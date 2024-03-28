@@ -30,7 +30,8 @@ mod tokio {
 	pub struct Tick {
 		this_tick: DateTime<Local>,
 		elapsed: TimeDelta,
-		remaining: TimeDelta
+		remaining: TimeDelta,
+		delayed: bool
 	}
 
 	impl ClockTimer {
@@ -45,10 +46,11 @@ mod tokio {
 		pub async fn tick(&mut self) -> Option<Tick> {
 			if self.remaining < TimeDelta::zero() { return None }
 
-			let tick = Tick {
+			let mut tick = Tick {
 				this_tick: self.next_tick,
 				elapsed: self.elapsed,
-				remaining: self.remaining
+				remaining: self.remaining,
+				delayed: false
 			};
 
 			self.next_tick += self.interval;
@@ -57,9 +59,15 @@ mod tokio {
 
 			let delta = tick.this_tick - Local::now();
 
-			if delta <= TimeDelta::zero() { return Some(tick) }
-			sleep(delta.to_std().unwrap()).await;
+			if delta <= TimeDelta::zero() {
+				// highly unlikely, but if delta somehow manages to hit exactly 0,
+				// we consider it on time. Maybe we should say like, if now is
+				// within 1ms after the set tick time? dunno
+				if delta < TimeDelta::zero() { tick.delayed = true }
+				return Some(tick)
+			}
 
+			sleep(delta.to_std().unwrap()).await;
 			Some(tick)
 		}
 
@@ -114,6 +122,24 @@ mod tokio {
 		#[inline]
 		pub fn total_runtime(&self) -> TimeDelta {
 			self.elapsed + self.remaining
+		}
+
+		/// Returns if this tick was delayed. This tick is considered delayed if
+		/// the tick function was called after the time of this tick had already past.
+		///
+		/// Note: does the same thing as [`past_due`][Self::past_due]
+		#[inline]
+		pub fn delayed(&self) -> bool {
+			self.delayed
+		}
+
+		/// Returns if this tick is past due. This tick is considered past due if
+		/// the tick function was called after the time of this tick had already past.
+		///
+		/// Note: does the same thing as [`delayed`][Self::delayed]
+		#[inline]
+		pub fn past_due(&self) -> bool {
+			self.delayed
 		}
 	}
 
