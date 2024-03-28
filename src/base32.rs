@@ -95,7 +95,7 @@ unsafe fn encode_frame<
 	const LOWER: u8,
 	const UPPER_ADJUSTED: u8
 >(frame: &[u8; BINARY_FRAME_LEN], dest: &mut UnsafeBufWriteGuard) {
-	let frame = frame as *const [u8] as *const u8;
+	let frame = frame as *const u8;
 
 	// keep first 5 bits from byte 0, leaving 3 bits left
 	let byte1 = *frame >> 3;
