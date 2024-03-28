@@ -1,6 +1,6 @@
 [package]
 name = "wiwi"
-version = "0.5.2"
+version = "0.5.3"
 description = "A library, of, Stuff™"
 edition = "2021"
 authors = ["Meadowsys"]
@@ -31,9 +31,9 @@ z85 = "3.0.5"
 # Make sure to check README and workflow files too
 # Also check below, docs.rs config
 
-base16 = ["dep:thiserror", "hex"]
-base32 = ["dep:thiserror"]
-base64 = ["dep:thiserror"]
+# base16 = ["dep:thiserror", "hex"]
+# base32 = ["dep:thiserror"]
+# base64 = ["dep:thiserror"]
 clock-timer = ["dep:chrono", "dep:thiserror"]
 clock-timer-2 = ["dep:chrono"]
 debounce = ["dep:chrono"]
@@ -41,7 +41,7 @@ h = ["dep:thiserror"]
 hex = ["dep:thiserror"]
 lazy-wrap = ["dep:parking_lot"]
 string-pool = ["dep:hashbrown", "lazy-wrap"]
-ws = []
+# ws = []
 z85 = ["dep:thiserror"]
 
 # runtime selection features
