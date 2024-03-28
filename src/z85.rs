@@ -16,7 +16,7 @@
 //! that stored amount of padding, and remove that amount from the end of the
 //! decoded bytes.
 //!
-//! Original Z85 spec: https://rfc.zeromq.org/spec/32
+//! Original Z85 spec: <https://rfc.zeromq.org/spec/32>
 
 use crate::encoding_utils::{ ChunkedSlice, UnsafeBufWriteGuard};
 use ::std::slice;
