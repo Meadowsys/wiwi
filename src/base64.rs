@@ -53,7 +53,7 @@ fn _encode(bytes: &[u8], last_2_bytes: *const u8) -> String {
 			let padding_amount = 3 - remainder;
 			frames_iter.with_remainder_unchecked(|frame| {
 				encode_frame(frame, last_2_bytes, &mut dest);
-				let ptr = dest.as_ptr().sub(padding_amount);
+				let ptr = dest.as_mut_ptr().sub(padding_amount);
 				ptr::copy_nonoverlapping(b"==" as *const u8, ptr, padding_amount);
 			});
 		}

@@ -36,7 +36,7 @@ fn _encode<const UPPER: bool>(bytes: &[u8]) -> String {
 			// mod 16
 			let remainder = bytes_len & 0b1111;
 
-			bytes_ptr = unsafe { encode::neon_uint8x16::<UPPER>(bytes_ptr, dest.as_ptr(), neon_rounds) };
+			bytes_ptr = unsafe { encode::neon_uint8x16::<UPPER>(bytes_ptr, dest.as_mut_ptr(), neon_rounds) };
 
 			// multiply by 32
 			// multiply by num rounds (^) times two, which is shift one more

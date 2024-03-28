@@ -70,8 +70,8 @@ pub fn encode_z85(bytes: &[u8]) -> String {
 	let capacity = if remainder == 0 {
 		frames * STRING_FRAME_LEN
 	} else {
-		// frames is number of *whole* frames so the remainder is not included by default.
-		// adding 1 to allocate space for a whole frame for it.
+		// frames is number of *whole* binary frames, so the remainder is not
+		// included in this. adding 1 to allocate space for a whole frame for it.
 		let capacity = (frames + 1) * STRING_FRAME_LEN;
 		// don't forget that last byte that encodes amount of padding
 		capacity + 1
@@ -81,10 +81,11 @@ pub fn encode_z85(bytes: &[u8]) -> String {
 	let mut dest = UnsafeBufWriteGuard::with_capacity(capacity);
 
 	for _ in 0..frames {
+		// SAFETY: the loop will loop `frames` times, each time taking out a frame's worth
+		// of bytes (`next_frame_unchecked`). this will consume all the bytes except
+		// amount stored in remainder. We also preallocated enough memory up front,
+		// so passing in &mut dest is fine.
 		unsafe {
-			// SAFETY: everything has been calculated:
-			// - amount of frames, so we'll have enough bytes left for next full frame
-			// - dest, we preallocated enough memory up front
 			let frame = frames_iter.next_frame_unchecked();
 			encode_frame(frame, &mut dest);
 		}
@@ -92,26 +93,34 @@ pub fn encode_z85(bytes: &[u8]) -> String {
 
 	if remainder > 0 {
 		unsafe {
+			// SAFETY: this will only run if there is any remainder, which is correct.
+			// `remainder` contains a frame with static len 4 (as required by
+			// encode_frame too). We preallocated enough memory up front, so &mut dest
+			// is good to use.
 			frames_iter.with_remainder_unchecked(|remainder| {
-				// SAFETY: everything has been calculated:
-				// - remainder, so 0 < remainder < N will be true
-				//   (which is what `with_remainder_unchecked` requires)
-				// - dest, we preallocated enough memory up front
 				encode_frame(remainder, &mut dest);
 			});
+
+			// amount of bytes that are padding (ie. doens't contain data)
 			let padding_len = BINARY_FRAME_LEN - remainder;
 
-			// SAFETY: 0 < padding_len < 4 will always be true, which
-			// fits in TABLE_ENCODER_LEN
+			// SAFETY: 0 < padding_len < 4 will always be true, because of calculation
+			// of remainder (bytes.len() % 4 will always be 0 <= n <= 3) which
+			// fits in TABLE_ENCODER_LEN (which is 85).
 			let padding_char = *TABLE_ENCODER.get_unchecked(padding_len);
+
+			// SAFETY: we would have preallocated this one extra byte if remainder
+			// were needed.
 			dest.write_bytes_const::<1>(&padding_char);
 		}
 	}
 
+	// SAFETY: we preallocated an amount of memory up front, and written enough
+	// bytes already. this will always be safe
 	let vec = unsafe { dest.into_full_vec() };
-	debug_assert!(String::from_utf8(vec.clone()).is_ok(), "output bytes are valid utf-8");
 
-	// SAFETY: we only are pushing in chars in the table, which are all ASCII chars
+	// SAFETY: we only are pushing in chars in the table, which are all valid ASCII.
+	debug_assert!(String::from_utf8(vec.clone()).is_ok(), "output bytes are valid utf-8");
 	unsafe { String::from_utf8_unchecked(vec) }
 }
 
@@ -122,17 +131,18 @@ pub fn decode_z85(mut bytes: &[u8]) -> Result<Vec<u8>, DecodeError> {
 			Ok(Vec::new())
 		} else {
 			// in here, bytes len is 0 < n < STRING_FRAME_LEN. we already returned
-			// on empty input. (empty bytes <-> empty string) at lengths 1-3, the
-			// single frame would have been padded to a full frame and then the
-			// amount of padding appended as one more byte, for a total lenght of 6.
-			// At length 4, it would just be the frame without any extra bytes added.
-			// so therefore the smallest valid non-zero len is 5, with one full frame
-			// or more.
+			// on empty input (valid because empty bytes <-> empty string). at input
+			// lengths 1-3, the single frame would have been padded to a full frame
+			// and then the amount of padding appended as one more byte, for a total
+			// lenght of 6. At input length 4, it would just be the frame without
+			// any extra bytes added. so therefore the smallest valid non-zero len
+			// is 5, encoding one full frame of data or more, so this is invalid input.
 			Err(DecodeError::InvalidLength)
 		}
 	}
 
-	// this will at least 1 (see comment above)
+	// `bytes.len()` will always be 5 or more, so `frames` will always
+	// be 1 or more (see comment above)
 	let frames = bytes.len() / STRING_FRAME_LEN;
 	debug_assert!(frames >= 1, "condition of \"at least one frame in input\" was checked correctly");
 
@@ -141,22 +151,27 @@ pub fn decode_z85(mut bytes: &[u8]) -> Result<Vec<u8>, DecodeError> {
 	// left shift 2 is the same as multiply by 4 (BINARY_FRAME_LEN)
 	let capacity = frames << 2;
 
+	// Match statement to check remainder for that extra padding encoding byte.
 	let (capacity, added_padding) = match remainder {
 		0 => {
 			// no padding was added
 			(capacity, 0usize)
 		}
 		1 => {
-			// the singular padding byte (there will never be more)
+			// the singular padding byte (there will never be more than this, handled
+			// by below match case, returning error)
 			let added_padding = unsafe {
 				// SAFETY: remainder is 1, so there will be at least 1 byte in the
-				// slice, because duh. so this will not underflow
+				// slice, because duh (well technically there will be at least 6
+				// bytes but at least 1 still holds). so this will not underflow
 				let one_shorter = bytes.len() - 1;
 
 				let ptr = bytes as *const [u8] as *const u8;
-				// end byte
+				// this will be last byte in slice
 				let byte = *(ptr.add(one_shorter));
 
+				// SAFETY: `one_shorter` is bytes.len() - 1, which as explained
+				// above is safe, so this will be too.
 				bytes = slice::from_raw_parts(ptr, one_shorter);
 
 				// SAFETY: 0 <= n < 256 is always true for a u8, and TABLE_DECODER is len 256,
@@ -166,7 +181,7 @@ pub fn decode_z85(mut bytes: &[u8]) -> Result<Vec<u8>, DecodeError> {
 				match decoded {
 					// having that last byte as a 0 is not something we generate,
 					// as its just a waste of a perfectly good byte, but it doesn't
-					// break this system (added a unit test for it).
+					// break this system (added a unit test for it to make sure).
 					Some(val) if (val as usize) < BINARY_FRAME_LEN => { val }
 					Some(_) | None => { return Err(DecodeError::InvalidChar) }
 				}
@@ -179,7 +194,7 @@ pub fn decode_z85(mut bytes: &[u8]) -> Result<Vec<u8>, DecodeError> {
 		_n => { return Err(DecodeError::InvalidLength) }
 	};
 
-	// because frames >= 1, this will be >= 0 (ie. will not underflow).
+	// because frames >= 1, `excluding_last_frame` will be >= 0 (ie. will not underflow).
 	let excluding_last_frame = frames - 1;
 
 	let mut frames_iter = ChunkedSlice::<STRING_FRAME_LEN>::new(bytes);
@@ -187,17 +202,15 @@ pub fn decode_z85(mut bytes: &[u8]) -> Result<Vec<u8>, DecodeError> {
 
 	for _ in 0..excluding_last_frame {
 		unsafe {
-			// SAFETY: everything has been calculated:
-			// - excluding_last_frame, so we'll always be in bounds of bytes
-			//   as well as not touch the last frame
-			// - dest, we preallocated all the capacity we need up front
-
+			// SAFETY: this loop loops `excluding_last_frame` times, ie. loops through
+			// every frame except the last. We've also preallocated enough capacity
+			// for the bytes we will write
 			let frame = frames_iter.next_frame_unchecked();
 			decode_frame(frame, |frame| dest.write_bytes_const::<BINARY_FRAME_LEN>(frame as *const u8))?;
 		}
 	}
 
-	// the last frame, this is where the padding is handled
+	// this is the last frame, and this is where the padding is handled
 	unsafe {
 		let frame = frames_iter.next_frame_unchecked();
 		decode_frame(frame, |frame| {
@@ -205,22 +218,32 @@ pub fn decode_z85(mut bytes: &[u8]) -> Result<Vec<u8>, DecodeError> {
 			//   added_padding would be 0
 			// - if 0 < n < 4 bytes of padding were added, this is correct
 			// - if 4 <= n bytes of "padding" were added, this should have been
-			//   either be 0 or 0 < n < 4
+			//   either be 0 or 0 < n < 4, ie. this case would not happen.
 			// this is checked up at the top, where the padding amount is decoded
 
-			// so because of all that, this will also be in range of 0 <= n < BINARY_FRAME_LEN
+			// This is the amount of bytes minus the padding bytes at the end.
+			// Because of all that explained above, this will also be in range of
+			// 0 <= n < BINARY_FRAME_LEN, ie. will not underflow. And because
+			// we are subtracting from BINARY_FRAME_LEN with a number 0 or more up to
+			// one before BINARY_FRAME_LEN, this will be 1 <= n <= BINARY_FRAME_LEN.
 			let non_padding_bytes = BINARY_FRAME_LEN - added_padding;
-			debug_assert!(non_padding_bytes <= BINARY_FRAME_LEN, "added padding is less than one full frame");
 
-			// SAFETY: as explained above, this is safe
+			// SAFETY: this writes the amount of bytes that aren't padding bytes,
+			// into the buffer. We subtracted padding bytes from the number we write
+			// already, so we write the perfect amount left and never over or under.
 			dest.write_bytes(frame as *const u8, non_padding_bytes);
 		})?;
 	}
 
+	// SAFETY: We have consumed all the input bytes (calculated)
+	#[cfg(debug_assertions)]
 	frames_iter.debug_assert_is_empty();
+
+	// SAFETY: We have written the exact amount of bytes we preallocated (calculated)
 	Ok(unsafe { dest.into_full_vec() })
 }
 
+// TODO: these errors could be improved.
 #[derive(Debug, ::thiserror::Error)]
 pub enum DecodeError {
 	#[error("invalid length")]
@@ -229,6 +252,10 @@ pub enum DecodeError {
 	InvalidChar
 }
 
+/// # Safety
+///
+/// Caller must guarantee dest is valid for at least `STRING_FRAME_LEN` bytes
+/// to be written.
 unsafe fn encode_frame(frame: &[u8; BINARY_FRAME_LEN], dest: &mut UnsafeBufWriteGuard) {
 	let mut int = u32::from_be_bytes(*frame) as usize;
 
@@ -249,8 +276,9 @@ unsafe fn encode_frame(frame: &[u8; BINARY_FRAME_LEN], dest: &mut UnsafeBufWrite
 	debug_assert!(int % TABLE_ENCODER_LEN == int, "no remaining/unused byte information");
 	debug_assert!(int / TABLE_ENCODER_LEN == 0, "no remaining/unused byte information");
 
-	// SAFETY: these are calculated by modulo TABLE_ENCODER_LEN, which
-	// guarantees the numbers are 0 <= n < TABLE_ENCODER_LEN, which won't overflow
+	// SAFETY: these are calculated by modulo TABLE_ENCODER_LEN (85), which
+	// guarantees the numbers are 0 <= n < TABLE_ENCODER_LEN (85),
+	// and the length of TABLE_ENCODER is 85, so this won't overflow
 	let encoded_frame: [u8; STRING_FRAME_LEN] = unsafe { [
 		*TABLE_ENCODER.get_unchecked(byte1),
 		*TABLE_ENCODER.get_unchecked(byte2),
@@ -259,9 +287,16 @@ unsafe fn encode_frame(frame: &[u8; BINARY_FRAME_LEN], dest: &mut UnsafeBufWrite
 		*TABLE_ENCODER.get_unchecked(byte5),
 	] };
 
+	// SAFETY: internal function. caller guarantees past dest has at least
+	// `STRING_FRAME_LEN` bytes left.
 	dest.write_bytes_const::<STRING_FRAME_LEN>(&encoded_frame as *const u8);
 }
 
+/// # Safety
+///
+/// All allowed-by-type-system inputs are valid. However, marking this function
+/// `unsafe` is not only consistent with [`encode_frame`], its also just more
+/// convenient :p. This is an internal function, so doesn't matter too much.
 unsafe fn decode_frame<F>(frame: &[u8; STRING_FRAME_LEN], f: F) -> Result<(), DecodeError>
 where
 	F: FnOnce(&[u8; BINARY_FRAME_LEN])
@@ -271,7 +306,7 @@ where
 	// SAFETY: 0 <= n < 256 is always true for a u8, and TABLE_DECODER is len 256,
 	// so this is safe.
 	// Additionally, if this comes back as Some from TABLE_DECODER, it is guaranteed
-	// to be 0 <= n <= 84, since there are no Some(n) outside this range.
+	// to be 0 <= n <= 84, since there are no Some(n) values outside this range.
 	let Some(byte1) = *TABLE_DECODER.get_unchecked(byte1 as usize) else {
 		return Err(DecodeError::InvalidChar)
 	};
@@ -288,6 +323,8 @@ where
 		return Err(DecodeError::InvalidChar)
 	};
 
+	// reversal process of encode. Max value is 84^5, or 4.182.119.424, which
+	// is less than u32::MAX, or 4.294.967.296, so will not overflow.
 	let mut int = byte1 as u32;
 
 	int *= TABLE_ENCODER_LEN as u32;

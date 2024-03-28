@@ -78,7 +78,7 @@ fn _encode<
 		unsafe {
 			frames_iter.with_remainder_unchecked(|frame| {
 				encode_frame::<BREAKPOINT, LOWER, UPPER_ADJUSTED>(frame, &mut dest);
-				let ptr = dest.as_ptr().sub(padding_amount);
+				let ptr = dest.as_mut_ptr().sub(padding_amount);
 				static PADDING: &[u8; 6] = b"======";
 				ptr::copy_nonoverlapping(PADDING as *const u8, ptr, padding_amount);
 			});
