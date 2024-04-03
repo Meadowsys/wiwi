@@ -1,4 +1,3 @@
-#[cfg(feature = "hex")]
 fn main() {
 	// we'll encode both upper and lower into the same table
 	use ::wiwi::hex::{ TABLE_ENCODER_LOWER, TABLE_ENCODER_UPPER };
@@ -34,10 +33,4 @@ fn main() {
 	string.push_str("\n];");
 
 	println!("{string}");
-}
-
-#[cfg(not(feature = "hex"))]
-fn main() {
-	eprintln!("Hi, this is the `generate-hex-table-decoder` binary, but you aren't running this binary with the `hex` feature enabled. Try rerunning this with that enabled: `cargo run --features hex");
-	::std::process::exit(69);
 }

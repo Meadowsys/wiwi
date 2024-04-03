@@ -58,6 +58,14 @@ harness = false
 [profile.bench]
 lto = "thin"
 
+[[bin]]
+name = "generate-hex-table-decoder"
+required-features = ["hex"]
+
+[[bin]]
+name = "generate-z85-table-decoder"
+required-features = ["z85"]
+
 [package.metadata.docs.rs]
 # https://docs.rs/about/metadata
 

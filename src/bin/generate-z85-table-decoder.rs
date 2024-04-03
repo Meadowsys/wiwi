@@ -1,4 +1,3 @@
-#[cfg(feature = "z85")]
 fn main() {
 	use ::wiwi::z85::TABLE_ENCODER;
 
@@ -27,10 +26,4 @@ fn main() {
 	string.push_str("\n];");
 
 	println!("{string}");
-}
-
-#[cfg(not(feature = "z85"))]
-fn main() {
-	eprintln!("Hi, this is the `generate-z85-table-decoder` binary, but you aren't running this binary with the `z85` feature enabled. Try rerunning this with that enabled: `cargo run --features z85");
-	::std::process::exit(69);
 }
