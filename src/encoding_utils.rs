@@ -143,7 +143,7 @@ impl<'h, const N: usize> ChunkedSlice<'h, N> {
 	///
 	/// `self.bytes` must have `N` or more bytes left in it,
 	/// otherwise invalid memory will be read from.
-	pub unsafe fn next_frame_unchecked(&mut self) -> &[u8; N] {
+	pub unsafe fn next_frame_unchecked(&mut self) -> &'h [u8; N] {
 		#[cfg(debug_assertions)]
 		assert!(self.bytes.len() >= N, "enough bytes left to form another whole frame");
 
