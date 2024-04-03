@@ -154,7 +154,7 @@ mod tokio {
 			/// New builder. You can also obtain a builder through [`ClockTimer::builder`]
 			#[inline]
 			pub fn new() -> Self {
-				// its gonna be noop lol
+				// its gonna optimise away to be noop lol
 				Self { __private: () }
 			}
 
