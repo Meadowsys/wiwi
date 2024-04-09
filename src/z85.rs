@@ -249,7 +249,9 @@ pub enum DecodeError {
 	#[error("invalid length")]
 	InvalidLength,
 	#[error("invalid character")]
-	InvalidChar
+	InvalidChar,
+	#[error("correct characters, but incorrect combination that would cause overflow")]
+	InvalidFrame
 }
 
 /// # Safety
@@ -325,21 +327,23 @@ where
 
 	// reversal process of encode. Max value is 84^5, or 4.182.119.424, which
 	// is less than u32::MAX, or 4.294.967.296, so will not overflow.
-	let mut int = byte1 as u32;
+	let mut int = byte1 as u64;
 
-	int *= TABLE_ENCODER_LEN as u32;
-	int += byte2 as u32;
+	int *= TABLE_ENCODER_LEN as u64;
+	int += byte2 as u64;
 
-	int *= TABLE_ENCODER_LEN as u32;
-	int += byte3 as u32;
+	int *= TABLE_ENCODER_LEN as u64;
+	int += byte3 as u64;
 
-	int *= TABLE_ENCODER_LEN as u32;
-	int += byte4 as u32;
+	int *= TABLE_ENCODER_LEN as u64;
+	int += byte4 as u64;
 
-	int *= TABLE_ENCODER_LEN as u32;
-	int += byte5 as u32;
+	int *= TABLE_ENCODER_LEN as u64;
+	int += byte5 as u64;
 
-	let decoded_frame = u32::to_be_bytes(int);
+	if int > u32::MAX as u64 { return Err(DecodeError::InvalidFrame) }
+
+	let decoded_frame = u32::to_be_bytes(int as u32);
 	f(&decoded_frame);
 
 	Ok(())
