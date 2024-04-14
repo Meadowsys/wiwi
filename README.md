@@ -24,9 +24,9 @@ Only one can be enabled at a time. utility implementations for **`tokio`** will 
 
 ### Feature configuration features
 
-These don't change API usage, only some compile time behaviour under the hood.
+These don't change the exposed API or program behaviour at all, only some internal implementation details that might affect things such as compile times, performance, and binary size.
 
-- **`debounce-dyn-fn`** - Wraps functions into a `Box<dyn Fn>`, to use dynamic dispatch and avoid monomorphisation binary size cost
+- **`debounce-dyn-fn`** - Wraps functions into a `Box<dyn Fn>`, rather than monomorphising. This will cause calls to the underlying function (not the returned one) to be a bit slower than static dispatch, but also reduces the binary size depending on how many different concrete types the debounce functions are called with.
 
 [zeromq]: https://zeromq.org
 [z85]: https://rfc.zeromq.org/spec/32
