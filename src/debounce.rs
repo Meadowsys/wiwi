@@ -113,7 +113,7 @@ mod tokio {
 		rt_handle.spawn(recv_task(receiver, fn_caller_sender, Arc::clone(&args.last_call_time)));
 		rt_handle.spawn(fn_caller(fn_caller_receiver, args));
 
-		move || sender.send(()).unwrap()
+		move || sender.send(()).expect("async task for a debounced function was stopped")
 	}
 
 	/// receives calls from debounce function, sending message to fn_caller if
