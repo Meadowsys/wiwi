@@ -54,6 +54,9 @@ pub mod hex;
 #[cfg(feature = "lazy-wrap")]
 pub mod lazy_wrap;
 
+#[cfg(feature = "serialiser")]
+pub mod serialiser;
+
 #[cfg(feature = "string-pool")]
 pub mod string_pool;
 
