@@ -88,10 +88,31 @@ pub const MARKER_U128: u8 = 32;
 /// Marker for signed integers that fit in 128 bits, regardless of source size
 pub const MARKER_I128: u8 = 33;
 
-pub const MARKER_HETEROARRAY_SMALL: u8 = 34;
-pub const MARKER_HETEROARRAY: u8 = 35;
-pub const MARKER_HOMOARRAY_SMALL: u8 = 36;
-pub const MARKER_HOMOARRAY: u8 = 37;
+/// Marker for homogenous (single-typed) arrays that have 255 items
+/// (`u8::MAX`) or less, using a 8-bit int without marker to store the length.
+pub const MARKER_HOMOARRAY_8: u8 = 34;
+
+/// Marker for homogenous (single-typed) arrays that have 65,535 items
+/// (`u16::MAX`) or less, using a 16-bit int without marker to store the length.
+pub const MARKER_HOMOARRAY_16: u8 = 35;
+
+/// Marker for homogenous (single-typed) arrays that have 1,099,511,627,775 items
+/// (about 1 trillion, or hypothetical `u40::MAX`) or less, using a 40-bit int
+/// without marker to store the length.
+pub const MARKER_HOMOARRAY_40: u8 = 36;
+
+/// Marker for homogenous (single-typed) arrays that have...
+/// 340,282,366,920,938,463,463,374,607,431,768,211,455 items (`u128::MAX`) or
+/// less, using an arbitrary int type with marker to store the length. Theoretically.
+/// For now... the more extreme larger lengths are more hypothetical than actually
+/// useable, especially since rust vecs will abort when reaching
+/// 9,223,372,036,854,775,807 items (`isize::MAX` on 64bit platforms) stored,
+/// which is... _probably_ enough :p. If you somehow get here, and you notice,
+/// perhaps let me know (file an issue?) cause I'll be curious lol
+pub const MARKER_HOMOARRAY_XL: u8 = 37;
+
+// pub const MARKER_HOMOARRAY_SMALL: u8 = 36;
+// pub const MARKER_HOMOARRAY: u8 = 37;
 
 // /// Marker for float values that fit in 16 bits (IEEE754-2008 binary16), regardless of source size
 // pub const MARKER_F16: u8 = 33;
@@ -169,11 +190,10 @@ pub const fn const_marker_description<const MARKER: u8>() -> &'static str {
 		MARKER_U128 => { "unsigned 128-bit integer" }
 		MARKER_I128 => { "signed 128-bit integer" }
 
-		MARKER_HETEROARRAY_SMALL => { "heterogenous array" }
-		MARKER_HETEROARRAY => { "heterogenous array" }
-
-		MARKER_HOMOARRAY_SMALL => { "homogenous array" }
-		MARKER_HOMOARRAY => { "homogenous array" }
+		MARKER_HOMOARRAY_8 => { "homogenous array" }
+		MARKER_HOMOARRAY_16 => { "homogenous array" }
+		MARKER_HOMOARRAY_40 => { "homogenous array" }
+		MARKER_HOMOARRAY_XL => { "homogenous array" }
 
 		// MARKER_F16 => { "binary16 (half-precision) floating point number" }
 		// MARKER_F32 => { "binary32 (single-precision) floating point number" }

@@ -101,7 +101,6 @@ const SMALLEST_I112: i128 = !LARGEST_I112;
 const LARGEST_I120: i128 = LARGEST_I112 << 8 | u8::MAX as i128;
 const SMALLEST_I120: i128 = !LARGEST_I120;
 
-
 #[inline]
 fn min_marker_i8(num: i8) -> u8 {
 	MARKER_I8
@@ -270,21 +269,20 @@ fn marker_is_valid_i128(marker: u8) -> bool {
 		_ => { marker_is_valid_i64(marker) }
 	}
 }
+
 macro_rules! impl_number_deserialise {
 	($($num:ty: $marker_fn:ident, $init_byte:expr)*) => {
 		$(
 			impl<'h> Deserialise<'h> for $num {
 				fn deserialise<B: BufferImplRead>(input: &mut B) -> Result<Self> {
-					let marker = input.read_next_byte().err_eof()?;
+					let marker = input.read_next_byte()?;
 
 					if $marker_fn(marker) {
 						let mut buf = [$init_byte; { <$num>::BITS as usize / 8 }];
 						let count = (marker >> 1) as usize;
 
 						unsafe {
-							let ptr = input
-								.read_next_bytes_ptr(count)
-								.err_eof()?;
+							let ptr = input.read_next_bytes_ptr(count)?;
 							ptr::copy_nonoverlapping(
 								ptr,
 								&mut buf as *mut u8,
@@ -314,4 +312,41 @@ impl_number_deserialise! {
 	i32: marker_is_valid_i32, !0
 	i64: marker_is_valid_i64, !0
 	i128: marker_is_valid_i128, !0
+}
+
+impl Serialise for [u8] {
+	fn serialise<B: BufferImplWrite>(&self, output: &mut B) {
+		const U8_MAX: u64 = LARGEST_U8 as _;
+		const U16_MAX: u64 = LARGEST_U16 as _;
+		const U40_MAX: u64 = LARGEST_U40 as _;
+
+		match self.len() as u64 {
+			len @ ..=U8_MAX => {
+				output.write_byte(MARKER_HOMOARRAY_8);
+				output.write_byte(MARKER_U8);
+				output.write_byte(len as u8);
+			}
+			len @ ..=U16_MAX => {
+				output.write_byte(MARKER_HOMOARRAY_16);
+				output.write_byte(MARKER_U8);
+				output.write_slice(&(len as u16).to_le_bytes());
+			}
+			len @ ..=U40_MAX => {
+				output.write_byte(MARKER_HOMOARRAY_40);
+				output.write_byte(MARKER_U8);
+
+				let len_bytes = len.to_le_bytes();
+				output.write_slice(unsafe {
+					slice::from_raw_parts(&len_bytes as *const u8, 5)
+				});
+			}
+			len => {
+				output.write_byte(MARKER_HOMOARRAY_XL);
+				output.write_byte(MARKER_U8);
+				len.serialise(output);
+			}
+		}
+
+		output.write_slice(self);
+	}
 }

@@ -1,4 +1,4 @@
-// use super::{ BufferImplWrite, Serialise };
+use super::{ BufferImplWrite, Serialise };
 // use super::marker::{ MARKER_HOMOARRAY, MARKER_HOMOARRAY_SMALL, MARKER_HETEROARRAY, MARKER_HETEROARRAY_SMALL };
 // // pub trait HomogenousSlice {}
 
@@ -11,3 +11,13 @@
 // impl<'h, T: Serialise> Serialise for HeterogenousSliceWrapper<'h, T> {
 // 	fn serialise<B: BufferImplWrite>(&self, out: &mut B) {}
 // }
+
+impl<T> Serialise for Vec<T>
+where
+	[T]: Serialise
+{
+	#[inline]
+	fn serialise<B: BufferImplWrite>(&self, output: &mut B) {
+		(**self).serialise(output);
+	}
+}

@@ -1,9 +1,10 @@
-use self::error::Result;
+use self::error::{ Result, ResultExt };
 
 pub mod error;
+
+mod array;
 mod marker;
 mod number;
-mod slice;
 
 /// Trait for generic buffer impl. Unsafe trait to assert that implementers have implemented it correctly
 // Might make it easier to do that unsafe impl later? :p
@@ -37,16 +38,16 @@ unsafe impl BufferImplWrite for Vec<u8> {
 }
 
 pub unsafe trait BufferImplRead {
-	unsafe fn read_next_bytes_ptr(&mut self, count: usize) -> Option<*const u8>;
+	unsafe fn read_next_bytes_ptr(&mut self, count: usize) -> Result<*const u8>;
 	// fn peek_next_byte(&mut self) -> Option<u8>;
 
 	#[inline]
-	unsafe fn read_next_bytes_const_ptr<const N: usize>(&mut self) -> Option<*const u8> {
+	unsafe fn read_next_bytes_const_ptr<const N: usize>(&mut self) -> Result<*const u8> {
 		self.read_next_bytes_ptr(N)
 	}
 
 	#[inline]
-	fn read_next_bytes(&mut self, count: usize) -> Option<&[u8]> {
+	fn read_next_bytes(&mut self, count: usize) -> Result<&[u8]> {
 		unsafe {
 			self.read_next_bytes_ptr(count)
 				.map(|ptr| ::std::slice::from_raw_parts(ptr, count))
@@ -54,7 +55,7 @@ pub unsafe trait BufferImplRead {
 	}
 
 	#[inline]
-	fn read_next_bytes_const<const N: usize>(&mut self) -> Option<&[u8; N]> {
+	fn read_next_bytes_const<const N: usize>(&mut self) -> Result<&[u8; N]> {
 		unsafe {
 			self.read_next_bytes_const_ptr::<N>()
 				.map(|ptr| &*(ptr as *const [u8; N]))
@@ -62,7 +63,7 @@ pub unsafe trait BufferImplRead {
 	}
 
 	#[inline]
-	fn read_next_byte(&mut self) -> Option<u8> {
+	fn read_next_byte(&mut self) -> Result<u8> {
 		unsafe {
 			self.read_next_bytes_const_ptr::<1>()
 				.map(|ptr| *ptr)
@@ -71,12 +72,12 @@ pub unsafe trait BufferImplRead {
 }
 
 unsafe impl<'h> BufferImplRead for &'h [u8] {
-	unsafe fn read_next_bytes_ptr(&mut self, count: usize) -> Option<*const u8> {
+	unsafe fn read_next_bytes_ptr(&mut self, count: usize) -> Result<*const u8> {
 		(self.len() >= count).then(#[inline] || {
 			let self_ptr = *self as *const [u8] as *const u8;
 			*self = ::std::slice::from_raw_parts(self_ptr.add(count), self.len() - count);
 			self_ptr
-		})
+		}).err_eof()
 	}
 
 	// fn peek_next_byte(&mut self) -> Option<u8> {
@@ -90,8 +91,14 @@ pub trait Serialise {
 	fn serialise<B: BufferImplWrite>(&self, output: &mut B);
 }
 
-pub fn serialise<T: Serialise>(item: &T) -> Vec<u8> {
+pub fn serialise<T: ?Sized + Serialise>(item: &T) -> Vec<u8> {
 	let mut vec = Vec::new();
+	item.serialise(&mut vec);
+	vec
+}
+
+pub fn serialise_with_capacity<T: ?Sized + Serialise>(item: &T, capacity: usize) -> Vec<u8> {
+	let mut vec = Vec::with_capacity(capacity);
 	item.serialise(&mut vec);
 	vec
 }
