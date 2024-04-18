@@ -17,7 +17,7 @@ Some goals of this serialiser, in _rough_ order of priority:
 These are non-goals (but still nice-to-haves):
 
 - Compressible by major compression algorithms, especially web ones (gzip, brotli)
-- Compat with other languages (serialisers may be written for them, but might not be able to process the whole range of types available)
+- Compat with other languages (serialisers may be written for them. The majority of types that people would actually use will be available in other languages, but they might not be able to process the whole range of types available (looking at you, 128-bit integers))
 
 ## Table of contents <!-- omit from toc -->
 
@@ -53,12 +53,12 @@ The general structure of an item serialised is a marker byte that is unique to t
 
 - Marker byte (one byte, until we get "close to" overflow, then 2 bytes for new ones)
 - Metadata (if applicable for the type)
-- Actual data (if applicable for the type)
+- Data (if applicable for the type)
 
 ### Markers
 
 | Marker | Type
-| ------ | ----------------------------------
+| ------ | ------------------------------------------------------------------
 | 0      | None
 | 1      | _unassigned_
 | 2      | 8-bit [integer], unsigned
@@ -226,9 +226,9 @@ Some collections will have variants, like the "heterogenous array (8)" and "hete
 
 Also known as `null` or `nil` in other languages. The marker represents the value, so just write the marker byte.
 
-In this type system, where applicable/possible, a `None` value represents an absence of a value, rather than a `null` sort of value
+In this type system, where applicable/possible, a `None` value represents an absence of a value, rather than a `null` sort of value. For example, a `None` value in an object would mean that key does not exist, rather than its set to None. In a language like JavaScript or deserialising into a `Value`, nothing would be put. However, if a rigid structure is used (like Rust structs), the the optional value would be decoded as `None`.
 
-In terms of "knowing types" for specialised variants of some structures (ex. array and object), `None` is to be considered a seperate type, as there is no way to reliably mark a null value in a densely packed array without markers. For example, in a byte array, there is no reasonable way to tell if an item is not a byte value, but is instead a null marker.
+In terms of "knowing types" for specialised variants of some structures (ex. array and object), `None` is to be considered a seperate type, as there is no way to reliably mark a null value in a densely packed structures without internal markers. For example, in a byte array, there is no reasonable way to tell if an item is a null marker and not a byte value.
 
 ### Integers
 
@@ -407,6 +407,12 @@ The length here refers to the amount of key value mappings.
 
 First write the marker for the object type, then write the length (see [section on collection variants]). For every key-value pair, first encode the key (including marker), then encode the value (including marker).
 
+- Marker for the specific object variant
+- Length for that specific variant (see [section on collection variants])
+- for each key value pair
+  - write key (with marker)
+  - write value (with marker)
+
 It is recommended, but not required, for all object types to sort the entries by key, from "least" to "greatest", if possible. That way, the same data written into an object will be deterministic.
 
 ### Object (key type known)
@@ -415,11 +421,25 @@ An object/map/dictionary with a known key type. Also, actually... This specialis
 
 First write the marker for the object, followed by the marker for the key type, followed by the length (see [section on collection variants]). Then, put in the key value pairs. Skip the marker on the key types, as it is already encoded in the beginning.
 
+- Marker
+- Key type marker
+- Length
+- for each key value pair
+  - Key (without marker)
+  - Value (with marker)
+
 ### Object (value type known)
 
 If in an object the key type is not known, but the value type is known...
 
 Write the marker for the object, followed by the marker for the value type, followed by the length (see [section on collection variants]). Then, put in the key value pairs, skipping the markers for the values, as that is already known.
+
+- Marker
+- Value type marker
+- Length
+- for each key value pair
+  - Key (with marker)
+  - Value (without marker)
 
 ### Object (key/value types known)
 
@@ -439,7 +459,13 @@ Write the marker for the object, followed by the marker for the key type, follow
 - Part of "Array of objects" group of specialisations
 - What keys each obj has is known, but no types are
 
-- encoding TODO
+- Marker
+- Length of array (or amount of objects)
+- Number of keys in each object
+- for each in key
+  - write key (with marker)
+  - for each in values
+    - write value (with marker)
 
 ### Object array (value types grouped)
 
@@ -459,13 +485,29 @@ Write the marker for this type of object, followed by length of array (or number
 - Values for each key do need to be the same type
 - Values that are for different keys do not have to be the same type
 
+- Marker
+- Length of array (or amount of objects)
+- Number of keys in each object
+- for each in key
+  - write key (with marker)
+  - write value type marker
+  - for each in values
+    - write value (without marker)
+
 ### Object array (key types consistent)
 
 - Part of "Array of objects" group of specialisations
 - Keys are known, and all the same type
 - Value types do not have to be the same
 
-TODO
+- Marker
+- Key type marker
+- Length of array (or amount of objects)
+- Number of keys in each object
+- for each in key
+  - write key (without marker)
+  - for each in values
+    - write value (with marker)
 
 ### Object array (key consistent, val grouped)
 
@@ -482,10 +524,10 @@ This is the same as above, but all key types are known to be the same, so that c
 - Write amount of objects (array len) (see [section on collection variants])
 - Write amount of keys per object
 - for each key
-  - write the key without marker
+  - write the key (without marker)
   - write value type marker
   - for each value
-    - write the value without marker
+    - write the value (without marker)
 
 ### Object array (key/val consistent)
 
@@ -502,9 +544,9 @@ A specialisation of the array of objects specialisation, where all keys are the 
 - Write amount of objects (array len) (see [section on collection variants])
 - Write amounts of keys per object
 - for each key
-  - write the key without marker
+  - write the key (without marker)
   - for each value
-    - write the value without marker
+    - write the value (without marker)
 
 ### Types for future consideration
 

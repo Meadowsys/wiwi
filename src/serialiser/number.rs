@@ -267,12 +267,12 @@ num_serialise_rest_fns! {
 }
 
 macro_rules! impl_number_serialise {
-	($($num:ty: $rest_fn:ident, $marker_fn:ident)*) => {
+	($($num:ty: $rest_fn:ident, $min_marker:ident)*) => {
 		$(
 			impl Serialise for $num {
 				fn serialise<B: BufferImplWrite>(&self, output: &mut B) {
 					let num = *self;
-					let marker = $marker_fn(num);
+					let marker = $min_marker(num);
 
 					output.write_byte(marker);
 					unsafe { $rest_fn(num, marker, output) }

@@ -3,9 +3,10 @@ use ::std::slice;
 
 pub mod error;
 
-mod array;
 mod marker;
+mod none;
 mod number;
+mod value;
 
 /// Trait for generic buffer impl. Unsafe trait to assert that implementers have implemented it correctly
 // Might make it easier to do that unsafe impl later? :p
@@ -116,7 +117,3 @@ pub trait DeserialiseOwned: for<'h> Deserialise<'h> {}
 pub fn deserialise<'h, T: Deserialise<'h>>(mut bytes: &'h [u8]) -> Result<T> {
 	T::deserialise(&mut bytes)
 }
-
-// fn serialise_none<B: BufferImpl>(buf: &mut B) {
-// 	buf.write_byte(consts::MARKER_NONE);
-// }
