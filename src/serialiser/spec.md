@@ -28,6 +28,7 @@ This does not have a formal name any more than "wiwi serialiser":p. Wiwi seriali
     - [Example: 17 booleans](#example-17-booleans)
     - [Misc other examples](#misc-other-examples)
     - [Why on earth?????](#why-on-earth)
+  - [UTF-8 String](#utf-8-string)
 
 ## Spec
 
@@ -41,38 +42,38 @@ Tne general structure of an item serialised is a marker byte that is unique to t
 | -------|----------------------------------
 | 0      | None
 | 1      | _unassigned_
-| 2      | **8-bit** integer, unsigned
-| 3      | **8-bit** integer, signed (two's compliment)
-| 4      | **16-bit** integer, unsigned
-| 5      | **16-bit** integer, signed (two's compliment)
-| 6      | **24-bit** integer, unsigned
-| 7      | **24-bit** integer, signed (two's compliment)
-| 8      | **32-bit** integer, unsigned
-| 9      | **32-bit** integer, signed (two's compliment)
-| 10     | **40-bit** integer, unsigned
-| 11     | **40-bit** integer, signed (two's compliment)
-| 12     | **48-bit** integer, unsigned
-| 13     | **48-bit** integer, signed (two's compliment)
-| 14     | **56-bit** integer, unsigned
-| 15     | **56-bit** integer, signed (two's compliment)
-| 16     | **64-bit** integer, unsigned
-| 17     | **64-bit** integer, signed (two's compliment)
-| 18     | **72-bit** integer, unsigned
-| 19     | **72-bit** integer, signed (two's compliment)
-| 20     | **80-bit** integer, unsigned
-| 21     | **80-bit** integer, signed (two's compliment)
-| 22     | **88-bit** integer, unsigned
-| 23     | **88-bit** integer, signed (two's compliment)
-| 24     | **96-bit** integer, unsigned
-| 25     | **96-bit** integer, signed (two's compliment)
-| 26     | **104-bit** integer, unsigned
-| 27     | **104-bit** integer, signed (two's compliment)
-| 28     | **112-bit** integer, unsigned
-| 29     | **112-bit** integer, signed (two's compliment)
-| 30     | **120-bit** integer, unsigned
-| 31     | **120-bit** integer, signed (two's compliment)
-| 32     | **128-bit** integer, unsigned
-| 33     | **128-bit** integer, signed (two's compliment)
+| 2      | 8-bit integer, unsigned
+| 3      | 8-bit integer, signed (two's compliment)
+| 4      | 16-bit integer, unsigned
+| 5      | 16-bit integer, signed (two's compliment)
+| 6      | 24-bit integer, unsigned
+| 7      | 24-bit integer, signed (two's compliment)
+| 8      | 32-bit integer, unsigned
+| 9      | 32-bit integer, signed (two's compliment)
+| 10     | 40-bit integer, unsigned
+| 11     | 40-bit integer, signed (two's compliment)
+| 12     | 48-bit integer, unsigned
+| 13     | 48-bit integer, signed (two's compliment)
+| 14     | 56-bit integer, unsigned
+| 15     | 56-bit integer, signed (two's compliment)
+| 16     | 64-bit integer, unsigned
+| 17     | 64-bit integer, signed (two's compliment)
+| 18     | 72-bit integer, unsigned
+| 19     | 72-bit integer, signed (two's compliment)
+| 20     | 80-bit integer, unsigned
+| 21     | 80-bit integer, signed (two's compliment)
+| 22     | 88-bit integer, unsigned
+| 23     | 88-bit integer, signed (two's compliment)
+| 24     | 96-bit integer, unsigned
+| 25     | 96-bit integer, signed (two's compliment)
+| 26     | 104-bit integer, unsigned
+| 27     | 104-bit integer, signed (two's compliment)
+| 28     | 112-bit integer, unsigned
+| 29     | 112-bit integer, signed (two's compliment)
+| 30     | 120-bit integer, unsigned
+| 31     | 120-bit integer, signed (two's compliment)
+| 32     | 128-bit integer, unsigned
+| 33     | 128-bit integer, signed (two's compliment)
 | 34     | IEEE754-2008 binary16 floating point number
 | 35     | IEEE754-2008 binary32 floating point number
 | 36     | IEEE754-2008 binary64 floating point number
@@ -92,6 +93,9 @@ Tne general structure of an item serialised is a marker byte that is unique to t
 | 49     | boolean array (8)
 | 50     | boolean array (16)
 | 51     | boolean array (XL)
+| 52     | string (8)
+| 53     | string (16)
+| 54     | string (XL)
 
 ### Integers
 
@@ -258,3 +262,9 @@ DISCLAIMER: I have not checked this table (yet), I have no clue if its actually 
 #### Why on earth?????
 
 Why not?
+
+### UTF-8 String
+
+A strictly UTF-8 string. Decoding it successfully would includes checking it to make sure its valid UTF-8. Encoding is very similar to the homogenous array, except because its a string, the type of the items can be inferred to be `u8`s.
+
+First write the marker for the string type, followed by the appropriately encoded length for that string variant. Then, write the string bytes.
