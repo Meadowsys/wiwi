@@ -12,12 +12,50 @@ use super::{ BufferImplWrite, Serialise };
 // 	fn serialise<B: BufferImplWrite>(&self, out: &mut B) {}
 // }
 
-impl<T> Serialise for Vec<T>
-where
-	[T]: Serialise
-{
-	#[inline]
-	fn serialise<B: BufferImplWrite>(&self, output: &mut B) {
-		(**self).serialise(output);
-	}
-}
+// impl Serialise for [u8] {
+// 	fn serialise<B: BufferImplWrite>(&self, output: &mut B) {
+// 		const U8_MAX: u64 = LARGEST_U8 as _;
+// 		const U16_MAX: u64 = LARGEST_U16 as _;
+// 		const U40_MAX: u64 = LARGEST_U40 as _;
+
+// 		match self.len() as u64 {
+// 			len @ ..=U8_MAX => {
+// 				output.write_byte(MARKER_HOMOARRAY_8);
+// 				output.write_byte(MARKER_U8);
+// 				output.write_byte(len as u8);
+// 			}
+// 			len @ ..=U16_MAX => {
+// 				output.write_byte(MARKER_HOMOARRAY_16);
+// 				output.write_byte(MARKER_U8);
+// 				output.write_slice(&(len as u16).to_le_bytes());
+// 			}
+// 			len @ ..=U40_MAX => {
+// 				output.write_byte(MARKER_HOMOARRAY_40);
+// 				output.write_byte(MARKER_U8);
+
+// 				let len_bytes = len.to_le_bytes();
+// 				output.write_slice(unsafe {
+// 					slice::from_raw_parts(&len_bytes as *const u8, 5)
+// 				});
+// 			}
+// 			len => {
+// 				output.write_byte(MARKER_HOMOARRAY_XL);
+// 				output.write_byte(MARKER_U8);
+// 				len.serialise(output);
+// 			}
+// 		}
+
+// 		output.write_slice(self);
+// 	}
+// }
+
+
+// impl<T> Serialise for Vec<T>
+// where
+// 	[T]: Serialise
+// {
+// 	#[inline]
+// 	fn serialise<B: BufferImplWrite>(&self, output: &mut B) {
+// 		(**self).serialise(output);
+// 	}
+// }

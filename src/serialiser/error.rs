@@ -16,6 +16,7 @@ pub fn err<T, S: Into<String>>(s: S) -> Result<T> {
 	Err(error(s))
 }
 
+#[inline]
 pub fn err_eof<T>() -> Result<T> {
 	err(UNEXPECTED_EOF)
 }

@@ -1,4 +1,5 @@
 use self::error::{ Result, ResultExt };
+use ::std::slice;
 
 pub mod error;
 
@@ -75,7 +76,10 @@ unsafe impl<'h> BufferImplRead for &'h [u8] {
 	unsafe fn read_next_bytes_ptr(&mut self, count: usize) -> Result<*const u8> {
 		(self.len() >= count).then(#[inline] || {
 			let self_ptr = *self as *const [u8] as *const u8;
-			*self = ::std::slice::from_raw_parts(self_ptr.add(count), self.len() - count);
+			*self = slice::from_raw_parts(
+				self_ptr.add(count),
+				self.len() - count
+			);
 			self_ptr
 		}).err_eof()
 	}
