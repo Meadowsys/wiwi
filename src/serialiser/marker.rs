@@ -100,10 +100,12 @@ pub const MARKER_F128_RESERVED: u8 = 37;
 /// reserved (not actually used)
 pub const MARKER_F256_RESERVED: u8 = 38;
 
-// /// Marker for the boolean value `true`
-// pub const MARKER_BOOL_TRUE: u8 = 39;
-// /// Marker for the boolean value `false`
-// pub const MARKER_BOOL_FALSE: u8 = 40;
+/// Marker for a boolean value
+pub const MARKER_BOOL: u8 = MARKER_BOOL_TRUE;
+/// Marker for the boolean value `true`
+pub const MARKER_BOOL_TRUE: u8 = 39;
+/// Marker for the boolean value `false`
+pub const MARKER_BOOL_FALSE: u8 = 40;
 
 // /// Marker for bools when they are packed into a homogenous array.
 // pub const MARKER_PACKED_BOOLS: u8 = 41;

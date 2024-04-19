@@ -3,6 +3,7 @@ use ::std::slice;
 
 pub mod error;
 
+mod bool;
 mod float;
 mod integer;
 mod marker;
