@@ -310,7 +310,7 @@ macro_rules! num_deserialise_rest_fns {
 				let bytes_ptr = &mut bytes as *mut u8;
 				let count = (marker >> 1) as usize;
 
-				let ptr = input.read_next_bytes_ptr(count)?;
+				let ptr = input.read_bytes_ptr(count)?;
 				ptr::copy_nonoverlapping(
 					ptr,
 					bytes_ptr,
@@ -356,7 +356,7 @@ macro_rules! impl_number_deserialise {
 		$(
 			impl<'h> Deserialise<'h> for $num {
 				fn deserialise<B: BufferImplRead>(input: &mut B) -> Result<Self> {
-					let marker = input.read_next_byte()?;
+					let marker = input.read_byte()?;
 
 					if $check_marker_fn(marker) {
 						unsafe { $rest_fn(marker, input) }

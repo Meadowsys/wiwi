@@ -95,10 +95,10 @@ pub const MARKER_F16: u8 = 34;
 pub const MARKER_F32: u8 = 35;
 /// Marker for float values that fit in 64 bits (IEEE754-2008 binary16), regardless of source size
 pub const MARKER_F64: u8 = 36;
-/// reserved (not actually used)
-pub const MARKER_F128_RESERVED: u8 = 37;
-/// reserved (not actually used)
-pub const MARKER_F256_RESERVED: u8 = 38;
+// /// reserved (not actually used)
+// pub const MARKER_F128_RESERVED: u8 = 37;
+// /// reserved (not actually used)
+// pub const MARKER_F256_RESERVED: u8 = 38;
 
 /// Marker for a boolean value
 pub const MARKER_BOOL: u8 = MARKER_BOOL_TRUE;
@@ -109,13 +109,12 @@ pub const MARKER_BOOL_FALSE: u8 = 40;
 
 pub const MARKER_HETEROGENOUS_ARRAY_8: u8 = 41;
 pub const MARKER_HETEROGENOUS_ARRAY_16: u8 = 42;
-pub const MARKER_HETEROGENOUS_ARRAY_24: u8 = 43;
-pub const MARKER_HETEROGENOUS_ARRAY_XL: u8 = 44;
+pub const MARKER_HETEROGENOUS_ARRAY_XL: u8 = 43;
 
-pub const MARKER_STRING_8: u8 = 52;
-pub const MARKER_STRING_16: u8 = 53;
-pub const MARKER_STRING_24: u8 = 54;
-pub const MARKER_STRING_XL: u8 = 55;
+// // TODO: these markers need fixing
+// pub const MARKER_STRING_8: u8 = 52;
+// pub const MARKER_STRING_16: u8 = 53;
+// pub const MARKER_STRING_XL: u8 = 55;
 
 // /// Marker for bools when they are packed into a homogenous array.
 // pub const MARKER_PACKED_BOOLS: u8 = 41;

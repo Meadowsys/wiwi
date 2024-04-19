@@ -1,8 +1,9 @@
 #![doc = include_str!("../README.md")]
 
-#![allow(clippy::should_implement_trait)]
 #![allow(clippy::missing_safety_doc)]
 #![allow(clippy::new_without_default)]
+#![allow(clippy::should_implement_trait)]
+#![allow(clippy::upper_case_acronyms)]
 
 // TODO: remove when more finished
 #![allow(

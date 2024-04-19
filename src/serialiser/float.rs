@@ -23,12 +23,12 @@ pub fn serialise_rest_of_f64<B: BufferImplWrite>(float: f64, output: &mut B) {
 
 #[inline]
 pub fn deserialise_rest_of_f32<B: BufferImplRead>(input: &mut B) -> Result<f32> {
-	Ok(f32::from_le_bytes(*input.read_next_bytes_const()?))
+	Ok(f32::from_le_bytes(*input.read_bytes_const()?))
 }
 
 #[inline]
 pub fn deserialise_rest_of_f64<B: BufferImplRead>(input: &mut B) -> Result<f64> {
-	Ok(f64::from_le_bytes(*input.read_next_bytes_const()?))
+	Ok(f64::from_le_bytes(*input.read_bytes_const()?))
 }
 
 impl Serialise for f32 {
@@ -47,7 +47,7 @@ impl Serialise for f64 {
 
 impl<'h> Deserialise<'h> for f32 {
 	fn deserialise<B: BufferImplRead>(input: &mut B) -> Result<Self> {
-		if marker_is_valid_f32(input.read_next_byte()?) {
+		if marker_is_valid_f32(input.read_byte()?) {
 			deserialise_rest_of_f32(input)
 		} else {
 			err("expected f32")
@@ -57,7 +57,7 @@ impl<'h> Deserialise<'h> for f32 {
 
 impl<'h> Deserialise<'h> for f64 {
 	fn deserialise<B: BufferImplRead>(input: &mut B) -> Result<Self> {
-		match input.read_next_byte()? {
+		match input.read_byte()? {
 			MARKER_F32 => { deserialise_rest_of_f32(input).map(|f| f as _) }
 			MARKER_F64 => { deserialise_rest_of_f64(input) }
 			_ => { err("expected f64-compatible float") }

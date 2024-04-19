@@ -1,30 +1,25 @@
-use super::{ BufferImplRead, BufferImplWrite, Deserialise, Serialise };
+use super::{
+	BufferImplRead,
+	BufferImplWrite,
+	Deserialise,
+	Serialise,
+	SerialiseLength3VariantsParams,
+	deserialise_rest_of_length_3_variants,
+	serialise_length_3_variants,
+	MarkerType
+};
 use super::{ error::*, marker::*, integer::* };
+use ::std::str;
 
 impl Serialise for str {
 	fn serialise<B: BufferImplWrite>(&self, output: &mut B) {
-		const U8_MAX: u64 = u8::MAX as u64;
-		const U16_MAX: u64 = u16::MAX as u64;
-		const U24_MAX: u64 = (u16::MAX as u64) << 8 | u8::MAX as u64;
-
-		match self.len() as u64 {
-			len @ ..=U8_MAX => {
-				output.write_byte(MARKER_STRING_8);
-				output.write_byte(len as u8);
-			}
-			len @ ..=U16_MAX => {
-				output.write_byte(MARKER_STRING_16);
-				unsafe { serialise_rest_of_u64(len, MARKER_U16, output) }
-			}
-			len @ ..=U24_MAX => {
-				output.write_byte(MARKER_STRING_24);
-				unsafe { serialise_rest_of_u64(len, MARKER_U24, output) }
-			}
-			len => {
-				output.write_byte(MARKER_STRING_XL);
-				len.serialise(output);
-			}
-		}
+		serialise_length_3_variants(SerialiseLength3VariantsParams {
+			marker_8: MARKER_STRING_8,
+			marker_16: MARKER_STRING_16,
+			marker_xl: MARKER_STRING_XL,
+			len: self.len(),
+			output
+		});
 
 		output.write_slice(self.as_bytes());
 	}
@@ -32,15 +27,18 @@ impl Serialise for str {
 
 impl<'h> Deserialise<'h> for String {
 	fn deserialise<B: BufferImplRead>(input: &mut B) -> Result<Self> {
-		let length = match input.read_next_byte()? {
-			MARKER_STRING_8 => unsafe { deserialise_rest_of_u64(MARKER_U8, input)? }
-			MARKER_STRING_16 => unsafe { deserialise_rest_of_u64(MARKER_U16, input)? }
-			MARKER_STRING_24 => unsafe { deserialise_rest_of_u64(MARKER_U24, input)? }
-			MARKER_STRING_XL => { u64::deserialise(input)? }
-			_ => { return err("expected string") }
-		};
-
-		let str_bytes = input.read_next_bytes(length as usize)?;
-		String::from_utf8(str_bytes.into()).convert_err()
+		match input.read_byte()? {
+			MARKER_STRING_8 => { deserialise_rest_of_string(MarkerType::M8, input) }
+			MARKER_STRING_16 => { deserialise_rest_of_string(MarkerType::M16, input) }
+			MARKER_STRING_XL => { deserialise_rest_of_string(MarkerType::MXL, input) }
+			_ => { err("expected string") }
+		}
 	}
+}
+
+fn deserialise_rest_of_string<B: BufferImplRead>(marker_type: MarkerType, input: &mut B) -> Result<String> {
+	let len = deserialise_rest_of_length_3_variants(marker_type, input)?;
+	str::from_utf8(input.read_bytes(len)?)
+		.map(Into::into)
+		.convert_err()
 }

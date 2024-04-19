@@ -123,115 +123,114 @@ The general structure of an item serialised is a marker byte that is unique to t
 | 40     | [boolean value] `false`
 | 41     | [heterogenous array] (8)
 | 42     | [heterogenous array] (16)
-| 43     | [heterogenous array] (24)
-| 44     | [heterogenous array] (XL)
-| 45     | [homogenous array] (8)
-| 46     | [homogenous array] (16)
-| 47     | [homogenous array] (24)
-| 48     | [homogenous array] (XL)
-| 49     | [boolean array] (8)
-| 50     | [boolean array] (16)
-| 51     | [boolean array] (XL)
-| 52     | [string] (8)
-| 53     | [string] (16)
-| 54     | [string] (24)
-| 55     | [string] (XL)
-| 56     | [object] (8)
-| 57     | [object] (16)
-| 58     | [object] (24)
-| 59     | [object] (XL)
-| 60     | [object (key ty known)] (8)
-| 61     | [object (key ty known)] (16)
-| 62     | [object (key ty known)] (24)
-| 63     | [object (key ty known)] (XL)
-| 64     | [object (val ty known)] (8)
-| 65     | [object (val ty known)] (16)
-| 66     | [object (val ty known)] (24)
-| 67     | [object (val ty known)] (XL)
-| 68     | [object (key/val ty known)] (8)
-| 69     | [object (key/val ty known)] (16)
-| 70     | [object (key/val ty known)] (24)
-| 71     | [object (key/val ty known)] (XL)
-| 72     | [object array (struct known)] (len 8, keys 8)
-| 73     | [object array (struct known)] (len 8, keys 16)
-| 74     | [object array (struct known)] (len 8, keys 24)
-| 75     | [object array (struct known)] (len 8, keys XL)
-| 76     | [object array (struct known)] (len 16, keys 8)
-| 77     | [object array (struct known)] (len 16, keys 16)
-| 78     | [object array (struct known)] (len 16, keys 24)
-| 79     | [object array (struct known)] (len 16, keys XL)
-| 80     | [object array (struct known)] (len 24, keys 8)
-| 81     | [object array (struct known)] (len 24, keys 16)
-| 82     | [object array (struct known)] (len 24, keys 24)
-| 83     | [object array (struct known)] (len 24, keys XL)
-| 84     | [object array (struct known)] (len XL, keys 8)
-| 85     | [object array (struct known)] (len XL, keys 16)
-| 86     | [object array (struct known)] (len XL, keys 24)
-| 87     | [object array (struct known)] (len XL, keys XL)
-| 88     | [object array (val ty grouped)] (len 8, keys 8)
-| 89     | [object array (val ty grouped)] (len 8, keys 16)
-| 90     | [object array (val ty grouped)] (len 8, keys 24)
-| 91     | [object array (val ty grouped)] (len 8, keys XL)
-| 92     | [object array (val ty grouped)] (len 16, keys 8)
-| 93     | [object array (val ty grouped)] (len 16, keys 16)
-| 94     | [object array (val ty grouped)] (len 16, keys 24)
-| 95     | [object array (val ty grouped)] (len 16, keys XL)
-| 96     | [object array (val ty grouped)] (len 24, keys 8)
-| 97     | [object array (val ty grouped)] (len 24, keys 16)
-| 98     | [object array (val ty grouped)] (len 24, keys 24)
-| 99     | [object array (val ty grouped)] (len 24, keys XL)
-| 100    | [object array (val ty grouped)] (len XL, keys 8)
-| 101    | [object array (val ty grouped)] (len XL, keys 16)
-| 102    | [object array (val ty grouped)] (len XL, keys 24)
-| 103    | [object array (val ty grouped)] (len XL, keys XL)
-| 104    | [object array (key ty consistent)] (len 8, keys 8)
-| 105    | [object array (key ty consistent)] (len 8, keys 16)
-| 106    | [object array (key ty consistent)] (len 8, keys 24)
-| 107    | [object array (key ty consistent)] (len 8, keys XL)
-| 108    | [object array (key ty consistent)] (len 16, keys 8)
-| 109    | [object array (key ty consistent)] (len 16, keys 16)
-| 110    | [object array (key ty consistent)] (len 16, keys 24)
-| 111    | [object array (key ty consistent)] (len 16, keys XL)
-| 112    | [object array (key ty consistent)] (len 24, keys 8)
-| 113    | [object array (key ty consistent)] (len 24, keys 16)
-| 114    | [object array (key ty consistent)] (len 24, keys 24)
-| 115    | [object array (key ty consistent)] (len 24, keys XL)
-| 116    | [object array (key ty consistent)] (len XL, keys 8)
-| 117    | [object array (key ty consistent)] (len XL, keys 16)
-| 118    | [object array (key ty consistent)] (len XL, keys 24)
-| 119    | [object array (key ty consistent)] (len XL, keys XL)
-| 120    | [object array (k consistent, v grouped)] (len 8, keys 8)
-| 121    | [object array (k consistent, v grouped)] (len 8, keys 16)
-| 122    | [object array (k consistent, v grouped)] (len 8, keys 24)
-| 123    | [object array (k consistent, v grouped)] (len 8, keys XL)
-| 124    | [object array (k consistent, v grouped)] (len 16, keys 8)
-| 125    | [object array (k consistent, v grouped)] (len 16, keys 16)
-| 126    | [object array (k consistent, v grouped)] (len 16, keys 24)
-| 127    | [object array (k consistent, v grouped)] (len 16, keys XL)
-| 128    | [object array (k consistent, v grouped)] (len 24, keys 8)
-| 129    | [object array (k consistent, v grouped)] (len 24, keys 16)
-| 130    | [object array (k consistent, v grouped)] (len 24, keys 24)
-| 131    | [object array (k consistent, v grouped)] (len 24, keys XL)
-| 132    | [object array (k consistent, v grouped)] (len XL, keys 8)
-| 133    | [object array (k consistent, v grouped)] (len XL, keys 16)
-| 134    | [object array (k consistent, v grouped)] (len XL, keys 24)
-| 135    | [object array (k consistent, v grouped)] (len XL, keys XL)
-| 136    | [object array (k/v consistent)] (len 8, keys 8)
-| 137    | [object array (k/v consistent)] (len 8, keys 16)
-| 138    | [object array (k/v consistent)] (len 8, keys 24)
-| 139    | [object array (k/v consistent)] (len 8, keys XL)
-| 140    | [object array (k/v consistent)] (len 16, keys 8)
-| 141    | [object array (k/v consistent)] (len 16, keys 16)
-| 142    | [object array (k/v consistent)] (len 16, keys 24)
-| 143    | [object array (k/v consistent)] (len 16, keys XL)
-| 144    | [object array (k/v consistent)] (len 24, keys 8)
-| 145    | [object array (k/v consistent)] (len 24, keys 16)
-| 146    | [object array (k/v consistent)] (len 24, keys 24)
-| 147    | [object array (k/v consistent)] (len 24, keys XL)
-| 148    | [object array (k/v consistent)] (len XL, keys 8)
-| 149    | [object array (k/v consistent)] (len XL, keys 16)
-| 150    | [object array (k/v consistent)] (len XL, keys 24)
-| 151    | [object array (k/v consistent)] (len XL, keys XL)
+| 43     | [heterogenous array] (XL)
+<!-- | 45     | [homogenous array] (8) -->
+<!-- | 46     | [homogenous array] (16) -->
+<!-- | 47     | [homogenous array] (24) -->
+<!-- | 48     | [homogenous array] (XL) -->
+<!-- | 49     | [boolean array] (8) -->
+<!-- | 50     | [boolean array] (16) -->
+<!-- | 51     | [boolean array] (XL) -->
+<!-- | 52     | [string] (8) -->
+<!-- | 53     | [string] (16) -->
+<!-- | 54     | [string] (24) -->
+<!-- | 55     | [string] (XL) -->
+<!-- | 56     | [object] (8) -->
+<!-- | 57     | [object] (16) -->
+<!-- | 58     | [object] (24) -->
+<!-- | 59     | [object] (XL) -->
+<!-- | 60     | [object (key ty known)] (8) -->
+<!-- | 61     | [object (key ty known)] (16) -->
+<!-- | 62     | [object (key ty known)] (24) -->
+<!-- | 63     | [object (key ty known)] (XL) -->
+<!-- | 64     | [object (val ty known)] (8) -->
+<!-- | 65     | [object (val ty known)] (16) -->
+<!-- | 66     | [object (val ty known)] (24) -->
+<!-- | 67     | [object (val ty known)] (XL) -->
+<!-- | 68     | [object (key/val ty known)] (8) -->
+<!-- | 69     | [object (key/val ty known)] (16) -->
+<!-- | 70     | [object (key/val ty known)] (24) -->
+<!-- | 71     | [object (key/val ty known)] (XL) -->
+<!-- | 72     | [object array (struct known)] (len 8, keys 8) -->
+<!-- | 73     | [object array (struct known)] (len 8, keys 16) -->
+<!-- | 74     | [object array (struct known)] (len 8, keys 24) -->
+<!-- | 75     | [object array (struct known)] (len 8, keys XL) -->
+<!-- | 76     | [object array (struct known)] (len 16, keys 8) -->
+<!-- | 77     | [object array (struct known)] (len 16, keys 16) -->
+<!-- | 78     | [object array (struct known)] (len 16, keys 24) -->
+<!-- | 79     | [object array (struct known)] (len 16, keys XL) -->
+<!-- | 80     | [object array (struct known)] (len 24, keys 8) -->
+<!-- | 81     | [object array (struct known)] (len 24, keys 16) -->
+<!-- | 82     | [object array (struct known)] (len 24, keys 24) -->
+<!-- | 83     | [object array (struct known)] (len 24, keys XL) -->
+<!-- | 84     | [object array (struct known)] (len XL, keys 8) -->
+<!-- | 85     | [object array (struct known)] (len XL, keys 16) -->
+<!-- | 86     | [object array (struct known)] (len XL, keys 24) -->
+<!-- | 87     | [object array (struct known)] (len XL, keys XL) -->
+<!-- | 88     | [object array (val ty grouped)] (len 8, keys 8) -->
+<!-- | 89     | [object array (val ty grouped)] (len 8, keys 16) -->
+<!-- | 90     | [object array (val ty grouped)] (len 8, keys 24) -->
+<!-- | 91     | [object array (val ty grouped)] (len 8, keys XL) -->
+<!-- | 92     | [object array (val ty grouped)] (len 16, keys 8) -->
+<!-- | 93     | [object array (val ty grouped)] (len 16, keys 16) -->
+<!-- | 94     | [object array (val ty grouped)] (len 16, keys 24) -->
+<!-- | 95     | [object array (val ty grouped)] (len 16, keys XL) -->
+<!-- | 96     | [object array (val ty grouped)] (len 24, keys 8) -->
+<!-- | 97     | [object array (val ty grouped)] (len 24, keys 16) -->
+<!-- | 98     | [object array (val ty grouped)] (len 24, keys 24) -->
+<!-- | 99     | [object array (val ty grouped)] (len 24, keys XL) -->
+<!-- | 100    | [object array (val ty grouped)] (len XL, keys 8) -->
+<!-- | 101    | [object array (val ty grouped)] (len XL, keys 16) -->
+<!-- | 102    | [object array (val ty grouped)] (len XL, keys 24) -->
+<!-- | 103    | [object array (val ty grouped)] (len XL, keys XL) -->
+<!-- | 104    | [object array (key ty consistent)] (len 8, keys 8) -->
+<!-- | 105    | [object array (key ty consistent)] (len 8, keys 16) -->
+<!-- | 106    | [object array (key ty consistent)] (len 8, keys 24) -->
+<!-- | 107    | [object array (key ty consistent)] (len 8, keys XL) -->
+<!-- | 108    | [object array (key ty consistent)] (len 16, keys 8) -->
+<!-- | 109    | [object array (key ty consistent)] (len 16, keys 16) -->
+<!-- | 110    | [object array (key ty consistent)] (len 16, keys 24) -->
+<!-- | 111    | [object array (key ty consistent)] (len 16, keys XL) -->
+<!-- | 112    | [object array (key ty consistent)] (len 24, keys 8) -->
+<!-- | 113    | [object array (key ty consistent)] (len 24, keys 16) -->
+<!-- | 114    | [object array (key ty consistent)] (len 24, keys 24) -->
+<!-- | 115    | [object array (key ty consistent)] (len 24, keys XL) -->
+<!-- | 116    | [object array (key ty consistent)] (len XL, keys 8) -->
+<!-- | 117    | [object array (key ty consistent)] (len XL, keys 16) -->
+<!-- | 118    | [object array (key ty consistent)] (len XL, keys 24) -->
+<!-- | 119    | [object array (key ty consistent)] (len XL, keys XL) -->
+<!-- | 120    | [object array (k consistent, v grouped)] (len 8, keys 8) -->
+<!-- | 121    | [object array (k consistent, v grouped)] (len 8, keys 16) -->
+<!-- | 122    | [object array (k consistent, v grouped)] (len 8, keys 24) -->
+<!-- | 123    | [object array (k consistent, v grouped)] (len 8, keys XL) -->
+<!-- | 124    | [object array (k consistent, v grouped)] (len 16, keys 8) -->
+<!-- | 125    | [object array (k consistent, v grouped)] (len 16, keys 16) -->
+<!-- | 126    | [object array (k consistent, v grouped)] (len 16, keys 24) -->
+<!-- | 127    | [object array (k consistent, v grouped)] (len 16, keys XL) -->
+<!-- | 128    | [object array (k consistent, v grouped)] (len 24, keys 8) -->
+<!-- | 129    | [object array (k consistent, v grouped)] (len 24, keys 16) -->
+<!-- | 130    | [object array (k consistent, v grouped)] (len 24, keys 24) -->
+<!-- | 131    | [object array (k consistent, v grouped)] (len 24, keys XL) -->
+<!-- | 132    | [object array (k consistent, v grouped)] (len XL, keys 8) -->
+<!-- | 133    | [object array (k consistent, v grouped)] (len XL, keys 16) -->
+<!-- | 134    | [object array (k consistent, v grouped)] (len XL, keys 24) -->
+<!-- | 135    | [object array (k consistent, v grouped)] (len XL, keys XL) -->
+<!-- | 136    | [object array (k/v consistent)] (len 8, keys 8) -->
+<!-- | 137    | [object array (k/v consistent)] (len 8, keys 16) -->
+<!-- | 138    | [object array (k/v consistent)] (len 8, keys 24) -->
+<!-- | 139    | [object array (k/v consistent)] (len 8, keys XL) -->
+<!-- | 140    | [object array (k/v consistent)] (len 16, keys 8) -->
+<!-- | 141    | [object array (k/v consistent)] (len 16, keys 16) -->
+<!-- | 142    | [object array (k/v consistent)] (len 16, keys 24) -->
+<!-- | 143    | [object array (k/v consistent)] (len 16, keys XL) -->
+<!-- | 144    | [object array (k/v consistent)] (len 24, keys 8) -->
+<!-- | 145    | [object array (k/v consistent)] (len 24, keys 16) -->
+<!-- | 146    | [object array (k/v consistent)] (len 24, keys 24) -->
+<!-- | 147    | [object array (k/v consistent)] (len 24, keys XL) -->
+<!-- | 148    | [object array (k/v consistent)] (len XL, keys 8) -->
+<!-- | 149    | [object array (k/v consistent)] (len XL, keys 16) -->
+<!-- | 150    | [object array (k/v consistent)] (len XL, keys 24) -->
+<!-- | 151    | [object array (k/v consistent)] (len XL, keys XL) -->
 
 ### Collection variants
 
@@ -239,8 +238,7 @@ Some collections will have variants, like the "heterogenous array (8)" and "hete
 
 - (8) means length is stored with a single 8-bit unsigned integer. Just the value itself is written; no marker is used. This can encode lengths up to 255.
 - (16) is the same as above, but with a single 16-bit unsigned little endian integer. As above, no marker is used. This can encode lengths up to 65,535.
-- (24) is the same as above, but with a 24-bit unsigned little endian integer. This can encode lengths up to 16,777,216 (around 16.7 million).
-- (XL) means any of the available unsigned integer types may be used to encode the length. Theoretically 2¹²⁸ - 1 is the maximum value for this, but the practical limit is likely well under that (well, at least at time of writing this spec, who knows what technological advancements will happen in the future :p).
+- (XL) means any of the available unsigned integer types may be used to encode the length. Theoretically 2¹²⁸ - 1 can be the maximum value for this, but the practical limit is likely well under that (well, at least at time of writing this spec, who knows what technological advancements will happen in the future :p). Unless specified otherwise, the length must be serialised/deserialised with a u64 (equivalent to usize on 64bit systems) being the maximum size.
 
 ### None
 

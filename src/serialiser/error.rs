@@ -44,12 +44,9 @@ pub trait ResultExt<T> {
 	fn convert_err(self) -> Result<T>;
 }
 
-impl<T, E> ResultExt<T> for Result<T, E>
-where
-	E: ::std::fmt::Display
-{
+impl<T, E: ToString> ResultExt<T> for Result<T, E> {
 	#[inline]
 	fn convert_err(self) -> Result<T> {
-		self.map_err(|e| error(e.to_string()))
+		self.map_err(#[inline] |e| error(e.to_string()))
 	}
 }

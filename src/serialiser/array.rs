@@ -1,4 +1,13 @@
-use super::{ BufferImplRead, BufferImplWrite, Deserialise, Serialise };
+use super::{
+	BufferImplRead,
+	BufferImplWrite,
+	Deserialise,
+	Serialise,
+	SerialiseLength3VariantsParams,
+	deserialise_rest_of_length_3_variants,
+	serialise_length_3_variants,
+	MarkerType
+};
 use super::{ error::*, integer::*, marker::*, value::Value };
 
 pub fn serialise_value_array<B: BufferImplWrite>(arr: &[Value], output: &mut B) {
@@ -6,49 +15,23 @@ pub fn serialise_value_array<B: BufferImplWrite>(arr: &[Value], output: &mut B) 
 	const U16_MAX: u64 = u16::MAX as u64;
 	const U24_MAX: u64 = (u16::MAX as u64) << 8 | u8::MAX as u64;
 
-	match arr.len() as u64 {
-		len @ ..=U8_MAX => {
-			output.write_byte(MARKER_HETEROGENOUS_ARRAY_8);
-			output.write_byte(len as u8);
-		}
-		len @ ..=U16_MAX => {
-			output.write_byte(MARKER_HETEROGENOUS_ARRAY_16);
-			unsafe { serialise_rest_of_u64(len, MARKER_U16, output) }
-		}
-		len @ ..=U24_MAX => {
-			output.write_byte(MARKER_HETEROGENOUS_ARRAY_24);
-			unsafe { serialise_rest_of_u64(len, MARKER_U24, output) }
-		}
-		len => {
-			output.write_byte(MARKER_HETEROGENOUS_ARRAY_XL);
-			len.serialise(output);
-		}
-	}
+	serialise_length_3_variants(SerialiseLength3VariantsParams {
+		marker_8: MARKER_HETEROGENOUS_ARRAY_8,
+		marker_16: MARKER_HETEROGENOUS_ARRAY_16,
+		marker_xl: MARKER_HETEROGENOUS_ARRAY_XL,
+		len: arr.len(),
+		output
+	});
 
 	// TODO: this is not good for auto vectorisation
 	arr.iter().for_each(|item| item.serialise(output));
 }
 
 #[inline]
-pub fn deserialise_rest_of_heterogenous_array_8<'h, V: Deserialise<'h>, B: BufferImplRead>(input: &mut B) -> Result<Vec<V>> {
-	let len = unsafe { deserialise_rest_of_u64(MARKER_U8, input)? as usize };
-	(0..len).map(|_| V::deserialise(input)).collect()
-}
-
-#[inline]
-pub fn deserialise_rest_of_heterogenous_array_16<'h, V: Deserialise<'h>, B: BufferImplRead>(input: &mut B) -> Result<Vec<V>> {
-	let len = unsafe { deserialise_rest_of_u64(MARKER_U16, input)? as usize };
-	(0..len).map(|_| V::deserialise(input)).collect()
-}
-
-#[inline]
-pub fn deserialise_rest_of_heterogenous_array_24<'h, V: Deserialise<'h>, B: BufferImplRead>(input: &mut B) -> Result<Vec<V>> {
-	let len = unsafe { deserialise_rest_of_u64(MARKER_U24, input)? as usize };
-	(0..len).map(|_| V::deserialise(input)).collect()
-}
-
-#[inline]
-pub fn deserialise_rest_of_heterogenous_array_xl<'h, V: Deserialise<'h>, B: BufferImplRead>(input: &mut B) -> Result<Vec<V>> {
-	let len = u64::deserialise(input)?;
+pub fn deserialise_rest_of_array<'h, V: Deserialise<'h>, B: BufferImplRead>(
+	marker_type: MarkerType,
+	input: &mut B
+) -> Result<Vec<V>> {
+	let len = deserialise_rest_of_length_3_variants(marker_type, input)?;
 	(0..len).map(|_| V::deserialise(input)).collect()
 }

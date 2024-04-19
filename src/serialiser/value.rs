@@ -1,4 +1,4 @@
-use super::{ BufferImplRead, BufferImplWrite, Deserialise, Serialise };
+use super::{ BufferImplRead, BufferImplWrite, Deserialise, Serialise, MarkerType };
 use super::{ array::*, error::*, float::*, integer::*, marker::*, none::* };
 use ::hashbrown::HashMap;
 use ::ordered_float::OrderedFloat;
@@ -32,7 +32,7 @@ impl Serialise for Value {
 
 impl<'h> Deserialise<'h> for Value {
 	fn deserialise<B: BufferImplRead>(input: &mut B) -> Result<Self> {
-		Ok(match input.read_next_byte()? {
+		Ok(match input.read_byte()? {
 			marker if marker_is_valid_none(marker) => { Self::None }
 
 			MARKER_BOOL_TRUE => { Self::Bool(true) }
@@ -55,16 +55,13 @@ impl<'h> Deserialise<'h> for Value {
 			}
 
 			MARKER_HETEROGENOUS_ARRAY_8 => {
-				Self::Array(deserialise_rest_of_heterogenous_array_8(input)?)
+				Self::Array(deserialise_rest_of_array(MarkerType::M8, input)?)
 			}
 			MARKER_HETEROGENOUS_ARRAY_16 => {
-				Self::Array(deserialise_rest_of_heterogenous_array_16(input)?)
-			}
-			MARKER_HETEROGENOUS_ARRAY_24 => {
-				Self::Array(deserialise_rest_of_heterogenous_array_24(input)?)
+				Self::Array(deserialise_rest_of_array(MarkerType::M16, input)?)
 			}
 			MARKER_HETEROGENOUS_ARRAY_XL => {
-				Self::Array(deserialise_rest_of_heterogenous_array_xl(input)?)
+				Self::Array(deserialise_rest_of_array(MarkerType::MXL, input)?)
 			}
 
 			_ => { return err("invalid serialised bytes") }

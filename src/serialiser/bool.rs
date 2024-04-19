@@ -12,11 +12,16 @@ impl Serialise for bool {
 }
 
 impl<'h> Deserialise<'h> for bool {
-	fn deserialise<B: BufferImplRead>(output: &mut B) -> Result<bool> {
-		match output.read_next_byte()? {
-			MARKER_BOOL_TRUE => { Ok(true) }
-			MARKER_BOOL_FALSE => { Ok(false) }
-			_ => { err("expected bool") }
-		}
+	fn deserialise<B: BufferImplRead>(input: &mut B) -> Result<bool> {
+		retrieve_bool_from_marker(input.read_byte()?)
+			.err("expected bool")
+	}
+}
+
+pub fn retrieve_bool_from_marker(marker: u8) -> Option<bool> {
+	match marker {
+		MARKER_BOOL_TRUE => { Some(true) }
+		MARKER_BOOL_FALSE => { Some(false) }
+		_ => { None }
 	}
 }
