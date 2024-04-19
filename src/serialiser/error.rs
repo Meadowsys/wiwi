@@ -21,7 +21,7 @@ pub fn err_eof<T>() -> Result<T> {
 	err(UNEXPECTED_EOF)
 }
 
-pub trait ResultExt<T>: Sized {
+pub trait OptionExt<T>: Sized {
 	fn err<S: Into<String>>(self, s: S) -> Result<T>;
 
 	#[inline]
@@ -30,12 +30,26 @@ pub trait ResultExt<T>: Sized {
 	}
 }
 
-impl<T> ResultExt<T> for Option<T> {
+impl<T> OptionExt<T> for Option<T> {
 	#[inline]
 	fn err<S: Into<String>>(self, s: S) -> Result<T> {
 		match self {
 			Some(v) => { Ok(v) }
 			None => { err(s) }
 		}
+	}
+}
+
+pub trait ResultExt<T> {
+	fn convert_err(self) -> Result<T>;
+}
+
+impl<T, E> ResultExt<T> for Result<T, E>
+where
+	E: ::std::fmt::Display
+{
+	#[inline]
+	fn convert_err(self) -> Result<T> {
+		self.map_err(|e| error(e.to_string()))
 	}
 }

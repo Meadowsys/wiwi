@@ -1,4 +1,4 @@
-use self::error::{ Result, ResultExt };
+use self::error::{ OptionExt, Result, ResultExt };
 use ::std::slice;
 
 pub mod error;
@@ -9,6 +9,7 @@ mod float;
 mod integer;
 mod marker;
 mod none;
+mod string;
 mod value;
 
 /// Trait for generic buffer impl. Unsafe trait to assert that implementers have implemented it correctly

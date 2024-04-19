@@ -112,6 +112,11 @@ pub const MARKER_HETEROGENOUS_ARRAY_16: u8 = 42;
 pub const MARKER_HETEROGENOUS_ARRAY_24: u8 = 43;
 pub const MARKER_HETEROGENOUS_ARRAY_XL: u8 = 44;
 
+pub const MARKER_STRING_8: u8 = 52;
+pub const MARKER_STRING_16: u8 = 53;
+pub const MARKER_STRING_24: u8 = 54;
+pub const MARKER_STRING_XL: u8 = 55;
+
 // /// Marker for bools when they are packed into a homogenous array.
 // pub const MARKER_PACKED_BOOLS: u8 = 41;
 

@@ -55,7 +55,7 @@ These are non-goals (but still nice-to-haves):
 - [x] Heterogenous arrays
 - [ ] Homogenous arrays
 - [ ] Boolean arrays
-- [ ] Strings
+- [x] Strings
 - [ ] Objects (key type known)
 - [ ] Objects (value type known)
 - [ ] Objects (key/value type known)
