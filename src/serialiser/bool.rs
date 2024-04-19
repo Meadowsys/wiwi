@@ -12,7 +12,7 @@ impl Serialise for bool {
 }
 
 impl<'h> Deserialise<'h> for bool {
-	fn deserialise<B: BufferImplRead>(input: &mut B) -> Result<bool> {
+	fn deserialise<B: BufferImplRead<'h>>(input: &mut B) -> Result<bool> {
 		retrieve_bool_from_marker(input.read_byte()?)
 			.err("expected bool")
 	}

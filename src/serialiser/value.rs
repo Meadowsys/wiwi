@@ -31,7 +31,7 @@ impl Serialise for Value {
 }
 
 impl<'h> Deserialise<'h> for Value {
-	fn deserialise<B: BufferImplRead>(input: &mut B) -> Result<Self> {
+	fn deserialise<B: BufferImplRead<'h>>(input: &mut B) -> Result<Self> {
 		Ok(match input.read_byte()? {
 			marker if marker_is_valid_none(marker) => { Self::None }
 

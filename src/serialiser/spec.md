@@ -111,6 +111,12 @@ The general structure of an item serialised is a marker byte that is unique to t
 | 41     | [heterogenous array] (8)
 | 42     | [heterogenous array] (16)
 | 43     | [heterogenous array] (XL)
+| 44     | [string] (8)
+| 45     | [string] (16)
+| 46     | [string] (XL)
+<!-- | 56     | [object] (8) -->
+<!-- | 57     | [object] (16) -->
+<!-- | 59     | [object] (XL) -->
 <!-- | 45     | [homogenous array] (8) -->
 <!-- | 46     | [homogenous array] (16) -->
 <!-- | 47     | [homogenous array] (24) -->
@@ -118,14 +124,6 @@ The general structure of an item serialised is a marker byte that is unique to t
 <!-- | 49     | [boolean array] (8) -->
 <!-- | 50     | [boolean array] (16) -->
 <!-- | 51     | [boolean array] (XL) -->
-<!-- | 52     | [string] (8) -->
-<!-- | 53     | [string] (16) -->
-<!-- | 54     | [string] (24) -->
-<!-- | 55     | [string] (XL) -->
-<!-- | 56     | [object] (8) -->
-<!-- | 57     | [object] (16) -->
-<!-- | 58     | [object] (24) -->
-<!-- | 59     | [object] (XL) -->
 <!-- | 60     | [object (key ty known)] (8) -->
 <!-- | 61     | [object (key ty known)] (16) -->
 <!-- | 62     | [object (key ty known)] (24) -->

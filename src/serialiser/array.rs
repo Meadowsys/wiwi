@@ -28,7 +28,7 @@ pub fn serialise_array<T: Serialise, B: BufferImplWrite>(arr: &[T], output: &mut
 }
 
 #[inline]
-pub fn deserialise_rest_of_array<'h, V: Deserialise<'h>, B: BufferImplRead>(
+pub fn deserialise_rest_of_array<'h, V: Deserialise<'h>, B: BufferImplRead<'h>>(
 	marker_type: MarkerType,
 	input: &mut B
 ) -> Result<Vec<V>> {

@@ -9,7 +9,7 @@ mod float;
 mod integer;
 mod marker;
 mod none;
-// mod string;
+mod string;
 mod value;
 
 /// Trait for generic buffer impl. Unsafe trait to assert that implementers have implemented it correctly
@@ -43,7 +43,7 @@ unsafe impl BufferImplWrite for Vec<u8> {
 	}
 }
 
-pub unsafe trait BufferImplRead {
+pub unsafe trait BufferImplRead<'h> {
 	unsafe fn read_bytes_ptr(&mut self, count: usize) -> Result<*const u8>;
 	// fn peek_next_byte(&mut self) -> Option<u8>;
 
@@ -53,7 +53,7 @@ pub unsafe trait BufferImplRead {
 	}
 
 	#[inline]
-	fn read_bytes(&mut self, count: usize) -> Result<&[u8]> {
+	fn read_bytes(&mut self, count: usize) -> Result<&'h [u8]> {
 		unsafe {
 			self.read_bytes_ptr(count)
 				.map(|ptr| ::std::slice::from_raw_parts(ptr, count))
@@ -61,7 +61,7 @@ pub unsafe trait BufferImplRead {
 	}
 
 	#[inline]
-	fn read_bytes_const<const N: usize>(&mut self) -> Result<&[u8; N]> {
+	fn read_bytes_const<const N: usize>(&mut self) -> Result<&'h [u8; N]> {
 		unsafe {
 			self.read_bytes_const_ptr::<N>()
 				.map(|ptr| &*(ptr as *const [u8; N]))
@@ -77,7 +77,7 @@ pub unsafe trait BufferImplRead {
 	}
 }
 
-unsafe impl<'h> BufferImplRead for &'h [u8] {
+unsafe impl<'h> BufferImplRead<'h> for &'h [u8] {
 	unsafe fn read_bytes_ptr(&mut self, count: usize) -> Result<*const u8> {
 		(self.len() >= count).then(#[inline] || {
 			let self_ptr = *self as *const [u8] as *const u8;
@@ -101,7 +101,7 @@ pub trait Serialise {
 }
 
 pub trait Deserialise<'h>: Sized {
-	fn deserialise<B: BufferImplRead>(input: &mut B) -> Result<Self>;
+	fn deserialise<B: BufferImplRead<'h>>(input: &mut B) -> Result<Self>;
 }
 
 pub trait DeserialiseOwned: for<'h> Deserialise<'h> {}
@@ -209,7 +209,7 @@ enum MarkerType {
 }
 
 #[inline]
-fn deserialise_rest_of_length_3_variants<B: BufferImplRead>(
+fn deserialise_rest_of_length_3_variants<'h, B: BufferImplRead<'h>>(
 	marker_type: MarkerType,
 	input: &mut B
 ) -> Result<usize> {

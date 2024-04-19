@@ -303,7 +303,7 @@ macro_rules! num_deserialise_rest_fns {
 			///
 			/// The passed in marker must be valid for the int type; otherwise,
 			/// this function can write to invalid memory.
-			pub unsafe fn $fn_name<B: BufferImplRead>(marker: u8, input: &mut B) -> Result<$num> {
+			pub unsafe fn $fn_name<'h, B: BufferImplRead<'h>>(marker: u8, input: &mut B) -> Result<$num> {
 				const NUM_BYTES: usize = <$num>::BITS as usize / 8;
 
 				let mut bytes = [0u8; NUM_BYTES];
@@ -355,7 +355,7 @@ macro_rules! impl_number_deserialise {
 	($($num:ty: $rest_fn:ident, $check_marker_fn:ident)*) => {
 		$(
 			impl<'h> Deserialise<'h> for $num {
-				fn deserialise<B: BufferImplRead>(input: &mut B) -> Result<Self> {
+				fn deserialise<B: BufferImplRead<'h>>(input: &mut B) -> Result<Self> {
 					let marker = input.read_byte()?;
 
 					if $check_marker_fn(marker) {
