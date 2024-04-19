@@ -4,24 +4,10 @@
 
 Note to self: needs more diagrams. Diagrams are nice.
 
-## About wiwi serialiser
-
-This does not have a formal name any more than "wiwi serialiser":p. Wiwi serialiser is a binary format serialisation similar to JSON.
-
-Some goals of this serialiser, in _rough_ order of priority:
-
-- Stable, self-describing format
-- Tiny output size
-- Fast
-
-These are non-goals (but still nice-to-haves):
-
-- Compressible by major compression algorithms, especially web ones (gzip, brotli)
-- Compat with other languages (serialisers may be written for them. The majority of types that people would actually use will be available in other languages, but they might not be able to process the whole range of types available (looking at you, 128-bit integers))
-
 ## Table of contents <!-- omit from toc -->
 
 - [About wiwi serialiser](#about-wiwi-serialiser)
+- [Implementation Status](#implementation-status)
 - [Spec](#spec)
   - [General structure](#general-structure)
   - [Markers](#markers)
@@ -44,6 +30,40 @@ These are non-goals (but still nice-to-haves):
   - [Object array (key consistent, val grouped)](#object-array-key-consistent-val-grouped)
   - [Object array (key/val consistent)](#object-array-keyval-consistent)
   - [Types for future consideration](#types-for-future-consideration)
+
+## About wiwi serialiser
+
+This does not have a formal name any more than "wiwi serialiser":p. Wiwi serialiser is a binary format serialisation similar to JSON.
+
+Some goals of this serialiser, in _rough_ order of priority:
+
+- Stable, self-describing format
+- Tiny output size
+- Fast
+
+These are non-goals (but still nice-to-haves):
+
+- Compressible by major compression algorithms, especially web ones (gzip, brotli)
+- Compat with other languages (serialisers may be written for them. The majority of types that people would actually use will be available in other languages, but they might not be able to process the whole range of types available (looking at you, 128-bit integers))
+
+## Implementation Status
+
+- [x] None
+- [x] Integers
+- [x] Floats
+- [x] Booleans
+- [x] Heterogenous arrays
+- [ ] Homogenous arrays
+- [ ] Boolean arrays
+- [ ] Strings
+- [ ] Objects (key type known)
+- [ ] Objects (value type known)
+- [ ] Objects (key/value type known)
+- [ ] Object array (struct known)
+- [ ] Object array (val type grouped)
+- [ ] Object array (key type consistent)
+- [ ] Object array (k consistent v grouped)
+- [ ] Object array (k/v consistent)
 
 ## Spec
 

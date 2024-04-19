@@ -1,5 +1,5 @@
 use super::{ BufferImplRead, BufferImplWrite, Deserialise, Serialise };
-use super::{ error::*, float::*, integer::*, marker::*, none::* };
+use super::{ array::*, error::*, float::*, integer::*, marker::*, none::* };
 use ::hashbrown::HashMap;
 use ::ordered_float::OrderedFloat;
 
@@ -10,6 +10,7 @@ pub enum Value {
 	SignedInt(i128),
 	UnsignedInt(u128),
 	Float(OrderedFloat<f64>),
+	Array(Vec<Value>)
 	// String(String),
 	// Bytes(Vec<u8>),
 	// HomogenousArray(HomogenousArray),
@@ -24,6 +25,7 @@ impl Serialise for Value {
 			Self::SignedInt(num) => { num.serialise(output) }
 			Self::UnsignedInt(num) => { num.serialise(output) }
 			Self::Float(num) => { num.0.serialise(output) }
+			Self::Array(arr) => { serialise_value_array(arr, output) }
 		}
 	}
 }
@@ -33,12 +35,15 @@ impl<'h> Deserialise<'h> for Value {
 		Ok(match input.read_next_byte()? {
 			marker if marker_is_valid_none(marker) => { Self::None }
 
-			marker if marker_is_valid_u128(marker) => unsafe {
-				Self::UnsignedInt(deserialise_rest_of_u128(marker, input)?)
-			}
+			MARKER_BOOL_TRUE => { Self::Bool(true) }
+			MARKER_BOOL_FALSE => { Self::Bool(false) }
 
 			marker if marker_is_valid_i128(marker) => unsafe {
 				Self::SignedInt(deserialise_rest_of_i128(marker, input)?)
+			}
+
+			marker if marker_is_valid_u128(marker) => unsafe {
+				Self::UnsignedInt(deserialise_rest_of_u128(marker, input)?)
 			}
 
 			marker if marker_is_valid_f32(marker) => {
@@ -49,8 +54,18 @@ impl<'h> Deserialise<'h> for Value {
 				Self::Float(OrderedFloat(deserialise_rest_of_f64(input)?))
 			}
 
-			MARKER_BOOL_TRUE => { Self::Bool(true) }
-			MARKER_BOOL_FALSE => { Self::Bool(false) }
+			MARKER_HETEROGENOUS_ARRAY_8 => {
+				Self::Array(deserialise_rest_of_heterogenous_array_8(input)?)
+			}
+			MARKER_HETEROGENOUS_ARRAY_16 => {
+				Self::Array(deserialise_rest_of_heterogenous_array_16(input)?)
+			}
+			MARKER_HETEROGENOUS_ARRAY_24 => {
+				Self::Array(deserialise_rest_of_heterogenous_array_24(input)?)
+			}
+			MARKER_HETEROGENOUS_ARRAY_XL => {
+				Self::Array(deserialise_rest_of_heterogenous_array_xl(input)?)
+			}
 
 			_ => { return err("invalid serialised bytes") }
 		})

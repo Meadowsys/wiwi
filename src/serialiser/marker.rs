@@ -107,6 +107,11 @@ pub const MARKER_BOOL_TRUE: u8 = 39;
 /// Marker for the boolean value `false`
 pub const MARKER_BOOL_FALSE: u8 = 40;
 
+pub const MARKER_HETEROGENOUS_ARRAY_8: u8 = 41;
+pub const MARKER_HETEROGENOUS_ARRAY_16: u8 = 42;
+pub const MARKER_HETEROGENOUS_ARRAY_24: u8 = 43;
+pub const MARKER_HETEROGENOUS_ARRAY_XL: u8 = 44;
+
 // /// Marker for bools when they are packed into a homogenous array.
 // pub const MARKER_PACKED_BOOLS: u8 = 41;
 
