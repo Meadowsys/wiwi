@@ -12,6 +12,37 @@ mod none;
 mod string;
 mod value;
 
+pub trait Serialise {
+	fn serialise<B: BufferImplWrite>(&self, output: &mut B);
+}
+
+pub trait Deserialise<'h>: Sized {
+	fn deserialise<B: BufferImplRead<'h>>(input: &mut B) -> Result<Self>;
+}
+
+pub trait DeserialiseOwned: for<'h> Deserialise<'h> {}
+
+impl<T> DeserialiseOwned for T
+where
+	T: for<'h> Deserialise<'h>
+{}
+
+pub fn serialise<T: ?Sized + Serialise>(item: &T) -> Vec<u8> {
+	let mut vec = Vec::new();
+	item.serialise(&mut vec);
+	vec
+}
+
+pub fn serialise_with_capacity<T: ?Sized + Serialise>(item: &T, capacity: usize) -> Vec<u8> {
+	let mut vec = Vec::with_capacity(capacity);
+	item.serialise(&mut vec);
+	vec
+}
+
+pub fn deserialise<'h, T: Deserialise<'h>>(mut bytes: &'h [u8]) -> Result<T> {
+	T::deserialise(&mut bytes)
+}
+
 /// Trait for generic buffer impl. Unsafe trait to assert that implementers have implemented it correctly
 // Might make it easier to do that unsafe impl later? :p
 pub unsafe trait BufferImplWrite {
@@ -94,37 +125,6 @@ unsafe impl<'h> BufferImplRead<'h> for &'h [u8] {
 	// 		*(*self as *const [u8] as *const u8)
 	// 	})
 	// }
-}
-
-pub trait Serialise {
-	fn serialise<B: BufferImplWrite>(&self, output: &mut B);
-}
-
-pub trait Deserialise<'h>: Sized {
-	fn deserialise<B: BufferImplRead<'h>>(input: &mut B) -> Result<Self>;
-}
-
-pub trait DeserialiseOwned: for<'h> Deserialise<'h> {}
-
-impl<T> DeserialiseOwned for T
-where
-	T: for<'h> Deserialise<'h>
-{}
-
-pub fn serialise<T: ?Sized + Serialise>(item: &T) -> Vec<u8> {
-	let mut vec = Vec::new();
-	item.serialise(&mut vec);
-	vec
-}
-
-pub fn serialise_with_capacity<T: ?Sized + Serialise>(item: &T, capacity: usize) -> Vec<u8> {
-	let mut vec = Vec::with_capacity(capacity);
-	item.serialise(&mut vec);
-	vec
-}
-
-pub fn deserialise<'h, T: Deserialise<'h>>(mut bytes: &'h [u8]) -> Result<T> {
-	T::deserialise(&mut bytes)
 }
 
 // helper things
