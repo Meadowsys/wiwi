@@ -25,7 +25,7 @@ impl Serialise for Value {
 			Self::SignedInt(num) => { num.serialise(output) }
 			Self::UnsignedInt(num) => { num.serialise(output) }
 			Self::Float(num) => { num.0.serialise(output) }
-			Self::Array(arr) => { serialise_value_array(arr, output) }
+			Self::Array(arr) => { serialise_array(arr, output) }
 		}
 	}
 }

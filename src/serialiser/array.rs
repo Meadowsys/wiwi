@@ -10,7 +10,7 @@ use super::{
 };
 use super::{ error::*, integer::*, marker::*, value::Value };
 
-pub fn serialise_value_array<B: BufferImplWrite>(arr: &[Value], output: &mut B) {
+pub fn serialise_array<T: Serialise, B: BufferImplWrite>(arr: &[T], output: &mut B) {
 	const U8_MAX: u64 = u8::MAX as u64;
 	const U16_MAX: u64 = u16::MAX as u64;
 	const U24_MAX: u64 = (u16::MAX as u64) << 8 | u8::MAX as u64;

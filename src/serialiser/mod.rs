@@ -3,14 +3,14 @@ use ::std::slice;
 
 pub mod error;
 
-// mod array;
-// mod bool;
-// mod float;
+mod array;
+mod bool;
+mod float;
 mod integer;
 mod marker;
-// mod none;
+mod none;
 // mod string;
-// mod value;
+mod value;
 
 /// Trait for generic buffer impl. Unsafe trait to assert that implementers have implemented it correctly
 // Might make it easier to do that unsafe impl later? :p

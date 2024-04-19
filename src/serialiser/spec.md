@@ -17,19 +17,6 @@ Note to self: needs more diagrams. Diagrams are nice.
   - [Floats](#floats)
   - [Booleans](#booleans)
   - [Arrays (heterogenous)](#arrays-heterogenous)
-  - [Arrays (homogenous)](#arrays-homogenous)
-  - [Array of booleans](#array-of-booleans)
-  - [UTF-8 String](#utf-8-string)
-  - [Object](#object)
-  - [Object (key type known)](#object-key-type-known)
-  - [Object (value type known)](#object-value-type-known)
-  - [Object (key/value types known)](#object-keyvalue-types-known)
-  - [Object array (structure known)](#object-array-structure-known)
-  - [Object array (value types grouped)](#object-array-value-types-grouped)
-  - [Object array (key types consistent)](#object-array-key-types-consistent)
-  - [Object array (key consistent, val grouped)](#object-array-key-consistent-val-grouped)
-  - [Object array (key/val consistent)](#object-array-keyval-consistent)
-  - [Types for future consideration](#types-for-future-consideration)
 
 ## About wiwi serialiser
 
@@ -286,15 +273,17 @@ Arrays that can store multiple different types of values (like in JSON and dynam
 
 First the marker for the array itself is stored, then the length is stored (see [section on collection variants]), then the items themselves are stored one after the other.
 
-### Arrays (homogenous)
+<!-- ### Arrays (homogenous)
 
 Arrays that store only one type of item (identical = same marker), meaning that can be stored a bit more compact/efficiently.
 
 First the marker for the array itself is stored, then the marker of the contained items is stored, followed by the length of the array (see [section on collection variants]), followed by the items. However, items are encoded without their corresponding prefix (as they are all identical, and this one prefix is already stored).
 
-Boolean note: For the type marker, use the generic bool marker (which is the same as the true marker), and use the true/false markers as the values. However, there are much more efficient ways to encode booleans. See the below section on an [array of booleans](#array-of-booleans).
+Boolean note: For the type marker, use the generic bool marker (which is the same as the true marker), and use the true/false markers as the values. However, there are much more efficient ways to encode booleans. See the below section on an [array of booleans](#array-of-booleans). -->
 
-### Array of booleans
+<!-- ### Array of booleans
+
+TODO: the `omit from toc` tags were messing with commenting out this whole region. replace them
 
 Specialised array type just for bools. It packs 8 of them down into one byte, letting the output size be an amortised 1/8 (12.5%) of using one byte per bool. Compared to boolean literals in JSON (`true` or `false`), in just the literal itself, that's packing 32x to 40x more bools into the same space!
 
@@ -304,7 +293,7 @@ First, you encode in the marker for the array type itself. Then, you encode the 
 
 I get that this is probably way too overcomplicated for its own good, and its still probably confusing. But, I guess this is where the silly part of this crate comes into play :p. It doesn't make the encoder any less reliable, it just uses one byte or so less of space that it would have otherwise, half of the time (which... isn't that much honestly, in the grand scheme of things... ah well). Hopefully examples below will help clear things up.
 
-#### Example: 0 booleans <!-- omit from toc -->
+TODO remove this text lol #### Example: 0 booleans
 
 ```txt
 00110001 00000000 00000000
@@ -312,7 +301,7 @@ I get that this is probably way too overcomplicated for its own good, and its st
 
 The first byte is the marker for a boolean array 8 (49). The second byte is the amount of fully packed bytes (0). The third byte is the "special" byte, the first four bits encode the "remainder" (0b0000 = 0), and the remaining 4 bits are unused.
 
-#### Example: 2 booleans <!-- omit from toc -->
+TODO remove this text lol #### Example: 2 booleans
 
 ```txt
 Encoding: [true, false]
@@ -322,7 +311,7 @@ Encoding: [true, false]
 
 The first byte is the marker for a boolean array 8 (49). The second byte is the amount of fully packed bytes (still 0). The first 4 bits of the third byte encode the "remainder" (0b0010 = 2). The next 2 bits after that encode the 2 booleans (10 = true, false). The last 2 bits are unused.
 
-#### Example: 4 booleans <!-- omit from toc -->
+TODO remove this text lol #### Example: 4 booleans
 
 This is the number at which the special byte gets filled completely, at which point the next one would need to be added to the next byte.
 
@@ -334,7 +323,7 @@ Encoding: [false, true, true, false]
 
 The first byte is the marker for a boolean array 8 (49). The second byte is the amount of fully packed bytes (0 again, as we've not even overflowed yet). The first 4 bits of the third byte encode the "remainder" (0b0100 = 4), the remaining 4 bits encode the 4 bools (0110 = false, true, true, false). This fits perfectly in the third byte, and no more are used.
 
-#### Example: 5 booleans <!-- omit from toc -->
+TODO remove this text lol #### Example: 5 booleans
 
 So, we've just overflowed to the 4th byte! :o
 
@@ -346,7 +335,7 @@ Encoding: [false, true, true, false, true]
 
 First byte is boolean array 8 marker. Second byte is amount of fully packed bytes (still 0, we've not fully filled that 4th byte yet). First 4 bits of the third byte encode the remainder, which would include that extra bit in the next byte (0b0101). Last 4 bits of the third byte encode the first 4 bools (0110 = false, true, true, false). The first bit of the 4th byte encodes the last bool (1 = true).
 
-#### Example: 12 booleans <!-- omit from toc -->
+TODO remove this text lol #### Example: 12 booleans
 
 This amount perfectly packs the first full byte.
 
@@ -358,7 +347,7 @@ Encoding: [true, false, true, false, true, false, true, false, true, false, true
 
 First byte is boolean array 8 marker. Second byte is amount of fully packed bytes (1 now!). First 4 bits of third byte is the amount of remainder. This time, this is set to 0. Since there are fully packed bytes, the decoder can assume that the next 4 bits are filled with bools. The remaining 8 is encoded in the fourth byte, and the information that this byte is full is in the length (that 1 in the second byte).
 
-#### Example: 17 booleans <!-- omit from toc -->
+TODO remove this text lol #### Example: 17 booleans
 
 Going 5 over the first packed byte.
 
@@ -370,7 +359,7 @@ Encoding: [true, false, true, false, ... for 17 bools]
 
 The second bit encodes the amount of fully packed bytes (1). The first 4 bits of the third byte encodes 5, which is the remainder after the last fully packed byte. The total amount is 4 from the special byte, plus 8 from the single packed byte, plus 5 remainder, totalling 17.
 
-#### Misc other examples <!-- omit from toc -->
+TODO remove this text lol #### Misc other examples
 
 Remember, there will be no holes!
 
@@ -407,17 +396,17 @@ DISCLAIMER: I have not checked this table (yet), I have no clue if its actually 
 | 50  | 5  | 6  | 9
 | 100 | 12 | 0  | 15
 
-#### Why on earth????? <!-- omit from toc -->
+TODO remove this text lol #### Why on earth?????
 
-Why not?
+Why not? -->
 
-### UTF-8 String
+<!-- ### UTF-8 String
 
 A string, strictly UTF-8 encoding. Decoding it successfully would include checking it to make sure its valid UTF-8.
 
-First write the marker for the string type, followed by the length (in bytes not characters) (see [section on collection variants]). Then, write the string bytes themselves.
+First write the marker for the string type, followed by the length (in bytes not characters) (see [section on collection variants]). Then, write the string bytes themselves. -->
 
-### Object
+<!-- ### Object
 
 Analogus to the object type in JSON, also known as maps or dictionaries in some languages, or more generally, a key to value mapping. This is the most general form of an object, with specialisations available below.
 
@@ -431,9 +420,9 @@ First write the marker for the object type, then write the length (see [section 
   - write key (with marker)
   - write value (with marker)
 
-It is recommended, but not required, for all object types to sort the entries by key, from "least" to "greatest", if possible. That way, the same data written into an object will be deterministic.
+It is recommended, but not required, for all object types to sort the entries by key, from "least" to "greatest", if possible. That way, the same data written into an object will be deterministic. -->
 
-### Object (key type known)
+<!-- ### Object (key type known)
 
 An object/map/dictionary with a known key type. Also, actually... This specialisation of the object type with string keys is more akin to what JSON has, since JSON objects always have string keys.
 
@@ -444,9 +433,9 @@ First write the marker for the object, followed by the marker for the key type, 
 - Length
 - for each key value pair
   - Key (without marker)
-  - Value (with marker)
+  - Value (with marker) -->
 
-### Object (value type known)
+<!-- ### Object (value type known)
 
 If in an object the key type is not known, but the value type is known...
 
@@ -457,9 +446,9 @@ Write the marker for the object, followed by the marker for the value type, foll
 - Length
 - for each key value pair
   - Key (with marker)
-  - Value (without marker)
+  - Value (without marker) -->
 
-### Object (key/value types known)
+<!-- ### Object (key/value types known)
 
 Objects where all the keys are known to have the same type as each other, and same for values.
 
@@ -470,9 +459,9 @@ Write the marker for the object, followed by the marker for the key type, follow
 - Value marker
 - for each in key value pairs
   - write the key (without marker)
-  - write the value (without marker)
+  - write the value (without marker) -->
 
-### Object array (structure known)
+<!-- ### Object array (structure known)
 
 - Part of "Array of objects" group of specialisations
 - What keys each obj has is known, but no types are
@@ -483,9 +472,9 @@ Write the marker for the object, followed by the marker for the key type, follow
 - for each in key
   - write key (with marker)
   - for each in values
-    - write value (with marker)
+    - write value (with marker) -->
 
-### Object array (value types grouped)
+<!-- ### Object array (value types grouped)
 
 - Part of "Array of objects" group of specialisations
 - Keys are known, but their types do not have to be the same
@@ -510,9 +499,9 @@ Write the marker for this type of object, followed by length of array (or number
   - write key (with marker)
   - write value type marker
   - for each in values
-    - write value (without marker)
+    - write value (without marker) -->
 
-### Object array (key types consistent)
+<!-- ### Object array (key types consistent)
 
 - Part of "Array of objects" group of specialisations
 - Keys are known, and all the same type
@@ -525,9 +514,9 @@ Write the marker for this type of object, followed by length of array (or number
 - for each in key
   - write key (without marker)
   - for each in values
-    - write value (with marker)
+    - write value (with marker) -->
 
-### Object array (key consistent, val grouped)
+<!-- ### Object array (key consistent, val grouped)
 
 This is the same as above, but all key types are known to be the same, so that can be abstracted out too.
 
@@ -545,9 +534,9 @@ This is the same as above, but all key types are known to be the same, so that c
   - write the key (without marker)
   - write value type marker
   - for each value
-    - write the value (without marker)
+    - write the value (without marker) -->
 
-### Object array (key/val consistent)
+<!-- ### Object array (key/val consistent)
 
 A specialisation of the array of objects specialisation, where all keys are the same type, and all values of all keys are the same type.
 
@@ -564,13 +553,13 @@ A specialisation of the array of objects specialisation, where all keys are the 
 - for each key
   - write the key (without marker)
   - for each value
-    - write the value (without marker)
+    - write the value (without marker) -->
 
-### Types for future consideration
+<!-- ### Types for future consideration
 
 - Set
 - Bit-packing integer arrays (4-bit, 2-bit, 1-bit ints)
-- Timestamp
+- Timestamp -->
 
 [section on collection variants]: #collection-variants
 
@@ -581,16 +570,16 @@ A specialisation of the array of objects specialisation, where all keys are the 
 [boolean value]: #booleans
 
 [heterogenous array]: #arrays-heterogenous
-[homogenous array]: #arrays-homogenous
-[boolean array]: #array-of-booleans
-[string]: #utf-8-string
-[object]: #object
-[object (key ty known)]: #object-key-type-known
-[object (val ty known)]: #object-value-type-known
-[object (key/val ty known)]: #object-keyvalue-types-known
+<!-- [homogenous array]: #arrays-homogenous -->
+<!-- [boolean array]: #array-of-booleans -->
+<!-- [string]: #utf-8-string -->
+<!-- [object]: #object -->
+<!-- [object (key ty known)]: #object-key-type-known -->
+<!-- [object (val ty known)]: #object-value-type-known -->
+<!-- [object (key/val ty known)]: #object-keyvalue-types-known -->
 
-[object array (struct known)]: #object-array-structure-known
-[object array (val ty grouped)]: #object-array-value-types-grouped
-[object array (key ty consistent)]: #object-array-key-types-consistent
-[object array (k consistent, v grouped)]: #object-array-key-consistent-val-grouped
-[object array (k/v consistent)]: #object-array-keyval-consistent
+<!-- [object array (struct known)]: #object-array-structure-known -->
+<!-- [object array (val ty grouped)]: #object-array-value-types-grouped -->
+<!-- [object array (key ty consistent)]: #object-array-key-types-consistent -->
+<!-- [object array (k consistent, v grouped)]: #object-array-key-consistent-val-grouped -->
+<!-- [object array (k/v consistent)]: #object-array-keyval-consistent -->
