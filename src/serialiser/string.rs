@@ -9,6 +9,7 @@ use super::{
 	MarkerType
 };
 use super::{ error::*, marker::*, integer::* };
+use ::std::borrow::Cow;
 use ::std::str;
 
 impl Serialise for str {
@@ -22,6 +23,18 @@ impl Serialise for str {
 		});
 
 		output.write_slice(self.as_bytes());
+	}
+}
+
+impl Serialise for String {
+	fn serialise<B: BufferImplWrite>(&self, output: &mut B) {
+		(**self).serialise(output);
+	}
+}
+
+impl<'h> Serialise for Cow<'h, str> {
+	fn serialise<B: BufferImplWrite>(&self, output: &mut B) {
+		(**self).serialise(output);
 	}
 }
 
@@ -39,6 +52,12 @@ impl<'h> Deserialise<'h> for &'h str {
 impl<'h> Deserialise<'h> for String {
 	fn deserialise<B: BufferImplRead<'h>>(input: &mut B) -> Result<Self> {
 		<&str>::deserialise(input).map(Into::into)
+	}
+}
+
+impl<'h> Deserialise<'h> for Cow<'h, str> {
+	fn deserialise<B: BufferImplRead<'h>>(input: &mut B) -> Result<Self> {
+		Ok(Self::Borrowed(<&str>::deserialise(input)?))
 	}
 }
 

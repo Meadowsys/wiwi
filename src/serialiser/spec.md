@@ -17,6 +17,7 @@ Note to self: needs more diagrams. Diagrams are nice.
   - [Floats](#floats)
   - [Booleans](#booleans)
   - [Arrays (heterogenous)](#arrays-heterogenous)
+  - [UTF-8 String](#utf-8-string)
 
 ## About wiwi serialiser
 
@@ -271,6 +272,12 @@ Arrays that can store multiple different types of values (like in JSON and dynam
 
 First the marker for the array itself is stored, then the length is stored (see [section on collection variants]), then the items themselves are stored one after the other.
 
+### UTF-8 String
+
+A string, strictly UTF-8 encoding. Decoding it successfully would include checking it to make sure its valid UTF-8.
+
+First write the marker for the string type, followed by the length (in bytes not characters) (see [section on collection variants]). Then, write the string bytes themselves.
+
 <!-- ### Arrays (homogenous)
 
 Arrays that store only one type of item (identical = same marker), meaning that can be stored a bit more compact/efficiently.
@@ -398,12 +405,6 @@ TODO remove this text lol #### Why on earth?????
 
 Why not? -->
 
-<!-- ### UTF-8 String
-
-A string, strictly UTF-8 encoding. Decoding it successfully would include checking it to make sure its valid UTF-8.
-
-First write the marker for the string type, followed by the length (in bytes not characters) (see [section on collection variants]). Then, write the string bytes themselves. -->
-
 <!-- ### Object
 
 Analogus to the object type in JSON, also known as maps or dictionaries in some languages, or more generally, a key to value mapping. This is the most general form of an object, with specialisations available below.
@@ -482,7 +483,7 @@ A specialisation of array type, for if you know what keys each object has (doesn
 
 This array is not grouped by objects, but rather by the keys of each object. You could think of it like a specialised type for many homogenous arrays, each tagged with a key, holding values, side by side, but serialised/deserialised transparently into an array of objects.
 
-Write the marker for this type of object, followed by length of array (or number of objects), then the amount of keys in each object (see [section on collection variants]). <!-- TODO: specify length variant ordering or whatever, since theres two unrelated lengths here, we kinda need specify both seperately in some kinda matrix type thing --> Then, for each key, encode the key itself (including the type marker), then encode the type marker for the value, then encode all the values for each object in the array (without type marker) (ie. `array[0].value`, then `array[1].value`, then `array[2].value`, etc, in a sequence, under the key).
+Write the marker for this type of object, followed by length of array (or number of objects), then the amount of keys in each object (see [section on collection variants]). Then, for each key, encode the key itself (including the type marker), then encode the type marker for the value, then encode all the values for each object in the array (without type marker) (ie. `array[0].value`, then `array[1].value`, then `array[2].value`, etc, in a sequence, under the key).
 
 - Part of "Array of objects" group of specialisations
 - All objects consist of the same set of known keys
@@ -557,7 +558,8 @@ A specialisation of the array of objects specialisation, where all keys are the 
 
 - Set
 - Bit-packing integer arrays (4-bit, 2-bit, 1-bit ints)
-- Timestamp -->
+- Timestamp
+- a "MaybeBorrowed" for types that have a higher-than-1-byte alignment requirement. Borrows if aligned, copies if not. -->
 
 [section on collection variants]: #collection-variants
 
