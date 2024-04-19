@@ -3,9 +3,10 @@ use ::std::slice;
 
 pub mod error;
 
+mod float;
+mod integer;
 mod marker;
 mod none;
-mod number;
 mod value;
 
 /// Trait for generic buffer impl. Unsafe trait to assert that implementers have implemented it correctly

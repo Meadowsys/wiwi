@@ -1,6 +1,7 @@
-use ::hashbrown::HashMap;
 use super::{ BufferImplRead, BufferImplWrite, Deserialise, Serialise };
-use super::{ error::*, integer::*, marker::*, none::* };
+use super::{ error::*, float::*, integer::*, marker::*, none::* };
+use ::hashbrown::HashMap;
+use ::ordered_float::OrderedFloat;
 
 #[derive(Debug, Clone, Hash)]
 pub enum Value {
@@ -8,7 +9,7 @@ pub enum Value {
 	// Bool(bool),
 	SignedInt(i128),
 	UnsignedInt(u128),
-	// Float(f64),
+	Float(OrderedFloat<f64>),
 	// String(String),
 	// Bytes(Vec<u8>),
 	// HomogenousArray(HomogenousArray),
@@ -20,8 +21,9 @@ impl Serialise for Value {
 		match self {
 			Self::None => { serialise_none(output) }
 // 			Self::Bool(b) => { b.serialise(output) }
-			Self::UnsignedInt(num) => { num.serialise(output) }
 			Self::SignedInt(num) => { num.serialise(output) }
+			Self::UnsignedInt(num) => { num.serialise(output) }
+			Self::Float(num) => { num.0.serialise(output) }
 		}
 	}
 }
@@ -37,6 +39,14 @@ impl<'h> Deserialise<'h> for Value {
 
 			marker if marker_is_valid_i128(marker) => unsafe {
 				Self::SignedInt(deserialise_rest_of_i128(marker, input)?)
+			}
+
+			marker if marker_is_valid_f32(marker) => {
+				Self::Float(OrderedFloat(deserialise_rest_of_f32(input)? as _))
+			}
+
+			marker if marker_is_valid_f64(marker) => {
+				Self::Float(OrderedFloat(deserialise_rest_of_f64(input)?))
 			}
 
 

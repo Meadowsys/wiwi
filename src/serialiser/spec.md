@@ -246,11 +246,11 @@ There is a way to get the amount of bytes needed for a specific integer by the m
 
 Floating point values, `binary16`, `binary32`, and `binary64`, as defined in IEEE754-2008. Markers for binary128 and binary256 are reserved, but not to be implemented at this time, since their use is quite uncommon at this time. In fact, the first time I heard that they were specified at all, was while I was researching these floating point values for this serialisation library.
 
-Floats are stored like integers (also little endian), marker, then bytes. As with integers, it is recommended, but not required, to pack a floating value down to a smaller one if it is possible to do so losslessly.
+Floats are stored like integers (also little endian), marker, then bytes. It is recommended, but not required, to pack a floating value down to a smaller one if it is possible to do so losslessly. As of writing, I have not figured out how to do this yet, so floats just get stored as is.
 
 The formula for getting the amount of bytes needed from the marker _does not work here_.
 
-There are markers reserved for 128- and 256-bit floats as defined by IEEE754-2008; however, at the time of writing, it is quite uncommon for a programming language to support these float types.
+There are markers reserved for 128- and 256-bit floats as defined by IEEE754-2008; however, at the time of writing, it is quite uncommon for a programming language to support these float types, so for now they are _not_ supported.
 
 If the target programming language does not support a 16-bit float, it can be losslessly expanded to a 32- or 64-bit float.
 

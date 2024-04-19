@@ -89,16 +89,16 @@ pub const MARKER_U128: u8 = 32;
 pub const MARKER_I128: u8 = 33;
 
 // // TODO
-// /// Marker for float values that fit in 16 bits (IEEE754-2008 binary16), regardless of source size
-// pub const MARKER_F16: u8 = 34;
-// /// Marker for float values that fit in 32 bits (IEEE754-2008 binary32), regardless of source size
-// pub const MARKER_F32: u8 = 35;
-// /// Marker for float values that fit in 64 bits (IEEE754-2008 binary16), regardless of source size
-// pub const MARKER_F64: u8 = 36;
-// /// reserved (not actually used)
-// pub const MARKER_F128: u8 = 37;
-// /// reserved (not actually used)
-// pub const MARKER_F256: u8 = 38;
+/// Marker for float values that fit in 16 bits (IEEE754-2008 binary16), regardless of source size
+pub const MARKER_F16: u8 = 34;
+/// Marker for float values that fit in 32 bits (IEEE754-2008 binary32), regardless of source size
+pub const MARKER_F32: u8 = 35;
+/// Marker for float values that fit in 64 bits (IEEE754-2008 binary16), regardless of source size
+pub const MARKER_F64: u8 = 36;
+/// reserved (not actually used)
+pub const MARKER_F128_RESERVED: u8 = 37;
+/// reserved (not actually used)
+pub const MARKER_F256_RESERVED: u8 = 38;
 
 // /// Marker for the boolean value `true`
 // pub const MARKER_BOOL_TRUE: u8 = 39;
