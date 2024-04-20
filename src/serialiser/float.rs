@@ -31,14 +31,14 @@ pub fn deserialise_rest_of_f64<'h, B: BufferImplRead<'h>>(input: &mut B) -> Resu
 }
 
 impl Serialise for f32 {
-	fn serialise<B: BufferImplWrite>(&self, output: &mut B) {
+	fn serialise<B: BufferImplWrite>(&self, output: &mut B, options: &Options) {
 		output.write_byte(MARKER_F32);
 		serialise_rest_of_f32(*self, output);
 	}
 }
 
 impl Serialise for f64 {
-	fn serialise<B: BufferImplWrite>(&self, output: &mut B) {
+	fn serialise<B: BufferImplWrite>(&self, output: &mut B, options: &Options) {
 		output.write_byte(MARKER_F64);
 		serialise_rest_of_f64(*self, output);
 	}

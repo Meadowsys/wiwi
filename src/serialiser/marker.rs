@@ -119,6 +119,22 @@ pub const MARKER_OBJECT_8: u8 = 47;
 pub const MARKER_OBJECT_16: u8 = 48;
 pub const MARKER_OBJECT_XL: u8 = 49;
 
+pub const MARKER_OBJ_ARRAY_KEY_DEDUP_8KEY_8LEN: u8 = 50;
+pub const MARKER_OBJ_ARRAY_KEY_DEDUP_8KEY_16LEN: u8 = 51;
+pub const MARKER_OBJ_ARRAY_KEY_DEDUP_8KEY_XLLEN: u8 = 52;
+pub const MARKER_OBJ_ARRAY_KEY_DEDUP_16KEY_8LEN: u8 = 53;
+pub const MARKER_OBJ_ARRAY_KEY_DEDUP_16KEY_16LEN: u8 = 54;
+pub const MARKER_OBJ_ARRAY_KEY_DEDUP_16KEY_XLLEN: u8 = 55;
+pub const MARKER_OBJ_ARRAY_KEY_DEDUP_XLKEY_8LEN: u8 = 56;
+pub const MARKER_OBJ_ARRAY_KEY_DEDUP_XLKEY_16LEN: u8 = 57;
+pub const MARKER_OBJ_ARRAY_KEY_DEDUP_XLKEY_XLLEN: u8 = 58;
+
+
+
+
+
+
+
 // /// Marker for bools when they are packed into a homogenous array.
 // pub const MARKER_PACKED_BOOLS: u8 = 41;
 

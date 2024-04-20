@@ -8,10 +8,11 @@ Note to self: needs more diagrams. Diagrams are nice.
 
 - [About wiwi serialiser](#about-wiwi-serialiser)
 - [Implementation Status](#implementation-status)
-- [Spec](#spec)
+- [General spec info](#general-spec-info)
   - [General structure](#general-structure)
   - [Markers](#markers)
   - [Collection variants](#collection-variants)
+- [Core types spec](#core-types-spec)
   - [None](#none)
   - [Integers](#integers)
   - [Floats](#floats)
@@ -19,6 +20,8 @@ Note to self: needs more diagrams. Diagrams are nice.
   - [Arrays](#arrays)
   - [UTF-8 String](#utf-8-string)
   - [Object](#object)
+- [Specialisation types spec](#specialisation-types-spec)
+  - [Object array (key deduping)](#object-array-key-deduping)
 
 ## About wiwi serialiser
 
@@ -54,7 +57,7 @@ These are non-goals (but still nice-to-haves):
 - [ ] Object array (k consistent v grouped)
 - [ ] Object array (k/v consistent)
 
-## Spec
+## General spec info
 
 ### General structure
 
@@ -119,6 +122,15 @@ The general structure of an item serialised is a marker byte that is unique to t
 | 47     | [object] (8)
 | 48     | [object] (16)
 | 49     | [object] (XL)
+| 50     | [object array (key deduping)] (8 keys, 8 len)
+| 51     | [object array (key deduping)] (8 keys, 16 len)
+| 52     | [object array (key deduping)] (8 keys, XL len)
+| 53     | [object array (key deduping)] (16 keys, 8 len)
+| 54     | [object array (key deduping)] (16 keys, 16 len)
+| 55     | [object array (key deduping)] (16 keys, XL len)
+| 56     | [object array (key deduping)] (XL keys, 8 len)
+| 57     | [object array (key deduping)] (XL keys, 16 len)
+| 58     | [object array (key deduping)] (XL keys, XL len)
 <!-- | 45     | [homogenous array] (8) -->
 <!-- | 46     | [homogenous array] (16) -->
 <!-- | 47     | [homogenous array] (24) -->
@@ -227,6 +239,10 @@ Some collections will have variants, like the "heterogenous array (8)" and "hete
 - (16) is the same as above, but with a single 16-bit unsigned little endian integer. As above, no marker is used. This can encode lengths up to 65,535.
 - (XL) means any of the available unsigned integer types may be used to encode the length. Theoretically 2¹²⁸ - 1 can be the maximum value for this, but the practical limit is likely well under that (well, at least at time of writing this spec, who knows what technological advancements will happen in the future :p). Unless specified otherwise, the length must be serialised/deserialised with a u64 (equivalent to usize on 64bit systems) being the maximum size.
 
+## Core types spec
+
+These are what are considered to be the "core types". These are the basic, most flexible types that wiwi serialiser has, and every type added is another new type that's "fundamentally different" from the other types in some way.
+
 ### None
 
 Also known as `null` or `nil` in other languages. The marker represents the value, so just write the marker byte.
@@ -294,6 +310,24 @@ The length here refers to the amount of key value pairs (ie. amount of entries i
   - write value (with marker)
 
 It is recommended, but not required, for all object types to sort the entries by key, from "least" to "greatest", if possible. That way, the same data written into an object will be deterministic.
+
+## Specialisation types spec
+
+In here are types that don't add any more basic data types. But, they offer shortcut ways to encode common structured data patterns, in order to help reduce size even further.
+
+### Object array (key deduping)
+
+When you have an array of objects, often times all the objects will have a very similar, if not identical, set of keys to each other, This optimisation keeps track of _all_ the different keys (_all_ of them, even if they only appear once), assigns them an ID, then stores them at the head of the array. Each object will then, instead of encoding the keys, encode the ID.
+
+- Marker
+- number of keys. This is the keys part of the variant type
+- for each key
+  - write the key (including marker)
+- Length of array; ie. amount of objects in the array. This is the "len" part of the variant type (see [section on collection variants])
+- for each object
+  - for each key/value pair in object
+    - encode the _index of the key_, using the same type as "len" part of variant type, without marker
+    - encode the value for that key
 
 <!-- ### Arrays (homogenous)
 
@@ -573,6 +607,7 @@ A specialisation of the array of objects specialisation, where all keys are the 
 [heterogenous array]: #arrays
 [string]: #utf-8-string
 [object]: #object
+[object array (key deduping)]: #object-array-key-deduping
 
 <!-- [homogenous array]: #arrays-homogenous -->
 <!-- [boolean array]: #array-of-booleans -->

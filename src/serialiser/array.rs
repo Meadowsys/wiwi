@@ -1,16 +1,17 @@
 use super::{ *, error::*, integer::*, marker::* };
 
-pub fn serialise_array<T: Serialise, B: BufferImplWrite>(arr: &[T], output: &mut B) {
+pub fn serialise_array<T: Serialise, B: BufferImplWrite>(arr: &[T], output: &mut B, options: &Options) {
 	serialise_length_3_variants(SerialiseLength3VariantsParams {
 		marker_8: MARKER_ARRAY_8,
 		marker_16: MARKER_ARRAY_16,
 		marker_xl: MARKER_ARRAY_XL,
 		len: arr.len(),
-		output
+		output,
+		options
 	});
 
 	// TODO: this is not good for auto vectorisation
-	arr.iter().for_each(|item| item.serialise(output));
+	arr.iter().for_each(|item| item.serialise(output, options));
 }
 
 #[inline]

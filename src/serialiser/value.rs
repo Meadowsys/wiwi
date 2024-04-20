@@ -32,18 +32,18 @@ pub enum Value<'h> {
 pub type ValueOwned = Value<'static>;
 
 impl<'h> Serialise for Value<'h> {
-	fn serialise<B: BufferImplWrite>(&self, output: &mut B) {
+	fn serialise<B: BufferImplWrite>(&self, output: &mut B, options: &Options) {
 		use Value::*;
 		match self {
 			None => { serialise_none(output) }
-			UnsignedInt(n) => { n.serialise(output) }
-			SignedInt(n) => { n.serialise(output) }
-			Float(f) => { f.0.serialise(output) }
-			Bool(b) => { b.serialise(output) }
-			String(s) => { s.serialise(output) }
-			ArrayBorrowed(a) => { serialise_array(a, output) }
-			ArrayOwned(a) => { serialise_array(a, output) }
-			Object(m) => { serialise_hashbrown_into_object(m, output) }
+			UnsignedInt(n) => { n.serialise(output, options) }
+			SignedInt(n) => { n.serialise(output, options) }
+			Float(f) => { f.0.serialise(output, options) }
+			Bool(b) => { b.serialise(output, options) }
+			String(s) => { s.serialise(output, options) }
+			ArrayBorrowed(a) => { serialise_array(a, output, options) }
+			ArrayOwned(a) => { serialise_array(a, output, options) }
+			Object(m) => { serialise_hashbrown_into_object(m, output, options) }
 		}
 	}
 }
@@ -170,15 +170,15 @@ pub enum Key<'h> {
 }
 
 impl<'h> Serialise for Key<'h> {
-	fn serialise<B: BufferImplWrite>(&self, output: &mut B) {
+	fn serialise<B: BufferImplWrite>(&self, output: &mut B, options: &Options) {
 		use Key::*;
 		match self {
 			None => { serialise_none(output) }
-			UnsignedInt(n) => { n.serialise(output) }
-			SignedInt(n) => { n.serialise(output) }
-			Float(f) => { f.serialise(output) }
-			Bool(b) => { b.serialise(output) }
-			String(s) => { s.serialise(output) }
+			UnsignedInt(n) => { n.serialise(output, options) }
+			SignedInt(n) => { n.serialise(output, options) }
+			Float(f) => { f.serialise(output, options) }
+			Bool(b) => { b.serialise(output, options) }
+			String(s) => { s.serialise(output, options) }
 		}
 	}
 }

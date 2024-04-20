@@ -1,7 +1,7 @@
 use super::{ *, error::*, marker::* };
 
 impl Serialise for bool {
-	fn serialise<B: BufferImplWrite>(&self, output: &mut B) {
+	fn serialise<B: BufferImplWrite>(&self, output: &mut B, options: &Options) {
 		match *self {
 			true => { output.write_byte(MARKER_BOOL_TRUE) }
 			false => { output.write_byte(MARKER_BOOL_FALSE) }

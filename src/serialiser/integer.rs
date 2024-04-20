@@ -268,7 +268,7 @@ macro_rules! impl_number_serialise {
 	($($num:ty: $rest_fn:ident, $min_marker:ident)*) => {
 		$(
 			impl Serialise for $num {
-				fn serialise<B: BufferImplWrite>(&self, output: &mut B) {
+				fn serialise<B: BufferImplWrite>(&self, output: &mut B, options: &Options) {
 					let num = *self;
 					let marker = $min_marker(num);
 

@@ -2,7 +2,11 @@ use super::{ *, error::*, marker::* };
 use ::hashbrown::HashMap;
 use ::std::hash::Hash;
 
-pub fn serialise_hashbrown_into_object<K, V, B>(object: &HashMap<K, V>, output: &mut B)
+pub fn serialise_hashbrown_into_object<K, V, B>(
+	object: &HashMap<K, V>,
+	output: &mut B,
+	options: &Options
+)
 where
 	K: Serialise,
 	V: Serialise,
@@ -13,12 +17,13 @@ where
 		marker_16: MARKER_OBJECT_16,
 		marker_xl: MARKER_OBJECT_XL,
 		len: object.len(),
-		output
+		output,
+		options
 	});
 
 	for (k, v) in object {
-		k.serialise(output);
-		v.serialise(output);
+		k.serialise(output, options);
+		v.serialise(output, options);
 	}
 }
 
@@ -37,7 +42,11 @@ where
 	for _ in 0..len {
 		let k = K::deserialise(input)?;
 		let v = V::deserialise(input)?;
-		map.insert(k, v);
+
+		let insert_res = map.insert(k, v);
+		if insert_res.is_some() {
+			return err("duplicate keys in objects are not allowed");
+		}
 	}
 
 	Ok(map)

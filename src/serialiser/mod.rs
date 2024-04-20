@@ -10,13 +10,16 @@ mod integer;
 mod marker;
 mod none;
 mod object;
+mod specialisations;
 mod string;
 mod value;
 
-pub use self::value::{ Key, Value };
+pub use self::value::{ Key, Value, ValueOwned };
+
+pub use specialisations::object_array_key_deduping::serialise_object_array_with_key_deduping;
 
 pub trait Serialise {
-	fn serialise<B: BufferImplWrite>(&self, output: &mut B);
+	fn serialise<B: BufferImplWrite>(&self, output: &mut B, options: &Options);
 }
 
 pub trait Deserialise<'h>: Sized {
@@ -31,16 +34,15 @@ where
 {}
 
 pub fn serialise<T: ?Sized + Serialise>(item: &T) -> Vec<u8> {
-	let mut vec = Vec::new();
-	item.serialise(&mut vec);
+	serialise_with_options(item, &Options::default())
+}
+
+pub fn serialise_with_options<T: ?Sized + Serialise>(item: &T, options: &Options) -> Vec<u8> {
+	let mut vec = Vec::with_capacity(options.capacity);
+	item.serialise(&mut vec, options);
 	vec
 }
 
-pub fn serialise_with_capacity<T: ?Sized + Serialise>(item: &T, capacity: usize) -> Vec<u8> {
-	let mut vec = Vec::with_capacity(capacity);
-	item.serialise(&mut vec);
-	vec
-}
 
 pub fn deserialise<'h, T: Deserialise<'h>>(mut bytes: &'h [u8]) -> Result<T> {
 	T::deserialise(&mut bytes)
@@ -130,6 +132,19 @@ unsafe impl<'h> BufferImplRead<'h> for &'h [u8] {
 	// }
 }
 
+#[derive(Clone, Debug)]
+pub struct Options {
+	pub capacity: usize
+}
+
+impl Default for Options {
+	fn default() -> Self {
+		Options {
+			capacity: 128
+		}
+	}
+}
+
 // helper things
 
 struct SerialiseLength3VariantsParams<'h, B> {
@@ -137,7 +152,8 @@ struct SerialiseLength3VariantsParams<'h, B> {
 	pub marker_16: u8,
 	pub marker_xl: u8,
 	pub len: usize,
-	pub output: &'h mut B
+	pub output: &'h mut B,
+	pub options: &'h Options
 }
 
 #[inline]
@@ -146,30 +162,43 @@ fn serialise_length_3_variants<B: BufferImplWrite>(
 ) {
 	use self::{ integer::*, marker::* };
 
-	const U8_MAX: u64 = u8::MAX as u64;
-	const U16_MAX: u64 = u16::MAX as u64;
-
 	let SerialiseLength3VariantsParams {
 		marker_8,
 		marker_16,
 		marker_xl,
 		len,
-		output
+		output,
+		options
 	} = params;
+	let len = len as u64;
 
-	match len as u64 {
-		len @ ..=U8_MAX => {
+	match get_marker_type(len) {
+		MarkerType::M8 => {
 			output.write_byte(marker_8);
 			unsafe { serialise_rest_of_u64(len, MARKER_U8, output) }
 		}
-		len @ ..=U16_MAX => {
+		MarkerType::M16 => {
 			output.write_byte(marker_16);
 			unsafe { serialise_rest_of_u64(len, MARKER_U16, output) }
 		}
-		len => {
+		MarkerType::MXL => {
 			output.write_byte(marker_xl);
-			len.serialise(output);
+			len.serialise(output, options);
 		}
+	}
+}
+
+fn serialise_length_3_variants_with_type<B: BufferImplWrite>(
+	marker_type: MarkerType,
+	len: u64,
+	output: &mut B,
+	options: &Options
+) {
+	use self::{ integer::*, marker::* };
+	match marker_type {
+		MarkerType::M8 => unsafe { serialise_rest_of_u64(len, MARKER_U8, output) }
+		MarkerType::M16 => unsafe { serialise_rest_of_u64(len, MARKER_U16, output) }
+		MarkerType::MXL => { len.serialise(output, options) }
 	}
 }
 
@@ -205,6 +234,7 @@ fn serialise_length_3_variants<B: BufferImplWrite>(
 // 	})
 // }
 
+#[derive(Clone, Copy)]
 enum MarkerType {
 	M8,
 	M16,
@@ -223,4 +253,21 @@ fn deserialise_rest_of_length_3_variants<'h, B: BufferImplRead<'h>>(
 		MarkerType::M16 => unsafe { deserialise_rest_of_u64(MARKER_U16, input)? as usize }
 		MarkerType::MXL => { u64::deserialise(input)? as usize }
 	})
+}
+
+fn get_marker_type(len: u64) -> MarkerType {
+	const U8_MAX: u64 = u8::MAX as u64;
+	const U16_MAX: u64 = u16::MAX as u64;
+
+	match len {
+		len @ ..=U8_MAX => {
+			MarkerType::M8
+		}
+		len @ ..=U16_MAX => {
+			MarkerType::M16
+		}
+		len => {
+			MarkerType::MXL
+		}
+	}
 }
