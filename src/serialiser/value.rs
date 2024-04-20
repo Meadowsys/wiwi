@@ -1,70 +1,224 @@
-use super::{ BufferImplRead, BufferImplWrite, Deserialise, Serialise, MarkerType };
-use super::{ array::*, error::*, float::*, integer::*, marker::*, none::* };
+use super::{
+	*,
+	array::*,
+	error::*,
+	float::*,
+	integer::*,
+	marker::*,
+	none::*,
+	object::*,
+	string::*
+};
 use ::hashbrown::HashMap;
 use ::ordered_float::OrderedFloat;
+use std::borrow::Borrow;
+use ::std::{ borrow::Cow, fmt, hint };
 
-#[derive(Debug, Clone, Hash)]
-pub enum Value {
+#[derive(Clone, Debug, PartialEq, Eq)]
+pub enum Value<'h> {
 	None,
-	Bool(bool),
-	SignedInt(i128),
 	UnsignedInt(u128),
+	SignedInt(i128),
 	Float(OrderedFloat<f64>),
-	Array(Vec<Value>)
-	// String(String),
+	Bool(bool),
+	String(Cow<'h, str>),
+	ArrayBorrowed(&'h [Value<'h>]),
+	ArrayOwned(Vec<Value<'h>>),
+	Object(HashMap<Key<'h>, Value<'h>>),
 	// Bytes(Vec<u8>),
 	// HomogenousArray(HomogenousArray),
-	// Object(HashMap<Value, Value>)
 }
 
-impl Serialise for Value {
+pub type ValueOwned = Value<'static>;
+
+impl<'h> Serialise for Value<'h> {
 	fn serialise<B: BufferImplWrite>(&self, output: &mut B) {
+		use Value::*;
 		match self {
-			Self::None => { serialise_none(output) }
-			Self::Bool(b) => { b.serialise(output) }
-			Self::SignedInt(num) => { num.serialise(output) }
-			Self::UnsignedInt(num) => { num.serialise(output) }
-			Self::Float(num) => { num.0.serialise(output) }
-			Self::Array(arr) => { serialise_array(arr, output) }
+			None => { serialise_none(output) }
+			UnsignedInt(n) => { n.serialise(output) }
+			SignedInt(n) => { n.serialise(output) }
+			Float(f) => { f.0.serialise(output) }
+			Bool(b) => { b.serialise(output) }
+			String(s) => { s.serialise(output) }
+			ArrayBorrowed(a) => { serialise_array(a, output) }
+			ArrayOwned(a) => { serialise_array(a, output) }
+			Object(m) => { serialise_hashbrown_into_object(m, output) }
 		}
 	}
 }
 
-impl<'h> Deserialise<'h> for Value {
+impl<'h> Deserialise<'h> for Value<'h> {
 	fn deserialise<B: BufferImplRead<'h>>(input: &mut B) -> Result<Self> {
+		use Value::*;
 		Ok(match input.read_byte()? {
-			marker if marker_is_valid_none(marker) => { Self::None }
-
-			MARKER_BOOL_TRUE => { Self::Bool(true) }
-			MARKER_BOOL_FALSE => { Self::Bool(false) }
-
-			marker if marker_is_valid_i128(marker) => unsafe {
-				Self::SignedInt(deserialise_rest_of_i128(marker, input)?)
-			}
+			marker if marker_is_valid_none(marker) => { None }
 
 			marker if marker_is_valid_u128(marker) => unsafe {
-				Self::UnsignedInt(deserialise_rest_of_u128(marker, input)?)
+				UnsignedInt(deserialise_rest_of_u128(marker, input)?)
+			}
+
+			marker if marker_is_valid_i128(marker) => unsafe {
+				SignedInt(deserialise_rest_of_i128(marker, input)?)
 			}
 
 			marker if marker_is_valid_f32(marker) => {
-				Self::Float(OrderedFloat(deserialise_rest_of_f32(input)? as _))
+				Float(OrderedFloat(deserialise_rest_of_f32(input)? as _))
 			}
 
 			marker if marker_is_valid_f64(marker) => {
-				Self::Float(OrderedFloat(deserialise_rest_of_f64(input)?))
+				Float(OrderedFloat(deserialise_rest_of_f64(input)?))
 			}
 
-			MARKER_HETEROGENOUS_ARRAY_8 => {
-				Self::Array(deserialise_rest_of_array(MarkerType::M8, input)?)
+			MARKER_BOOL_TRUE => { Bool(true) }
+			MARKER_BOOL_FALSE => { Bool(false) }
+
+			MARKER_STRING_8 => {
+				String(Cow::Borrowed(deserialise_rest_of_str(MarkerType::M8, input)?))
 			}
-			MARKER_HETEROGENOUS_ARRAY_16 => {
-				Self::Array(deserialise_rest_of_array(MarkerType::M16, input)?)
+			MARKER_STRING_16 => {
+				String(Cow::Borrowed(deserialise_rest_of_str(MarkerType::M16, input)?))
 			}
-			MARKER_HETEROGENOUS_ARRAY_XL => {
-				Self::Array(deserialise_rest_of_array(MarkerType::MXL, input)?)
+			MARKER_STRING_XL => {
+				String(Cow::Borrowed(deserialise_rest_of_str(MarkerType::MXL, input)?))
 			}
 
-			_ => { return err("invalid serialised bytes") }
+			MARKER_ARRAY_8 => {
+				ArrayOwned(deserialise_rest_of_array(MarkerType::M8, input)?)
+			}
+			MARKER_ARRAY_16 => {
+				ArrayOwned(deserialise_rest_of_array(MarkerType::M16, input)?)
+			}
+			MARKER_ARRAY_XL => {
+				ArrayOwned(deserialise_rest_of_array(MarkerType::MXL, input)?)
+			}
+
+			MARKER_OBJECT_8 => {
+				Object(deserialise_rest_of_object_into_hashbrown(MarkerType::M8, input)?)
+			}
+			MARKER_OBJECT_16 => {
+				Object(deserialise_rest_of_object_into_hashbrown(MarkerType::M16, input)?)
+			}
+			MARKER_OBJECT_XL => {
+				Object(deserialise_rest_of_object_into_hashbrown(MarkerType::MXL, input)?)
+			}
+
+			_ => { return err("invalid bytes (unknown marker)") }
+		})
+	}
+}
+
+// TODO: I dunno if I like this (how to handle strings and arrays?)
+// impl<'h> fmt::Display for Value<'h> {
+// 	fn fmt(&self, output: &mut fmt::Formatter<'_>) -> fmt::Result {
+// 		use Value::*;
+// 		match self {
+// 			None => { output.write_str("None") }
+// 			Bool(b) => { write!(output, "{b}") }
+// 			SignedInt(n) => { write!(output, "{i}") }
+// 			UnsignedInt(n) => { write!(output, "{i}") }
+// 			Float(f) => { write!(output, "{}", f.0) }
+// 			Array(a) => { a.iter().try_for_each(|v| write!(output, "{v}")) }
+// 			String(s) => { output.write_str(s) }
+// 		}
+// 	}
+// }
+
+// impl<'h> Value<'h> {
+// 	pub fn ensure_owned(self) -> ValueOwned {
+// 		use Value::*;
+
+// 		match self {
+// 			None => { None }
+// 			Bool(b) => { Bool(b) }
+// 			SignedInt(n) => { SignedInt(n) }
+// 			UnsignedInt(n) => { UnsignedInt(n) }
+// 			Float(f) => { Float(f) }
+// 			ArrayBorrowed(a) => { ArrayOwned(a.iter().cloned().map(Value::ensure_owned).collect()) }
+// 			ArrayOwned(a) => { ArrayOwned(a.into_iter().map(Value::ensure_owned).collect()) }
+// 			StringBorrowed(s) => { StringOwned(s.into()) }
+// 			StringOwned(s) => { StringOwned(s) }
+// 		}
+// 	}
+
+// 	// pub fn unwrap_bool(self) -> bool {
+// 	// 	match self {
+// 	// 		Value::Bool(b) => { b }
+// 	// 		_ => { panic!("attempted to call unwrap_bool; value was not a bool") }
+// 	// 	}
+// 	// }
+
+// 	// pub fn unwrap_u8(self) -> u8 {
+// 	// 	match self {
+// 	// 		Value::UnsignedInt(n) if marker_is_valid_u8(min_marker_u128(i)) => { i }
+// 	// 		Value::UnsignedInt(_) => { panic!("attempted to call unwrap_u8; value would have overflowed") }
+// 	// 		_ => { panic!("attempted to call unwrap_u8; value was not an unsigned u8") }
+// 	// 	}
+// 	// }
+// }
+
+/// Values that are allowed to be used as the key for an object
+/// (everything but an object)
+#[derive(Clone, Debug, Hash, PartialEq, Eq, PartialOrd, Ord)]
+pub enum Key<'h> {
+	None,
+	UnsignedInt(u128),
+	SignedInt(i128),
+	Float(OrderedFloat<f64>),
+	Bool(bool),
+	String(Cow<'h, str>)
+}
+
+impl<'h> Serialise for Key<'h> {
+	fn serialise<B: BufferImplWrite>(&self, output: &mut B) {
+		use Key::*;
+		match self {
+			None => { serialise_none(output) }
+			UnsignedInt(n) => { n.serialise(output) }
+			SignedInt(n) => { n.serialise(output) }
+			Float(f) => { f.serialise(output) }
+			Bool(b) => { b.serialise(output) }
+			String(s) => { s.serialise(output) }
+		}
+	}
+}
+
+impl<'h> Deserialise<'h> for Key<'h> {
+	fn deserialise<B: BufferImplRead<'h>>(input: &mut B) -> Result<Self> {
+		use Key::*;
+		Ok(match input.read_byte()? {
+			marker if marker_is_valid_none(marker) => { None }
+
+			marker if marker_is_valid_u128(marker) => unsafe {
+				UnsignedInt(deserialise_rest_of_u128(marker, input)?)
+			}
+
+			marker if marker_is_valid_i128(marker) => unsafe {
+				SignedInt(deserialise_rest_of_i128(marker, input)?)
+			}
+
+			marker if marker_is_valid_f32(marker) => {
+				Float(OrderedFloat(deserialise_rest_of_f32(input)? as _))
+			}
+
+			marker if marker_is_valid_f64(marker) => {
+				Float(OrderedFloat(deserialise_rest_of_f64(input)?))
+			}
+
+			MARKER_BOOL_TRUE => { Bool(true) }
+			MARKER_BOOL_FALSE => { Bool(false) }
+
+			MARKER_STRING_8 => {
+				String(Cow::Borrowed(deserialise_rest_of_str(MarkerType::M8, input)?))
+			}
+			MARKER_STRING_16 => {
+				String(Cow::Borrowed(deserialise_rest_of_str(MarkerType::M16, input)?))
+			}
+			MARKER_STRING_XL => {
+				String(Cow::Borrowed(deserialise_rest_of_str(MarkerType::MXL, input)?))
+			}
+
+			_ => { return err("invalid bytes (unknown marker)") }
 		})
 	}
 }

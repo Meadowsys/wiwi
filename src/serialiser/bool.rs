@@ -1,6 +1,4 @@
-use super::{ BufferImplRead, BufferImplWrite, Deserialise, Serialise };
-use super::error::*;
-use super::marker::{ MARKER_BOOL_FALSE, MARKER_BOOL_TRUE };
+use super::{ *, error::*, marker::* };
 
 impl Serialise for bool {
 	fn serialise<B: BufferImplWrite>(&self, output: &mut B) {

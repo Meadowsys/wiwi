@@ -16,8 +16,9 @@ Note to self: needs more diagrams. Diagrams are nice.
   - [Integers](#integers)
   - [Floats](#floats)
   - [Booleans](#booleans)
-  - [Arrays (heterogenous)](#arrays-heterogenous)
+  - [Arrays](#arrays)
   - [UTF-8 String](#utf-8-string)
+  - [Object](#object)
 
 ## About wiwi serialiser
 
@@ -115,9 +116,9 @@ The general structure of an item serialised is a marker byte that is unique to t
 | 44     | [string] (8)
 | 45     | [string] (16)
 | 46     | [string] (XL)
-<!-- | 56     | [object] (8) -->
-<!-- | 57     | [object] (16) -->
-<!-- | 59     | [object] (XL) -->
+| 47     | [object] (8)
+| 48     | [object] (16)
+| 49     | [object] (XL)
 <!-- | 45     | [homogenous array] (8) -->
 <!-- | 46     | [homogenous array] (16) -->
 <!-- | 47     | [homogenous array] (24) -->
@@ -266,17 +267,33 @@ The marker is also the value for bool values. Just write the appropriate marker 
 
 Note: Use the ones with specific values (the ones marked with `true` and `false` in the table). The generic bool type marker is the same as the true marker, as they won't ever be used in the same context side by side.
 
-### Arrays (heterogenous)
+### Arrays
 
-Arrays that can store multiple different types of values (like in JSON and dynamic languages like JavaScript). This is the most general form of an array, with specialisations available below.
+Arrays that can store multiple different types of values (like in JSON and dynamic languages like JavaScript). This is the most general form of an array, storing any item of any type.
 
-First the marker for the array itself is stored, then the length is stored (see [section on collection variants]), then the items themselves are stored one after the other.
+First the marker for the array itself is stored, then the length is stored (see [section on collection variants]), then the items themselves are stored one after the other, with type marker.
 
 ### UTF-8 String
 
 A string, strictly UTF-8 encoding. Decoding it successfully would include checking it to make sure its valid UTF-8.
 
 First write the marker for the string type, followed by the length (in bytes not characters) (see [section on collection variants]). Then, write the string bytes themselves.
+
+### Object
+
+Analogus (kind of) to the object type in JSON, also known as maps or dictionaries in some languages, or more generally, a key to value mapping. This is the most general form of an object, allowing keys and values to have any type.
+
+For now, keys of an object can only be None, ints (signed and unsigned), floats, bools, and strings. This may be expanded in the future.
+
+The length here refers to the amount of key value pairs (ie. amount of entries in a hashmap), NOT the amount of keys plus the amount of values (that would be double the correct value).
+
+- Marker
+- Length (ie. amount of key value pairs) (see [section on collection variants])
+- for each key value pair
+  - write key (with marker)
+  - write value (with marker)
+
+It is recommended, but not required, for all object types to sort the entries by key, from "least" to "greatest", if possible. That way, the same data written into an object will be deterministic.
 
 <!-- ### Arrays (homogenous)
 
@@ -404,22 +421,6 @@ DISCLAIMER: I have not checked this table (yet), I have no clue if its actually 
 TODO remove this text lol #### Why on earth?????
 
 Why not? -->
-
-<!-- ### Object
-
-Analogus to the object type in JSON, also known as maps or dictionaries in some languages, or more generally, a key to value mapping. This is the most general form of an object, with specialisations available below.
-
-The length here refers to the amount of key value mappings.
-
-First write the marker for the object type, then write the length (see [section on collection variants]). For every key-value pair, first encode the key (including marker), then encode the value (including marker).
-
-- Marker for the specific object variant
-- Length for that specific variant (see [section on collection variants])
-- for each key value pair
-  - write key (with marker)
-  - write value (with marker)
-
-It is recommended, but not required, for all object types to sort the entries by key, from "least" to "greatest", if possible. That way, the same data written into an object will be deterministic. -->
 
 <!-- ### Object (key type known)
 
@@ -569,11 +570,12 @@ A specialisation of the array of objects specialisation, where all keys are the 
 [floating point number]: #floats
 [boolean value]: #booleans
 
-[heterogenous array]: #arrays-heterogenous
+[heterogenous array]: #arrays
+[string]: #utf-8-string
+[object]: #object
+
 <!-- [homogenous array]: #arrays-homogenous -->
 <!-- [boolean array]: #array-of-booleans -->
-<!-- [string]: #utf-8-string -->
-<!-- [object]: #object -->
 <!-- [object (key ty known)]: #object-key-type-known -->
 <!-- [object (val ty known)]: #object-value-type-known -->
 <!-- [object (key/val ty known)]: #object-keyvalue-types-known -->

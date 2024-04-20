@@ -1,6 +1,4 @@
-use super::{ BufferImplRead, BufferImplWrite, Deserialise, Serialise };
-use super::{ error::*, marker::* };
-use ::std::mem::transmute;
+use super::{ *, error::*, marker::* };
 use ::std::{ ptr, slice };
 
 pub const LARGEST_U8: u16 = u8::MAX as u16;

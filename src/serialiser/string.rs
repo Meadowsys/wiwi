@@ -1,16 +1,5 @@
-use super::{
-	BufferImplRead,
-	BufferImplWrite,
-	Deserialise,
-	Serialise,
-	SerialiseLength3VariantsParams,
-	deserialise_rest_of_length_3_variants,
-	serialise_length_3_variants,
-	MarkerType
-};
-use super::{ error::*, marker::*, integer::* };
-use ::std::borrow::Cow;
-use ::std::str;
+use super::{ *, error::*, marker::*, integer::* };
+use ::std::{ borrow::Cow, str };
 
 impl Serialise for str {
 	fn serialise<B: BufferImplWrite>(&self, output: &mut B) {
@@ -61,7 +50,7 @@ impl<'h> Deserialise<'h> for Cow<'h, str> {
 	}
 }
 
-fn deserialise_rest_of_str<'h, B: BufferImplRead<'h>>(
+pub fn deserialise_rest_of_str<'h, B: BufferImplRead<'h>>(
 	marker_type: MarkerType,
 	input: &mut B
 ) -> Result<&'h str> {

@@ -9,8 +9,11 @@ mod float;
 mod integer;
 mod marker;
 mod none;
+mod object;
 mod string;
 mod value;
+
+pub use self::value::{ Key, Value };
 
 pub trait Serialise {
 	fn serialise<B: BufferImplWrite>(&self, output: &mut B);

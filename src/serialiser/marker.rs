@@ -107,13 +107,17 @@ pub const MARKER_BOOL_TRUE: u8 = 39;
 /// Marker for the boolean value `false`
 pub const MARKER_BOOL_FALSE: u8 = 40;
 
-pub const MARKER_HETEROGENOUS_ARRAY_8: u8 = 41;
-pub const MARKER_HETEROGENOUS_ARRAY_16: u8 = 42;
-pub const MARKER_HETEROGENOUS_ARRAY_XL: u8 = 43;
+pub const MARKER_ARRAY_8: u8 = 41;
+pub const MARKER_ARRAY_16: u8 = 42;
+pub const MARKER_ARRAY_XL: u8 = 43;
 
 pub const MARKER_STRING_8: u8 = 44;
 pub const MARKER_STRING_16: u8 = 45;
 pub const MARKER_STRING_XL: u8 = 46;
+
+pub const MARKER_OBJECT_8: u8 = 47;
+pub const MARKER_OBJECT_16: u8 = 48;
+pub const MARKER_OBJECT_XL: u8 = 49;
 
 // /// Marker for bools when they are packed into a homogenous array.
 // pub const MARKER_PACKED_BOOLS: u8 = 41;
