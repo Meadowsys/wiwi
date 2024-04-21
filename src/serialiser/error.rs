@@ -28,6 +28,11 @@ pub trait OptionExt<T>: Sized {
 	fn err_eof(self) -> Result<T> {
 		self.err(UNEXPECTED_EOF)
 	}
+
+	fn err_f<S, F>(self, f: F) -> Result<T>
+	where
+		F: FnOnce() -> S,
+		S: Into<String>;
 }
 
 impl<T> OptionExt<T> for Option<T> {
@@ -36,6 +41,17 @@ impl<T> OptionExt<T> for Option<T> {
 		match self {
 			Some(v) => { Ok(v) }
 			None => { err(s) }
+		}
+	}
+
+	fn err_f<S, F>(self, f: F) -> Result<T>
+	where
+		F: FnOnce() -> S,
+		S: Into<String>
+	{
+		match self {
+			Some(v) => { Ok(v) }
+			None => { err(f()) }
 		}
 	}
 }

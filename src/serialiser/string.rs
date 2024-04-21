@@ -3,7 +3,7 @@ use ::std::{ borrow::Cow, str };
 
 impl Serialise for str {
 	fn serialise<B: BufferImplWrite>(&self, output: &mut B, options: &Options) {
-		serialise_length_3_variants(SerialiseLength3VariantsParams {
+		serialise_len_3_variants(SerialiseLength3VariantsParams {
 			marker_8: MARKER_STRING_8,
 			marker_16: MARKER_STRING_16,
 			marker_xl: MARKER_STRING_XL,

@@ -16,8 +16,6 @@ mod value;
 
 pub use self::value::{ Key, Value, ValueOwned };
 
-pub use specialisations::object_array_key_deduping::serialise_object_array_with_key_deduping;
-
 pub trait Serialise {
 	fn serialise<B: BufferImplWrite>(&self, output: &mut B, options: &Options);
 }
@@ -45,7 +43,9 @@ pub fn serialise_with_options<T: ?Sized + Serialise>(item: &T, options: &Options
 
 
 pub fn deserialise<'h, T: Deserialise<'h>>(mut bytes: &'h [u8]) -> Result<T> {
-	T::deserialise(&mut bytes)
+	let value = T::deserialise(&mut bytes);
+	if !bytes.is_empty() { return err("trailing bytes found") }
+	value
 }
 
 /// Trait for generic buffer impl. Unsafe trait to assert that implementers have implemented it correctly
@@ -157,7 +157,7 @@ struct SerialiseLength3VariantsParams<'h, B> {
 }
 
 #[inline]
-fn serialise_length_3_variants<B: BufferImplWrite>(
+fn serialise_len_3_variants<B: BufferImplWrite>(
 	params: SerialiseLength3VariantsParams<B>
 ) {
 	use self::{ integer::*, marker::* };
@@ -188,7 +188,7 @@ fn serialise_length_3_variants<B: BufferImplWrite>(
 	}
 }
 
-fn serialise_length_3_variants_with_type<B: BufferImplWrite>(
+fn serialise_len_3_variants_with_type<B: BufferImplWrite>(
 	marker_type: MarkerType,
 	len: u64,
 	output: &mut B,
@@ -235,10 +235,68 @@ fn serialise_length_3_variants_with_type<B: BufferImplWrite>(
 // }
 
 #[derive(Clone, Copy)]
+
+// #[repr(u8)]
 enum MarkerType {
-	M8,
-	M16,
-	MXL
+	M8 = 1,
+	M16 = 2,
+	MXL = 3
+}
+
+impl MarkerType {
+	fn from_u8(n: u8) -> Option<Self> {
+		const M8_U8: u8 = MarkerType::M8 as u8;
+		const M16_U8: u8 = MarkerType::M16 as u8;
+		const MXL_U8: u8 = MarkerType::MXL as u8;
+
+		match n {
+			M8_U8 => { Some(Self::M8) }
+			M16_U8 => { Some(Self::M16) }
+			MXL_U8 => { Some(Self::MXL) }
+			_ => { None }
+		}
+	}
+}
+
+fn make_variants_byte(
+	marker1: Option<MarkerType>,
+	marker2: Option<MarkerType>,
+	marker3: Option<MarkerType>,
+	marker4: Option<MarkerType>,
+) -> u8 {
+	let mut byte = 0u8;
+
+	if let Some(marker) = marker1 {
+		byte |= (marker as u8) << 6;
+	}
+
+	if let Some(marker) = marker2 {
+		byte |= (marker as u8) << 4;
+	}
+
+	if let Some(marker) = marker3 {
+		byte |= (marker as u8) << 2;
+	}
+
+	if let Some(marker) = marker4 {
+		byte |= marker as u8;
+	}
+
+	byte
+}
+
+fn decode_variants_byte(byte: u8) -> (
+	Option<MarkerType>,
+	Option<MarkerType>,
+	Option<MarkerType>,
+	Option<MarkerType>
+) {
+	(
+		MarkerType::from_u8(byte >> 6),
+		MarkerType::from_u8((byte >> 4) & 0b11),
+		MarkerType::from_u8((byte >> 2) & 0b11),
+		MarkerType::from_u8(byte & 0b11),
+	)
 }
 
 #[inline]

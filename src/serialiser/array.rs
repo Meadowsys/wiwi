@@ -1,7 +1,7 @@
 use super::{ *, error::*, integer::*, marker::* };
 
 pub fn serialise_array<T: Serialise, B: BufferImplWrite>(arr: &[T], output: &mut B, options: &Options) {
-	serialise_length_3_variants(SerialiseLength3VariantsParams {
+	serialise_len_3_variants(SerialiseLength3VariantsParams {
 		marker_8: MARKER_ARRAY_8,
 		marker_16: MARKER_ARRAY_16,
 		marker_xl: MARKER_ARRAY_XL,

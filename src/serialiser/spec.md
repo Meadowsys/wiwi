@@ -7,12 +7,11 @@ Note to self: needs more diagrams. Diagrams are nice.
 ## Table of contents <!-- omit from toc -->
 
 - [About wiwi serialiser](#about-wiwi-serialiser)
-- [Implementation Status](#implementation-status)
 - [General spec info](#general-spec-info)
   - [General structure](#general-structure)
   - [Markers](#markers)
   - [Collection variants](#collection-variants)
-- [Core types spec](#core-types-spec)
+- [Core types](#core-types)
   - [None](#none)
   - [Integers](#integers)
   - [Floats](#floats)
@@ -20,7 +19,7 @@ Note to self: needs more diagrams. Diagrams are nice.
   - [Arrays](#arrays)
   - [UTF-8 String](#utf-8-string)
   - [Object](#object)
-- [Specialisation types spec](#specialisation-types-spec)
+- [Specialisation types](#specialisation-types)
   - [Object array (key deduping)](#object-array-key-deduping)
 
 ## About wiwi serialiser
@@ -36,32 +35,13 @@ Some goals of this serialiser, in _rough_ order of priority:
 These are non-goals (but still nice-to-haves):
 
 - Compressible by major compression algorithms, especially web ones (gzip, brotli)
-- Compat with other languages (serialisers may be written for them. The majority of types that people would actually use will be available in other languages, but they might not be able to process the whole range of types available (looking at you, 128-bit integers))
-
-## Implementation Status
-
-- [x] None
-- [x] Integers
-- [x] Floats
-- [x] Booleans
-- [x] Heterogenous arrays
-- [ ] Homogenous arrays
-- [ ] Boolean arrays
-- [x] Strings
-- [ ] Objects (key type known)
-- [ ] Objects (value type known)
-- [ ] Objects (key/value type known)
-- [ ] Object array (struct known)
-- [ ] Object array (val type grouped)
-- [ ] Object array (key type consistent)
-- [ ] Object array (k consistent v grouped)
-- [ ] Object array (k/v consistent)
+- Compat with other languages (serialisers can be written for them. The majority of types that people would actually use will be available in most other languages, but they might not be able to process the whole range of types available (looking at you, 128-bit integers))
 
 ## General spec info
 
 ### General structure
 
-The general structure of an item serialised is a marker byte that is unique to that type, followed by the data in a specific format following it. The length of the data can always be determined, either by a property of the type (for example, a i32 will always take 4 bytes of space), or specified somewhere towards the beginning where it can be deterministically found before the variable length section (for example, storing the length before an array).
+The general structure of an item serialised is a marker byte that is unique to that type, followed by the data in a specific format following it. The length of the data can always be determined, either by a property of the type (for example, a i32 will always take 4 additional bytes of space), or specified somewhere where it can always be found (for example, storing the length before an array).
 
 - Marker byte (one byte, until we get "close to" overflow, then 2 bytes for new ones)
 - Metadata (if applicable for the type)
@@ -113,24 +93,16 @@ The general structure of an item serialised is a marker byte that is unique to t
 | 39     | [boolean value]
 | 39     | [boolean value] `true`
 | 40     | [boolean value] `false`
-| 41     | [heterogenous array] (8)
-| 42     | [heterogenous array] (16)
-| 43     | [heterogenous array] (XL)
+| 41     | [array] (8)
+| 42     | [array] (16)
+| 43     | [array] (XL)
 | 44     | [string] (8)
 | 45     | [string] (16)
 | 46     | [string] (XL)
 | 47     | [object] (8)
 | 48     | [object] (16)
 | 49     | [object] (XL)
-| 50     | [object array (key deduping)] (8 keys, 8 len)
-| 51     | [object array (key deduping)] (8 keys, 16 len)
-| 52     | [object array (key deduping)] (8 keys, XL len)
-| 53     | [object array (key deduping)] (16 keys, 8 len)
-| 54     | [object array (key deduping)] (16 keys, 16 len)
-| 55     | [object array (key deduping)] (16 keys, XL len)
-| 56     | [object array (key deduping)] (XL keys, 8 len)
-| 57     | [object array (key deduping)] (XL keys, 16 len)
-| 58     | [object array (key deduping)] (XL keys, XL len)
+| 50     | [object array (key deduping)]
 <!-- | 45     | [homogenous array] (8) -->
 <!-- | 46     | [homogenous array] (16) -->
 <!-- | 47     | [homogenous array] (24) -->
@@ -233,13 +205,15 @@ The general structure of an item serialised is a marker byte that is unique to t
 
 ### Collection variants
 
-Some collections will have variants, like the "heterogenous array (8)" and "heterogenous array (XL)". Here is what they mean:
+Some collections will have variants, like the "array (8)" and "array (XL)". Here is what they mean:
 
 - (8) means length is stored with a single 8-bit unsigned integer. Just the value itself is written; no marker is used. This can encode lengths up to 255.
 - (16) is the same as above, but with a single 16-bit unsigned little endian integer. As above, no marker is used. This can encode lengths up to 65,535.
-- (XL) means any of the available unsigned integer types may be used to encode the length. Theoretically 2¹²⁸ - 1 can be the maximum value for this, but the practical limit is likely well under that (well, at least at time of writing this spec, who knows what technological advancements will happen in the future :p). Unless specified otherwise, the length must be serialised/deserialised with a u64 (equivalent to usize on 64bit systems) being the maximum size.
+- (XL) means any of the available unsigned integer types may be used to encode the length. Theoretically 2¹²⁸ - 1 can be the maximum value for this, but the practical limit is likely well under that (well, at least at time of writing this spec, who knows what technological advancements will happen in the future :p). Unless specified otherwise, the length must be serialised/deserialised with a 64-bit int (equivalent to usize on 64bit systems) being the maximum sized type.
 
-## Core types spec
+Some collections, will have more than one "length" sort of value. For example, the [object array (key deduping)] specialisation type needs to store 3 such values (one for number of unique keys, one for number of objects, and one for number of K/V pairs per object). For these collections, there could be 9, 27, 81 markers, or more combinations of the types as needed... but that's, kinda not great to be honest. Instead, these collections will have only one marker, then the byte(s) after it will be used to store the variant data. Each byte can store information for up to 4 variants. The highest 2 bits in a byte should be used first, then the next 2, and the next 2, then the 2 least significant bits used fourth. Then after, if there's more to encode, move on to the next byte, repeat, etc.
+
+## Core types
 
 These are what are considered to be the "core types". These are the basic, most flexible types that wiwi serialiser has, and every type added is another new type that's "fundamentally different" from the other types in some way.
 
@@ -259,7 +233,7 @@ To store an integer, you write first the marker byte, then the bytes needed for 
 
 For example, to write a 96-bit signed integer, you would first write one byte `25`, then you would write exactly 12 more bytes to encoded that integer.
 
-Implementations are required to find the smallest type able to store the given integer. Failing to do so isn't valid per se, but may cause some deserialisers to behave in unexpected ways. Because of this requirement, deserialisers are allowed to rely on the type for the maximum value, so they can do things like always reject 40-bit ints if the target container is only a 32-bit int, because it _will_ be too big.
+Implementations are required to find the smallest type able to store the given integer. Failing to do so isn't invalid per se, but may cause some deserialisers to behave in unexpected ways. Because of this requirement, deserialisers are allowed to rely on the int type for the maximum value, so they can do things like always reject 40-bit ints if the target type is only 32-bit, because it _will_ be too big.
 
 There is a way to get the amount of bytes needed for a specific integer by the marker byte, by using the formula of `marker >> 1` (integer division by 2).
 
@@ -301,7 +275,7 @@ Analogus (kind of) to the object type in JSON, also known as maps or dictionarie
 
 For now, keys of an object can only be None, ints (signed and unsigned), floats, bools, and strings. This may be expanded in the future.
 
-The length here refers to the amount of key value pairs (ie. amount of entries in a hashmap), NOT the amount of keys plus the amount of values (that would be double the correct value).
+The length here refers to the amount of key value pairs (ie. amount of entries in a hashmap), NOT the amount of keys plus the amount of values (which would be double the correct value).
 
 - Marker
 - Length (ie. amount of key value pairs) (see [section on collection variants])
@@ -311,22 +285,26 @@ The length here refers to the amount of key value pairs (ie. amount of entries i
 
 It is recommended, but not required, for all object types to sort the entries by key, from "least" to "greatest", if possible. That way, the same data written into an object will be deterministic.
 
-## Specialisation types spec
+## Specialisation types
 
 In here are types that don't add any more basic data types. But, they offer shortcut ways to encode common structured data patterns, in order to help reduce size even further.
 
 ### Object array (key deduping)
 
-When you have an array of objects, often times all the objects will have a very similar, if not identical, set of keys to each other, This optimisation keeps track of _all_ the different keys (_all_ of them, even if they only appear once), assigns them an ID, then stores them at the head of the array. Each object will then, instead of encoding the keys, encode the ID.
+When you have an array of objects, often times all the objects will have a very similar, if not identical, set of keys to each other, This optimisation keeps track of _all_ the different keys (_all_ of them, even if they only appear once), assigns them an ID, then stores them together in the front of the array. Each object will then, instead of encoding the keys, encode the ID of the key.
 
 - Marker
-- number of keys. This is the keys part of the variant type
-- for each key
-  - write the key (including marker)
-- Length of array; ie. amount of objects in the array. This is the "len" part of the variant type (see [section on collection variants])
-- for each object
+- Variants info
+  - number of unique keys
+  - number of objects (array len)
+  - number of k/v pairs per object (every object has this to encode the amount of key value pairs it has)
+- number of unique keys, encoded using the "number of unique keys" variant type
+  - write the keys (including markers)
+- Length of array, encoded using the "number of objects" variant type
+- for each object in array
+  - amount of K/V pairs in the object, encoded using "number of k/v pairs per object" variant type
   - for each key/value pair in object
-    - encode the _index of the key_, using the same type as "len" part of variant type, without marker
+    - encode the _index of the key_, using the "number of unique keys" variant type, without marker
     - encode the value for that key
 
 <!-- ### Arrays (homogenous)
@@ -604,7 +582,7 @@ A specialisation of the array of objects specialisation, where all keys are the 
 [floating point number]: #floats
 [boolean value]: #booleans
 
-[heterogenous array]: #arrays
+[array]: #arrays
 [string]: #utf-8-string
 [object]: #object
 [object array (key deduping)]: #object-array-key-deduping

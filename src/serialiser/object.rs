@@ -12,7 +12,7 @@ where
 	V: Serialise,
 	B: BufferImplWrite
 {
-	serialise_length_3_variants(SerialiseLength3VariantsParams {
+	serialise_len_3_variants(SerialiseLength3VariantsParams {
 		marker_8: MARKER_OBJECT_8,
 		marker_16: MARKER_OBJECT_16,
 		marker_xl: MARKER_OBJECT_XL,
