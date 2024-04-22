@@ -158,7 +158,6 @@ impl<'h> Deserialise<'h> for Value<'h> {
 // }
 
 /// Values that are allowed to be used as the key for an object
-/// (everything but an object)
 #[derive(Clone, Debug, Hash, PartialEq, Eq, PartialOrd, Ord)]
 pub enum Key<'h> {
 	None,
