@@ -10,36 +10,184 @@ Note to self: needs more diagrams. Diagrams are nice.
 - [General spec info](#general-spec-info)
   - [General structure](#general-structure)
   - [Markers](#markers)
-  - [Collection variants](#collection-variants)
+  - [Diagram format](#diagram-format)
 - [Core types](#core-types)
-  - [None](#none)
+  - [Smallints](#smallints)
   - [Integers](#integers)
-  - [Floats](#floats)
   - [Booleans](#booleans)
-  - [Arrays](#arrays)
-  - [UTF-8 String](#utf-8-string)
-  - [Object](#object)
-- [Specialisation types](#specialisation-types)
-  - [Object array (key deduping)](#object-array-key-deduping)
+    - [Encoding a boolean](#encoding-a-boolean)
+- [General spec info (outdated)](#general-spec-info-outdated)
+  - [General structure (outdated)](#general-structure-outdated)
+  - [Markers (outdated)](#markers-outdated)
+  - [Extended markers (outdated)](#extended-markers-outdated)
+  - [Collection variants (outdated)](#collection-variants-outdated)
+- [Core types (outdated)](#core-types-outdated)
+  - [None (outdated)](#none-outdated)
+  - [Integers (outdated)](#integers-outdated)
+  - [Floats (outdated)](#floats-outdated)
+  - [Booleans (outdated)](#booleans-outdated)
+  - [Arrays (outdated)](#arrays-outdated)
+  - [UTF-8 String (outdated)](#utf-8-string-outdated)
+  - [Object (outdated)](#object-outdated)
+- [Specialisation types (outdated)](#specialisation-types-outdated)
+  - [Object array (key deduping) (outdated)](#object-array-key-deduping-outdated)
+  - [Single-type array (outdated)](#single-type-array-outdated)
 
 ## About wiwi serialiser
 
-This does not have a formal name any more than "wiwi serialiser":p. Wiwi serialiser is a binary format serialisation similar to JSON.
+This does not (yet?) have a formal name any more than "wiwi serialiser" :p. Wiwi serialiser is a binary serialisation format similar (but more flexible than) JSON, as well as inspired by parts of other binary formats like [MessagePack](https://msgpack.org), [CBOR](https://cbor.io), and [Bitcode](https://github.com/SoftbearStudios/bitcode). I had a few ideas, and I wanted to see if I can match, or _maybe_ even beat, their encode/decode speed and output size. But also, just to fiddle with binary serialisation and stuff, learn a few things hehe
 
 Some goals of this serialiser, in _rough_ order of priority:
 
-- Stable, self-describing format
+- Self-describing format (and stable, once finalised)
 - Tiny output size
-- Fast
+- Fast encode/decode
 
 These are non-goals (but still nice-to-haves):
 
 - Compressible by major compression algorithms, especially web ones (gzip, brotli)
-- Compat with other languages (serialisers can be written for them. The majority of types that people would actually use will be available in most other languages, but they might not be able to process the whole range of types available (looking at you, 128-bit integers))
+- Compat with languages other than Rust (serialisers can be written for them. The majority of types that people would actually use will be available in most other languages, but they might not be able to process the whole range of types available, like 128-bit integers)
+
+These are non-goals:
+
+- Simple format, and simple to implement a serialiser/deserialiser
 
 ## General spec info
 
 ### General structure
+
+To be documented
+
+### Markers
+
+Below are a list of markers.
+
+- `0x00` to `0x7f`: smallint
+- `0x80` to `0x9f`: signed/unsigned ints
+- `0xa0`: bool, `true`
+- `0xa1`: `false`
+- `0xa2`: 32-bit float
+- `0xa3`: 64-bit float
+- `0xa4`: _reserved_ (16-bit float)
+- `0xa5`: _reserved_ (128-bit float)
+- `0xa6`: _reserved_ (256-bit float)
+- `0xa7`: `null`
+- `0xa8`: array
+- `0xa9`: object
+- `0xaa`: bytes
+- `0xab`: string (UTF-8)
+- `0xac`: string (ASCII)
+- `0xad`: _unassigned_
+- `0xae`: _unassigned_
+- `0xaf`: _unassigned_
+- `0xb0`: _unassigned_
+- `0xb1`: _unassigned_
+- `0xb2`: _unassigned_
+- `0xb3`: _unassigned_
+- `0xb4`: _unassigned_
+- `0xb5`: _unassigned_
+- `0xb6`: _unassigned_
+- `0xb7`: _unassigned_
+- `0xb8`: _reserved_ (for 2-byte markers)
+- `0xb9`: _reserved_ (for 2-byte markers)
+- `0xba`: _reserved_ (for 2-byte markers)
+- `0xbb`: _reserved_ (for 2-byte markers)
+- `0xbc`: _reserved_ (for 2-byte markers)
+- `0xbd`: _reserved_ (for 2-byte markers)
+- `0xbe`: _reserved_ (for 3-byte markers)
+- `0xbf`: _reserved_ (for 4-byte markers)
+- `0xc0` to `0xff`: smallint
+
+### Diagram format
+
+Maybe its better with just text descriptions in bullet point. hmm
+
+#### Standalone marker <!-- omit from toc -->
+
+```txt
+┏━━━━━━━━┓
+┃  0xa7  ┃
+┗━━━━━━━━┛
+```
+
+#### Marker with fixed length data <!-- omit from toc -->
+
+```txt
+┏━━━━━━━━┱────────┐
+┃  0x00  ┃XXXXXXXX│
+┗━━━━━━━━┹────────┘
+```
+
+```txt
+┏━━━━━━━━┱────────┬────────┬────────┐
+┃  0x04  ┃XXXXXXXX│XXXXXXXX│XXXXXXXX│
+┗━━━━━━━━┹────────┴────────┴────────┘
+```
+
+### Marker with variable length data <!-- omit from toc -->
+
+TODO: replace with actual type
+
+- E: ...
+
+```txt
+┏━━━━━━━━┱─ ─ ─ ─ ─ ─┐
+┃  0x04  ┃EEEEEEEEEEE│
+┗━━━━━━━━┹─ ─ ─ ─ ─ ─┘
+```
+
+### Extended marker <!-- omit from toc -->
+
+TODO: replace with actual type
+
+```txt
+┏━━━━━━━━┳════════┱────────┐
+┃  0x00  ┃  0x00  ┃XXXXXXXX│
+┗━━━━━━━━┻════════┹────────┘
+```
+
+## Core types
+
+### Smallints
+
+Unsigned integer or signed integer (two's compliment) that falls within the range `-64..=127`.
+
+To encode, just check that the number falls within the range `-64..=127`, then just write it in, unmodified.
+
+To decode, read in one byte (the marker). If decoding to a signed int, cast the byte to an i8 and check its within `-64..=127`. If decoding to an unsigned int, check its within `0..=127`. If so, that byte is the encoded number.
+
+Alternatively, `int >> 7 == 0` checks that a number falls within `0..=127` and `int >> 6 == 0b11` checks a (signed) number is within `-64..=-1`.
+
+### Integers
+
+Unsigned integers and signed integers (two's complement).
+
+#### Encoding an integer <!-- omit from toc -->
+
+- Write the marker (1 byte)
+- Write corresponding amount of bytes to encode the integer, _in little endian order_ (variable byte len)
+  - ex. To encode a 24-bit integer, 3 more bytes would be written after the marker
+
+To be strictly compliant, the serialiser must find the smallest integer size to encode an integer. This way, the deserialiser can rely on the fact that if an encoded integer size is bigger than the target size, the int is too big to fit.
+
+#### Integer metadata stored in the marker <!-- omit from toc -->
+
+- if the 3 most significant bytes are `100`, then it is a number marker in general (ie. `marker >> 5 == 0b100`)
+- if `(marker & 0b11111) < (byte_size << 1)`, the int represented by the marker is small enough to fit in `byte_size`-byte destination
+- The byte size of an int can be retrieved using `((marker & 0b11111) >> 1) + 1`
+- if `marker & 0b1 == 0`, the integer is unsigned; otherwise its signed
+
+### Booleans
+
+Boolean values (`true` and `false`).
+
+#### Encoding a boolean
+
+- Write the marker that represents the value (1 byte)
+
+## General spec info (outdated)
+
+### General structure (outdated)
 
 The general structure of an item serialised is a marker byte that is unique to that type, followed by the data in a specific format following it. The length of the data can always be determined, either by a property of the type (for example, a i32 will always take 4 additional bytes of space), or specified somewhere where it can always be found (for example, storing the length before an array).
 
@@ -47,7 +195,7 @@ The general structure of an item serialised is a marker byte that is unique to t
 - Metadata (if applicable for the type)
 - Data (if applicable for the type)
 
-### Markers
+### Markers (outdated)
 
 | Marker | Type
 | ------ | ------------------------------------------------------------------
@@ -103,10 +251,9 @@ The general structure of an item serialised is a marker byte that is unique to t
 | 48     | [object] (16)
 | 49     | [object] (XL)
 | 50     | [object array (key deduping)]
-<!-- | 45     | [homogenous array] (8) -->
-<!-- | 46     | [homogenous array] (16) -->
-<!-- | 47     | [homogenous array] (24) -->
-<!-- | 48     | [homogenous array] (XL) -->
+| 51     | [single-type array] (8)
+| 52     | [single-type array] (24)
+| 53     | [single-type array] (XL)
 <!-- | 49     | [boolean array] (8) -->
 <!-- | 50     | [boolean array] (16) -->
 <!-- | 51     | [boolean array] (XL) -->
@@ -203,7 +350,15 @@ The general structure of an item serialised is a marker byte that is unique to t
 <!-- | 150    | [object array (k/v consistent)] (len XL, keys 24) -->
 <!-- | 151    | [object array (k/v consistent)] (len XL, keys XL) -->
 
-### Collection variants
+### Extended markers (outdated)
+
+Extended markers are markers that take up more than one byte, with the additional bytes adding more metadata. For example, the [object array (key deduping)] specialisation type uses this type to specify the size of the 3 lengths that are inside, using one more byte.
+
+As like arrays and objects, these markers can be "dynamically sized" too.
+
+TODO: table of extended markers
+
+### Collection variants (outdated)
 
 Some collections will have variants, like the "array (8)" and "array (XL)". Here is what they mean:
 
@@ -211,13 +366,13 @@ Some collections will have variants, like the "array (8)" and "array (XL)". Here
 - (16) is the same as above, but with a single 16-bit unsigned little endian integer. As above, no marker is used. This can encode lengths up to 65,535.
 - (XL) means any of the available unsigned integer types may be used to encode the length. Theoretically 2¹²⁸ - 1 can be the maximum value for this, but the practical limit is likely well under that (well, at least at time of writing this spec, who knows what technological advancements will happen in the future :p). Unless specified otherwise, the length must be serialised/deserialised with a 64-bit int (equivalent to usize on 64bit systems) being the maximum sized type.
 
-Some collections, will have more than one "length" sort of value. For example, the [object array (key deduping)] specialisation type needs to store 3 such values (one for number of unique keys, one for number of objects, and one for number of K/V pairs per object). For these collections, there could be 9, 27, 81 markers, or more combinations of the types as needed... but that's, kinda not great to be honest. Instead, these collections will have only one marker, then the byte(s) after it will be used to store the variant data. Each byte can store information for up to 4 variants. The highest 2 bits in a byte should be used first, then the next 2, and the next 2, then the 2 least significant bits used fourth. Then after, if there's more to encode, move on to the next byte, repeat, etc.
+Some collections, will have more than one "length" sort of value. For example, the [object array (key deduping)] specialisation type needs to store 3 such values (one for number of unique keys, one for number of objects, and one for number of K/V pairs per object). For these collections, there could be 9, 27, 81 markers, or more combinations of the types as needed... but that's, kinda not great to be honest. Instead, these collections will have only one "top level" marker, then the byte(s) after it will be used to store the variant data. These bytes are considered extended markers. Each byte can store information for up to 4 variants. The highest 2 bits in a byte should be used first, then the next 2, and the next 2, then the 2 least significant bits used fourth. Then after, if there's more to encode, move on to the next byte, repeat, etc. A value of `0` means empty, `1` means variant (8), `2` means variant (16), and `3` means variant (XL).
 
-## Core types
+## Core types (outdated)
 
 These are what are considered to be the "core types". These are the basic, most flexible types that wiwi serialiser has, and every type added is another new type that's "fundamentally different" from the other types in some way.
 
-### None
+### None (outdated)
 
 Also known as `null` or `nil` in other languages. The marker represents the value, so just write the marker byte.
 
@@ -225,7 +380,7 @@ In this type system, where applicable/possible, a `None` value represents an abs
 
 In terms of "knowing types" for specialised variants of some structures (ex. array and object), `None` is to be considered a seperate type, as there is no way to reliably mark a null value in a densely packed structures without internal markers. For example, in a byte array, there is no reasonable way to tell if an item is a null marker and not a byte value.
 
-### Integers
+### Integers (outdated)
 
 Signed (two's compliment) or unsigned integer, variable bit sizes from 8 to 128, available in all multiples of 8.
 
@@ -237,7 +392,7 @@ Implementations are required to find the smallest type able to store the given i
 
 There is a way to get the amount of bytes needed for a specific integer by the marker byte, by using the formula of `marker >> 1` (integer division by 2).
 
-### Floats
+### Floats (outdated)
 
 Floating point values, `binary16`, `binary32`, and `binary64`, as defined in IEEE754-2008. Markers for binary128 and binary256 are reserved, but not to be implemented at this time, since their use is quite uncommon at this time. In fact, the first time I heard that they were specified at all, was while I was researching these floating point values for this serialisation library.
 
@@ -249,7 +404,7 @@ There are markers reserved for 128- and 256-bit floats as defined by IEEE754-200
 
 If the target programming language does not support a 16-bit float, it can be losslessly expanded to a 32- or 64-bit float.
 
-### Booleans
+### Booleans (outdated)
 
 `true`, or `false`.
 
@@ -257,19 +412,19 @@ The marker is also the value for bool values. Just write the appropriate marker 
 
 Note: Use the ones with specific values (the ones marked with `true` and `false` in the table). The generic bool type marker is the same as the true marker, as they won't ever be used in the same context side by side.
 
-### Arrays
+### Arrays (outdated)
 
 Arrays that can store multiple different types of values (like in JSON and dynamic languages like JavaScript). This is the most general form of an array, storing any item of any type.
 
 First the marker for the array itself is stored, then the length is stored (see [section on collection variants]), then the items themselves are stored one after the other, with type marker.
 
-### UTF-8 String
+### UTF-8 String (outdated)
 
 A string, strictly UTF-8 encoding. Decoding it successfully would include checking it to make sure its valid UTF-8.
 
 First write the marker for the string type, followed by the length (in bytes not characters) (see [section on collection variants]). Then, write the string bytes themselves.
 
-### Object
+### Object (outdated)
 
 Analogus (kind of) to the object type in JSON, also known as maps or dictionaries in some languages, or more generally, a key to value mapping. This is the most general form of an object, allowing keys and values to have any type.
 
@@ -285,19 +440,19 @@ The length here refers to the amount of key value pairs (ie. amount of entries i
 
 It is recommended, but not required, for all object types to sort the entries by key, from "least" to "greatest", if possible. That way, the same data written into an object will be deterministic.
 
-## Specialisation types
+## Specialisation types (outdated)
 
 In here are types that don't add any more basic data types. But, they offer shortcut ways to encode common structured data patterns, in order to help reduce size even further.
 
-### Object array (key deduping)
+### Object array (key deduping) (outdated)
 
 When you have an array of objects, often times all the objects will have a very similar, if not identical, set of keys to each other, This optimisation keeps track of _all_ the different keys (_all_ of them, even if they only appear once), assigns them an ID, then stores them together in the front of the array. Each object will then, instead of encoding the keys, encode the ID of the key.
 
 - Marker
-- Variants info
-  - number of unique keys
-  - number of objects (array len)
-  - number of k/v pairs per object (every object has this to encode the amount of key value pairs it has)
+  - Variants info
+    - number of unique keys
+    - number of objects (array len)
+    - number of k/v pairs per object (every object has this to encode the amount of key value pairs it has)
 - number of unique keys, encoded using the "number of unique keys" variant type
   - write the keys (including markers)
 - Length of array, encoded using the "number of objects" variant type
@@ -307,13 +462,15 @@ When you have an array of objects, often times all the objects will have a very 
     - encode the _index of the key_, using the "number of unique keys" variant type, without marker
     - encode the value for that key
 
-<!-- ### Arrays (homogenous)
+### Single-type array (outdated)
 
-Arrays that store only one type of item (identical = same marker), meaning that can be stored a bit more compact/efficiently.
+Arrays that store only one type of item (identical type marker), meaning that can be stored a bit more compact/efficiently.
 
 First the marker for the array itself is stored, then the marker of the contained items is stored, followed by the length of the array (see [section on collection variants]), followed by the items. However, items are encoded without their corresponding prefix (as they are all identical, and this one prefix is already stored).
 
-Boolean note: For the type marker, use the generic bool marker (which is the same as the true marker), and use the true/false markers as the values. However, there are much more efficient ways to encode booleans. See the below section on an [array of booleans](#array-of-booleans). -->
+<!-- TODO: old commented out spec below -->
+
+<!-- Boolean note: For the type marker, use the generic bool marker (which is the same as the true marker), and use the true/false markers as the values. However, there are much more efficient ways to encode booleans. See the below section on an [array of booleans](#array-of-booleans). -->
 
 <!-- ### Array of booleans
 
@@ -574,20 +731,20 @@ A specialisation of the array of objects specialisation, where all keys are the 
 - Timestamp
 - a "MaybeBorrowed" for types that have a higher-than-1-byte alignment requirement. Borrows if aligned, copies if not. -->
 
-[section on collection variants]: #collection-variants
+[section on collection variants]: #collection-variants-outdated
 
 <!-- links from marker table to specific section -->
 
-[integer]: #integers
-[floating point number]: #floats
-[boolean value]: #booleans
+[integer]: #integers-outdated
+[floating point number]: #floats-outdated
+[boolean value]: #booleans-outdated
 
-[array]: #arrays
-[string]: #utf-8-string
-[object]: #object
-[object array (key deduping)]: #object-array-key-deduping
+[array]: #arrays-outdated
+[string]: #utf-8-string-outdated
+[object]: #object-outdated
+[object array (key deduping)]: #object-array-key-deduping-outdated
+[single-type array]: #single-type-array-outdated
 
-<!-- [homogenous array]: #arrays-homogenous -->
 <!-- [boolean array]: #array-of-booleans -->
 <!-- [object (key ty known)]: #object-key-type-known -->
 <!-- [object (val ty known)]: #object-value-type-known -->
