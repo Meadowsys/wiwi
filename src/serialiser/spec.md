@@ -10,7 +10,6 @@ Note to self: needs more diagrams. Diagrams are nice.
 - [General spec info](#general-spec-info)
   - [General structure](#general-structure)
   - [Markers](#markers)
-  - [Diagram format](#diagram-format)
 - [Core types](#core-types)
   - [Smallints](#smallints)
   - [Integers](#integers)
@@ -62,47 +61,47 @@ To be documented
 
 Below are a list of markers.
 
-- `0x00` to `0x7f`: smallint
-- `0x80` to `0x9f`: signed/unsigned ints
-- `0xa0`: bool, `true`
-- `0xa1`: `false`
-- `0xa2`: 32-bit float
-- `0xa3`: 64-bit float
-- `0xa4`: _reserved_ (16-bit float)
-- `0xa5`: _reserved_ (128-bit float)
-- `0xa6`: _reserved_ (256-bit float)
-- `0xa7`: `null`
-- `0xa8`: array
-- `0xa9`: object
-- `0xaa`: bytes
-- `0xab`: string (UTF-8)
-- `0xac`: string (ASCII)
-- `0xad`: _unassigned_
-- `0xae`: _unassigned_
-- `0xaf`: _unassigned_
-- `0xb0`: _unassigned_
-- `0xb1`: _unassigned_
-- `0xb2`: _unassigned_
-- `0xb3`: _unassigned_
-- `0xb4`: _unassigned_
-- `0xb5`: _unassigned_
-- `0xb6`: _unassigned_
-- `0xb7`: _unassigned_
-- `0xb8`: _reserved_ (for 2-byte markers)
-- `0xb9`: _reserved_ (for 2-byte markers)
-- `0xba`: _reserved_ (for 2-byte markers)
-- `0xbb`: _reserved_ (for 2-byte markers)
-- `0xbc`: _reserved_ (for 2-byte markers)
-- `0xbd`: _reserved_ (for 2-byte markers)
-- `0xbe`: _reserved_ (for 3-byte markers)
-- `0xbf`: _reserved_ (for 4-byte markers)
-- `0xc0` to `0xff`: smallint
+- [ ] `0x00` to `0x7f`: smallint
+- [ ] `0x80` to `0x9f`: signed/unsigned ints
+- [ ] `0xa0`: bool, `true`
+- [ ] `0xa1`: `false`
+- [ ] `0xa2`: _reserved_ (16-bit float)
+- [ ] `0xa3`: 32-bit float
+- [ ] `0xa4`: 64-bit float
+- [ ] `0xa5`: _reserved_ (128-bit float)
+- [ ] `0xa6`: _reserved_ (256-bit float)
+- [ ] `0xa7`: `null`
+- [ ] `0xa8`: `done`
+- [ ] `0xa9`: array (8)
+- [ ] `0xaa`: array (16)
+- [ ] `0xab`: array (XL)
+- [ ] `0xac`: array (streaming)
+- [ ] `0xad`: object (8)
+- [ ] `0xae`: object (16)
+- [ ] `0xaf`: object (XL)
+- [ ] `0xb0`: object (streaming)
+- [ ] `0xb1`: string (8)
+- [ ] `0xb2`: string (16)
+- [ ] `0xb3`: string (XL)
+- [ ] `0xb4`: string (streaming)
+- [ ] `0xb5`: set (8)
+- [ ] `0xb6`: set (16)
+- [ ] `0xb7`: set (XL)
+- [ ] `0xb8`: set (streaming)
+- [ ] `0xb9`: single-type array (8)
+- [ ] `0xba`: single-type array (16)
+- [ ] `0xbb`: single-type array (XL)
+- [ ] `0xbc`: single-type array (streaming)
+- [ ] `0xbd`: _reserved_ (for 2-byte markers)
+- [ ] `0xbe`: _reserved_ (for 2-byte markers)
+- [ ] `0xbf`: _reserved_ (for 3-byte markers)
+- [ ] `0xc0` to `0xff`: smallint
 
-### Diagram format
+<!-- ### Diagram format
 
 Maybe its better with just text descriptions in bullet point. hmm
 
-#### Standalone marker <!-- omit from toc -->
+#### Standalone marker
 
 ```txt
 ┏━━━━━━━━┓
@@ -110,7 +109,7 @@ Maybe its better with just text descriptions in bullet point. hmm
 ┗━━━━━━━━┛
 ```
 
-#### Marker with fixed length data <!-- omit from toc -->
+#### Marker with fixed length data
 
 ```txt
 ┏━━━━━━━━┱────────┐
@@ -124,7 +123,7 @@ Maybe its better with just text descriptions in bullet point. hmm
 ┗━━━━━━━━┹────────┴────────┴────────┘
 ```
 
-### Marker with variable length data <!-- omit from toc -->
+### Marker with variable length data
 
 TODO: replace with actual type
 
@@ -136,7 +135,7 @@ TODO: replace with actual type
 ┗━━━━━━━━┹─ ─ ─ ─ ─ ─┘
 ```
 
-### Extended marker <!-- omit from toc -->
+### Extended marker
 
 TODO: replace with actual type
 
@@ -144,7 +143,7 @@ TODO: replace with actual type
 ┏━━━━━━━━┳════════┱────────┐
 ┃  0x00  ┃  0x00  ┃XXXXXXXX│
 ┗━━━━━━━━┻════════┹────────┘
-```
+``` -->
 
 ## Core types
 
