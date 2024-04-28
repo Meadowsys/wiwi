@@ -4,8 +4,6 @@ pub type Result<T, E = Error> = ::std::result::Result<T, E>;
 #[error("{0}")]
 pub struct Error(String);
 
-const UNEXPECTED_EOF: &str = "unexpected EOF";
-
 #[inline]
 pub fn error<S: Into<String>>(s: S) -> Error {
 	Error(s.into())
@@ -17,17 +15,19 @@ pub fn err<T, S: Into<String>>(s: S) -> Result<T> {
 }
 
 #[inline]
+pub fn error_eof() -> Error {
+	error("unexpected EOF")
+}
+
+#[inline]
 pub fn err_eof<T>() -> Result<T> {
-	err(UNEXPECTED_EOF)
+	Err(error_eof())
 }
 
 pub trait OptionExt<T>: Sized {
 	fn err<S: Into<String>>(self, s: S) -> Result<T>;
 
-	#[inline]
-	fn err_eof(self) -> Result<T> {
-		self.err(UNEXPECTED_EOF)
-	}
+	fn err_eof(self) -> Result<T>;
 
 	fn err_f<S, F>(self, f: F) -> Result<T>
 	where
@@ -38,21 +38,21 @@ pub trait OptionExt<T>: Sized {
 impl<T> OptionExt<T> for Option<T> {
 	#[inline]
 	fn err<S: Into<String>>(self, s: S) -> Result<T> {
-		match self {
-			Some(v) => { Ok(v) }
-			None => { err(s) }
-		}
+		self.ok_or_else(|| error(s))
 	}
 
+	#[inline]
+	fn err_eof(self) -> Result<T> {
+		self.ok_or_else(error_eof)
+	}
+
+	#[inline]
 	fn err_f<S, F>(self, f: F) -> Result<T>
 	where
 		F: FnOnce() -> S,
 		S: Into<String>
 	{
-		match self {
-			Some(v) => { Ok(v) }
-			None => { err(f()) }
-		}
+		self.ok_or_else(|| error(f()))
 	}
 }
 
@@ -63,6 +63,6 @@ pub trait ResultExt<T> {
 impl<T, E: ToString> ResultExt<T> for Result<T, E> {
 	#[inline]
 	fn convert_err(self) -> Result<T> {
-		self.map_err(#[inline] |e| error(e.to_string()))
+		self.map_err(|e| error(e.to_string()))
 	}
 }

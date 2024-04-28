@@ -1,12 +1,11 @@
-// use self::error::*;
-// use ::std::slice;
-
-// pub mod error;
+use self::buffer::*;
 
 // pub mod array;
 // pub mod bool;
+pub mod buffer;
+pub mod error;
 // pub mod float;
-// pub mod integer;
+pub mod integer;
 // pub mod marker;
 // pub mod none;
 // pub mod object;
@@ -14,7 +13,22 @@
 // pub mod string;
 // pub mod value;
 
+macro_rules! exported_match_macro {
+	($name:ident: $($match:tt)+) => {
+		#[macro_export]
+		macro_rules! $name {
+			() => { $($match)+ }
+		}
+		pub use $name;
+	}
+}
+use exported_match_macro;
+
 // pub use self::value::{ Key, Value, ValueOwned };
+
+pub trait Serialise {
+	fn serialise<B: BufferWrite>(&self, output: &mut B, options: &Options);
+}
 
 // pub trait Serialise {
 // 	fn serialise<B: BufferImplWrite>(&self, output: &mut B, options: &Options);
@@ -31,15 +45,15 @@
 // 	T: for<'h> Deserialise<'h>
 // {}
 
-// pub fn serialise<T: ?Sized + Serialise>(item: &T) -> Vec<u8> {
-// 	serialise_with_options(item, &Options::default())
-// }
+pub fn serialise<T: ?Sized + Serialise>(item: &T) -> Vec<u8> {
+	serialise_with_options(item, &Options::default())
+}
 
-// pub fn serialise_with_options<T: ?Sized + Serialise>(item: &T, options: &Options) -> Vec<u8> {
-// 	let mut vec = Vec::with_capacity(options.capacity);
-// 	item.serialise(&mut vec, options);
-// 	vec
-// }
+pub fn serialise_with_options<T: ?Sized + Serialise>(item: &T, options: &Options) -> Vec<u8> {
+	let mut vec = Vec::with_capacity(options.capacity);
+	item.serialise(&mut vec, options);
+	vec
+}
 
 
 // pub fn deserialise<'h, T: Deserialise<'h>>(mut bytes: &'h [u8]) -> Result<T> {
@@ -132,18 +146,18 @@
 // 	// }
 // }
 
-// #[derive(Clone, Debug)]
-// pub struct Options {
-// 	pub capacity: usize
-// }
+#[derive(Clone, Debug)]
+pub struct Options {
+	pub capacity: usize
+}
 
-// impl Default for Options {
-// 	fn default() -> Self {
-// 		Options {
-// 			capacity: 128
-// 		}
-// 	}
-// }
+impl Default for Options {
+	fn default() -> Self {
+		Options {
+			capacity: 128
+		}
+	}
+}
 
 // // helper things
 
