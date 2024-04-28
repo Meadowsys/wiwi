@@ -1,8 +1,17 @@
+use ::std::{ error, fmt };
+
 pub type Result<T, E = Error> = ::std::result::Result<T, E>;
 
-#[derive(Clone, Debug, PartialEq, Eq, ::thiserror::Error)]
-#[error("{0}")]
+#[derive(Clone, Debug, PartialEq, Eq)]
 pub struct Error(String);
+
+impl fmt::Display for Error {
+	fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
+		f.write_str(&self.0)
+	}
+}
+
+impl error::Error for Error {}
 
 #[inline]
 pub fn error<S: Into<String>>(s: S) -> Error {
