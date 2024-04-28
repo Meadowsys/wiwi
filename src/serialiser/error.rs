@@ -1,6 +1,6 @@
 pub type Result<T, E = Error> = ::std::result::Result<T, E>;
 
-#[derive(Clone, Debug, ::thiserror::Error)]
+#[derive(Clone, Debug, PartialEq, Eq, ::thiserror::Error)]
 #[error("{0}")]
 pub struct Error(String);
 

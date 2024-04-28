@@ -1,4 +1,4 @@
-use self::buffer::*;
+use self::{ buffer::*, error::* };
 
 // pub mod array;
 // pub mod bool;
@@ -30,13 +30,9 @@ pub trait Serialise {
 	fn serialise<B: BufferWrite>(&self, output: &mut B, options: &Options);
 }
 
-// pub trait Serialise {
-// 	fn serialise<B: BufferImplWrite>(&self, output: &mut B, options: &Options);
-// }
-
-// pub trait Deserialise<'h>: Sized {
-// 	fn deserialise<B: BufferImplRead<'h>>(input: &mut B) -> Result<Self>;
-// }
+pub trait Deserialise<'h>: Sized {
+	fn deserialise<B: BufferRead<'h>>(input: &mut B) -> Result<Self>;
+}
 
 // pub trait DeserialiseOwned: for<'h> Deserialise<'h> {}
 

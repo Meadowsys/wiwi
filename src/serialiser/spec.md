@@ -172,7 +172,7 @@ To be strictly compliant, the serialiser must find the smallest integer size to 
 #### Integer metadata stored in the marker <!-- omit from toc -->
 
 - if the 3 most significant bytes are `100`, then it is a number marker in general (ie. `marker >> 5 == 0b100`)
-- if `(marker & 0b11111) < (byte_size << 1)`, the int represented by the marker is small enough to fit in `byte_size`-byte destination
+- if `((marker & 0b11111) >> 1) < byte_size`, the int represented by the marker is small enough to fit in `byte_size`-byte destination
 - The byte size of an int can be retrieved using `((marker & 0b11111) >> 1) + 1`
 - if `marker & 0b1 == 0`, the integer is unsigned; otherwise its signed
 

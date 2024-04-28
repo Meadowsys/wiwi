@@ -127,6 +127,7 @@ exported_match_macro!(match_smallint_positive: 0..=127);
 exported_match_macro!(match_smallint_negative: -64..=-1);
 exported_match_macro!(match_smallint_unsigned: 0..=127);
 exported_match_macro!(match_smallint_signed: -64..=127);
+exported_match_macro!(match_smallint_signed_as_unsigned: 0..=127 | 192..=255);
 
 // unsigned
 
@@ -363,18 +364,25 @@ macro_rules! impl_number_serialise {
 					let bytes = self.to_le_bytes();
 					let marker = $min_marker(*self);
 
-					output.reserve(BYTES + 1);
-					unsafe { output.with_ptr(|ptr| {
-						ptr::write(ptr, marker);
-
+					unsafe {
 						if marker >> 5 == 0b100 {
 							let count = (((marker & 0b11111) >> 1) + 1) as usize;
-							ptr::copy_nonoverlapping(&bytes as *const u8, ptr.add(1), count);
-							return count + 1
-						}
+							let total = count + 1;
 
-						1
-					}) }
+							output.reserve(total);
+							output.with_ptr(|ptr| {
+								ptr::write(ptr, marker);
+								ptr::copy_nonoverlapping(&bytes as *const u8, ptr.add(1), count);
+								total
+							});
+						} else {
+							output.reserve(1);
+							output.with_ptr(|ptr| {
+								ptr::write(ptr, marker);
+								1
+							});
+						}
+					}
 				}
 			}
 		)*
@@ -396,343 +404,345 @@ impl_number_serialise! {
 	i128: min_marker_for_i128
 }
 
-// pub fn serialise_int<N, B>(num: N, output: &mut B)
-// where
-// 	N: Num,
-// 	B: BufferWrite
-// {
-// 	let bytes = num.to_le_bytes();
-// 	let marker = num.min_marker_for();
+pub enum CheckedIntMarker {
+	SmallInt(u8),
+	Read(usize),
+	// Invalid(&'static str)
+}
 
-// 	output.reserve(N::BYTES + 1);
-// 	unsafe { output.with_ptr(|ptr| {
-// 		ptr::write(ptr, marker);
+macro_rules! marker_valid_for_inner {
+	($num:ty {
+		// name of output fn
+		$fn_name:ident
+		// macro to use to match smallints
+		$smallint_macro:ident
+		// target size (ie. 2 if deserialising into a u16)
+		$dest_size:literal
 
-// 		if marker >> 5 == 0b100 {
-// 			let count = (((marker & 0b11111) >> 1) + 1) as usize;
-// 			ptr::copy_nonoverlapping(&bytes as *const u8, ptr.add(1), count);
-// 			return count + 1
-// 		}
+		// reason why we're giving _all_ markers:
+		// hopefully the optimiser can figure out "5 <= 4" will always be false
+		// and get rid of that match arm
 
-// 		1
-// 	}) }
-// }
+		// all marker lists
+		{
+			// marker: self explanatory
+			// marker_type: type the marker encodes as str literal (for err message generation, ie. "u48")
+			// marker_size: size of the encoded type as int literal
+			$(($marker:ident, $marker_type:literal, $marker_size:literal))*
+		}
 
+		// present this block if the target should be unsigned
+		// inside should go all signed markers, for err messages
+		$(should be unsigned {
+			// marker_signed: the signed marker
+			// target_signed: type the marker represents, as str literal
+			$(($marker_signed:ident, $target_signed:literal))*
+		})?
 
+		// if the target should be signed
+		// isnide should go all unsigned markers for err messages
+		$(should be signed {
+			// marker_unsigned: unsigned marker
+			// target_unsigned: type the marker represents, as str literal
+			$(($marker_unsigned:ident, $target_unsigned:literal))*
+		})?
+	}) => {
+		pub fn $fn_name(marker: u8) -> Result<CheckedIntMarker> {
+			#[deny(unreachable_patterns)]
+			Ok(match marker {
+				int @ $smallint_macro!() => { CheckedIntMarker::SmallInt(int) }
 
+				$(
+					$marker if $marker_size <= $dest_size => { CheckedIntMarker::Read($marker_size) }
+					$marker => {
+						return err(concat!($marker_type, " will overflow ", stringify!($num)))
+					}
+				)*
 
+				$(
+					$(
+						$marker_signed => {
+							return err(concat!("expected unsigned number, found ", $target_signed))
+						}
+					)*
+					_ => { return err(concat!("expected ", stringify!($num), "-compatible unsigned number")) }
+				)?
 
+				$(
+					$(
+						$marker_unsigned => {
+							return err(concat!("expected signed number, found ", $target_unsigned))
+						}
+					)*
+					_ => { return err(concat!("expected ", stringify!($num), "-compatible signed number")) }
+				)?
+			})
+		}
+	}
+}
 
+macro_rules! marker_valid_for_unsigned {
+	($($num:ty {
+		$fn_name:ident
+		$smallint_macro:ident
+		$dest_size:literal
+	})*) => {
+		$(
+			marker_valid_for_inner! {
+				$num {
+					$fn_name
+					$smallint_macro
+					$dest_size
 
+					{
+						(MARKER_U8, "u8", 1)
+						(MARKER_U16, "u16", 2)
+						(MARKER_U24, "u24", 3)
+						(MARKER_U32, "u32", 4)
+						(MARKER_U40, "u40", 5)
+						(MARKER_U48, "u48", 6)
+						(MARKER_U56, "u56", 7)
+						(MARKER_U64, "u64", 8)
+						(MARKER_U72, "u72", 9)
+						(MARKER_U80, "u80", 10)
+						(MARKER_U88, "u88", 11)
+						(MARKER_U96, "u96", 12)
+						(MARKER_U104, "u104", 13)
+						(MARKER_U112, "u112", 14)
+						(MARKER_U120, "u120", 15)
+						(MARKER_U128, "u128", 16)
+					}
 
+					should be unsigned {
+						(MARKER_I8, "i8")
+						(MARKER_I16, "i16")
+						(MARKER_I24, "i24")
+						(MARKER_I32, "i32")
+						(MARKER_I40, "i40")
+						(MARKER_I48, "i48")
+						(MARKER_I56, "i56")
+						(MARKER_I64, "i64")
+						(MARKER_I72, "i72")
+						(MARKER_I80, "i80")
+						(MARKER_I88, "i88")
+						(MARKER_I96, "i96")
+						(MARKER_I104, "i104")
+						(MARKER_I112, "i112")
+						(MARKER_I120, "i120")
+						(MARKER_I128, "i128")
+					}
+				}
+			}
+		)*
+	}
+}
 
+marker_valid_for_unsigned! {
+	u8 {
+		marker_valid_for_u8
+		match_smallint_unsigned
+		1
+	}
+	u16 {
+		marker_valid_for_u16
+		match_smallint_unsigned
+		2
+	}
+	u32 {
+		marker_valid_for_u32
+		match_smallint_unsigned
+		4
+	}
+	u64 {
+		marker_valid_for_u64
+		match_smallint_unsigned
+		8
+	}
+	u128 {
+		marker_valid_for_u128
+		match_smallint_unsigned
+		16
+	}
+}
 
+macro_rules! marker_valid_for_signed {
+	($($num:ty {
+		$fn_name:ident
+		$smallint_macro:ident
+		$dest_size:literal
+	})*) => {
+		$(
+			marker_valid_for_inner! {
+				$num {
+					$fn_name
+					$smallint_macro
+					$dest_size
 
+					{
+						(MARKER_I8, "i8", 1)
+						(MARKER_I16, "i16", 2)
+						(MARKER_I24, "i24", 3)
+						(MARKER_I32, "i32", 4)
+						(MARKER_I40, "i40", 5)
+						(MARKER_I48, "i48", 6)
+						(MARKER_I56, "i56", 7)
+						(MARKER_I64, "i64", 8)
+						(MARKER_I72, "i72", 9)
+						(MARKER_I80, "i80", 10)
+						(MARKER_I88, "i88", 11)
+						(MARKER_I96, "i96", 12)
+						(MARKER_I104, "i104", 13)
+						(MARKER_I112, "i112", 14)
+						(MARKER_I120, "i120", 15)
+						(MARKER_I128, "i128", 16)
+					}
 
+					should be signed {
+						(MARKER_U8, "u8")
+						(MARKER_U16, "u16")
+						(MARKER_U24, "u24")
+						(MARKER_U32, "u32")
+						(MARKER_U40, "u40")
+						(MARKER_U48, "u48")
+						(MARKER_U56, "u56")
+						(MARKER_U64, "u64")
+						(MARKER_U72, "u72")
+						(MARKER_U80, "u80")
+						(MARKER_U88, "u88")
+						(MARKER_U96, "u96")
+						(MARKER_U104, "u104")
+						(MARKER_U112, "u112")
+						(MARKER_U120, "u120")
+						(MARKER_U128, "u128")
+					}
+				}
+			}
+		)*
+	}
+}
 
+marker_valid_for_signed! {
+	i8 {
+		marker_valid_for_i8
+		match_smallint_signed_as_unsigned
+		1
+	}
+	i16 {
+		marker_valid_for_i16
+		match_smallint_signed_as_unsigned
+		2
+	}
+	i32 {
+		marker_valid_for_i32
+		match_smallint_signed_as_unsigned
+		4
+	}
+	i64 {
+		marker_valid_for_i64
+		match_smallint_signed_as_unsigned
+		8
+	}
+	i128 {
+		marker_valid_for_i128
+		match_smallint_signed_as_unsigned
+		16
+	}
+}
 
+fn deserialise_rest_of_inner_to_le<'h, const BYTES: usize, const SIGN_EXTEND: bool, B: BufferRead<'h>>(
+	result: CheckedIntMarker,
+	input: &mut B
+) -> Result<[u8; BYTES]> {
+	use CheckedIntMarker::*;
 
+	let mut array = [0u8; BYTES];
+	let ptr = &mut array as *mut u8;
 
+	match result {
+		SmallInt(byte) => unsafe {
+			ptr::write(ptr, byte);
 
+			if SIGN_EXTEND {
+				let sign = if byte >> 7 == 0 { 0 } else { u8::MAX };
+				ptr::write_bytes(ptr.add(1), sign, BYTES - 1);
+			}
+		}
 
+		Read(count) => unsafe {
+			// we don't have markers for zero sized ints lol
+			// the closest to "zero sized int" we have is smallint, which is handled
+			// in the previous match arm
+			debug_assert!(count > 0);
 
+			// otherwise we copy too much (also it should have caught this as overflow)
+			// and returned `Invalid`, which will be handled by the next match arm
+			debug_assert!(count <= BYTES);
 
+			let input_ptr = input.read_bytes_ptr(count)?;
+			ptr::copy_nonoverlapping(input_ptr, ptr, count);
 
-// fn deserialise_rest_of_int_no_smallint<const BYTES: usize, const SIGNED: bool, N, B>(marker: u8, input: &mut B)
-// where
-// 	N: Num<BYTES, SIGNED>,
-// 	B: BufferRead
-// {
-// 	// let bytes = [0u8; ]
-// 	// if marker >>
-// }
+			if SIGN_EXTEND {
+				// count myst be gte 1 so this will always be valid
+				let last_byte = *input_ptr.add(count).sub(1);
+				let sign = if last_byte >> 7 == 0 { 0 } else { u8::MAX };
+				ptr::write_bytes(ptr.add(count), sign, BYTES - count);
+			}
+		}
+	}
 
+	Ok(array)
+}
 
+macro_rules! deserialise_rest_of {
+	($($num:ty: $fn_name:ident, $num_size:literal, $signed:literal
+	)*) => {
+		$(
+			pub fn $fn_name<'h, B: BufferRead<'h>>(checked_marker: CheckedIntMarker, input: &mut B) -> Result<$num> {
+				let rest = deserialise_rest_of_inner_to_le::<$num_size, $signed, _>(checked_marker, input)?;
+				Ok(<$num>::from_le_bytes(rest))
+			}
+		)*
+	}
+}
 
+deserialise_rest_of! {
+	u8: deserialise_rest_of_u8, 1, false
+	u16: deserialise_rest_of_u16, 2, false
+	u32: deserialise_rest_of_u32, 4, false
+	u64: deserialise_rest_of_u64, 8, false
+	u128: deserialise_rest_of_u128, 16, false
 
+	i8: deserialise_rest_of_i8, 1, true
+	i16: deserialise_rest_of_i16, 2, true
+	i32: deserialise_rest_of_i32, 4, true
+	i64: deserialise_rest_of_i64, 8, true
+	i128: deserialise_rest_of_i128, 16, true
+}
 
+macro_rules! impl_number_deserialise {
+	($($num:ty: $marker_valid:ident, $deserialise_rest:ident)*) => {
+		$(
+			impl<'h> Deserialise<'h> for $num {
+				fn deserialise<B: BufferRead<'h>>(input: &mut B) -> Result<Self> {
+					let marker = input.read_byte()?;
+					let checked_marker = $marker_valid(marker)?;
+					$deserialise_rest(checked_marker, input)
+				}
+			}
+		)*
+	}
+}
 
+impl_number_deserialise! {
+	u8: marker_valid_for_u8, deserialise_rest_of_u8
+	u16: marker_valid_for_u16, deserialise_rest_of_u16
+	u32: marker_valid_for_u32, deserialise_rest_of_u32
+	u64: marker_valid_for_u64, deserialise_rest_of_u64
+	u128: marker_valid_for_u128, deserialise_rest_of_u128
 
-
-
-
-
-
-
-
-// fn deserialise_rest_of_number<const BYTES: usize, const SIGNED: bool, N, B>(marker: u8, input: &mut B)
-// where
-// 	N: Num<BYTES, SIGNED>,
-// 	B: BufferRead
-// {
-// 	// let bytes = [0u8; ]
-// 	if marker >>
-// }
-
-// pub struct NumSerialiser<const BYTES: usize, const SIGNED: bool> {
-// 	bytes: [u8; BYTES],
-// 	marker: u8,
-// 	amount_to_write: usize
-// }
-
-// impl<const BYTES: usize, const SIGNED: bool> NumSerialiser<BYTES, SIGNED> {
-// 	fn new<N>(num: N) -> Self
-// 	where
-// 		N: Num<BYTES, SIGNED>
-// 	{
-// 		let mut bytes = num.to_le_bytes();
-// 		let marker = num.get_marker_for();
-// 		let amount_to_write = if marker >> 5 == 0b100 {
-// 			(((marker & 0b11111) >> 1) + 1) as usize
-// 		} else {
-// 			0
-// 		};
-
-// 		Self { bytes, marker, amount_to_write }
-// 	}
-// }
-
-// impl<'h, const BYTES: usize> SerialiseIntermediate<'h> for NumSerialiser<BYTES> {
-// 	fn serialise<B: BufferWrite>(&mut self, output: &mut B) {
-// 		// output.write_byte(self.marker);
-// 	}
-// }
-
-// // TODO: these is_valid functions might be able to be optimised
-// // I think something can be done with that special property of markers that
-// // we rely on elsewhere (the `marker >> 1 == amount` of bytes after thing)
-//
-// pub fn marker_is_valid_u8(marker: u8) -> bool {
-// 	marker == MARKER_U8
-// }
-//
-// pub fn marker_is_valid_u16(marker: u8) -> bool {
-// 	match marker {
-// 		MARKER_U16 => { true }
-// 		_ => { marker_is_valid_u8(marker) }
-// 	}
-// }
-//
-// pub fn marker_is_valid_u32(marker: u8) -> bool {
-// 	match marker {
-// 		MARKER_U24 => { true }
-// 		MARKER_U32 => { true }
-// 		_ => { marker_is_valid_u16(marker) }
-// 	}
-// }
-//
-// pub fn marker_is_valid_u64(marker: u8) -> bool {
-// 	match marker {
-// 		MARKER_U40 => { true }
-// 		MARKER_U48 => { true }
-// 		MARKER_U56 => { true }
-// 		MARKER_U64 => { true }
-// 		_ => { marker_is_valid_u32(marker) }
-// 	}
-// }
-//
-// pub fn marker_is_valid_u128(marker: u8) -> bool {
-// 	match marker {
-// 		MARKER_U72 => { true }
-// 		MARKER_U80 => { true }
-// 		MARKER_U88 => { true }
-// 		MARKER_U96 => { true }
-// 		MARKER_U104 => { true }
-// 		MARKER_U112 => { true }
-// 		MARKER_U120 => { true }
-// 		MARKER_U128 => { true }
-// 		_ => { marker_is_valid_u64(marker) }
-// 	}
-// }
-//
-// pub fn marker_is_valid_i8(marker: u8) -> bool {
-// 	marker == MARKER_I8
-// }
-//
-// pub fn marker_is_valid_i16(marker: u8) -> bool {
-// 	match marker {
-// 		MARKER_I16 => { true }
-// 		_ => { marker_is_valid_i8(marker) }
-// 	}
-// }
-//
-// pub fn marker_is_valid_i32(marker: u8) -> bool {
-// 	match marker {
-// 		MARKER_I24 => { true }
-// 		MARKER_I32 => { true }
-// 		_ => { marker_is_valid_i16(marker) }
-// 	}
-// }
-//
-// pub fn marker_is_valid_i64(marker: u8) -> bool {
-// 	match marker {
-// 		MARKER_I40 => { true }
-// 		MARKER_I48 => { true }
-// 		MARKER_I56 => { true }
-// 		MARKER_I64 => { true }
-// 		_ => { marker_is_valid_i32(marker) }
-// 	}
-// }
-//
-// pub fn marker_is_valid_i128(marker: u8) -> bool {
-// 	match marker {
-// 		MARKER_I72 => { true }
-// 		MARKER_I80 => { true }
-// 		MARKER_I88 => { true }
-// 		MARKER_I96 => { true }
-// 		MARKER_I104 => { true }
-// 		MARKER_I112 => { true }
-// 		MARKER_I120 => { true }
-// 		MARKER_I128 => { true }
-// 		_ => { marker_is_valid_i64(marker) }
-// 	}
-// }
-//
-// macro_rules! num_serialise_rest_fns {
-// 	($($num:ty: $fn_name:ident)*) => {
-// 		$(
-// 			/// # Safety
-// 			///
-// 			/// The passed in marker must be valid for the int type; otherwise,
-// 			/// invalid memory can be read from, breaking memory safety
-// 			pub unsafe fn $fn_name<B: BufferImplWrite>(num: $num, marker: u8, output: &mut B) {
-// 				let bytes = <$num>::to_le_bytes(num);
-// 				output.write_slice(slice::from_raw_parts(
-// 					&bytes as *const u8,
-// 					(marker >> 1) as usize
-// 				));
-// 			}
-// 		)*
-// 	}
-// }
-//
-// num_serialise_rest_fns! {
-// 	u8: serialise_rest_of_u8
-// 	u16: serialise_rest_of_u16
-// 	u32: serialise_rest_of_u32
-// 	u64: serialise_rest_of_u64
-// 	u128: serialise_rest_of_u128
-//
-// 	i8: serialise_rest_of_i8
-// 	i16: serialise_rest_of_i16
-// 	i32: serialise_rest_of_i32
-// 	i64: serialise_rest_of_i64
-// 	i128: serialise_rest_of_i128
-// }
-//
-// macro_rules! impl_number_serialise {
-// 	($($num:ty: $rest_fn:ident, $min_marker:ident)*) => {
-// 		$(
-// 			impl Serialise for $num {
-// 				fn serialise<B: BufferImplWrite>(&self, output: &mut B, options: &Options) {
-// 					let num = *self;
-// 					let marker = $min_marker(num);
-//
-// 					output.write_byte(marker);
-// 					unsafe { $rest_fn(num, marker, output) }
-// 				}
-// 			}
-// 		)*
-// 	}
-// }
-//
-// impl_number_serialise! {
-// 	u8: serialise_rest_of_u8, min_marker_u8
-// 	u16: serialise_rest_of_u16, min_marker_u16
-// 	u32: serialise_rest_of_u32, min_marker_u32
-// 	u64: serialise_rest_of_u64, min_marker_u64
-// 	u128: serialise_rest_of_u128, min_marker_u128
-//
-// 	i8: serialise_rest_of_i8, min_marker_i8
-// 	i16: serialise_rest_of_i16, min_marker_i16
-// 	i32: serialise_rest_of_i32, min_marker_i32
-// 	i64: serialise_rest_of_i64, min_marker_i64
-// 	i128: serialise_rest_of_i128, min_marker_i128
-// }
-//
-// macro_rules! num_deserialise_rest_fns {
-// 	($($num:ty: $fn_name:ident, $sign_extend:expr)*) => {
-// 		$(
-// 			/// # Safety
-// 			///
-// 			/// The passed in marker must be valid for the int type; otherwise,
-// 			/// this function can write to invalid memory.
-// 			pub unsafe fn $fn_name<'h, B: BufferImplRead<'h>>(marker: u8, input: &mut B) -> Result<$num> {
-// 				const NUM_BYTES: usize = <$num>::BITS as usize / 8;
-//
-// 				let mut bytes = [0u8; NUM_BYTES];
-// 				let bytes_ptr = &mut bytes as *mut u8;
-// 				let count = (marker >> 1) as usize;
-//
-// 				let ptr = input.read_bytes_ptr(count)?;
-// 				ptr::copy_nonoverlapping(
-// 					ptr,
-// 					bytes_ptr,
-// 					count
-// 				);
-//
-// 				if $sign_extend {
-// 					if count < NUM_BYTES {
-// 						let sign_bit = *bytes_ptr.add(count - 1) >> 7;
-// 						if sign_bit != 0 {
-// 							ptr::write_bytes(
-// 								bytes_ptr.add(count),
-// 								u8::MAX,
-// 								NUM_BYTES - count
-// 							);
-// 						}
-// 					}
-// 				}
-//
-// 				Ok(<$num>::from_le_bytes(bytes))
-// 			}
-// 		)*
-// 	}
-// }
-//
-// num_deserialise_rest_fns! {
-// 	u8: deserialise_rest_of_u8, false
-// 	u16: deserialise_rest_of_u16, false
-// 	u32: deserialise_rest_of_u32, false
-// 	u64: deserialise_rest_of_u64, false
-// 	u128: deserialise_rest_of_u128, false
-//
-// 	// i8 will always be one byte only, nothing to extend
-// 	i8: deserialise_rest_of_i8, false
-// 	i16: deserialise_rest_of_i16, true
-// 	i32: deserialise_rest_of_i32, true
-// 	i64: deserialise_rest_of_i64, true
-// 	i128: deserialise_rest_of_i128, true
-// }
-//
-// macro_rules! impl_number_deserialise {
-// 	($($num:ty: $rest_fn:ident, $check_marker_fn:ident)*) => {
-// 		$(
-// 			impl<'h> Deserialise<'h> for $num {
-// 				fn deserialise<B: BufferImplRead<'h>>(input: &mut B) -> Result<Self> {
-// 					let marker = input.read_byte()?;
-//
-// 					if $check_marker_fn(marker) {
-// 						unsafe { $rest_fn(marker, input) }
-// 					} else {
-// 						err(concat!("expected ", stringify!($num), "-compatible integer"))
-// 					}
-// 				}
-// 			}
-// 		)*
-// 	}
-// }
-//
-// impl_number_deserialise! {
-// 	u8: deserialise_rest_of_u8, marker_is_valid_u8
-// 	u16: deserialise_rest_of_u16, marker_is_valid_u16
-// 	u32: deserialise_rest_of_u32, marker_is_valid_u32
-// 	u64: deserialise_rest_of_u64, marker_is_valid_u64
-// 	u128: deserialise_rest_of_u128, marker_is_valid_u128
-//
-// 	i8: deserialise_rest_of_i8, marker_is_valid_i8
-// 	i16: deserialise_rest_of_i16, marker_is_valid_i16
-// 	i32: deserialise_rest_of_i32, marker_is_valid_i32
-// 	i64: deserialise_rest_of_i64, marker_is_valid_i64
-// 	i128: deserialise_rest_of_i128, marker_is_valid_i128
-// }
+	i8: marker_valid_for_i8, deserialise_rest_of_i8
+	i16: marker_valid_for_i16, deserialise_rest_of_i16
+	i32: marker_valid_for_i32, deserialise_rest_of_i32
+	i64: marker_valid_for_i64, deserialise_rest_of_i64
+	i128: marker_valid_for_i128, deserialise_rest_of_i128
+}
