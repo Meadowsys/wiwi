@@ -37,11 +37,7 @@ impl<'h> Serialise for Cow<'h, str> {
 
 impl<'h> Deserialise<'h> for &'h str {
 	fn deserialise<B: BufferRead<'h>>(input: &mut B) -> Result<Self> {
-		let len = match input.read_byte()? {
-			MARKER_STRING_8 => { input.read_byte()? as _ }
-			MARKER_STRING_XL => { deserialise_len_int(input)? }
-			_ => { return err("expected string") }
-		};
+		let len = deserialise_str_len(input.read_byte()?, input)?;
 		deserialise_rest_of_str(len, input)
 	}
 }
@@ -55,6 +51,14 @@ impl<'h> Deserialise<'h> for String {
 impl<'h> Deserialise<'h> for Cow<'h, str> {
 	fn deserialise<B: BufferRead<'h>>(input: &mut B) -> Result<Self> {
 		Ok(Self::Borrowed(<&str>::deserialise(input)?))
+	}
+}
+
+pub fn deserialise_str_len<'h, B: BufferRead<'h>>(marker: u8, input: &mut B) -> Result<usize> {
+	match marker {
+		MARKER_STRING_8 => { input.read_byte().map(|len| len as _) }
+		MARKER_STRING_XL => { deserialise_len_int(input) }
+		_ => { err("expected string") }
 	}
 }
 

@@ -6,12 +6,12 @@ pub mod error;
 pub mod float;
 pub mod integer;
 pub mod len_int;
+pub mod map;
 pub mod null;
-pub mod object;
 // pub mod specialisations;
 pub mod string;
 // pub mod util;
-// pub mod value;
+pub mod value;
 
 macro_rules! exported_match_macro {
 	($name:ident: $($match:tt)+) => {

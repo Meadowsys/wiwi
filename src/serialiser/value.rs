@@ -1,4 +1,107 @@
 use super::{
+	array::*,
+	bool::*,
+	buffer::*,
+	core::*,
+	error::*,
+	float::*,
+	integer::*,
+	len_int::*,
+	map::*,
+	null::*,
+	string::*
+};
+
+#[cfg(feature = "serialiser-serde-json")]
+impl Serialise for ::serde_json::Value {
+	fn serialise<B: BufferWrite>(&self, output: &mut B, options: &Options) {
+		use ::serde_json::Value;
+
+		match self {
+			Value::Null => { serialise_null(output) }
+			Value::Bool(b) => { b.serialise(output, options) }
+			Value::Number(n) => {
+				if let Some(n) = n.as_u64() {
+					n.serialise(output, options);
+				} else if let Some(n) = n.as_i64() {
+					n.serialise(output, options);
+				} else if let Some(n) = n.as_f64() {
+					n.serialise(output, options);
+				} else {
+					// ?????
+					f32::NAN.serialise(output, options);
+				}
+			}
+			Value::String(s) => {
+				s.serialise(output, options);
+			}
+			Value::Array(a) => {
+				serialise_array(a, output, options);
+			}
+			Value::Object(o) => { o.serialise(output, options) }
+		}
+	}
+}
+
+#[cfg(feature = "serialiser-serde-json")]
+impl<'h> Deserialise<'h> for ::serde_json::Value {
+	fn deserialise<B: BufferRead<'h>>(input: &mut B) -> Result<Self> {
+		use ::serde_json::{ Number, Value };
+
+		Ok(match input.read_byte()? {
+			MARKER_NULL => { Value::Null }
+
+			MARKER_TRUE => { Value::Bool(true) }
+			MARKER_FALSE => { Value::Bool(false) }
+
+			marker @ (MARKER_STRING_8 | MARKER_STRING_XL) => {
+				let len = deserialise_str_len(marker, input)?;
+				Value::String(deserialise_rest_of_str(len, input)?.into())
+			}
+
+			marker @ (MARKER_ARRAY_8 | MARKER_ARRAY_XL) => {
+				let len = deserialise_array_len(marker, input)?;
+				Value::Array(deserialise_rest_of_array(len, input)?)
+			}
+
+			marker @ (MARKER_MAP_8 | MARKER_MAP_XL) => {
+				let len = deserialise_map_len(marker, input)?;
+				Value::Object(deserialise_map_kv(len, input).collect::<Result<_>>()?)
+			}
+
+			// integers are in catch-all below
+			MARKER_F32 => {
+				let num = deserialise_rest_of_f32(input)?;
+				let num = Number::from_f64(num as _).err("invalid JSON float")?;
+				Value::Number(num)
+			}
+			MARKER_F64 => {
+				let num = deserialise_rest_of_f64(input)?;
+				let num = Number::from_f64(num).err("invalid JSON float")?;
+				Value::Number(num)
+			}
+
+			marker => {
+				use ::serde_json::Number;
+
+				if let Ok(checked_marker) = marker_valid_for_u64(marker) {
+					let num = deserialise_rest_of_u64(checked_marker, input)?;
+					return Ok(Value::Number(Number::from(num)))
+				}
+
+				if let Ok(checked_marker) = marker_valid_for_i64(marker) {
+					let num = deserialise_rest_of_i64(checked_marker, input)?;
+					return Ok(Value::Number(Number::from(num)))
+				}
+
+				return err("expected JSON-compatible value")
+			}
+		})
+	}
+}
+
+/*
+use super::{
 	*,
 	array::*,
 	error::*,
@@ -221,3 +324,4 @@ impl<'h> Deserialise<'h> for Key<'h> {
 		})
 	}
 }
+*/

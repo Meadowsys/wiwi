@@ -39,10 +39,10 @@ pub const MAX_U48_U128: u128 = MAX_U48_U64 as _;
 pub const MAX_U56_U128: u128 = MAX_U56_U64 as _;
 
 // sanity check
-pub const _: () = assert!(MAX_U8_U16 == u8::MAX as _);
-pub const _: () = assert!(MAX_U16_U32 == u16::MAX as _);
-pub const _: () = assert!(MAX_U32_U64 == u32::MAX as _);
-pub const _: () = assert!(MAX_U64_U128 == u64::MAX as _);
+pub const _: () = assert!(MAX_U8_U16 == u8::MAX as u16);
+pub const _: () = assert!(MAX_U16_U32 == u16::MAX as u32);
+pub const _: () = assert!(MAX_U32_U64 == u32::MAX as u64);
+pub const _: () = assert!(MAX_U64_U128 == u64::MAX as u128);
 pub const _: () = assert!(MAX_U128_U128 == u128::MAX);
 
 // max signed
@@ -79,10 +79,10 @@ pub const MAX_I48_I128: i128 = MAX_I48_I64 as _;
 pub const MAX_I56_I128: i128 = MAX_I56_I64 as _;
 
 // sanity check
-pub const _: () = assert!(MAX_I8_I16 == i8::MAX as _);
-pub const _: () = assert!(MAX_I16_I32 == i16::MAX as _);
-pub const _: () = assert!(MAX_I32_I64 == i32::MAX as _);
-pub const _: () = assert!(MAX_I64_I128 == i64::MAX as _);
+pub const _: () = assert!(MAX_I8_I16 == i8::MAX as i16);
+pub const _: () = assert!(MAX_I16_I32 == i16::MAX as i32);
+pub const _: () = assert!(MAX_I32_I64 == i32::MAX as i64);
+pub const _: () = assert!(MAX_I64_I128 == i64::MAX as i128);
 pub const _: () = assert!(MAX_I128_I128 == i128::MAX);
 
 // min signed
@@ -119,10 +119,10 @@ pub const MIN_I48_I128: i128 = !MAX_I48_I128;
 pub const MIN_I56_I128: i128 = !MAX_I56_I128;
 
 // sanity check
-pub const _: () = assert!(MIN_I8_I16 == i8::MIN as _);
-pub const _: () = assert!(MIN_I16_I32 == i16::MIN as _);
-pub const _: () = assert!(MIN_I32_I64 == i32::MIN as _);
-pub const _: () = assert!(MIN_I64_I128 == i64::MIN as _);
+pub const _: () = assert!(MIN_I8_I16 == i8::MIN as i16);
+pub const _: () = assert!(MIN_I16_I32 == i16::MIN as i32);
+pub const _: () = assert!(MIN_I32_I64 == i32::MIN as i64);
+pub const _: () = assert!(MIN_I64_I128 == i64::MIN as i128);
 pub const _: () = assert!(MIN_I128_I128 == i128::MIN);
 
 exported_match_macro!(fits_in_smallint_positive: 0..=127);
