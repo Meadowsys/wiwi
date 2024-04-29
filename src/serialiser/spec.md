@@ -77,8 +77,8 @@ Below are a list of markers.
 - [x] `0xab`: array (XL)
 - [x] `0xac`: map (8)
 - [x] `0xad`: map (XL)
-- [ ] `0xae`: single-type array (8)
-- [ ] `0xaf`: single-type array (XL)
+- [x] `0xae`: single-type array (8)
+- [x] `0xaf`: single-type array (XL)
 - [ ] `0xb0`: binary (8)
 - [ ] `0xb1`: binary (XL)
 - [ ] `0xb2`: _unassigned_ <!-- set (8) -->

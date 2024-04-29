@@ -1,5 +1,7 @@
 use super::{ buffer::*, core::*, error::*, integer::*, len_int::* };
 
+mod single_type;
+
 pub const MARKER_ARRAY_8: u8 = 0xaa;
 pub const MARKER_ARRAY_XL: u8 = 0xab;
 

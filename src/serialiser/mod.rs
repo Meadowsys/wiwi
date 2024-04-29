@@ -8,6 +8,7 @@ pub mod integer;
 pub mod len_int;
 pub mod map;
 pub mod null;
+mod reference;
 // pub mod specialisations;
 pub mod string;
 // pub mod util;
