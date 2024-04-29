@@ -71,22 +71,22 @@ Below are a list of markers.
 - [ ] `0xa5`: _reserved_ (128-bit float)
 - [ ] `0xa6`: _reserved_ (256-bit float)
 - [x] `0xa7`: `null`
-- [x] `0xa8`: `done`
-- [x] `0xa9`: array (8)
-- [x] `0xaa`: array (XL)
-- [ ] `0xab`: array (streaming)
-- [ ] `0xac`: object (8)
-- [ ] `0xad`: object (XL)
-- [ ] `0xae`: object (streaming)
-- [ ] `0xaf`: single-type array (8)
-- [ ] `0xb0`: single-type array (XL)
-- [ ] `0xb1`: single-type array (streaming)
-- [ ] `0xb2`: string (8)
-- [ ] `0xb3`: string (XL)
-- [ ] `0xb4`: string (streaming)
-- [ ] `0xb5`: _unassigned_ <!-- set (8) -->
-- [ ] `0xb6`: _unassigned_ <!-- set (XL) -->
-- [ ] `0xb7`: _unassigned_ <!-- set (streaming) -->
+- [x] `0xa8`: array (8)
+- [x] `0xa9`: array (XL)
+- [ ] `0xaa`: array (streaming)
+- [ ] `0xab`: object (8)
+- [ ] `0xac`: object (XL)
+- [ ] `0xad`: object (streaming)
+- [ ] `0xae`: single-type array (8)
+- [ ] `0xaf`: single-type array (XL)
+- [ ] `0xb0`: single-type array (streaming)
+- [ ] `0xb1`: string (8)
+- [ ] `0xb2`: string (XL)
+- [ ] `0xb3`: string (streaming)
+- [ ] `0xb4`: _unassigned_ <!-- set (8) -->
+- [ ] `0xb5`: _unassigned_ <!-- set (XL) -->
+- [ ] `0xb6`: _unassigned_ <!-- set (streaming) -->
+- [ ] `0xb7`: _unassigned_
 - [ ] `0xb8`: _unassigned_
 - [ ] `0xb9`: _unassigned_
 - [ ] `0xba`: _unassigned_

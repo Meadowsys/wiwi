@@ -2,7 +2,6 @@ pub mod array;
 pub mod bool;
 pub mod buffer;
 pub mod core;
-pub mod done;
 pub mod error;
 pub mod float;
 pub mod integer;
