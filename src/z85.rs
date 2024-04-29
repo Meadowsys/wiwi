@@ -244,7 +244,7 @@ pub fn decode_z85(mut bytes: &[u8]) -> Result<Vec<u8>, DecodeError> {
 }
 
 // TODO: these errors could be improved.
-#[derive(Debug, ::thiserror::Error)]
+#[derive(Debug, PartialEq, ::thiserror::Error)]
 pub enum DecodeError {
 	#[error("invalid length")]
 	InvalidLength,
@@ -470,6 +470,32 @@ mod tests {
 			let str2 = decode_z85(str2.as_bytes())
 				.expect("padded-with-0 z85 parses successfully");
 			assert_eq!(str1, str2);
+		}
+	}
+
+	#[test]
+	fn max_value() {
+		let decoded = decode_z85(b"%nSc0%nSc0%nSc0%nSc0");
+		let decoded = decoded.as_deref();
+		assert_eq!(decoded, Ok(&[255u8; 16] as &[u8]));
+	}
+
+	#[test]
+	fn rejects_too_large() {
+		let strs = [
+			//   v
+			"%nSc1",
+			//                            v
+			"%nSc0%nSc0%nSc0%nSc0%nSc0%nSc1%nSc0",
+			//          v
+			"%nSc0%nSc0%oSc0%nSc0%nSc0%nSc0%nSc0",
+			// kinda obvious
+			"#####"
+		];
+
+		for s in strs {
+			let decoded = decode_z85(s.as_bytes());
+			assert_eq!(decoded, Err(DecodeError::InvalidFrame))
 		}
 	}
 }
