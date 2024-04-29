@@ -341,7 +341,7 @@ where
 	int *= TABLE_ENCODER_LEN as u64;
 	int += byte5 as u64;
 
-	if int > u32::MAX as u64 { return Err(DecodeError::InvalidFrame) }
+	if int >> u32::BITS != 0 { return Err(DecodeError::InvalidFrame) }
 
 	let decoded_frame = u32::to_be_bytes(int as u32);
 	f(&decoded_frame);
