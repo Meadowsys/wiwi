@@ -1,6 +1,8 @@
 #![allow(clippy::match_overlapping_arm)]
 
-use super::{ *, buffer::*, error::* };
+// TODO: figure out usize?
+
+use super::{ *, buffer::*, core::*, error::* };
 use ::std::ptr;
 
 // max unsigned
@@ -123,11 +125,11 @@ pub const _: () = assert!(MIN_I32_I64 == i32::MIN as _);
 pub const _: () = assert!(MIN_I64_I128 == i64::MIN as _);
 pub const _: () = assert!(MIN_I128_I128 == i128::MIN);
 
-exported_match_macro!(match_smallint_positive: 0..=127);
-exported_match_macro!(match_smallint_negative: -64..=-1);
-exported_match_macro!(match_smallint_unsigned: 0..=127);
-exported_match_macro!(match_smallint_signed: -64..=127);
-exported_match_macro!(match_smallint_signed_as_unsigned: 0..=127 | 192..=255);
+exported_match_macro!(fits_in_smallint_positive: 0..=127);
+exported_match_macro!(fits_in_smallint_negative: -64..=-1);
+exported_match_macro!(fits_in_smallint_unsigned: 0..=127);
+exported_match_macro!(fits_in_smallint_signed: -64..=127);
+exported_match_macro!(fits_in_smallint_signed_as_unsigned_range: 0..=127 | 192..=255);
 
 // unsigned
 
@@ -235,14 +237,14 @@ pub const MARKER_I128: u8 = MARKER_U128 + 1;
 
 fn min_marker_for_u8(num: u8) -> u8 {
 	match num {
-		num @ match_smallint_unsigned!() => { num }
+		num @ fits_in_smallint_unsigned!() => { num }
 		_ => { MARKER_U8 }
 	}
 }
 
 fn min_marker_for_u16(num: u16) -> u8 {
 	match num {
-		num @ match_smallint_unsigned!() => { num as _ }
+		num @ fits_in_smallint_unsigned!() => { num as _ }
 		fits_in_u8_u16!() => { MARKER_U8 }
 		_ => { MARKER_U16 }
 	}
@@ -250,7 +252,7 @@ fn min_marker_for_u16(num: u16) -> u8 {
 
 fn min_marker_for_u32(num: u32) -> u8 {
 	match num {
-		num @ match_smallint_unsigned!() => { num as _ }
+		num @ fits_in_smallint_unsigned!() => { num as _ }
 		fits_in_u8_u32!() => { MARKER_U8 }
 		fits_in_u16_u32!() => { MARKER_U16 }
 		fits_in_u24_u32!() => { MARKER_U24 }
@@ -260,7 +262,7 @@ fn min_marker_for_u32(num: u32) -> u8 {
 
 fn min_marker_for_u64(num: u64) -> u8 {
 	match num {
-		num @ match_smallint_unsigned!() => { num as _ }
+		num @ fits_in_smallint_unsigned!() => { num as _ }
 		fits_in_u8_u64!() => { MARKER_U8 }
 		fits_in_u16_u64!() => { MARKER_U16 }
 		fits_in_u24_u64!() => { MARKER_U24 }
@@ -274,7 +276,7 @@ fn min_marker_for_u64(num: u64) -> u8 {
 
 fn min_marker_for_u128(num: u128) -> u8 {
 	match num {
-		num @ match_smallint_unsigned!() => { num as _ }
+		num @ fits_in_smallint_unsigned!() => { num as _ }
 		fits_in_u8_u128!() => { MARKER_U8 }
 		fits_in_u16_u128!() => { MARKER_U16 }
 		fits_in_u24_u128!() => { MARKER_U24 }
@@ -296,14 +298,14 @@ fn min_marker_for_u128(num: u128) -> u8 {
 
 fn min_marker_for_i8(num: i8) -> u8 {
 	match num {
-		num @ match_smallint_signed!() => { num as _ }
+		num @ fits_in_smallint_signed!() => { num as _ }
 		_ => { MARKER_I8 }
 	}
 }
 
 fn min_marker_for_i16(num: i16) -> u8 {
 	match num {
-		num @ match_smallint_signed!() => { num as _ }
+		num @ fits_in_smallint_signed!() => { num as _ }
 		fits_in_i8_i16!() => { MARKER_I8 }
 		_ => { MARKER_I16 }
 	}
@@ -311,7 +313,7 @@ fn min_marker_for_i16(num: i16) -> u8 {
 
 fn min_marker_for_i32(num: i32) -> u8 {
 	match num {
-		num @ match_smallint_signed!() => { num as _ }
+		num @ fits_in_smallint_signed!() => { num as _ }
 		fits_in_i8_i32!() => { MARKER_I8 }
 		fits_in_i16_i32!() => { MARKER_I16 }
 		fits_in_i24_i32!() => { MARKER_I24 }
@@ -321,7 +323,7 @@ fn min_marker_for_i32(num: i32) -> u8 {
 
 fn min_marker_for_i64(num: i64) -> u8 {
 	match num {
-		num @ match_smallint_signed!() => { num as _ }
+		num @ fits_in_smallint_signed!() => { num as _ }
 		fits_in_i8_i64!() => { MARKER_I8 }
 		fits_in_i16_i64!() => { MARKER_I16 }
 		fits_in_i24_i64!() => { MARKER_I24 }
@@ -335,7 +337,7 @@ fn min_marker_for_i64(num: i64) -> u8 {
 
 fn min_marker_for_i128(num: i128) -> u8 {
 	match num {
-		num @ match_smallint_signed!() => { num as _ }
+		num @ fits_in_smallint_signed!() => { num as _ }
 		fits_in_i8_i128!() => { MARKER_I8 }
 		fits_in_i16_i128!() => { MARKER_I16 }
 		fits_in_i24_i128!() => { MARKER_I24 }
@@ -406,8 +408,7 @@ impl_number_serialise! {
 
 pub enum CheckedIntMarker {
 	SmallInt(u8),
-	Read(usize),
-	// Invalid(&'static str)
+	Read(usize)
 }
 
 macro_rules! marker_valid_for_inner {
@@ -540,27 +541,27 @@ macro_rules! marker_valid_for_unsigned {
 marker_valid_for_unsigned! {
 	u8 {
 		marker_valid_for_u8
-		match_smallint_unsigned
+		fits_in_smallint_unsigned
 		1
 	}
 	u16 {
 		marker_valid_for_u16
-		match_smallint_unsigned
+		fits_in_smallint_unsigned
 		2
 	}
 	u32 {
 		marker_valid_for_u32
-		match_smallint_unsigned
+		fits_in_smallint_unsigned
 		4
 	}
 	u64 {
 		marker_valid_for_u64
-		match_smallint_unsigned
+		fits_in_smallint_unsigned
 		8
 	}
 	u128 {
 		marker_valid_for_u128
-		match_smallint_unsigned
+		fits_in_smallint_unsigned
 		16
 	}
 }
@@ -624,27 +625,27 @@ macro_rules! marker_valid_for_signed {
 marker_valid_for_signed! {
 	i8 {
 		marker_valid_for_i8
-		match_smallint_signed_as_unsigned
+		fits_in_smallint_signed_as_unsigned_range
 		1
 	}
 	i16 {
 		marker_valid_for_i16
-		match_smallint_signed_as_unsigned
+		fits_in_smallint_signed_as_unsigned_range
 		2
 	}
 	i32 {
 		marker_valid_for_i32
-		match_smallint_signed_as_unsigned
+		fits_in_smallint_signed_as_unsigned_range
 		4
 	}
 	i64 {
 		marker_valid_for_i64
-		match_smallint_signed_as_unsigned
+		fits_in_smallint_signed_as_unsigned_range
 		8
 	}
 	i128 {
 		marker_valid_for_i128
-		match_smallint_signed_as_unsigned
+		fits_in_smallint_signed_as_unsigned_range
 		16
 	}
 }

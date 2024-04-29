@@ -1,61 +1,76 @@
-use super::{ *, error::*, marker::* };
+use super::{ buffer::*, core::*, error::* };
+use ::std::ptr;
 
-#[inline]
-pub fn marker_is_valid_f32(marker: u8) -> bool {
-	marker == MARKER_F32
-}
+// s: sign, e: exponent, f: fraction
+// f16: seeeeeffffffffff (5 exponent 10 fraction)
+// f32: seeeeeeeefffffffffffffffffffffff (8 exponent 23 fraction)
+// f64: seeeeeeeeeeeffffffffffffffffffffffffffffffffffffffffffffffffffff (11 exponent 52 fraction)
 
-#[inline]
-pub fn marker_is_valid_f64(marker: u8) -> bool {
-	matches!(marker, MARKER_F32 | MARKER_F64)
-}
-
-#[inline]
-pub fn serialise_rest_of_f32<B: BufferImplWrite>(float: f32, output: &mut B) {
-	output.write_slice(&float.to_le_bytes());
-}
-
-#[inline]
-pub fn serialise_rest_of_f64<B: BufferImplWrite>(float: f64, output: &mut B) {
-	output.write_slice(&float.to_le_bytes());
-}
-
-#[inline]
-pub fn deserialise_rest_of_f32<'h, B: BufferImplRead<'h>>(input: &mut B) -> Result<f32> {
-	Ok(f32::from_le_bytes(*input.read_bytes_const()?))
-}
-
-#[inline]
-pub fn deserialise_rest_of_f64<'h, B: BufferImplRead<'h>>(input: &mut B) -> Result<f64> {
-	Ok(f64::from_le_bytes(*input.read_bytes_const()?))
-}
+pub const MARKER_F16: u8 = 0xa2;
+pub const MARKER_F32: u8 = 0xa3;
+pub const MARKER_F64: u8 = 0xa4;
+pub const MARKER_F128: u8 = 0xa5;
+pub const MARKER_F256: u8 = 0xa6;
 
 impl Serialise for f32 {
-	fn serialise<B: BufferImplWrite>(&self, output: &mut B, options: &Options) {
-		output.write_byte(MARKER_F32);
-		serialise_rest_of_f32(*self, output);
+	fn serialise<B: BufferWrite>(&self, output: &mut B, options: &Options) {
+		let bytes = self.to_le_bytes();
+		output.reserve(5);
+		unsafe {
+			output.with_ptr(|ptr| {
+				ptr::write(ptr, MARKER_F32);
+				ptr::copy_nonoverlapping(&bytes as *const u8, ptr.add(1), 4);
+				5
+			});
+		}
 	}
 }
 
 impl Serialise for f64 {
-	fn serialise<B: BufferImplWrite>(&self, output: &mut B, options: &Options) {
-		output.write_byte(MARKER_F64);
-		serialise_rest_of_f64(*self, output);
+	fn serialise<B: BufferWrite>(&self, output: &mut B, options: &Options) {
+		let bytes = self.to_le_bytes();
+		output.reserve(9);
+		unsafe {
+			output.with_ptr(|ptr| {
+				ptr::write(ptr, MARKER_F64);
+				ptr::copy_nonoverlapping(&bytes as *const u8, ptr, 8);
+				9
+			});
+		}
 	}
 }
 
+#[inline]
+pub fn marker_valid_for_f32(marker: u8) -> bool {
+	marker == MARKER_F32
+}
+
+#[inline]
+pub fn marker_valid_for_f64(marker: u8) -> bool {
+	matches!(marker, MARKER_F32 | MARKER_F64)
+}
+
+#[inline]
+pub fn deserialise_rest_of_f32<'h, B: BufferRead<'h>>(input: &mut B) -> Result<f32> {
+	Ok(f32::from_le_bytes(*input.read_bytes_const()?))
+}
+
+#[inline]
+pub fn deserialise_rest_of_f64<'h, B: BufferRead<'h>>(input: &mut B) -> Result<f64> {
+	Ok(f64::from_le_bytes(*input.read_bytes_const()?))
+}
+
 impl<'h> Deserialise<'h> for f32 {
-	fn deserialise<B: BufferImplRead<'h>>(input: &mut B) -> Result<Self> {
-		if marker_is_valid_f32(input.read_byte()?) {
-			deserialise_rest_of_f32(input)
-		} else {
-			err("expected f32")
+	fn deserialise<B: BufferRead<'h>>(input: &mut B) -> Result<Self> {
+		match input.read_byte()? {
+			MARKER_F32 => { deserialise_rest_of_f32(input) }
+			_ => { err("expected f32-compatible float") }
 		}
 	}
 }
 
 impl<'h> Deserialise<'h> for f64 {
-	fn deserialise<B: BufferImplRead<'h>>(input: &mut B) -> Result<Self> {
+	fn deserialise<B: BufferRead<'h>>(input: &mut B) -> Result<Self> {
 		match input.read_byte()? {
 			MARKER_F32 => { deserialise_rest_of_f32(input).map(|f| f as _) }
 			MARKER_F64 => { deserialise_rest_of_f64(input) }
@@ -118,8 +133,3 @@ impl<'h> Deserialise<'h> for f64 {
 // 		}
 // 	}
 // }
-
-// s: sign, e: exponent, f: fraction
-// f16: seeeeeffffffffff (5 exponent 10 fraction)
-// f32: seeeeeeeefffffffffffffffffffffff (8 exponent 23 fraction)
-// f64: seeeeeeeeeeeffffffffffffffffffffffffffffffffffffffffffffffffffff (11 exponent 52 fraction)

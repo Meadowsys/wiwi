@@ -61,41 +61,41 @@ To be documented
 
 Below are a list of markers.
 
-- [ ] `0x00` to `0x7f`: smallint
-- [ ] `0x80` to `0x9f`: signed/unsigned ints
-- [ ] `0xa0`: bool, `true`
-- [ ] `0xa1`: `false`
+- [x] `0x00` to `0x7f`: smallint
+- [x] `0x80` to `0x9f`: signed/unsigned ints
+- [x] `0xa0`: bool, `true`
+- [x] `0xa1`: `false`
 - [ ] `0xa2`: _reserved_ (16-bit float)
-- [ ] `0xa3`: 32-bit float
-- [ ] `0xa4`: 64-bit float
+- [x] `0xa3`: 32-bit float
+- [x] `0xa4`: 64-bit float
 - [ ] `0xa5`: _reserved_ (128-bit float)
 - [ ] `0xa6`: _reserved_ (256-bit float)
-- [ ] `0xa7`: `null`
-- [ ] `0xa8`: `done`
-- [ ] `0xa9`: array (8)
-- [ ] `0xaa`: array (16)
-- [ ] `0xab`: array (XL)
-- [ ] `0xac`: array (streaming)
-- [ ] `0xad`: object (8)
-- [ ] `0xae`: object (16)
-- [ ] `0xaf`: object (XL)
-- [ ] `0xb0`: object (streaming)
-- [ ] `0xb1`: single-type array (8)
-- [ ] `0xb2`: single-type array (16)
-- [ ] `0xb3`: single-type array (XL)
-- [ ] `0xb4`: single-type array (streaming)
-- [ ] `0xb5`: string (8)
-- [ ] `0xb6`: string (16)
-- [ ] `0xb7`: string (XL)
-- [ ] `0xb8`: string (streaming)
-- [ ] `0xb9`: set (8)
-- [ ] `0xba`: set (16)
-- [ ] `0xbb`: set (XL)
-- [ ] `0xbc`: set (streaming)
+- [x] `0xa7`: `null`
+- [x] `0xa8`: `done`
+- [x] `0xa9`: array (8)
+- [x] `0xaa`: array (XL)
+- [ ] `0xab`: array (streaming)
+- [ ] `0xac`: object (8)
+- [ ] `0xad`: object (XL)
+- [ ] `0xae`: object (streaming)
+- [ ] `0xaf`: single-type array (8)
+- [ ] `0xb0`: single-type array (XL)
+- [ ] `0xb1`: single-type array (streaming)
+- [ ] `0xb2`: string (8)
+- [ ] `0xb3`: string (XL)
+- [ ] `0xb4`: string (streaming)
+- [ ] `0xb5`: _unassigned_ <!-- set (8) -->
+- [ ] `0xb6`: _unassigned_ <!-- set (XL) -->
+- [ ] `0xb7`: _unassigned_ <!-- set (streaming) -->
+- [ ] `0xb8`: _unassigned_
+- [ ] `0xb9`: _unassigned_
+- [ ] `0xba`: _unassigned_
+- [ ] `0xbb`: _unassigned_
+- [ ] `0xbc`: _unassigned_
 - [ ] `0xbd`: _reserved_ (for 2-byte markers)
 - [ ] `0xbe`: _reserved_ (for 2-byte markers)
 - [ ] `0xbf`: _reserved_ (for 3-byte markers)
-- [ ] `0xc0` to `0xff`: smallint
+- [x] `0xc0` to `0xff`: smallint
 
 <!-- ### Diagram format
 
