@@ -47,11 +47,11 @@ exported_match_macro!(fits_in_u64: ..=MAX_U64);
 // deserialise one of these (like, ex. after a collection marker), so the
 // deserialise-rest functions aren't needed.
 
-pub fn serialise_len_int<B: BufferWrite>(len: u64, output: &mut B) {
+pub fn serialise_len_int<B: BufferWrite>(len: usize, output: &mut B) {
 	let bytes = len.to_le_bytes();
 	let bytes_ptr = &bytes as *const u8;
 
-	let marker = match len {
+	let marker = match len as u64 {
 		fits_in_u12!() => { MARKER_U12 }
 		fits_in_u20!() => { MARKER_U20 }
 		fits_in_u28!() => { MARKER_U28 }
@@ -86,13 +86,23 @@ pub fn serialise_len_int<B: BufferWrite>(len: u64, output: &mut B) {
 	}
 }
 
-pub fn deserialise_len_int<'h, B: BufferRead<'h>>(input: &mut B) -> Result<u64> {
-	let marker = input.read_byte()?;
+pub fn deserialise_len_int<'h, B: BufferRead<'h>>(input: &mut B) -> Result<usize> {
+	macro_rules! usize_overflow_check {
+		($len:ident) => {
+			#[cfg(not(target_pointer_width = "64"))]
+			if $len > usize::MAX as u64 {
+				return err("length overflows platform word size")
+			}
+		}
+	}
 
+	let marker = input.read_byte()?;
 	let (marker, last_4_bits) = match marker & 0b1111 {
 		m @ ..=6 => { (m, marker >> 4) }
 		7 => {
-			return Ok(u64::from_le_bytes(*input.read_bytes_const()?))
+			let len = u64::from_le_bytes(*input.read_bytes_const()?);
+			usize_overflow_check!(len);
+			return Ok(len as _)
 		}
 		_ => { return err("expected len int") }
 	};
@@ -107,5 +117,7 @@ pub fn deserialise_len_int<'h, B: BufferRead<'h>>(input: &mut B) -> Result<u64> 
 		ptr::write(bytes_ptr.add(len), last_4_bits);
 	}
 
-	Ok(u64::from_le_bytes(bytes))
+	let len = u64::from_le_bytes(bytes);
+	usize_overflow_check!(len);
+	Ok(len as _)
 }

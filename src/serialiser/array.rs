@@ -33,7 +33,7 @@ where
 	deserialise_rest_of_array(len, input)
 }
 
-pub fn deserialise_array_len<'h, B: BufferRead<'h>>(marker: u8, input: &mut B) -> Result<u64> {
+pub fn deserialise_array_len<'h, B: BufferRead<'h>>(marker: u8, input: &mut B) -> Result<usize> {
 	match marker {
 		MARKER_ARRAY_8 => { input.read_byte().map(|len| len as _) }
 		MARKER_ARRAY_XL => { deserialise_len_int(input) }
@@ -41,13 +41,10 @@ pub fn deserialise_array_len<'h, B: BufferRead<'h>>(marker: u8, input: &mut B) -
 	}
 }
 
-pub fn deserialise_rest_of_array<'h, T, B>(len: u64, input: &mut B) -> Result<Vec<T>>
+pub fn deserialise_rest_of_array<'h, T, B>(len: usize, input: &mut B) -> Result<Vec<T>>
 where
 	T: Deserialise<'h>,
 	B: BufferRead<'h>
 {
-	#[cfg(not(target_pointer_width = "64"))]
-	if len > usize::MAX as u64 { return err("length overflows platform word size") }
-
 	(0..len).map(|_| T::deserialise(input)).collect()
 }

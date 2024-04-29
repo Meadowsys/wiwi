@@ -9,7 +9,7 @@ pub mod len_int;
 pub mod null;
 // pub mod object;
 // pub mod specialisations;
-// pub mod string;
+pub mod string;
 // pub mod util;
 // pub mod value;
 

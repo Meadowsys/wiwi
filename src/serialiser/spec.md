@@ -71,8 +71,8 @@ Below are a list of markers.
 - [ ] `0xa5`: _reserved_ (128-bit float)
 - [ ] `0xa6`: _reserved_ (256-bit float)
 - [x] `0xa7`: `null`
-- [ ] `0xa8`: string (8)
-- [ ] `0xa9`: string (XL)
+- [x] `0xa8`: string (8)
+- [x] `0xa9`: string (XL)
 - [ ] `0xaa`: string (streaming)
 - [x] `0xab`: array (8)
 - [x] `0xac`: array (XL)
