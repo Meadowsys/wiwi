@@ -2,8 +2,8 @@ use super::{ buffer::*, core::*, error::*, len_int::* };
 use ::std::hash::{ BuildHasher, Hash };
 use ::std::collections::{ BTreeMap, HashMap };
 
-pub const MARKER_MAP_8: u8 = 0xae;
-pub const MARKER_MAP_XL: u8 = 0xaf;
+pub const MARKER_MAP_8: u8 = 0xac;
+pub const MARKER_MAP_XL: u8 = 0xad;
 
 pub fn serialise_map_len<B: BufferWrite>(len: usize, output: &mut B) {
 	match len {

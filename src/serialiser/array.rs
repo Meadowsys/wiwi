@@ -1,7 +1,7 @@
 use super::{ buffer::*, core::*, error::*, integer::*, len_int::* };
 
-pub const MARKER_ARRAY_8: u8 = 0xab;
-pub const MARKER_ARRAY_XL: u8 = 0xac;
+pub const MARKER_ARRAY_8: u8 = 0xaa;
+pub const MARKER_ARRAY_XL: u8 = 0xab;
 
 pub fn serialise_array<T, B>(items: &[T], output: &mut B, options: &Options)
 where

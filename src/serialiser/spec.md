@@ -73,22 +73,22 @@ Below are a list of markers.
 - [x] `0xa7`: `null`
 - [x] `0xa8`: string (8)
 - [x] `0xa9`: string (XL)
-- [ ] `0xaa`: string (streaming)
-- [x] `0xab`: array (8)
-- [x] `0xac`: array (XL)
-- [ ] `0xad`: array (streaming)
-- [x] `0xae`: map (8)
-- [x] `0xaf`: map (XL)
-- [ ] `0xb0`: map (streaming)
-- [ ] `0xb1`: single-type array (8)
-- [ ] `0xb2`: single-type array (XL)
-- [ ] `0xb3`: single-type array (streaming)
-- [ ] `0xb4`: binary (8)
-- [ ] `0xb5`: binary (XL)
-- [ ] `0xb6`: binary (streaming)
-- [ ] `0xb7`: _unassigned_ <!-- set (8) -->
-- [ ] `0xb8`: _unassigned_ <!-- set (XL) -->
-- [ ] `0xb9`: _unassigned_ <!-- set (streaming) -->
+- [x] `0xaa`: array (8)
+- [x] `0xab`: array (XL)
+- [x] `0xac`: map (8)
+- [x] `0xad`: map (XL)
+- [ ] `0xae`: single-type array (8)
+- [ ] `0xaf`: single-type array (XL)
+- [ ] `0xb0`: binary (8)
+- [ ] `0xb1`: binary (XL)
+- [ ] `0xb2`: _unassigned_ <!-- set (8) -->
+- [ ] `0xb3`: _unassigned_ <!-- set (XL) -->
+- [ ] `0xb4`: _unassigned_
+- [ ] `0xb5`: _unassigned_
+- [ ] `0xb6`: _unassigned_
+- [ ] `0xb7`: _unassigned_
+- [ ] `0xb8`: _unassigned_
+- [ ] `0xb9`: _unassigned_
 - [ ] `0xba`: _unassigned_
 - [ ] `0xbb`: _unassigned_
 - [ ] `0xbc`: _unassigned_
