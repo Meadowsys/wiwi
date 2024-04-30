@@ -11,7 +11,7 @@ Note to self: needs more diagrams. Diagrams are nice.
   - [General structure](#general-structure)
   - [Markers](#markers)
 - [Core types](#core-types)
-  - [Smallints](#smallints)
+  - [Small integers](#small-integers)
   - [Integers](#integers)
   - [Booleans](#booleans)
     - [Encoding a boolean](#encoding-a-boolean)
@@ -147,7 +147,7 @@ TODO: replace with actual type
 
 ## Core types
 
-### Smallints
+### Small integers
 
 Unsigned integer or signed integer (two's compliment) that falls within the range `-64..=127`.
 

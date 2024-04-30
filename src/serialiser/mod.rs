@@ -9,6 +9,7 @@ pub mod image;
 pub mod integer;
 pub mod len_int;
 pub mod map;
+pub mod marker;
 pub mod null;
 mod reference;
 // pub mod specialisations;

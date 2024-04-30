@@ -1,3 +1,330 @@
+use super::error::*;
+use ::std::ops::Deref;
+
+pub struct Marker {
+	inner: MarkerInner
+}
+
+pub enum MarkerInner {
+	Number {
+		marker: NumberMarker
+	},
+	Bool {
+		marker: BoolMarker
+	},
+	Null {
+		marker: NullMarker
+	},
+	String {
+		marker: StringMarker
+	},
+	Array {
+		marker: ArrayMarker
+	},
+	Map {
+		marker: MapMarker
+	}
+}
+
+impl Deref for Marker {
+	type Target = MarkerInner;
+	#[inline]
+	fn deref(&self) -> &MarkerInner {
+		&self.inner
+	}
+}
+
+impl Marker {
+	fn from_byte(byte: u8) -> Result<Self> {
+		match byte {
+			num @ 0x00..=0x7f => { NumberMarker::SmallIntPositive { num }.into() }
+			num @ 0xc0..=0xff => { NumberMarker::SmallIntNegative { num: num as _ }.into() }
+
+			marker @ 0x80..=0x9f => {
+				let byte_count = ((marker & 0b11111) >> 1) + 1;
+				if marker & 1 == 0 {
+					NumberMarker::Unsigned { byte_count }.into()
+				} else {
+					NumberMarker::Signed { byte_count }.into()
+				}
+			}
+
+			0xa0 => { BoolMarker { value: true }.into() }
+			0xa1 => { BoolMarker { value: false }.into() }
+
+			// 0xa2 => { NumberMarker::Float16.into() }
+			0xa3 => { NumberMarker::Float32.into() }
+			0xa4 => { NumberMarker::Float64.into() }
+			// 0xa5 => { NumberMarker::Float128.into() }
+			// 0xa6 => { NumberMarker::Float256.into() }
+
+			0xa7 => { NullMarker { __private: () }.into() }
+
+			0xa8 => { StringMarker::Variant8.into() }
+			0xa9 => { StringMarker::VariantXL.into() }
+
+			0xaa => { ArrayMarker::Variant8.into() }
+			0xab => { ArrayMarker::VariantXL.into() }
+
+			0xac => { MapMarker::Variant8.into() }
+			0xad => { MapMarker::VariantXL.into() }
+
+			_ => { err("unknown marker") }
+		}
+	}
+	// marker_to_from! {
+	// 	u8 {
+	// 		(Unsigned8 <-> 0x80)
+	// 	}
+	// 	u16 {
+	// 		(Unsigned16 <-> 0x82)
+	// 	}
+	// 	u32 {
+	// 		(Unsigned24 <-> 0x84)
+	// 		(Unsigned32 <-> 0x86)
+	// 	}
+	// 	u64 {
+	// 		(Unsigned40 <-> 0x88)
+	// 		(Unsigned48 <-> 0x8a)
+	// 		(Unsigned56 <-> 0x8c)
+	// 		(Unsigned64 <-> 0x8e)
+	// 	}
+	// 	u128 {
+	// 		(Unsigned72 <-> 0x90)
+	// 		(Unsigned80 <-> 0x92)
+	// 		(Unsigned88 <-> 0x94)
+	// 		(Unsigned96 <-> 0x96)
+	// 		(Unsigned104 <-> 0x98)
+	// 		(Unsigned112 <-> 0x9a)
+	// 		(Unsigned120 <-> 0x9c)
+	// 		(Unsigned128 <-> 0x9e)
+	// 	}
+	// 	i8 {
+	// 		(Signed8 <-> 0x81)
+	// 	}
+	// 	i16 {
+	// 		(Signed16 <-> 0x83)
+	// 	}
+	// 	i32 {
+	// 		(Signed24 <-> 0x85)
+	// 		(Signed32 <-> 0x87)
+	// 	}
+	// 	i64 {
+	// 		(Signed40 <-> 0x89)
+	// 		(Signed48 <-> 0x8b)
+	// 		(Signed56 <-> 0x8d)
+	// 		(Signed64 <-> 0x8f)
+	// 	}
+	// 	i128 {
+	// 		(Signed72 <-> 0x91)
+	// 		(Signed80 <-> 0x93)
+	// 		(Signed88 <-> 0x95)
+	// 		(Signed96 <-> 0x97)
+	// 		(Signed104 <-> 0x99)
+	// 		(Signed112 <-> 0x9b)
+	// 		(Signed120 <-> 0x9d)
+	// 		(Signed128 <-> 0x9f)
+	// 	}
+	// 	bool {
+	// 		(BoolOrTrue <-> 0xa0)
+	// 		(False <-> 0xa1)
+	// 	}
+	// 	float {
+	// 		// (Float16 <-> 0xa2)
+	// 		(Float32 <-> 0xa3)
+	// 		(Float64 <-> 0xa4)
+	// 		// (Float128 <-> 0xa5)
+	// 		// (Float256 <-> 0xa6)
+	// 	}
+	// 	null {
+	// 		(Null <-> 0xa7)
+	// 	}
+	// 	string {
+	// 		()
+	// 	}
+	// }
+
+	// // pub fn ensure_unsigned_smallint
+	// // pub fn ensure_signed_smallint
+}
+
+pub enum NumberMarker {
+	SmallIntPositive { num: u8 },
+	SmallIntNegative { num: i8 },
+	Unsigned { byte_count: u8 },
+	Signed { byte_count: u8 },
+	// Float16,
+	Float32,
+	Float64,
+	// Float128,
+	// Float256
+}
+
+pub struct BoolMarker {
+	value: bool
+}
+
+pub struct NullMarker {
+	__private: ()
+}
+
+pub enum StringMarker {
+	Variant8,
+	VariantXL
+}
+
+pub enum ArrayMarker {
+	Variant8,
+	VariantXL
+}
+
+pub enum MapMarker {
+	Variant8,
+	VariantXL
+}
+
+macro_rules! marker_from_impls {
+	($($container:ident $variant:ident)*) => {
+		$(
+			impl From<$container> for Marker {
+				#[inline]
+				fn from(marker: $container) -> Self {
+					Self { inner: MarkerInner::$variant { marker } }
+				}
+			}
+
+			impl<E> From<$container> for Result<Marker, E> {
+				#[inline]
+				fn from(marker: $container) -> Self {
+					Ok(marker.into())
+				}
+			}
+		)*
+	}
+}
+
+marker_from_impls! {
+	NumberMarker Number
+	BoolMarker Bool
+	NullMarker Null
+	StringMarker String
+	ArrayMarker Array
+	MapMarker Map
+}
+
+// pub enum FromByteResult {
+// 	Ok(Marker)
+// }
+//
+// pub enum ToByteResult {
+// 	Ok(u8)
+// }
+//
+// macro_rules! marker_to_from {
+// 	(
+// 		u8 { $(($enumval_u8:ident <-> $byte_u8:literal))* }
+// 		u16 { $(($enumval_u16:ident <-> $byte_u16:literal))* }
+// 		u32 { $(($enumval_u32:ident <-> $byte_u32:literal))* }
+// 		u64 { $(($enumval_u64:ident <-> $byte_u64:literal))* }
+// 		u128 { $(($enumval_u128:ident <-> $byte_u128:literal))* }
+//
+// 		i8 { $(($enumval_i8:ident <-> $byte_i8:literal))* }
+// 		i16 { $(($enumval_i16:ident <-> $byte_i16:literal))* }
+// 		i32 { $(($enumval_i32:ident <-> $byte_i32:literal))* }
+// 		i64 { $(($enumval_i64:ident <-> $byte_i64:literal))* }
+// 		i128 { $(($enumval_i128:ident <-> $byte_i128:literal))* }
+//
+// 		bool { $(($enumval_bool:ident <-> $byte_bool:literal))* }
+// 		float { $(($enumval_float:ident <-> $byte_float:literal))* }
+// 		null { $(($enumval_null:ident <-> $byte_null:literal))* }
+// 	) => {
+// 		pub fn from_byte(byte: u8) -> Result<FromByteResult> {
+// 			#[deny(unreachable_patterns)]
+// 			match byte {
+// 				byte @ 0x00..=0x7f => { Ok(FromByteResult::Ok(MarkerInner::SmallIntPositive { byte }.into())) }
+// 				byte @ 0xc0..=0xff => { Ok(FromByteResult::Ok(MarkerInner::SmallIntNegative { byte }.into())) }
+//
+// 				$($byte_u8 => { Ok(FromByteResult::Ok(MarkerInner::$enumval_u8.into())) })*
+// 				$($byte_u16 => { Ok(FromByteResult::Ok(MarkerInner::$enumval_u16.into())) })*
+// 				$($byte_u32 => { Ok(FromByteResult::Ok(MarkerInner::$enumval_u32.into())) })*
+// 				$($byte_u64 => { Ok(FromByteResult::Ok(MarkerInner::$enumval_u64.into())) })*
+// 				$($byte_u128 => { Ok(FromByteResult::Ok(MarkerInner::$enumval_u128.into())) })*
+//
+// 				$($byte_i8 => { Ok(FromByteResult::Ok(MarkerInner::$enumval_i8.into())) })*
+// 				$($byte_i16 => { Ok(FromByteResult::Ok(MarkerInner::$enumval_i16.into())) })*
+// 				$($byte_i32 => { Ok(FromByteResult::Ok(MarkerInner::$enumval_i32.into())) })*
+// 				$($byte_i64 => { Ok(FromByteResult::Ok(MarkerInner::$enumval_i64.into())) })*
+// 				$($byte_i128 => { Ok(FromByteResult::Ok(MarkerInner::$enumval_i128.into())) })*
+//
+// 				$($byte_bool => { Ok(FromByteResult::Ok(MarkerInner::$enumval_bool.into())) })*
+// 				$($byte_float => { Ok(FromByteResult::Ok(MarkerInner::$enumval_float.into())) })*
+// 				$($byte_null => { Ok(FromByteResult::Ok(MarkerInner::$enumval_null.into())) })*
+
+// 				_ => { err("unknown marker") }
+// 			}
+// 		}
+//
+// 		pub fn to_byte(&self) -> ToByteResult {
+// 			#[deny(unreachable_patterns)]
+// 			match self.inner {
+// 				MarkerInner::SmallIntPositive { byte } => { ToByteResult::Ok(byte) }
+// 				MarkerInner::SmallIntNegative { byte } => { ToByteResult::Ok(byte) }
+//
+// 				$(MarkerInner::$enumval_u8 => { ToByteResult::Ok($byte_u8) })*
+// 				$(MarkerInner::$enumval_u16 => { ToByteResult::Ok($byte_u16) })*
+// 				$(MarkerInner::$enumval_u32 => { ToByteResult::Ok($byte_u32) })*
+// 				$(MarkerInner::$enumval_u64 => { ToByteResult::Ok($byte_u64) })*
+// 				$(MarkerInner::$enumval_u128 => { ToByteResult::Ok($byte_u128) })*
+//
+// 				$(MarkerInner::$enumval_i8 => { ToByteResult::Ok($byte_i8) })*
+// 				$(MarkerInner::$enumval_i16 => { ToByteResult::Ok($byte_i16) })*
+// 				$(MarkerInner::$enumval_i32 => { ToByteResult::Ok($byte_i32) })*
+// 				$(MarkerInner::$enumval_i64 => { ToByteResult::Ok($byte_i64) })*
+// 				$(MarkerInner::$enumval_i128 => { ToByteResult::Ok($byte_i128) })*
+//
+// 				$(MarkerInner::$enumval_bool => { ToByteResult::Ok($byte_bool) })*
+// 				$(MarkerInner::$enumval_float => { ToByteResult::Ok($byte_float) })*
+// 				$(MarkerInner::$enumval_null => { ToByteResult::Ok($byte_null) })*
+// 			}
+// 		}
+//
+// 		// pub fn ensure_u8_compatible(&self) -> Result<u8> {
+// 		// 	#[deny(unreachable_patterns)]
+// 		// 	match self {
+// 		// 		$(Self::$enumval_u8 => { Ok($byte_u8) })*
+// 		// 		_ => { err("expected u8-compatible marker") }
+// 		// 	}
+// 		// }
+// 		//
+// 		// pub fn ensure_u16_compatible(&self) -> Result<u8> {
+// 		// 	#[deny(unreachable_patterns)]
+// 		// 	match self {
+// 		// 		$(Self::$enumval_u8 => { Ok($byte_u8) })*
+// 		// 		$(Self::$enumval_u16 => { Ok($byte_u16) })*
+// 		// 		_ => { err("expected u16-compatible marker") }
+// 		// 	}
+// 		// }
+// 		//
+// 		// pub fn ensure_u32_compatible(&self) -> Result<u8> {
+// 		// 	#[deny(unreachable_patterns)]
+// 		// 	match self {
+// 		// 		$(Self::$enumval_u8 => { Ok($byte_u8) })*
+// 		// 		$(Self::$enumval_u16 => { Ok($byte_u16) })*
+// 		// 		$(Self::$enumval_u32 => { Ok($byte_u32) })*
+// 		// 		_ => { err("expected u32-compatible marker") }
+// 		// 	}
+// 		// }
+// 		// etc
+// 	}
+// }
+//
+// impl From<MarkerInner> for Marker {
+// 	#[inline]
+// 	fn from(inner: MarkerInner) -> Self {
+// 		Self { inner }
+// 	}
+// }
+
 // // #![deny(dead_code)]
 
 // /// Marker for [`None`], otherwise known as `nil` or `null` in other languages
