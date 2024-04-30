@@ -50,3 +50,15 @@ where
 {
 	(0..len).map(|_| T::deserialise(input)).collect()
 }
+
+impl<T: Serialise> Serialise for [T] {
+	fn serialise<B: BufferWrite>(&self, output: &mut B, options: &Options) {
+		serialise_array(self, output, options)
+	}
+}
+
+impl<'h, T: Deserialise<'h>> Deserialise<'h> for Vec<T> {
+	fn deserialise<B: BufferRead<'h>>(input: &mut B) -> Result<Self> {
+		deserialise_array(input)
+	}
+}
