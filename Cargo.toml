@@ -18,6 +18,7 @@ cfg-if = "1.0.0"
 chrono = { version = "0.4.35", features = ["clock"], optional = true }
 hashbrown = { version = "0.14.3", features = ["ahash"], optional = true }
 httparse = { version = "1.8.0", optional = true }
+image = { version = "0.25.1", optional = true }
 ordered-float = { version = "4.2.0", optional = true }
 parking_lot = { version = "0.12.1", optional = true }
 serde_json = { version = "1.0.116", optional = true }
@@ -56,6 +57,7 @@ tokio = ["dep:tokio"]
 # compiler errors if the feature its for isn't enabled
 debounce-dyn-fn = []
 serialiser-hashbrown = ["dep:hashbrown"]
+serialiser-image = ["dep:image"]
 serialiser-serde-json = ["dep:serde_json"]
 
 [[bench]]
