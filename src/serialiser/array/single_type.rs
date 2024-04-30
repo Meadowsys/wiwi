@@ -59,6 +59,8 @@ where
 				marker = item.get_preferred_marker(Some(marker));
 			}
 
+			output.write_byte(marker);
+
 			for item in array {
 				item.serialise_rest_for_marker(marker, output, options);
 			}
@@ -72,6 +74,8 @@ where
 			} else {
 				return
 			};
+
+			output.write_byte(marker);
 
 			for item in iter {
 				item.serialise_rest_for_marker(marker, output, options);
