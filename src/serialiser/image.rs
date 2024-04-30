@@ -1,7 +1,7 @@
-use super::{ buffer::*, core::*, integer::* };
-use ::image::codecs::png::PngEncoder;
-use ::image::{ ExtendedColorType, ImageEncoder, RgbImage, RgbaImage };
-use ::std::ptr;
+use super::{ buffer::*, core::*, error::*, integer::* };
+use ::image::codecs::png::{ PngDecoder, PngEncoder };
+use ::image::{ ExtendedColorType, ImageEncoder, ImageDecoder, RgbImage, RgbaImage };
+use ::std::{ io::Cursor, ptr, slice };
 
 pub fn serialise_to_png<T: ?Sized + Serialise>(item: &T) -> Vec<u8> {
 	serialise_to_png_with_options(item, &ImageOptions::default())
@@ -67,6 +67,22 @@ pub fn serialise_to_png_with_options<T: ?Sized + Serialise>(item: &T, options: &
 		.write_image(image_slice, width, height, ExtendedColorType::Rgb8)
 		.expect("png encoding failed");
 	output
+}
+
+pub fn deserialise_from_png<T: for<'h> Deserialise<'h>>(img_bytes: &[u8]) -> Result<T> {
+	let decoder = PngDecoder::new(Cursor::new(img_bytes))
+		.convert_err()?;
+	let mut bytes = vec![0; decoder.total_bytes() as usize];
+	decoder.read_image(&mut bytes).convert_err()?;
+	let mut bytes = &*bytes;
+
+	let len = u64::deserialise(&mut bytes)?;
+	if len > usize::MAX as u64 { return err("input length overflowed usize") }
+
+	let len = len as usize;
+	if len > bytes.len() { return err("invalid input") }
+
+	deserialise(unsafe { slice::from_raw_parts(bytes as *const [u8] as *const u8, len) })
 }
 
 /// returns (width, height)

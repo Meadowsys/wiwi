@@ -19,9 +19,9 @@ pub fn serialise_with_options<T: ?Sized + Serialise>(item: &T, options: &Options
 }
 
 pub fn deserialise<'h, T: Deserialise<'h>>(mut bytes: &'h [u8]) -> Result<T> {
-	let value = T::deserialise(&mut bytes);
+	let value = T::deserialise(&mut bytes)?;
 	if !bytes.is_empty() { return err("trailing bytes found") }
-	value
+	Ok(value)
 }
 
 pub fn deserialise_lax<'h, T: Deserialise<'h>>(mut bytes: &'h [u8]) -> Result<T> {

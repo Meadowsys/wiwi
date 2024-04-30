@@ -33,7 +33,7 @@ impl Serialise for f64 {
 		unsafe {
 			output.with_ptr(|ptr| {
 				ptr::write(ptr, MARKER_F64);
-				ptr::copy_nonoverlapping(&bytes as *const u8, ptr, 8);
+				ptr::copy_nonoverlapping(&bytes as *const u8, ptr.add(1), 8);
 				9
 			});
 		}
