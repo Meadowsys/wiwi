@@ -85,12 +85,13 @@ features = [
 	"h",
 	"hex",
 	"lazy-wrap",
+	"serialiser",
 	"string-pool",
 	"z85",
 
-	"tokio"
+	"tokio",
 
-	# debounce-dyn-fn not enabled, because it doesn't change docs
+	"serialiser-image"
 ]
 
 targets = [
