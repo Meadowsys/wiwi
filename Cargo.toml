@@ -50,15 +50,17 @@ string-pool = ["dep:hashbrown", "lazy-wrap"]
 # ws = ["dep:httparse", "dep:thiserror", "dep:url"]
 z85 = ["dep:thiserror"]
 
+# addon features
+hashbrown = ["dep:hashbrown"]
+image = ["dep:image"]
+serde-json = ["dep:serde_json"]
+
 # runtime selection features
 tokio = ["dep:tokio"]
 
 # config options for certain features
 # compiler errors if the feature its for isn't enabled
 debounce-dyn-fn = []
-serialiser-hashbrown = ["dep:hashbrown"]
-serialiser-image = ["dep:image"]
-serialiser-serde-json = ["dep:serde_json"]
 
 [[bench]]
 name = "hex-and-z85"
@@ -91,7 +93,7 @@ features = [
 
 	"tokio",
 
-	"serialiser-image"
+	"image"
 ]
 
 targets = [

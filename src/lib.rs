@@ -58,9 +58,6 @@ pub mod lazy_wrap;
 
 #[cfg(feature = "serialiser")]
 pub mod serialiser;
-feature_cfg_compile_check!("serialiser-hashbrown", cfg of "serialiser");
-feature_cfg_compile_check!("serialiser-image", cfg of "serialiser");
-feature_cfg_compile_check!("serialiser-serde-json", cfg of "serialiser");
 
 #[cfg(feature = "string-pool")]
 pub mod string_pool;

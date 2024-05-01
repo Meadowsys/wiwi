@@ -16,6 +16,14 @@ All exposed features are gated behind features, none of which are enabled by def
 - **`string-pool`** - Global immutable string pool and String type
 - **`z85`** - A fast (faster than `z85` crate[^2]) implementation of [ZeroMQ]'s [z85] format, a format to represent binary data as printable ASCII text. Think base64, but more efficient in encoded size. This implementation is not fully to spec, as it handles padding text to the correct length where the spec says the application code must handle it instead.
 
+### Addon features
+
+These features enable things specific to 3rd-party crates and features you have enabled. For example, the `hashbrown` feature, when the `serialiser` feature is enabled, will implement `Serialise` and `Deserialise` traits for structs in `hashbrown`.
+
+- **`hashbrown`**
+- **`image`**
+- **`serde-json`**
+
 ### Async runtime features
 
 Only one can be enabled at a time. utility implementations for **`tokio`** will be prioritised over other runtimes, if/when they are added.

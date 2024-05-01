@@ -14,7 +14,7 @@ use super::{
 
 /*
 
-#[cfg(feature = "serialiser-serde-json")]
+#[cfg(feature = "serde-json")]
 impl Serialise for ::serde_json::Value {
 	fn serialise<B: BufferWrite>(&self, output: &mut B, options: &Options) {
 		use ::serde_json::Value;
@@ -45,7 +45,7 @@ impl Serialise for ::serde_json::Value {
 	}
 }
 
-#[cfg(feature = "serialiser-serde-json")]
+#[cfg(feature = "serde-json")]
 impl<'h> Deserialise<'h> for ::serde_json::Value {
 	fn deserialise<B: BufferRead<'h>>(input: &mut B) -> Result<Self> {
 		use ::serde_json::{ Number, Value };

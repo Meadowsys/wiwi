@@ -4,7 +4,7 @@ pub mod buffer;
 pub mod core;
 pub mod error;
 pub mod float;
-#[cfg(feature = "serialiser-image")]
+#[cfg(feature = "image")]
 pub mod image;
 pub mod integer;
 pub mod len_int;

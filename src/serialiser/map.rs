@@ -99,7 +99,7 @@ where
 	}
 }
 
-#[cfg(feature = "serialiser-hashbrown")]
+#[cfg(feature = "hashbrown")]
 impl<K, V, S> Serialise for ::hashbrown::HashMap<K, V, S>
 where
 	K: Serialise,
@@ -112,7 +112,7 @@ where
 	}
 }
 
-#[cfg(feature = "serialiser-hashbrown")]
+#[cfg(feature = "hashbrown")]
 impl<'h, K, V, S> Deserialise<'h> for ::hashbrown::HashMap<K, V, S>
 where
 	K: Deserialise<'h> + Eq + Hash,
@@ -126,7 +126,7 @@ where
 }
 
 /*
-#[cfg(feature = "serialiser-serde-json")]
+#[cfg(feature = "serde-json")]
 impl Serialise for ::serde_json::Map<String, ::serde_json::Value> {
 	fn serialise<B: BufferWrite>(&self, output: &mut B, options: &Options) {
 		serialise_map_len(self.len(), output);
@@ -134,7 +134,7 @@ impl Serialise for ::serde_json::Map<String, ::serde_json::Value> {
 	}
 }
 
-#[cfg(feature = "serialiser-serde-json")]
+#[cfg(feature = "serde-json")]
 impl<'h> Deserialise<'h> for ::serde_json::Map<String, ::serde_json::Value> {
 	fn deserialise<B: BufferRead<'h>>(input: &mut B) -> Result<Self> {
 		let len = deserialise_map_len(input.read_byte()?, input)?;
