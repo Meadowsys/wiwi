@@ -1,3 +1,62 @@
+use number::*;
+use super::error::*;
+
+pub mod number;
+
+pub struct Marker {
+	inner: MarkerInner
+}
+
+pub enum MarkerInner {
+	Number { marker: NumberMarker }
+}
+
+impl Marker {
+	pub fn to_marker(&self) -> u8 {
+		use MarkerInner::*;
+		match &**self {
+			Number { marker } => { marker.to_marker() }
+		}
+	}
+}
+
+macro_rules! marker_impls {
+	($container:ident $container_inner:ident $variant:ident) => {
+		impl From<$container_inner> for $crate::serialiser::marker::Marker {
+			#[inline]
+			fn from(marker: $container_inner) -> Self {
+				let marker = $container { inner: marker };
+				Self { inner: MarkerInner::$variant { marker } }
+			}
+		}
+
+		impl<E> From<$container_inner> for Result<$crate::serialiser::marker::Marker, E> {
+			#[inline]
+			fn from(marker: $container_inner) -> Self {
+				Ok(marker.into())
+			}
+		}
+
+		impl ::std::ops::Deref for $container {
+			type Target = $container_inner;
+			#[inline]
+			fn deref(&self) -> &$container_inner {
+				&self.inner
+			}
+		}
+	}
+}
+use marker_impls;
+
+impl std::ops::Deref for Marker {
+	type Target = MarkerInner;
+	#[inline]
+	fn deref(&self) -> &MarkerInner {
+		&self.inner
+	}
+}
+
+/*
 use super::{ buffer::*, error::*, integer::* };
 use std::ops::Deref;
 
@@ -244,35 +303,6 @@ impl MapMarker {
 	}
 }
 
-macro_rules! marker_impls {
-	($($container:ident $container_inner:ident $variant:ident)*) => {
-		$(
-			impl From<$container_inner> for Marker {
-				#[inline]
-				fn from(marker: $container_inner) -> Self {
-					let marker = $container { inner: marker };
-					Self { inner: MarkerInner::$variant { marker } }
-				}
-			}
-
-			impl<E> From<$container_inner> for Result<Marker, E> {
-				#[inline]
-				fn from(marker: $container_inner) -> Self {
-					Ok(marker.into())
-				}
-			}
-
-			impl Deref for $container {
-				type Target = $container_inner;
-				#[inline]
-				fn deref(&self) -> &$container_inner {
-					&self.inner
-				}
-			}
-		)*
-	}
-}
-
 marker_impls! {
 	NumberMarker NumberMarkerInner Number
 	BoolMarker BoolMarkerInner Bool
@@ -304,3 +334,4 @@ macro_rules! extract_marker_ref {
 	}
 }
 use extract_marker_ref;
+*/
