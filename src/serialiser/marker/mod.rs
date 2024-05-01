@@ -1,5 +1,5 @@
-use number::*;
-use super::error::*;
+use super::{ *, error::* };
+use std::ops::RangeInclusive;
 
 pub mod number;
 
@@ -8,10 +8,34 @@ pub struct Marker {
 }
 
 pub enum MarkerInner {
-	Number { marker: NumberMarker }
+	Number { marker: number::NumberMarker }
 }
 
 impl Marker {
+	pub fn from_byte(byte: u8) -> Result<Self> {
+		#[deny(unreachable_patterns)]
+		match byte {
+			marker @ number::smallint_positive_range!() => {
+				number::NumberMarkerInner::SmallIntPositive { marker }.into()
+			}
+			marker @ number::smallint_negative_range!() => {
+				number::NumberMarkerInner::SmallIntNegative { marker }.into()
+			}
+			marker @ number::int_range!() => {
+				let byte_count = ((marker & 0b11111) >> 1) + 1;
+				if marker & 1 == 0 {
+					number::NumberMarkerInner::Unsigned { byte_count }.into()
+				} else {
+					number::NumberMarkerInner::Signed { byte_count }.into()
+				}
+			}
+			number::FLOAT32 => { number::NumberMarkerInner::Float32.into() }
+			number::FLOAT64 => { number::NumberMarkerInner::Float64.into() }
+
+			_ => { err_str("unknown marker") }
+		}
+	}
+
 	pub fn to_marker(&self) -> u8 {
 		use MarkerInner::*;
 		match &**self {

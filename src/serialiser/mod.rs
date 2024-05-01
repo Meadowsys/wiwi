@@ -17,16 +17,16 @@ pub mod marker;
 // // pub mod util;
 // pub mod value;
 
-// macro_rules! exported_match_macro {
-// 	($name:ident: $($match:tt)+) => {
-// 		#[macro_export]
-// 		macro_rules! $name {
-// 			() => { $($match)+ }
-// 		}
-// 		pub use $name;
-// 	}
-// }
-// use exported_match_macro;
+macro_rules! exported_match_macro {
+	($name:ident: $($match:tt)+) => {
+		#[macro_export]
+		macro_rules! $name {
+			() => { $($match)+ }
+		}
+		pub use $name;
+	}
+}
+use exported_match_macro;
 
 // pub use self::value::{ Key, Value, ValueOwned };
 
