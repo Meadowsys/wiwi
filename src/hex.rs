@@ -27,24 +27,24 @@ fn _encode<const UPPER: bool>(bytes: &[u8]) -> String {
 	let mut dest = UnsafeBufWriteGuard::with_capacity(capacity);
 	let mut rounds = bytes_len;
 
-	#[cfg(target_arch = "aarch64")] {
-		if std::arch::is_aarch64_feature_detected!("neon") {
-			// we handle the big chunks, but leave enough info for the below generic
-			// to continue the uneven chunks
-			// divide by 16
-			let neon_rounds = rounds >> 4;
-			// mod 16
-			let remainder = bytes_len & 0b1111;
-
-			bytes_ptr = unsafe { encode::neon_uint8x16::<UPPER>(bytes_ptr, dest.as_mut_ptr(), neon_rounds) };
-
-			// multiply by 32
-			// multiply by num rounds (^) times two, which is shift one more
-			let amount_written = neon_rounds << 5;
-			rounds = remainder;
-			unsafe { dest.add_byte_count(amount_written) }
-		}
-	}
+	// #[cfg(target_arch = "aarch64")] {
+	// 	if std::arch::is_aarch64_feature_detected!("neon") {
+	// 		// we handle the big chunks, but leave enough info for the below generic
+	// 		// to continue the uneven chunks
+	// 		// divide by 16
+	// 		let neon_rounds = rounds >> 4;
+	// 		// mod 16
+	// 		let remainder = bytes_len & 0b1111;
+	//
+	// 		bytes_ptr = unsafe { encode::neon_uint8x16::<UPPER>(bytes_ptr, dest.as_mut_ptr(), neon_rounds) };
+	//
+	// 		// multiply by 32
+	// 		// multiply by num rounds (^) times two, which is shift one more
+	// 		let amount_written = neon_rounds << 5;
+	// 		rounds = remainder;
+	// 		unsafe { dest.add_byte_count(amount_written) }
+	// 	}
+	// }
 
 	unsafe { encode::generic::<UPPER>(bytes_ptr, &mut dest, rounds) };
 
