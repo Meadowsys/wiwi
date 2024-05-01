@@ -1,5 +1,5 @@
 use super::{ buffer::*, core::*, error::*, integer::*, len_int::* };
-use ::std::{ borrow::Cow, ptr, str };
+use std::{ borrow::Cow, ptr, str };
 
 pub const MARKER_STRING_8: u8 = 0xa8;
 pub const MARKER_STRING_XL: u8 = 0xa9;

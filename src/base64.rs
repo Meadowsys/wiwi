@@ -1,5 +1,5 @@
 use crate::encoding_utils::{ ChunkedSlice, UnsafeBufWriteGuard };
-use ::std::ptr;
+use std::ptr;
 
 const CHAR_0: u8 = b'A';
 const CHAR_26: u8 = b'a';

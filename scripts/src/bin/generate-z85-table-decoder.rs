@@ -1,5 +1,5 @@
 fn main() {
-	use ::wiwi::z85::TABLE_ENCODER;
+	use wiwi::z85::TABLE_ENCODER;
 
 	let mut string = String::new();
 

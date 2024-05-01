@@ -28,7 +28,7 @@ fn _encode<const UPPER: bool>(bytes: &[u8]) -> String {
 	let mut rounds = bytes_len;
 
 	#[cfg(target_arch = "aarch64")] {
-		if ::std::arch::is_aarch64_feature_detected!("neon") {
+		if std::arch::is_aarch64_feature_detected!("neon") {
 			// we handle the big chunks, but leave enough info for the below generic
 			// to continue the uneven chunks
 			// divide by 16
@@ -70,7 +70,7 @@ pub fn decode_hex(bytes: &[u8]) -> Result<Vec<u8>, DecodeError> {
 	Ok(unsafe { dest.into_full_vec() })
 }
 
-#[derive(Debug, ::thiserror::Error)]
+#[derive(Debug, thiserror::Error)]
 pub enum DecodeError {
 	#[error("invalid length")]
 	InvalidLength,
@@ -81,7 +81,7 @@ pub enum DecodeError {
 #[cfg(test)]
 mod tests {
 	use super::*;
-	use ::rand::{ Rng, thread_rng };
+	use rand::{ Rng, thread_rng };
 
 	#[test]
 	fn rfc_provided_examples() {
@@ -176,12 +176,12 @@ mod tests {
 		let bytes = &*bytes;
 
 		let wiwi_encoded = encode_hex(bytes);
-		let hex_encoded = ::hex::encode(bytes);
+		let hex_encoded = hex::encode(bytes);
 		assert_eq!(wiwi_encoded, hex_encoded);
 
 		let wiwi_decoded_hex = decode_hex(hex_encoded.as_bytes())
 			.expect("wiwi can decode hex");
-		let hex_decoded_wiwi = ::hex::decode(wiwi_encoded.as_bytes())
+		let hex_decoded_wiwi = hex::decode(wiwi_encoded.as_bytes())
 			.expect("hex can decode wiwi");
 
 		assert_eq!(wiwi_decoded_hex, hex_decoded_wiwi);

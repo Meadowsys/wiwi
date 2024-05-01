@@ -1,7 +1,7 @@
 use super::{ *, marker::*, integer::* };
-use ::hashbrown::HashMap;
-use ::std::collections::BTreeSet;
-use ::std::hash::Hash;
+use hashbrown::HashMap;
+use std::collections::BTreeSet;
+use std::hash::Hash;
 
 pub fn serialise_object_array_with_key_deduping<K, V, B>(objects: &[&HashMap<K, V>], output: &mut B, options: &Options)
 where

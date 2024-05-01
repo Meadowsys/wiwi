@@ -1786,6 +1786,13 @@ dependencies = [
 ]
 
 [[package]]
+name = "wiwi-scripts"
+version = "0.0.0"
+dependencies = [
+ "wiwi",
+]
+
+[[package]]
 name = "z85"
 version = "3.0.5"
 source = "registry+https://github.com/rust-lang/crates.io-index"

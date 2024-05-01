@@ -2,13 +2,13 @@
 //!
 //! Works in static contexts (static variables)
 
-use ::parking_lot::{ Once, OnceState };
-use ::std::cell::UnsafeCell;
-use ::std::fmt::{ self, Debug, Display };
-use ::std::mem::ManuallyDrop;
-use ::std::ops::{ Deref, DerefMut };
-use ::std::panic::{ RefUnwindSafe, UnwindSafe };
-use ::std::ptr;
+use parking_lot::{ Once, OnceState };
+use std::cell::UnsafeCell;
+use std::fmt::{ self, Debug, Display };
+use std::mem::ManuallyDrop;
+use std::ops::{ Deref, DerefMut };
+use std::panic::{ RefUnwindSafe, UnwindSafe };
+use std::ptr;
 
 union Data<T, F> {
 	init: ManuallyDrop<F>,

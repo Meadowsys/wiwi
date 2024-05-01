@@ -1,6 +1,6 @@
 use super::error::*;
-use ::std::{ ptr, slice };
-use ::std::future::Future;
+use std::{ ptr, slice };
+use std::future::Future;
 
 pub trait BufferWrite {
 	fn reserve(&mut self, additional: usize);

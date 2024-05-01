@@ -12,9 +12,9 @@ pub use tokio::*;
 
 #[cfg(feature = "tokio")]
 mod tokio {
-	use ::chrono::{ DateTime, Local, NaiveDateTime, ParseError };
-	pub use ::chrono::{ TimeDelta, Timelike };
-	use ::thiserror::Error;
+	use chrono::{ DateTime, Local, NaiveDateTime, ParseError };
+	pub use chrono::{ TimeDelta, Timelike };
+	use thiserror::Error;
 
 	pub const SECS_PER_MIN: u64 = 60;
 	pub const SECS_PER_HOUR: u64 = SECS_PER_MIN * 60;

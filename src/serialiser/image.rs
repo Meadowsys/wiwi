@@ -1,7 +1,7 @@
 use super::{ buffer::*, core::*, error::*, integer::* };
-use ::image::codecs::png::{ PngDecoder, PngEncoder };
-use ::image::{ ExtendedColorType, ImageEncoder, ImageDecoder, RgbImage, RgbaImage };
-use ::std::{ io::Cursor, ptr, slice };
+use image::codecs::png::{ PngDecoder, PngEncoder };
+use image::{ ExtendedColorType, ImageEncoder, ImageDecoder, RgbImage, RgbaImage };
+use std::{ io::Cursor, ptr, slice };
 
 pub fn serialise_to_png<T: ?Sized + Serialise>(item: &T) -> Vec<u8> {
 	serialise_to_png_with_options(item, &ImageOptions::default())

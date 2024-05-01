@@ -3,7 +3,7 @@
 // TODO: figure out usize?
 
 use super::{ *, buffer::*, core::*, error::* };
-use ::std::ptr;
+use std::ptr;
 
 // max unsigned
 

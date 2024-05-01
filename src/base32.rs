@@ -1,5 +1,5 @@
 use crate::encoding_utils::{ ChunkedSlice, UnsafeBufWriteGuard };
-use ::std::{ hint, ptr };
+use std::{ hint, ptr };
 
 // // table unused, for ref only, cause it can be calculated
 // pub const TABLE_ENCODER_LEN: usize = 32;
@@ -139,7 +139,7 @@ unsafe fn encode_frame<
 #[cfg(test)]
 mod tests {
 	use super::*;
-	use ::rand::{ Rng, thread_rng };
+	use rand::{ Rng, thread_rng };
 
 	#[test]
 	fn rfc_provided_examples() {

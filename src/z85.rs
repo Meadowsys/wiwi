@@ -19,7 +19,7 @@
 //! Original Z85 spec: <https://rfc.zeromq.org/spec/32>
 
 use crate::encoding_utils::{ ChunkedSlice, UnsafeBufWriteGuard};
-use ::std::slice;
+use std::slice;
 
 pub const TABLE_ENCODER_LEN: usize = 85;
 pub const TABLE_ENCODER: [u8; TABLE_ENCODER_LEN] = *b"0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ.-:+=^!/*?&<>()[]{}@%$#";
@@ -244,7 +244,7 @@ pub fn decode_z85(mut bytes: &[u8]) -> Result<Vec<u8>, DecodeError> {
 }
 
 // TODO: these errors could be improved.
-#[derive(Debug, PartialEq, ::thiserror::Error)]
+#[derive(Debug, PartialEq, thiserror::Error)]
 pub enum DecodeError {
 	#[error("invalid length")]
 	InvalidLength,
@@ -352,7 +352,7 @@ where
 #[cfg(test)]
 mod tests {
 	use super::*;
-	use ::rand::{ Rng, thread_rng };
+	use rand::{ Rng, thread_rng };
 
 	#[test]
 	fn provided_test_case() {
@@ -438,12 +438,12 @@ mod tests {
 		let bytes = &*bytes;
 
 		let wiwi_encoded = encode_z85(bytes);
-		let z85_encoded = ::z85::encode(bytes);
+		let z85_encoded = z85::encode(bytes);
 		assert_eq!(wiwi_encoded, z85_encoded);
 
 		let wiwi_decoded_z85 = decode_z85(z85_encoded.as_bytes())
 			.expect("wiwi can decode z85");
-		let z85_decoded_wiwi = ::z85::decode(wiwi_encoded.as_bytes())
+		let z85_decoded_wiwi = z85::decode(wiwi_encoded.as_bytes())
 			.expect("z85 can decode wiwi");
 
 		assert_eq!(wiwi_decoded_z85, z85_decoded_wiwi);

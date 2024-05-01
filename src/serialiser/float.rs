@@ -1,5 +1,5 @@
 use super::{ buffer::*, core::*, error::* };
-use ::std::ptr;
+use std::ptr;
 
 // s: sign, e: exponent, f: fraction
 // f16: seeeeeffffffffff (5 exponent 10 fraction)

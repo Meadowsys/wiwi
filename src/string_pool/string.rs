@@ -1,11 +1,11 @@
 use super::pool::{ GlobalPool, Pool, SlicesWrap };
-use ::std::borrow::Borrow;
-use ::std::ffi::OsStr;
-use ::std::fmt::{ self, Debug, Display };
-use ::std::ops::{ Add, AddAssign, Bound, Deref, RangeBounds };
-use ::std::path::Path;
-use ::std::string::{ self as std_string, String as StdString };
-use ::std::str as std_str;
+use std::borrow::Borrow;
+use std::ffi::OsStr;
+use std::fmt::{ self, Debug, Display };
+use std::ops::{ Add, AddAssign, Bound, Deref, RangeBounds };
+use std::path::Path;
+use std::string::{ self as std_string, String as StdString };
+use std::str as std_str;
 
 pub struct String<P: Pool = GlobalPool> {
 	raw: P::Raw,
@@ -558,8 +558,8 @@ impl<P: Pool> From<(&str, P)> for String<P> {
 mod tests {
 	use super::Pool;
 	use super::*;
-	use ::rand::{ Rng, rngs::OsRng };
-	use ::std::fmt::Debug;
+	use rand::{ Rng, rngs::OsRng };
+	use std::fmt::Debug;
 
 	#[test]
 	fn new() {

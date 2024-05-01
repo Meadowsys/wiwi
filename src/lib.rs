@@ -14,7 +14,7 @@
 	unused_variables
 )]
 
-use ::cfg_if::cfg_if;
+use cfg_if::cfg_if;
 
 pub mod prelude;
 

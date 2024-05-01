@@ -7,11 +7,11 @@ pub use tokio::*;
 
 #[cfg(feature = "tokio")]
 mod tokio {
-	pub use ::chrono;
+	pub use chrono;
 
-	use ::chrono::{ DateTime, Local, NaiveDateTime, TimeDelta, Timelike, TimeZone };
-	use ::std::future::Future;
-	use ::tokio::time::sleep;
+	use chrono::{ DateTime, Local, NaiveDateTime, TimeDelta, Timelike, TimeZone };
+	use std::future::Future;
+	use tokio::time::sleep;
 
 	/// An interval tracking clock. Takes a start time, an end time or a run duration,
 	/// and an interval. Calls to [`tick`][ClockTimer::tick] will return only if

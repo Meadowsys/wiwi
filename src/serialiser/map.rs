@@ -1,6 +1,6 @@
 use super::{ buffer::*, core::*, error::*, len_int::* };
-use ::std::hash::{ BuildHasher, Hash };
-use ::std::collections::{ BTreeMap, HashMap };
+use std::hash::{ BuildHasher, Hash };
+use std::collections::{ BTreeMap, HashMap };
 
 pub const MARKER_MAP_8: u8 = 0xac;
 pub const MARKER_MAP_XL: u8 = 0xad;
@@ -100,7 +100,7 @@ where
 }
 
 #[cfg(feature = "hashbrown")]
-impl<K, V, S> Serialise for ::hashbrown::HashMap<K, V, S>
+impl<K, V, S> Serialise for hashbrown::HashMap<K, V, S>
 where
 	K: Serialise,
 	V: Serialise,
@@ -113,7 +113,7 @@ where
 }
 
 #[cfg(feature = "hashbrown")]
-impl<'h, K, V, S> Deserialise<'h> for ::hashbrown::HashMap<K, V, S>
+impl<'h, K, V, S> Deserialise<'h> for hashbrown::HashMap<K, V, S>
 where
 	K: Deserialise<'h> + Eq + Hash,
 	V: Deserialise<'h>,
@@ -127,7 +127,7 @@ where
 
 /*
 #[cfg(feature = "serde-json")]
-impl Serialise for ::serde_json::Map<String, ::serde_json::Value> {
+impl Serialise for serde_json::Map<String, serde_json::Value> {
 	fn serialise<B: BufferWrite>(&self, output: &mut B, options: &Options) {
 		serialise_map_len(self.len(), output);
 		serialise_map_kv(self, output, options);
@@ -135,7 +135,7 @@ impl Serialise for ::serde_json::Map<String, ::serde_json::Value> {
 }
 
 #[cfg(feature = "serde-json")]
-impl<'h> Deserialise<'h> for ::serde_json::Map<String, ::serde_json::Value> {
+impl<'h> Deserialise<'h> for serde_json::Map<String, serde_json::Value> {
 	fn deserialise<B: BufferRead<'h>>(input: &mut B) -> Result<Self> {
 		let len = deserialise_map_len(input.read_byte()?, input)?;
 		deserialise_map_kv(len, input).collect()

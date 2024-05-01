@@ -1,6 +1,6 @@
 fn main() {
 	// we'll encode both upper and lower into the same table
-	use ::wiwi::hex::{ TABLE_ENCODER_LOWER, TABLE_ENCODER_UPPER };
+	use wiwi::hex::{ TABLE_ENCODER_LOWER, TABLE_ENCODER_UPPER };
 
 	let mut string = String::new();
 

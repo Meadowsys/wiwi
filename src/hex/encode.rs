@@ -34,7 +34,7 @@ pub(super) unsafe fn neon_uint8x16<const UPPER: bool>(
 	mut dest_ptr: *mut u8,
 	rounds: usize
 ) -> *const u8 {
-	use ::std::arch::aarch64::*;
+	use std::arch::aarch64::*;
 
 	let four_lower_bits = vdupq_n_u8(0xf);
 	let nine = vdupq_n_u8(9);

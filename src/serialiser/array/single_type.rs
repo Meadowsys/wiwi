@@ -1,5 +1,5 @@
 use super::*;
-use ::std::marker::PhantomData;
+use std::marker::PhantomData;
 
 pub const MARKER_SINGLE_TYPE_ARRAY_8: u8 = 0xae;
 pub const MARKER_SINGLE_TYPE_ARRAY_XL: u8 = 0xaf;

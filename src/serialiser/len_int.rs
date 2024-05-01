@@ -1,7 +1,7 @@
 #![allow(clippy::match_overlapping_arm)]
 
 use super::{ *, buffer::*, error::*, integer::* };
-use ::std::ptr;
+use std::ptr;
 
 // we are just going to be responsible for serialising/deserialising XL lengths,
 // nothing else (not 8 variant etc)

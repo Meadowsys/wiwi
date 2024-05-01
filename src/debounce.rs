@@ -9,12 +9,12 @@ pub use tokio::*;
 #[cfg(feature = "tokio")]
 mod tokio {
 	use super::dyn_fn;
-	use ::chrono::{ Local, NaiveDateTime, TimeDelta };
-	use ::std::{ mem::swap, sync::Arc };
-	use ::tokio::runtime::Handle;
-	use ::tokio::sync::Mutex;
-	use ::tokio::sync::mpsc::{ UnboundedReceiver, UnboundedSender, unbounded_channel };
-	use ::tokio::time::sleep;
+	use chrono::{ Local, NaiveDateTime, TimeDelta };
+	use std::{ mem::swap, sync::Arc };
+	use tokio::runtime::Handle;
+	use tokio::sync::Mutex;
+	use tokio::sync::mpsc::{ UnboundedReceiver, UnboundedSender, unbounded_channel };
+	use tokio::time::sleep;
 
 	/// Returns a new function that debounces calls to the passed function. This
 	/// function can be cloned however many times you want and passed across threads.

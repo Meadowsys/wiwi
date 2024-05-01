@@ -1,4 +1,4 @@
-use ::std::{ slice, ptr };
+use std::{ slice, ptr };
 
 /// In debug mode, keeps track of the amount of bytes written, and asserts
 /// preconditions like not writing over capacity and having all preallocated

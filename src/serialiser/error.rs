@@ -1,6 +1,6 @@
-use ::std::{ error, fmt };
+use std::{ error, fmt };
 
-pub type Result<T, E = Error> = ::std::result::Result<T, E>;
+pub type Result<T, E = Error> = std::result::Result<T, E>;
 
 #[derive(Clone, Debug, PartialEq, Eq)]
 pub struct Error(String);

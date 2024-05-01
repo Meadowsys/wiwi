@@ -15,9 +15,9 @@ use super::{
 /*
 
 #[cfg(feature = "serde-json")]
-impl Serialise for ::serde_json::Value {
+impl Serialise for serde_json::Value {
 	fn serialise<B: BufferWrite>(&self, output: &mut B, options: &Options) {
-		use ::serde_json::Value;
+		use serde_json::Value;
 
 		match self {
 			Value::Null => { serialise_null(output) }
@@ -46,9 +46,9 @@ impl Serialise for ::serde_json::Value {
 }
 
 #[cfg(feature = "serde-json")]
-impl<'h> Deserialise<'h> for ::serde_json::Value {
+impl<'h> Deserialise<'h> for serde_json::Value {
 	fn deserialise<B: BufferRead<'h>>(input: &mut B) -> Result<Self> {
-		use ::serde_json::{ Number, Value };
+		use serde_json::{ Number, Value };
 
 		Ok(match input.read_byte()? {
 			MARKER_NULL => { Value::Null }
@@ -84,7 +84,7 @@ impl<'h> Deserialise<'h> for ::serde_json::Value {
 			}
 
 			marker => {
-				use ::serde_json::Number;
+				use serde_json::Number;
 
 				if let Ok(checked_marker) = marker_valid_for_u64(marker) {
 					let num = deserialise_rest_of_u64(checked_marker, input)?;
@@ -115,10 +115,10 @@ use super::{
 	object::*,
 	string::*
 };
-use ::hashbrown::HashMap;
-use ::ordered_float::OrderedFloat;
+use hashbrown::HashMap;
+use ordered_float::OrderedFloat;
 use std::borrow::Borrow;
-use ::std::{ borrow::Cow, fmt, hint };
+use std::{ borrow::Cow, fmt, hint };
 
 #[derive(Clone, Debug, PartialEq, Eq)]
 pub enum Value<'h> {

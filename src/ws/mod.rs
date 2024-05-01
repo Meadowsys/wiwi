@@ -10,7 +10,7 @@ pub use tokio::*;
 
 #[cfg(feature = "tokio")]
 mod tokio {
-	use ::tokio::net::TcpSocket;
+	use tokio::net::TcpSocket;
 	use tokio::io::AsyncRead;
 
 	pub struct ClientBuilder {}

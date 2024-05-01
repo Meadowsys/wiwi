@@ -1,5 +1,5 @@
 use super::{ buffer::*, error::*, integer::* };
-use ::std::ops::Deref;
+use std::ops::Deref;
 
 pub struct Marker {
 	inner: MarkerInner

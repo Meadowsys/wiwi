@@ -1,9 +1,9 @@
 use crate::lazy_wrap::LazyWrap;
 use super::{ Pool, SlicesWrap };
-use ::hashbrown::{ Equivalent, HashSet };
-use ::parking_lot::RwLock;
-use ::std::hash::{ Hash, Hasher };
-use ::std::sync::Arc;
+use hashbrown::{ Equivalent, HashSet };
+use parking_lot::RwLock;
+use std::hash::{ Hash, Hasher };
+use std::sync::Arc;
 
 /// The default, global string pool
 #[derive(Clone, Debug, Default)]
@@ -101,11 +101,11 @@ impl<'h> Equivalent<<GlobalPool as Pool>::Raw> for SlicesWrap<'h> {
 #[cfg(test)]
 mod tests {
 	use super::*;
-	use ::hashbrown::hash_map::DefaultHashBuilder;
-	use ::rand::{ Rng, rngs::OsRng };
-	use ::std::string::String as StdString;
-	use ::std::iter::repeat;
-	use ::std::hash::BuildHasher;
+	use hashbrown::hash_map::DefaultHashBuilder;
+	use rand::{ Rng, rngs::OsRng };
+	use std::string::String as StdString;
+	use std::iter::repeat;
+	use std::hash::BuildHasher;
 
 	#[test]
 	fn slices_wrap_iter_hash_and_eq() {

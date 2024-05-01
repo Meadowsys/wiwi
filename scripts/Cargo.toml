@@ -1,0 +1,16 @@
+[package]
+name = "wiwi-scripts"
+version = "0.0.0"
+edition = "2021"
+publish = false
+
+[dependencies]
+wiwi = { path = ".." }
+
+[[bin]]
+name = "generate-hex-table-decoder"
+required-features = ["wiwi/hex"]
+
+[[bin]]
+name = "generate-z85-table-decoder"
+required-features = ["wiwi/z85"]

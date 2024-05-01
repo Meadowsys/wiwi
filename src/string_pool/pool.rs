@@ -1,5 +1,5 @@
-use ::std::fmt::Debug;
-use ::std::hash::{ Hash, Hasher };
+use std::fmt::Debug;
+use std::hash::{ Hash, Hasher };
 
 mod global;
 
