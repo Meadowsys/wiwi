@@ -61,24 +61,24 @@ To be documented
 
 Below are a list of markers.
 
-- [x] `0x00` to `0x7f`: smallint
-- [x] `0x80` to `0x9f`: signed/unsigned ints
-- [x] `0xa0`: bool, `true`
-- [x] `0xa1`: `false`
+- [ ] `0x00` to `0x7f`: smallint
+- [ ] `0x80` to `0x9f`: signed/unsigned ints
+- [ ] `0xa0`: bool, `true`
+- [ ] `0xa1`: `false`
 - [ ] `0xa2`: _reserved_ (16-bit float)
-- [x] `0xa3`: 32-bit float
-- [x] `0xa4`: 64-bit float
+- [ ] `0xa3`: 32-bit float
+- [ ] `0xa4`: 64-bit float
 - [ ] `0xa5`: _reserved_ (128-bit float)
 - [ ] `0xa6`: _reserved_ (256-bit float)
-- [x] `0xa7`: `null`
-- [x] `0xa8`: string (8)
-- [x] `0xa9`: string (XL)
-- [x] `0xaa`: array (8)
-- [x] `0xab`: array (XL)
-- [x] `0xac`: map (8)
-- [x] `0xad`: map (XL)
-- [x] `0xae`: single-type array (8)
-- [x] `0xaf`: single-type array (XL)
+- [ ] `0xa7`: `null`
+- [ ] `0xa8`: string (8)
+- [ ] `0xa9`: string (XL)
+- [ ] `0xaa`: array (8)
+- [ ] `0xab`: array (XL)
+- [ ] `0xac`: map (8)
+- [ ] `0xad`: map (XL)
+- [ ] `0xae`: single-type array (8)
+- [ ] `0xaf`: single-type array (XL)
 - [ ] `0xb0`: binary (8)
 - [ ] `0xb1`: binary (XL)
 - [ ] `0xb2`: _unassigned_ <!-- set (8) -->
