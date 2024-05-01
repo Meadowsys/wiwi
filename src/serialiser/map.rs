@@ -125,6 +125,7 @@ where
 	}
 }
 
+/*
 #[cfg(feature = "serialiser-serde-json")]
 impl Serialise for ::serde_json::Map<String, ::serde_json::Value> {
 	fn serialise<B: BufferWrite>(&self, output: &mut B, options: &Options) {
@@ -140,3 +141,4 @@ impl<'h> Deserialise<'h> for ::serde_json::Map<String, ::serde_json::Value> {
 		deserialise_map_kv(len, input).collect()
 	}
 }
+*/
