@@ -1,6 +1,6 @@
 use std::cell::RefCell;
 
-pub fn next_id() -> u64 {
+pub(super) fn next_id() -> u64 {
 	thread_local! {
 		static NEXT_ID: RefCell<u64> = const { RefCell::new(0) };
 	}

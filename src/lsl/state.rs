@@ -1,4 +1,5 @@
 use super::*;
+use std::fmt;
 
 #[derive(Clone, Copy)]
 pub struct State {
@@ -23,11 +24,6 @@ fn _state(state: Option<State>, f: impl FnOnce()) {
 	enter_state(state);
 	f();
 	exit_state(state);
-}
-
-#[derive(Default)]
-pub(super) struct StateContainer {
-	// events
 }
 
 pub(super) fn enter_state(state: Option<State>) {
@@ -69,4 +65,9 @@ pub(super) fn exit_state(state: Option<State>) {
 		};
 		// TODO: update entry somehow lol
 	});
+}
+
+#[derive(Default)]
+pub(super) struct StateContainer {
+	// events
 }
