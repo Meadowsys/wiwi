@@ -56,6 +56,9 @@ pub mod hex;
 #[cfg(feature = "lazy-wrap")]
 pub mod lazy_wrap;
 
+#[cfg(feature = "lsl")]
+pub mod lsl;
+
 #[cfg(feature = "serialiser")]
 pub mod serialiser;
 

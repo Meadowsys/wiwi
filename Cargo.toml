@@ -45,6 +45,7 @@ debounce = ["dep:chrono"]
 h = ["dep:thiserror"]
 hex = ["dep:thiserror"]
 lazy-wrap = ["dep:parking_lot"]
+lsl = []
 serialiser = ["dep:ordered-float"]
 string-pool = ["dep:hashbrown", "lazy-wrap"]
 # ws = ["dep:httparse", "dep:thiserror", "dep:url"]
@@ -79,6 +80,7 @@ features = [
 	"h",
 	"hex",
 	"lazy-wrap",
+	"lsl",
 	"serialiser",
 	"string-pool",
 	"z85",
