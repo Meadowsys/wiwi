@@ -58,9 +58,11 @@ pub mod lazy_wrap;
 
 #[cfg(feature = "lsl")]
 pub mod lsl;
+unstable_feature!("lsl");
 
 #[cfg(feature = "serialiser")]
 pub mod serialiser;
+unstable_feature!("serialiser");
 
 #[cfg(feature = "string-pool")]
 pub mod string_pool;
@@ -122,3 +124,14 @@ macro_rules! feature_cfg_compile_check {
 	}
 }
 use feature_cfg_compile_check;
+
+macro_rules! unstable_feature {
+	($feature:literal) => {
+		#[cfg(all(
+			not(feature = "unstable"),
+			feature = $feature
+		))]
+		compile_error!(concat!("`", $feature, "` is an unstable feature, and you must have the `unstable` feature enabled to use it"));
+	}
+}
+use unstable_feature;

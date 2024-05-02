@@ -4,6 +4,8 @@ A lil lib containing misc utilities, and Stuff™. Contains some useful things, 
 
 All exposed features are gated behind features, none of which are enabled by default.
 
+**Unstable features are not covered by semver guarantee.** You must also enable the `unstable` feature to make use of these features.
+
 ## Features
 
 <!-- make sure to check Cargo.toml and workflow files too -->
@@ -13,8 +15,8 @@ All exposed features are gated behind features, none of which are enabled by def
 - **`h`** - h
 - **`hex`** - Fast (faster than `hex` crate[^1]) implementation of hex encoding, supporting upper hex and lower hex.
 - **`lazy-wrap`** - Wrapper around an initialisation function to lazily initialise a value on first access (can be used in statics)
-- **`lsl`** - experimental lib to help with writing Second Life scripts in Rust... because yes, I got fed up with it very quickly and immediately missed Rust lol
-- **`serialiser`** - self describing, stable (once finished) binary serialiser, aiming for small output size by exploiting common patterns in real world data
+- **`lsl`** (unstable) - experimental lib to help with writing Second Life scripts in Rust... because yes, I got fed up with it very quickly and immediately missed Rust lol
+- **`serialiser`** (unstable) - self describing, stable (once finished) binary serialiser, aiming for small output size by exploiting common patterns in real world data
 - **`string-pool`** - Global immutable string pool and String type
 - **`z85`** - A fast (faster than `z85` crate[^2]) implementation of [ZeroMQ]'s [z85] format, a format to represent binary data as printable ASCII text. Think base64, but more efficient in encoded size. This implementation is not fully to spec, as it handles padding text to the correct length where the spec says the application code must handle it instead.
 
