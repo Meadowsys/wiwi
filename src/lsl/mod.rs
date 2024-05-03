@@ -1,8 +1,10 @@
 use std::marker::PhantomData;
 
 pub mod ctx;
+pub mod var;
 pub mod script;
 pub mod state;
+pub mod ty;
 pub mod util;
 
 type SingleThreadMarker = PhantomData<*const ()>;

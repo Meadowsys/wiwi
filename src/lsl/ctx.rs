@@ -39,4 +39,13 @@ impl Context {
 	pub fn unwrap_state_ctx(self) -> (Option<u64>, state::StateContainer) {
 		check_variant!(self, State, id, ctx, "expected state context")
 	}
+
+	pub fn borrow_var_delarable(&mut self) -> &mut dyn var::VarDeclarable {
+		match self {
+			Self::Script { ctx } => { ctx }
+			Self::State { .. } => {
+				panic!("cannot define variables while in a state context and outside an event context")
+			}
+		}
+	}
 }
