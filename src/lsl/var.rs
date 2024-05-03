@@ -176,36 +176,49 @@ macro_rules! impl_init_value {
 	}
 }
 
+fn empty_string(_: ()) -> String {
+	String::new()
+}
+
 impl_init_value! {
 	// float
-	f32, ty::Float, |f| format!("{f}");
+	(), ty::Float, empty_string;
+	f32, ty::Float, |f| format!("={f}");
 
 	// int
-	u8, ty::Integer, |i| format!("{i}");
-	u16, ty::Integer, |i| format!("{i}");
-	u32, ty::Integer, |i| format!("{i}");
-	i8, ty::Integer, |i| format!("{i}");
-	i16, ty::Integer, |i| format!("{i}");
-	i32, ty::Integer, |i| format!("{i}");
-	i64, ty::Integer, |i| format!("{i}");
+	(), ty::Integer, empty_string;
+	u8, ty::Integer, |i| format!("={i}");
+	u16, ty::Integer, |i| format!("={i}");
+	u32, ty::Integer, |i| format!("={i}");
+	i8, ty::Integer, |i| format!("={i}");
+	i16, ty::Integer, |i| format!("={i}");
+	i32, ty::Integer, |i| format!("={i}");
+	i64, ty::Integer, |i| format!("={i}");
 
 	// key (for now, we're not gonna check its valid?)
-	&str, ty::Key, |s| format!("{s:?}");
-	String, ty::Key, |s| format!("{s:?}");
+	(), ty::Key, empty_string;
+	&str, ty::Key, |s| format!("={s:?}");
+	String, ty::Key, |s| format!("={s:?}");
 
 	// list
+	(), ty::List, empty_string;
 
 	// rotation
+	(), ty::Rotation, empty_string;
 
 	// string
-	&str, ty::String, |s| format!("{s:?}");
-	String, ty::String, |s| format!("{s:?}");
+	(), ty::String, empty_string;
+	&str, ty::String, |s| format!("={s:?}");
+	String, ty::String, |s| format!("={s:?}");
 
 	// vector
-	(f32, f32, f32), ty::Vector, |(f1, f2, f3)| format!("<{f1}, {f2}, {f3}>");
+	(), ty::Vector, empty_string;
+	(f32, f32, f32), ty::Vector, |(f1, f2, f3)| format!("=<{f1}, {f2}, {f3}>");
 
 	// boolean
-	bool, ty::Boolean, |b| format!("{}", b as usize);
+	(), ty::Boolean, empty_string;
+	bool, ty::Boolean, |b| format!("={}", b as usize);
 
 	// quaternion
+	(), ty::Quaternion, empty_string;
 }

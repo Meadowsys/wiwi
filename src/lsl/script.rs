@@ -44,7 +44,7 @@ impl fmt::Display for Script {
 				var::VAR_INIT_VALUES.with_borrow(|init_val_map| {
 					let val = init_val_map.get(id)
 						.expect("invalid state (var says it has an init value, but can't find one)");
-					write!(f, " = {val}")
+					f.write_str(val)
 				})?;
 			}
 
