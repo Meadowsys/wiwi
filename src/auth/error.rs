@@ -45,3 +45,9 @@ impl From<argon2::Error> for ErrorInner {
 		Self::Argon2(error)
 	}
 }
+
+impl From<std::array::TryFromSliceError> for ErrorInner {
+	fn from(_error: std::array::TryFromSliceError) -> Self {
+		Self::TryIntoArray
+	}
+}

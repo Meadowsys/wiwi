@@ -1,7 +1,7 @@
 /// Something that is able to identify a user. Usually an email or username.
 /// Store directly in the database without modification
 pub struct UserId {
-	user_id: String
+	pub user_id: String
 }
 
 impl UserId {
