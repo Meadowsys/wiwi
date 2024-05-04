@@ -28,6 +28,10 @@ pub mod prelude;
 ))]
 mod encoding_utils;
 
+#[cfg(feature = "auth")]
+pub mod auth;
+unstable_feature!("auth");
+
 #[cfg(feature = "base16")]
 pub mod base16;
 

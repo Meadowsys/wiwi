@@ -14,22 +14,25 @@ keywords = [
 ]
 
 [dependencies]
+argon2 = { version = "0.5.3", optional = true }
 cfg-if = "1.0.0"
-chrono = { version = "0.4.35", features = ["clock"], optional = true }
-hashbrown = { version = "0.14.3", features = ["ahash"], optional = true }
+chrono = { version = "0.4.35", optional = true, features = ["clock"] }
+hashbrown = { version = "0.14.3", optional = true, features = ["ahash"] }
 httparse = { version = "1.8.0", optional = true }
 image = { version = "0.25.1", optional = true }
 ordered-float = { version = "4.2.0", optional = true }
+p384 = { version = "0.13.0", optional = true }
 parking_lot = { version = "0.12.1", optional = true }
+rand = { version = "0.8.5", optional = true }
 serde_json = { version = "1.0.116", optional = true }
 thiserror = { version = "1.0.58", optional = true }
-tokio = { version = "1.36.0", features = ["full"], optional = true }
+tokio = { version = "1.36.0", optional = true, features = ["full"] }
 url = { version = "2.5.0", optional = true }
+zeroize = { version = "1.7.0", optional = true }
 
 [dev-dependencies]
 criterion = { version = "0.5.1", features = ["html_reports"] }
 hex = "0.4.3"
-rand = "0.8.5"
 z85 = "3.0.5"
 
 [features]
@@ -38,20 +41,61 @@ z85 = "3.0.5"
 
 unstable = []
 
-# base16 = ["dep:thiserror", "hex"]
-# base32 = ["dep:thiserror"]
-# base64 = ["dep:thiserror"]
-clock-timer = ["dep:chrono", "dep:thiserror"]
-clock-timer-2 = ["dep:chrono"]
-debounce = ["dep:chrono"]
-h = ["dep:thiserror"]
-hex = ["dep:thiserror"]
-lazy-wrap = ["dep:parking_lot"]
-lsl = []
-serialiser = ["dep:ordered-float"]
-string-pool = ["dep:hashbrown", "lazy-wrap"]
-# ws = ["dep:httparse", "dep:thiserror", "dep:url"]
-z85 = ["dep:thiserror"]
+auth = [
+	"dep:argon2",
+	"dep:p384",
+	"dep:rand",
+	"dep:thiserror",
+	"dep:zeroize",
+	"z85"
+]
+# base16 = [
+# 	"dep:thiserror",
+# 	"hex"
+# ]
+# base32 = [
+# 	"dep:thiserror"
+# ]
+# base64 = [
+# 	"dep:thiserror"
+# ]
+clock-timer = [
+	"dep:chrono",
+	"dep:thiserror"
+]
+clock-timer-2 = [
+	"dep:chrono"
+]
+debounce = [
+	"dep:chrono"
+]
+h = [
+	"dep:thiserror"
+]
+hex = [
+	"dep:thiserror"
+]
+lazy-wrap = [
+	"dep:parking_lot"
+]
+lsl = [
+	"dep:hashbrown"
+]
+serialiser = [
+	"dep:ordered-float"
+]
+string-pool = [
+	"dep:hashbrown",
+	"lazy-wrap"
+]
+# ws = [
+# 	"dep:httparse",
+# 	"dep:thiserror",
+# 	"dep:url"
+# ]
+z85 = [
+	"dep:thiserror"
+]
 
 # addon features
 hashbrown = ["dep:hashbrown"]
