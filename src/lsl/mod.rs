@@ -1,16 +1,21 @@
 use std::marker::PhantomData;
 
-pub mod ctx;
-pub mod var;
-pub mod script;
-pub mod state;
-pub mod ty;
-pub mod util;
+// mod consts;
+mod ctx;
+// mod var;
+// mod script;
+// mod script_render;
+// mod state;
+mod ty;
+mod util;
+mod val;
+
+pub use ctx::script::Script;
 
 type SingleThreadMarker = PhantomData<*const ()>;
 
-pub fn new_script(f: impl FnOnce()) -> script::Script {
-	script::enter_script_ctx();
+pub fn script(f: impl FnOnce()) -> Script {
+	ctx::enter_script();
 	f();
-	script::exit_script_ctx()
+	ctx::exit_script()
 }

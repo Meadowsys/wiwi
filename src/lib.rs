@@ -57,6 +57,10 @@ pub mod h;
 #[cfg(feature = "hex")]
 pub mod hex;
 
+#[cfg(feature = "id")]
+pub mod id;
+unstable_feature!("id");
+
 #[cfg(feature = "lazy-wrap")]
 pub mod lazy_wrap;
 

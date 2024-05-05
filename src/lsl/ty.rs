@@ -1,5 +1,3 @@
-use std::fmt;
-
 #[derive(Clone, Copy)]
 pub struct Float;
 #[derive(Clone, Copy)]
@@ -43,6 +41,6 @@ impl_type_trait! {
 	Rotation "rotation"
 	String "string"
 	Vector "vector"
-	Boolean "integer" // ?????
+	Boolean "integer"
 	Quaternion "quaternion"
 }
