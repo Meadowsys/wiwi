@@ -1,3 +1,5 @@
+pub type Result<T, E = Error> = std::result::Result<T, E>;
+
 #[derive(Debug, thiserror::Error)]
 #[error(transparent)]
 pub struct Error {
@@ -7,34 +9,35 @@ pub struct Error {
 #[derive(Debug, thiserror::Error)]
 enum ErrorInner {
 	#[error("{0}")]
+	Aead(chacha20poly1305::aead::Error),
+	#[error("{0}")]
 	Argon2(argon2::Error),
 	#[error(transparent)]
-	ParseInt(#[from] std::num::ParseIntError),
-	#[error("error parsing KDF string")]
-	ParseKdf,
-	#[error("unable to convert to fixed length array")]
-	TryIntoArray,
+	P384PKCS8DER(#[from] p384::pkcs8::der::Error),
+	// #[error(transparent)]
+	// ParseInt(#[from] std::num::ParseIntError),
+	// #[error("error parsing KDF string")]
+	// ParseKdf,
 	#[error(transparent)]
-	Z85Decode(#[from] crate::z85::DecodeError)
+	TryIntoArray(#[from] std::array::TryFromSliceError),
+	// #[error(transparent)]
+	// Z85Decode(#[from] crate::z85::DecodeError)
 }
 
-impl Error {
-	#[inline]
-	pub(in crate::auth) fn parse_kdf() -> Self {
-		let inner = ErrorInner::ParseKdf;
-		Self { inner }
-	}
+// impl Error {
+// 	#[inline]
+// 	pub(in crate::auth) fn parse_kdf() -> Self {
+// 		let inner = ErrorInner::ParseKdf;
+// 		Self { inner }
+// 	}
 
-	pub(in crate::auth) fn try_into_array() -> Self {
-		let inner = ErrorInner::TryIntoArray;
-		Self { inner }
-	}
-}
+// 	pub(in crate::auth) fn try_into_array() -> Self {
+// 		let inner = ErrorInner::TryIntoArray;
+// 		Self { inner }
+// 	}
+// }
 
-impl<T> From<T> for Error
-where
-	ErrorInner: From<T>
-{
+impl<T: Into<ErrorInner>> From<T> for Error {
 	fn from(inner: T) -> Self {
 		Self { inner: inner.into() }
 	}
@@ -46,8 +49,8 @@ impl From<argon2::Error> for ErrorInner {
 	}
 }
 
-impl From<std::array::TryFromSliceError> for ErrorInner {
-	fn from(_error: std::array::TryFromSliceError) -> Self {
-		Self::TryIntoArray
+impl From<chacha20poly1305::aead::Error> for ErrorInner {
+	fn from(error: chacha20poly1305::aead::Error) -> Self {
+		Self::Aead(error)
 	}
 }

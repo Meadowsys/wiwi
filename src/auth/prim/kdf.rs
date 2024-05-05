@@ -1,10 +1,8 @@
 use crate::auth::error::Error;
 use crate::z85::{ encode_z85, decode_z85 };
 use super::*;
-use std::{ fmt, str };
-
 use argon2::{ Algorithm, Argon2, PasswordHasher, Version };
-use zeroize::Zeroize;
+use std::{ fmt, str };
 
 const ALG: Algorithm = Algorithm::Argon2id;
 const VERSION: Version = Version::V0x13;
@@ -12,6 +10,7 @@ const M_COST: u32 = 0x10000;
 const T_COST: u32 = 4;
 const P_COST: u32 = 2;
 
+/// Key derivation function (argon2).
 pub struct Kdf {
 	alg: Algorithm,
 	version: Version,
@@ -22,14 +21,7 @@ pub struct Kdf {
 }
 
 impl Kdf {
-	// pub(in crate::auth) fn hash_and_salt(
-	// 	bytes: &[u8],
-	// 	salt: &salt::Salt
-	// ) {}
-}
-
-impl Default for Kdf {
-	fn default() -> Self {
+	fn new() -> Self {
 		Self {
 			alg: ALG,
 			version: VERSION,
@@ -38,6 +30,35 @@ impl Default for Kdf {
 			p_cost: P_COST,
 			bytes: [0u8; 32]
 		}
+	}
+
+	fn get_hasher(&self) -> Result<Argon2<'static>> {
+		Ok(Argon2::new(
+			self.alg,
+			self.version,
+			argon2::ParamsBuilder::new()
+				.m_cost(self.m_cost)
+				.t_cost(self.t_cost)
+				.p_cost(self.p_cost)
+				.build()?
+		))
+	}
+
+	pub(in crate::auth) fn hash_and_salt(
+		bytes: &[u8],
+		salt: &salt::Salt
+	) -> Result<Self> {
+		let mut this = Self::new();
+		this.get_hasher()?.hash_password_into(
+			bytes,
+			&salt.inner,
+			&mut this.bytes
+		)?;
+		Ok(this)
+	}
+
+	pub(in crate::auth) fn as_bytes(&self) -> &[u8; 32] {
+		&self.bytes
 	}
 }
 

@@ -1,17 +1,15 @@
 use crate::z85::{ encode_z85, decode_z85 };
 use super::*;
-use rand::{ Rng, rngs::OsRng };
 use std::{ fmt, str };
 
+/// 32-byte salt
 pub struct Salt {
-	pub salt: [u8; 32]
+	pub(in crate::auth) inner: [u8; 32]
 }
 
 impl Salt {
 	pub(in crate::auth) fn generate() -> Self {
-		let mut salt = [0u8; 32];
-		OsRng.fill(&mut salt);
-		Self { salt }
+		Self { inner: util::rand_array() }
 	}
 }
 
