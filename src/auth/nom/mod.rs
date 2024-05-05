@@ -2,8 +2,8 @@
 //! piece of data, so they don't get mixed up. For example, "user public key"
 //! and "session public key"
 
-pub mod email_verification_token;
-pub use email_verification_token::*;
+pub mod verification_token;
+pub use verification_token::*;
 pub mod hashed_password_verifier;
 pub use hashed_password_verifier::*;
 pub mod password_key;

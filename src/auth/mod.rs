@@ -2,7 +2,7 @@ pub mod error;
 mod nom;
 mod prim;
 mod util;
-mod flow;
+pub mod flow;
 
 use error::*;
 use nom::*;

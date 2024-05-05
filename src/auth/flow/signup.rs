@@ -73,7 +73,7 @@ impl EnsureIDUnique {
 
 	/// Call this once the server has confirmed that user ID is unique and
 	/// reserved it
-	pub fn confirmed_user_id_unique(self) -> Result<SendVerificationEmail> {
+	pub fn confirmed_user_id_unique(self) -> Result<SendVerification> {
 		let SignupServerReq {
 			user_id,
 			password_salt,
@@ -90,8 +90,8 @@ impl EnsureIDUnique {
 			&hashed_password_verifier_salt
 		)?;
 
-		let email_verification_token = EmailVerificationToken::generate();
-		let last_email_token_generate_time = LastEmailVerificationTokenGenerationTime::now();
+		let verification_token = VerificationToken::generate();
+		let last_token_generate_time = LastVerificationTokenGenerationTime::now();
 
 		let stored_data = ServerStoredUnverifiedUserData {
 			user_id,
@@ -102,15 +102,29 @@ impl EnsureIDUnique {
 			user_secret_key_nonce,
 			encrypted_user_secret_key,
 			user_public_key,
-			email_verification_token,
-			last_email_token_generate_time
+			verification_token,
+			last_token_generate_time
 		};
-		Ok(SendVerificationEmail { stored_data })
+		Ok(SendVerification { stored_data })
 	}
 }
 
-pub struct SendVerificationEmail {
+pub struct SendVerification {
 	stored_data: ServerStoredUnverifiedUserData
+}
+
+impl SendVerification {
+	pub fn user_id(&self) -> &str {
+		&self.stored_data.user_id.inner
+	}
+
+	pub fn verification_token(&self) -> &[u8; 32] {
+		&self.stored_data.verification_token.inner
+	}
+
+	pub fn verification_sent(self) -> ServerStoredUnverifiedUserData {
+		self.stored_data
+	}
 }
 
 /// Data the server stores for unverified users
@@ -124,6 +138,6 @@ pub struct ServerStoredUnverifiedUserData {
 	pub user_secret_key_nonce: UserSecretKeyNonce,
 	pub encrypted_user_secret_key: EncryptedUserSecretKey,
 	pub user_public_key: UserPublicKey,
-	pub email_verification_token: EmailVerificationToken,
-	pub last_email_token_generate_time: LastEmailVerificationTokenGenerationTime
+	pub verification_token: VerificationToken,
+	pub last_token_generate_time: LastVerificationTokenGenerationTime
 }
