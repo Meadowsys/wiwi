@@ -1,4 +1,5 @@
 use super::*;
+use hashbrown::HashMap;
 
 #[derive(Clone, Copy)]
 pub struct State {
@@ -38,8 +39,10 @@ pub fn new_state(f: impl FnOnce()) -> State {
 	state
 }
 
-#[derive(Default)]
-pub(in crate::lsl) struct StateContainer {}
+pub(in crate::lsl) struct StateContainer {
+	events: HashMap<u64, event::Event>,
+	_st: SingleThreadMarker
+}
 
 fn enter(state: Option<State>) {
 	CONTEXT.with_borrow_mut(|ctx| match ctx.len() {
@@ -48,7 +51,7 @@ fn enter(state: Option<State>) {
 		1 => {
 			ctx.push(ctx::Ctx::State {
 				id: state.map(|s| s.id),
-				ctx: StateContainer::default(),
+				ctx: StateContainer::new(),
 			})
 		}
 	})
@@ -68,10 +71,10 @@ fn exit(state: Option<State>) {
 
 			let state = match (state, id) {
 				(Some(state), Some(id)) if state.id == id => {
-					script.states.entry(id).or_default()
+					script.states.entry(id).or_insert_with(StateContainer::new)
 				}
 				(None, None) => {
-					script.default_state.get_or_insert_with(Default::default)
+					script.default_state.get_or_insert_with(StateContainer::new)
 				}
 				_ => { panic!("cannot exit unmatched state") }
 			};
@@ -79,4 +82,13 @@ fn exit(state: Option<State>) {
 			// TODO: entry updating when we have stuff to put into it heh
 		}
 	})
+}
+
+impl StateContainer {
+	fn new() -> Self {
+		Self {
+			events: HashMap::with_capacity(8),
+			_st: PhantomData
+		}
+	}
 }

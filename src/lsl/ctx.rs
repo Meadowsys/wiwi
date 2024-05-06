@@ -1,6 +1,7 @@
 use super::*;
 use std::{ cell::RefCell, num::NonZeroU64 };
 
+pub(in crate::lsl) mod event;
 pub(in crate::lsl) mod script;
 pub(in crate::lsl) mod state;
 
@@ -22,7 +23,9 @@ pub enum Ctx {
 		ctx: state::StateContainer
 	},
 	/// Inside an event declaration in a state (ex. attach)
-	Event {},
+	Event {
+		ctx: event::Event
+	},
 	/// Inside a function declaration
 	Function {}
 	// TODO: if/else statements etc
@@ -52,8 +55,17 @@ impl Ctx {
 		variant_check!(self, "expected script context", (Script, ctx))
 	}
 
+	pub fn borrow_state_ctx(&mut self) -> (Option<u64>, &mut state::StateContainer) {
+		let (id, state) = variant_check!(self, "expected state context", (State, id, ctx));
+		(*id, state)
+	}
+
 	pub fn unwrap_state_ctx(self) -> (Option<u64>, state::StateContainer) {
 		variant_check!(self, "expected state context", (State, id, ctx))
+	}
+
+	pub fn unwrap_event_ctx(self) -> event::Event {
+		variant_check!(self, "expected event context", (Event, ctx))
 	}
 
 	pub fn borrow_var_delarable(&mut self) -> &mut dyn VarDeclarable {

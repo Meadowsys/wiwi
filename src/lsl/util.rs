@@ -2,7 +2,7 @@ use crate::id::IDGenerator;
 use spin_sleep::SpinSleeper;
 use std::{ cell::RefCell, num::NonZeroU64, time::Duration };
 
-/// Returns next (increment) ID. Guaranteed unique within the thread.
+/// Returns next ID. Guaranteed unique within the thread.
 pub(super) fn next_id() -> NonZeroU64 {
 	thread_local! {
 		static GENERATOR: RefCell<(IDGenerator, SpinSleeper)> = {
