@@ -57,6 +57,18 @@ impl<T: ty::Type> IntoVarInit<T> for Var<T> {
 	}
 }
 
+impl<T: ty::Type, I: IntoVarInit<T>> IntoVarInit<T> for &I {
+	fn to_var_init(&self) -> Option<String> {
+		(**self).to_var_init()
+	}
+}
+
+impl<T: ty::Type, I: IntoVarInit<T>> IntoVarInit<T> for &mut I {
+	fn to_var_init(&self) -> Option<String> {
+		(**self).to_var_init()
+	}
+}
+
 // this one conflicts with the one above. best I can do I think, is macro for
 // specific types to use the IntoVal impl (below)
 //
