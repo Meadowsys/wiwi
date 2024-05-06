@@ -1,5 +1,5 @@
 use super::*;
-use std::cell::RefCell;
+use std::{ cell::RefCell, num::NonZeroU64 };
 
 pub(in crate::lsl) mod script;
 pub(in crate::lsl) mod state;
@@ -17,7 +17,10 @@ pub enum Ctx {
 	},
 	/// Root of state (ex. root of a `default {}` block,
 	/// or `state examplestate {}` block)
-	State {},
+	State {
+		id: Option<u64>,
+		ctx: state::StateContainer
+	},
 	/// Inside an event declaration in a state (ex. attach)
 	Event {},
 	/// Inside a function declaration
@@ -25,38 +28,18 @@ pub enum Ctx {
 	// TODO: if/else statements etc
 }
 
-pub fn enter_script() {
-	CONTEXT.with_borrow_mut(|ctx| match ctx.len() {
-		1.. => { panic!("cannot start script within another script") }
-		0 => {
-			ctx.push(Ctx::Script {
-				ctx: script::new()
-			})
-		}
-	})
-}
-
-pub fn exit_script() -> script::Script {
-	CONTEXT.with_borrow_mut(|ctx| match ctx.len() {
-		0 => { panic!("cannot exit non-existent script context") }
-		2.. => { panic!("cannot exit script context while in sub context") }
-		1 => {
-			ctx.pop()
-				.unwrap()
-				.unwrap_script_ctx()
-		}
-	})
-}
-
 pub fn with<R>(f: impl FnOnce(&mut Ctx) -> R) -> R {
-	CONTEXT.with_borrow_mut(|ctx| match ctx.len() {
-		0 => { panic!("not in a script context") }
-		2.. => { panic!("cannot get script context from a nested context") }
-		1 => {
-			let ctx = ctx.last_mut()
-				.unwrap();
-			f(ctx)
-		}
+	CONTEXT.with_borrow_mut(|ctx| {
+		let ctx = ctx.last_mut()
+			.expect("not in a script context");
+		f(ctx)
+	})
+}
+
+pub fn assert_in_script_root() {
+	with(|ctx| {
+		// Just want the panic if its not the right variant
+		let _ = ctx.borrow_script_ctx();
 	})
 }
 
@@ -64,13 +47,18 @@ impl Ctx {
 	pub fn borrow_script_ctx(&mut self) -> &mut script::Script {
 		variant_check!(self, "expected script context", (Script, ctx))
 	}
+
 	pub fn unwrap_script_ctx(self) -> script::Script {
 		variant_check!(self, "expected script context", (Script, ctx))
 	}
 
+	pub fn unwrap_state_ctx(self) -> (Option<u64>, state::StateContainer) {
+		variant_check!(self, "expected state context", (State, id, ctx))
+	}
+
 	pub fn borrow_var_delarable(&mut self) -> &mut dyn VarDeclarable {
 		variant_check! {
-			self, "expected context where variables can be defined"
+			self, "expected context where variables can be declared"
 			(Script, ctx)
 		}
 	}
@@ -86,7 +74,7 @@ macro_rules! variant_check {
 		$(($variant:ident $(, $fields:ident)*))*
 	} => {
 		match $var {
-			$(Self::$variant { $($fields,)* .. } => { $($fields),* })*
+			$(Self::$variant { $($fields,)* .. } => { ($($fields),*) })*
 			_ => { panic!($msg) }
 		}
 	};

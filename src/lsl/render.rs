@@ -30,9 +30,11 @@ pub(super) fn render(script: &ctx::script::Script) -> Result<String, fmt::Error>
 
 	// TODO: need to detect... empty states then add a dummy thing
 	if let Some(state) = default_state {
-		// TODO: do something
+		writeln!(out, "default {{")?;
+		// TODO: events
+		writeln!(out, "}}")?;
 	} else {
-		// also TODO: jwoeijaoifjwelofijaiwe
+		// TODO: not sure what to do here?
 	}
 
 	for (id, state) in states {
