@@ -48,20 +48,54 @@ pub fn exit_script() -> script::Script {
 	})
 }
 
-impl Ctx {
-	pub fn unwrap_script_ctx(self) -> script::Script {
-		single_variant_check!(self, Script, ctx, "expected script context")
-	}
+pub fn with<R>(f: impl FnOnce(&mut Ctx) -> R) -> R {
+	CONTEXT.with_borrow_mut(|ctx| match ctx.len() {
+		0 => { panic!("not in a script context") }
+		2.. => { panic!("cannot get script context from a nested context") }
+		1 => {
+			let ctx = ctx.last_mut()
+				.unwrap();
+			f(ctx)
+		}
+	})
 }
 
-macro_rules! single_variant_check {
-	($var:ident, $variant:ident, $($fields:ident,)* $msg:literal) => {
-		#[allow(clippy::unused_unit)]
-		if let Self::$variant { $($fields,)* .. } = $var {
-			($($fields),*)
-		} else {
-			panic!($msg);
+impl Ctx {
+	pub fn borrow_script_ctx(&mut self) -> &mut script::Script {
+		variant_check!(self, "expected script context", (Script, ctx))
+	}
+	pub fn unwrap_script_ctx(self) -> script::Script {
+		variant_check!(self, "expected script context", (Script, ctx))
+	}
+
+	pub fn borrow_var_delarable(&mut self) -> &mut dyn VarDeclarable {
+		variant_check! {
+			self, "expected context where variables can be defined"
+			(Script, ctx)
 		}
 	}
 }
-use single_variant_check;
+
+pub trait VarDeclarable {
+	fn declare_var(&mut self, var: Box<dyn var::VarTrait>);
+}
+
+macro_rules! variant_check {
+	{
+		$var:ident, $msg:literal
+		$(($variant:ident $(, $fields:ident)*))*
+	} => {
+		match $var {
+			$(Self::$variant { $($fields,)* .. } => { $($fields),* })*
+			_ => { panic!($msg) }
+		}
+	};
+
+	($var:ident, $msg:literal, $(($variant:ident $(, $fields:ident)*)),*) => {
+		variant_check! {
+			$var, $msg
+			$(($variant $(, $fields)*))*
+		}
+	}
+}
+use variant_check;

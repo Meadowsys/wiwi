@@ -24,9 +24,10 @@ const TOP_BIT: u64 = 1 << (u64::BITS - 1);
 /// counting from the most significant to least significant bit, bits 1 to 64:
 /// - (1-46) 46 bits for timestamp (this is >2000years with millisecond precision,
 ///   up to year 4199)
-/// - (47-60) 14 bits for increment (this is max 16384 IDs/ms, or 16M IDs/s)
+/// - (47-60) 14 bits for increment (this is max 16384 IDs/ms, or about 16M IDs/s)
 /// - (61-64) last 4 bits for randomness (so IDs within one ms aren't just increments)
-/// IDs generated from one single factory are guaranteed to monotonically increase.
+/// IDs generated from one single factory are guaranteed to be unique and
+/// monotonically increase.
 pub struct IDGenerator {
 	/// unix epoch time
 	last_generated_time: u64,
@@ -97,6 +98,11 @@ impl GeneratedID {
 	#[inline]
 	pub fn as_unsigned(&self) -> u64 {
 		self.unsigned.get()
+	}
+
+	#[inline]
+	pub fn as_unsigned_nonzero(&self) -> NonZeroU64 {
+		self.unsigned
 	}
 
 	/// # Safety

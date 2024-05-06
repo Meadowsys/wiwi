@@ -1,14 +1,23 @@
-use std::cell::RefCell;
+use crate::id::IDGenerator;
+use spin_sleep::SpinSleeper;
+use std::{ cell::RefCell, num::NonZeroU64, time::Duration };
 
 /// Returns next (increment) ID. Guaranteed unique within the thread.
-pub(super) fn next_id() -> u64 {
+pub(super) fn next_id() -> NonZeroU64 {
 	thread_local! {
-		static NEXT_ID: RefCell<u64> = const { RefCell::new(0) };
+		static GENERATOR: RefCell<(IDGenerator, SpinSleeper)> = {
+			RefCell::new((IDGenerator::new(), SpinSleeper::default()))
+		}
 	}
 
-	NEXT_ID.with_borrow_mut(|next| {
-		let id = *next;
-		*next += 1;
-		id
+	const SLEEP_DURATION: Duration = Duration::from_micros(250);
+
+	GENERATOR.with_borrow_mut(|(gen, sleeper)| {
+		loop {
+			if let Some(id) = gen.next() {
+				return id.as_unsigned_nonzero()
+			}
+			sleeper.sleep(SLEEP_DURATION);
+		}
 	})
 }
