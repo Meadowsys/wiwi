@@ -47,11 +47,62 @@ impl<T: ty::Type> VarTrait for Var<T> {
 	}
 }
 
+pub trait IntoVarInit<T> {
+	fn to_var_init(&self) -> Option<String>;
+}
+
+impl<T: ty::Type> IntoVarInit<T> for Var<T> {
+	fn to_var_init(&self) -> Option<String> {
+		self.val.as_ref().map(|val| val.with(|val| val.into()))
+	}
+}
+
+// this one conflicts with the one above. best I can do I think, is macro for
+// specific types to use the IntoVal impl (below)
+//
+// impl<T: ty::Type, I> IntoVarInit<T> for I
+// where
+// 	I: val::IntoVal<T>
+// {
+// 	fn into_var_init(self) -> Option<String> {
+// 		Some(self.into_value())
+// 	}
+// }
+
+macro_rules! passthrough_into_var_init_impl {
+	{ $(($ty:ty: $($bound_stuff:tt)*))* } => {
+		$(
+			impl<T: ty::Type> IntoVarInit<T> for $ty
+			where
+				$($bound_stuff)* : val::IntoVal<T>
+			{
+				fn to_var_init(&self) -> Option<String> {
+					use val::IntoVal as _;
+					Some(self.to_value())
+				}
+			}
+		)*
+	}
+}
+
+passthrough_into_var_init_impl! {
+	(String: String)
+	(&str: for<'h> &'h str)
+	(i8: i8)
+	(i16: i16)
+	(i32: i32)
+	(i64: i64)
+	(u8: u8)
+	(u16: u16)
+	(u32: u32)
+	(u64: u64)
+}
+
 macro_rules! var_init_fns {
 	($($fn_name:ident, $fn_name_uninit:ident, $ty:path)*) => {
 		$(
-			pub fn $fn_name<I: val::IntoVal<$ty>>(init: I) -> Var<$ty> {
-				var_decl_untyped($ty, Some(init.into_value()))
+			pub fn $fn_name<I: IntoVarInit<$ty>>(init: I) -> Var<$ty> {
+				var_decl_untyped($ty, init.to_var_init())
 			}
 			pub fn $fn_name_uninit() -> Var<$ty> {
 				var_decl_untyped($ty, None)
@@ -86,4 +137,28 @@ var_init_fns! {
 
 	var_quaternion, var_quaternion_uninit, ty::Quaternion
 	var_qua, var_qua_uninit, ty::Quaternion
+}
+
+macro_rules! impl_unit_init_values {
+	($($ty:ty)*) => {
+		$(
+			impl IntoVarInit<$ty> for () {
+				fn to_var_init(&self) -> Option<String> {
+					None
+				}
+			}
+		)*
+	}
+}
+
+impl_unit_init_values! {
+	ty::Float
+	ty::Integer
+	ty::Key
+	ty::List
+	ty::Rotation
+	ty::String
+	ty::Vector
+	ty::Boolean
+	ty::Quaternion
 }

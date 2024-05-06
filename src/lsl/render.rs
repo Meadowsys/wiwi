@@ -20,7 +20,7 @@ pub(super) fn render(script: &ctx::script::Script) -> Result<String, fmt::Error>
 		write!(out, "{ty_ident} var_{}", encode_hex(&id.to_le_bytes()))?;
 
 		if let Some(val) = var.val() {
-			val.with_value(&mut |val| {
+			val.with(&mut |val| {
 				write!(out, " = {val}")
 			})?;
 		}
