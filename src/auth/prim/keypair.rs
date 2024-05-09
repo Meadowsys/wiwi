@@ -31,6 +31,11 @@ impl Keypair {
 	pub fn secret_key(&self) -> &SecretKey {
 		&self.secret_key
 	}
+
+	pub(crate) fn into_inner(self) -> (PublicKey, SecretKey) {
+		let Self { public_key, secret_key } = self;
+		(public_key, secret_key)
+	}
 }
 
 impl PublicKey {

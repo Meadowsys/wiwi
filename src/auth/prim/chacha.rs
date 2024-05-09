@@ -1,7 +1,7 @@
 use super::*;
 use chacha20poly1305::{ aead::Aead, KeyInit, XChaCha20Poly1305 };
 
-pub struct ChaChaEncryptedBytes {
+pub struct EncryptedBytes {
 	inner: Vec<u8>
 }
 
@@ -17,10 +17,10 @@ pub fn encrypt(
 	bytes: &[u8],
 	key: &Key,
 	nonce: &Nonce
-) -> Result<ChaChaEncryptedBytes> {
+) -> Result<EncryptedBytes> {
 	let cipher = XChaCha20Poly1305::new(&key.inner);
 	let encrypted = cipher.encrypt(&nonce.inner, bytes)?;
-	Ok(ChaChaEncryptedBytes { inner: encrypted })
+	Ok(EncryptedBytes { inner: encrypted })
 }
 
 pub fn generate_nonce() -> Nonce {
@@ -38,7 +38,7 @@ pub fn key_from(bytes: &[u8; 32]) -> Key {
 	Key { inner }
 }
 
-impl ChaChaEncryptedBytes {
+impl EncryptedBytes {
 	pub fn as_bytes(&self) -> &[u8] {
 		&self.inner
 	}

@@ -4,27 +4,35 @@ use super::*;
 /// encrypting/decrypting the secret key. Not sent to the server; only sent after
 /// hashing again (as password verifier).
 pub struct PasswordKey {
-	pub(in crate::auth) inner: kdf::Kdf
+	inner: kdf::Kdf
+}
+
+pub struct PasswordKeySalt {
+	inner: salt::Salt
+}
+
+pub(crate) fn new(
+	pw: &user_input::UserPassword
+) -> Result<(PasswordKey, PasswordKeySalt)> {
+	let salt = generate_salt();
+	with_salt(pw, &salt).map(|pw_key| (pw_key, salt))
+}
+
+pub(crate) fn with_salt(
+	pw: &user_input::UserPassword,
+	salt: &PasswordKeySalt
+) -> Result<PasswordKey> {
+	let inner = kdf::hash(pw.as_bytes(), &salt.inner)?;
+	Ok(PasswordKey { inner })
+}
+
+pub(crate) fn generate_salt() -> PasswordKeySalt {
+	let inner = salt::generate();
+	PasswordKeySalt { inner }
 }
 
 impl PasswordKey {
-	pub(in crate::auth) fn new(
-		pw: &user_details::UserPassword,
-		salt: &UserPasswordSalt
-	) -> Result<Self> {
-		let inner = kdf::Kdf::hash_and_salt(pw.inner.as_bytes(), &salt.inner)?;
-		Ok(Self { inner })
-	}
-}
-
-/// Salt used in hashing a user's password. Sent to the server as is for storage.
-pub struct UserPasswordSalt {
-	pub(in crate::auth) inner: salt::Salt
-}
-
-impl UserPasswordSalt {
-	pub(in crate::auth) fn generate() -> Self {
-		let inner = salt::Salt::generate();
-		Self { inner }
+	pub(crate) fn as_bytes(&self) -> &[u8; 32] {
+		self.inner.as_hash_bytes()
 	}
 }

@@ -24,19 +24,6 @@ enum ErrorInner {
 	// Z85Decode(#[from] crate::z85::DecodeError)
 }
 
-// impl Error {
-// 	#[inline]
-// 	pub(in crate::auth) fn parse_kdf() -> Self {
-// 		let inner = ErrorInner::ParseKdf;
-// 		Self { inner }
-// 	}
-
-// 	pub(in crate::auth) fn try_into_array() -> Self {
-// 		let inner = ErrorInner::TryIntoArray;
-// 		Self { inner }
-// 	}
-// }
-
 impl<T: Into<ErrorInner>> From<T> for Error {
 	fn from(inner: T) -> Self {
 		Self { inner: inner.into() }

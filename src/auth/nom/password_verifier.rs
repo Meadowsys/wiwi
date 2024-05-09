@@ -4,27 +4,36 @@ use super::*;
 /// Sent to the server to use for initial verification purposes. Server stores
 /// it after hashing it again
 pub struct PasswordVerifier {
-	pub(in crate::auth) inner: kdf::Kdf
-}
-
-impl PasswordVerifier {
-	pub(in crate::auth) fn new(
-		pw_key: &password_key::PasswordKey,
-		salt: &PasswordVerifierSalt
-	) -> Result<Self> {
-		let inner = kdf::Kdf::hash_and_salt(pw_key.inner.as_bytes(), &salt.inner)?;
-		Ok(Self { inner })
-	}
+	inner: kdf::Kdf
 }
 
 /// Salt used to hash the password key. Sent to server and stored as is
 pub struct PasswordVerifierSalt {
-	pub(in crate::auth) inner: salt::Salt
+	inner: salt::Salt
 }
 
-impl PasswordVerifierSalt {
-	pub(in crate::auth) fn generate() -> Self {
-		let inner = salt::Salt::generate();
-		Self { inner }
+pub(crate) fn new(
+	pw_key: &password_key::PasswordKey
+) -> Result<(PasswordVerifier, PasswordVerifierSalt)> {
+	let salt = generate_salt();
+	with_salt(pw_key, &salt).map(|pw_verifier| (pw_verifier, salt))
+}
+
+pub(crate) fn with_salt(
+	pw_key: &password_key::PasswordKey,
+	salt: &PasswordVerifierSalt
+) -> Result<PasswordVerifier> {
+	let inner = kdf::hash(pw_key.as_bytes(), &salt.inner)?;
+	Ok(PasswordVerifier { inner })
+}
+
+pub(crate) fn generate_salt() -> PasswordVerifierSalt {
+	let inner = salt::generate();
+	PasswordVerifierSalt { inner }
+}
+
+impl PasswordVerifier {
+	pub fn as_bytes(&self) -> &[u8; 32] {
+		self.inner.as_hash_bytes()
 	}
 }
