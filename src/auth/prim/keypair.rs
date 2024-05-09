@@ -1,40 +1,46 @@
 use super::*;
 use rand::thread_rng;
 
-/// P384 keypairs for signing
 pub struct Keypair {
-	pub(in crate::auth) public_key: PublicKey,
-	pub(in crate::auth) secret_key: SecretKey
+	public_key: PublicKey,
+	secret_key: SecretKey
 }
 
 pub struct PublicKey {
-	pub(in crate::auth) inner: p384::PublicKey
+	inner: p384::PublicKey
 }
 
 pub struct SecretKey {
-	pub(in crate::auth) inner: p384::SecretKey
+	inner: p384::SecretKey
+}
+
+pub fn generate() -> Keypair {
+	let secret_key = p384::SecretKey::random(&mut thread_rng());
+	let public_key = secret_key.public_key();
+
+	let public_key = PublicKey { inner: public_key };
+	let secret_key = SecretKey { inner: secret_key };
+	Keypair { public_key, secret_key }
 }
 
 impl Keypair {
-	pub(in crate::auth) fn generate() -> Self {
-		let secret_key = p384::SecretKey::random(&mut thread_rng());
-		let public_key = secret_key.public_key();
+	pub fn public_key(&self) -> &PublicKey {
+		&self.public_key
+	}
 
-		let public_key = PublicKey { inner: public_key };
-		let secret_key = SecretKey { inner: secret_key };
-
-		Self { public_key, secret_key }
+	pub fn secret_key(&self) -> &SecretKey {
+		&self.secret_key
 	}
 }
 
 impl PublicKey {
-	pub(in crate::auth) fn to_bytes(&self) -> Vec<u8> {
+	pub fn to_bytes(&self) -> Vec<u8> {
 		self.inner.to_sec1_bytes().into()
 	}
 }
 
 impl SecretKey {
-	pub(in crate::auth) fn to_bytes(&self) -> Result<Vec<u8>> {
+	pub fn to_bytes(&self) -> Result<Vec<u8>> {
 		let key = self.inner.to_sec1_der()?;
 		Ok((**key).into())
 	}

@@ -1,48 +1,49 @@
 use super::*;
 use chacha20poly1305::{ aead::Aead, KeyInit, XChaCha20Poly1305 };
 
-/// Symmetric encryption using XChaCha20Poly1305
-pub struct ChaCha {
-	pub(in crate::auth) inner: Vec<u8>
-}
-
-impl ChaCha {
-	pub(in crate::auth) fn encrypt(
-		bytes: &[u8],
-		key: &Key,
-		nonce: &Nonce
-	) -> Result<Self> {
-		let key = chacha20poly1305::Key::from(key.inner);
-		let cipher = XChaCha20Poly1305::new(&key);
-
-		let encrypted = cipher.encrypt(&nonce.inner, bytes)?;
-		Ok(Self { inner: encrypted })
-	}
+pub struct ChaChaEncryptedBytes {
+	inner: Vec<u8>
 }
 
 pub struct Nonce {
-	pub(in crate::auth) inner: chacha20poly1305::XNonce
-}
-
-impl Nonce {
-	pub(in crate::auth) fn generate() -> Self {
-		let inner = chacha20poly1305::XNonce::from(util::rand_array());
-		Self { inner }
-	}
+	inner: chacha20poly1305::XNonce
 }
 
 pub struct Key {
-	pub(in crate::auth) inner: chacha20poly1305::Key
+	inner: chacha20poly1305::Key
 }
 
-impl Key {
-	pub(in crate::auth) fn generate() -> Self {
-		let inner = chacha20poly1305::Key::from(util::rand_array());
-		Self { inner }
+pub fn encrypt(
+	bytes: &[u8],
+	key: &Key,
+	nonce: &Nonce
+) -> Result<ChaChaEncryptedBytes> {
+	let cipher = XChaCha20Poly1305::new(&key.inner);
+	let encrypted = cipher.encrypt(&nonce.inner, bytes)?;
+	Ok(ChaChaEncryptedBytes { inner: encrypted })
+}
+
+pub fn generate_nonce() -> Nonce {
+	let inner = chacha20poly1305::XNonce::from(util::rand_array());
+	Nonce { inner }
+}
+
+pub fn generate_key() -> Key {
+	let inner = chacha20poly1305::Key::from(util::rand_array());
+	Key { inner }
+}
+
+pub fn key_from(bytes: &[u8; 32]) -> Key {
+	let inner = chacha20poly1305::Key::from(*bytes);
+	Key { inner }
+}
+
+impl ChaChaEncryptedBytes {
+	pub fn as_bytes(&self) -> &[u8] {
+		&self.inner
 	}
 
-	pub(in crate::auth) fn from_bytes(key: &[u8; 32]) -> Self {
-		let inner = chacha20poly1305::Key::from(*key);
-		Self { inner }
+	pub fn into_bytes(self) -> Vec<u8> {
+		self.inner
 	}
 }

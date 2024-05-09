@@ -10,57 +10,59 @@ const M_COST: u32 = 0x10000;
 const T_COST: u32 = 4;
 const P_COST: u32 = 2;
 
-/// Key derivation function (argon2).
 pub struct Kdf {
 	alg: Algorithm,
 	version: Version,
 	m_cost: u32,
 	t_cost: u32,
 	p_cost: u32,
-	bytes: [u8; 32]
+	output: [u8; 32]
+}
+
+fn get_hasher() -> Result<Argon2<'static>> {
+	Ok(Argon2::new(
+		ALG,
+		VERSION,
+		argon2::ParamsBuilder::new()
+			.m_cost(M_COST)
+			.t_cost(T_COST)
+			.p_cost(P_COST)
+			.build()?
+	))
+}
+
+pub fn hash(
+	bytes: &[u8],
+	salt: &salt::Salt
+) -> Result<Kdf> {
+	let mut res = Kdf {
+		alg: ALG,
+		version: VERSION,
+		m_cost: M_COST,
+		t_cost: T_COST,
+		p_cost: P_COST,
+		output: util::rand_array()
+	};
+
+	get_hasher()?.hash_password_into(
+		bytes,
+		salt.as_bytes(),
+		&mut res.output
+	)?;
+
+	Ok(res)
 }
 
 impl Kdf {
-	fn new() -> Self {
-		Self {
-			alg: ALG,
-			version: VERSION,
-			m_cost: M_COST,
-			t_cost: T_COST,
-			p_cost: P_COST,
-			bytes: [0u8; 32]
-		}
-	}
-
-	fn get_hasher(&self) -> Result<Argon2<'static>> {
-		Ok(Argon2::new(
-			self.alg,
-			self.version,
-			argon2::ParamsBuilder::new()
-				.m_cost(self.m_cost)
-				.t_cost(self.t_cost)
-				.p_cost(self.p_cost)
-				.build()?
-		))
-	}
-
-	pub(in crate::auth) fn hash_and_salt(
-		bytes: &[u8],
-		salt: &salt::Salt
-	) -> Result<Self> {
-		let mut this = Self::new();
-		this.get_hasher()?.hash_password_into(
-			bytes,
-			&salt.inner,
-			&mut this.bytes
-		)?;
-		Ok(this)
-	}
-
-	pub(in crate::auth) fn as_bytes(&self) -> &[u8; 32] {
-		&self.bytes
+	pub fn as_hash_bytes(&self) -> &[u8; 32] {
+		&self.output
 	}
 }
+
+
+
+
+
 
 // impl fmt::Display for Kdf {
 // 	fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {

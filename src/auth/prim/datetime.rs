@@ -2,11 +2,9 @@ use super::*;
 use chrono::Utc;
 
 pub struct DateTime {
-	pub(in crate::auth) inner: chrono::DateTime<Utc>
+	inner: chrono::DateTime<Utc>
 }
 
-impl DateTime {
-	pub(in crate::auth) fn now() -> Self {
-		Self { inner: Utc::now() }
-	}
+pub fn now() -> DateTime {
+	DateTime { inner: Utc::now() }
 }

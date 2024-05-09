@@ -4,12 +4,16 @@ use std::{ fmt, str };
 
 /// 32-byte salt
 pub struct Salt {
-	pub(in crate::auth) inner: [u8; 32]
+	inner: [u8; 32]
+}
+
+pub fn generate() -> Salt {
+	Salt { inner: util::rand_array() }
 }
 
 impl Salt {
-	pub(in crate::auth) fn generate() -> Self {
-		Self { inner: util::rand_array() }
+	pub fn as_bytes(&self) -> &[u8; 32] {
+		&self.inner
 	}
 }
 
