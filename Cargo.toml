@@ -36,6 +36,7 @@ zeroize = { version = "1.7.0", optional = true }
 [dev-dependencies]
 criterion = { version = "0.5.1", features = ["html_reports"] }
 hex = "0.4.3"
+rand = "0.8.5"
 z85 = "3.0.5"
 
 [features]
