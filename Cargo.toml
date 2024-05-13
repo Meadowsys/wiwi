@@ -134,18 +134,24 @@ lto = "thin"
 
 # all features, and only tokio for runtime feature
 features = [
+	"unstable",
+
+	# features
 	"clock-timer-2",
 	"debounce",
 	"h",
 	"hex",
+	"id",
 	"lazy-wrap",
 	"lsl",
 	"serialiser",
 	"string-pool",
 	"z85",
 
+	# rt
 	"tokio",
 
+	# addon features
 	"image"
 ]
 
