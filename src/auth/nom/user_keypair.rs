@@ -34,6 +34,27 @@ pub(crate) fn generate() -> UserKeypair {
 	UserKeypair { public_key, secret_key }
 }
 
+pub(crate) fn decrypt_sec_key(
+	encrypted: &EncryptedUserSecretKey,
+	pw_key: &password_key::PasswordKey,
+	nonce: &EncryptedUserSecretKeyNonce
+) -> Result<Option<UserSecretKey>> {
+	let Some(decrypted) = chacha::decrypt(
+		&encrypted.inner,
+		&chacha::key_from(pw_key.as_bytes()),
+		&nonce.inner
+	) else { return Ok(None) };
+
+	let key = keypair::sec_key_from_bytes(&decrypted)?;
+	Ok(Some(UserSecretKey { inner: key }))
+}
+
+impl UserPublicKey {
+	pub(crate) fn verify(&self, bytes: &[u8], sig: &keypair::Signature) -> bool {
+		self.inner.verify(bytes, sig)
+	}
+}
+
 impl UserSecretKey {
 	pub(crate) fn encrypt(
 		&self,
@@ -49,6 +70,10 @@ impl UserSecretKey {
 			EncryptedUserSecretKey { inner: encrypted_bytes },
 			EncryptedUserSecretKeyNonce { inner: nonce }
 		))
+	}
+
+	pub(crate) fn sign(&self, bytes: &[u8]) -> keypair::Signature {
+		self.inner.sign(bytes)
 	}
 }
 

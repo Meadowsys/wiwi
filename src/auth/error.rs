@@ -14,6 +14,8 @@ enum ErrorInner {
 	Argon2(argon2::Error),
 	#[error(transparent)]
 	P384PKCS8DER(#[from] p384::pkcs8::der::Error),
+	#[error(transparent)]
+	P384ECC(#[from] p384::elliptic_curve::Error),
 	// #[error(transparent)]
 	// ParseInt(#[from] std::num::ParseIntError),
 	// #[error("error parsing KDF string")]

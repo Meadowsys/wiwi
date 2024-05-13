@@ -2,7 +2,7 @@
 
 use super::*;
 
-pub struct SignupServerRequest {
+pub struct SignupRequest {
 	pub user_id: user_input::UserID,
 	pub pw_key_salt: password_key::PasswordKeySalt,
 	pub pw_verifier: password_verifier::PasswordVerifier,
@@ -24,7 +24,7 @@ pub struct StoredUnverifiedUserData {
 	pub verification_token: verification_token::VerificationToken
 }
 
-pub fn process_signup_client(params: user_input::UserDetailsInput) -> Result<SignupServerRequest> {
+pub fn process_signup_client(params: user_input::UserDetailsInput) -> Result<SignupRequest> {
 	let user_input::UserDetailsInput { user_id, user_password } = params;
 
 	let (user_public_key, user_secret_key) = user_keypair::generate().into_inner();
@@ -36,7 +36,7 @@ pub fn process_signup_client(params: user_input::UserDetailsInput) -> Result<Sig
 		encrypted_user_sec_key_nonce
 	) = user_secret_key.encrypt(&pw_key)?;
 
-	Ok(SignupServerRequest {
+	Ok(SignupRequest {
 		user_id,
 		pw_key_salt,
 		pw_verifier,
@@ -48,8 +48,8 @@ pub fn process_signup_client(params: user_input::UserDetailsInput) -> Result<Sig
 }
 
 /// Call with data received from the client
-pub fn process_signup_server(params: SignupServerRequest) -> Result<StoredUnverifiedUserData> {
-	let SignupServerRequest {
+pub fn process_signup_server(params: SignupRequest) -> Result<StoredUnverifiedUserData> {
+	let SignupRequest {
 		user_id,
 		pw_key_salt,
 		pw_verifier,

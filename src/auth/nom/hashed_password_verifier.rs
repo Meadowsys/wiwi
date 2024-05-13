@@ -1,4 +1,5 @@
 use super::*;
+use std::cmp;
 
 /// Hashed version of the password verifier (server stores this)
 pub struct HashedPasswordVerifier {
@@ -28,6 +29,15 @@ pub(crate) fn generate_salt() -> HashedPasswordVerifierSalt {
 	let inner = salt::generate();
 	HashedPasswordVerifierSalt { inner }
 }
+
+impl cmp::PartialEq for HashedPasswordVerifier {
+	fn eq(&self, other: &Self) -> bool {
+		// constant time eq?
+		self.inner.as_hash_bytes() == other.inner.as_hash_bytes()
+	}
+}
+
+impl cmp::Eq for HashedPasswordVerifier {}
 
 // impl HashedPasswordVerifier {
 // 	pub(crate) fn new(

@@ -2,6 +2,7 @@ use super::*;
 
 /// Something that is able to identify a user. Usually an email or username.
 /// Store directly in the database without modification
+#[derive(Clone)]
 pub struct UserID {
 	inner: String
 }

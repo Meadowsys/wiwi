@@ -5,6 +5,10 @@
 pub mod hashed_password_verifier;
 pub mod password_key;
 pub mod password_verifier;
+pub mod session_id;
+pub mod session_keypair;
+pub mod signin_attempt_id;
+pub mod signing_challenge;
 pub mod user_input;
 pub mod user_keypair;
 pub mod verification_token;

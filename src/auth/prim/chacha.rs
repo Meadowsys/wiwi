@@ -23,6 +23,15 @@ pub fn encrypt(
 	Ok(EncryptedBytes { inner: encrypted })
 }
 
+pub fn decrypt(
+	bytes: &EncryptedBytes,
+	key: &Key,
+	nonce: &Nonce
+) -> Option<Vec<u8>> {
+	let cipher = XChaCha20Poly1305::new(&key.inner);
+	cipher.decrypt(&nonce.inner, &*bytes.inner).ok()
+}
+
 pub fn generate_nonce() -> Nonce {
 	let inner = chacha20poly1305::XNonce::from(util::rand_array());
 	Nonce { inner }
