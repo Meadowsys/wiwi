@@ -43,8 +43,27 @@ z85 = "3.0.5"
 # Make sure to check README and workflow files too
 # Also check below, docs.rs config
 
-unstable = []
+all = [
+	"clock-timer",
+	"debounce",
+	"h",
+	"hex",
+	"lazy-wrap",
+	"string-pool",
+	"z85"
+]
+all-unstable = [
+	"all",
+	"unstable",
 
+	"auth",
+	"chaining",
+	"id",
+	"lsl",
+	"serialiser"
+]
+
+unstable = []
 auth = [
 	"dep:argon2",
 	"dep:chacha20poly1305",
