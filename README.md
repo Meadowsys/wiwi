@@ -33,6 +33,8 @@ You must also enable the `unstable` feature to make use of them.
 
 These features enable things specific to 3rd-party crates and features you have enabled. For example, the `hashbrown` feature, when the `serialiser` feature is enabled, will implement `Serialise` and `Deserialise` traits for structs in `hashbrown`.
 
+If you enable one of these, and it doesn't have anything to affect any of the features you have enabled, it'll silently do nothing.
+
 - **`hashbrown`**
 - **`image`**
 - **`serde-json`**
