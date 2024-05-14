@@ -1,0 +1,1 @@
+this is a chaining wrapper that consumes self, performs the operation, then returns self again. To get the inner value, use `into_inner`
