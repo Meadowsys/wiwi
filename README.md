@@ -4,7 +4,7 @@ A lil lib containing misc utilities, and Stuff™. Contains some useful things, 
 
 All exposed features are gated behind features, none of which are enabled by default.
 
-**Unstable features are not covered by semver guarantee.** You must also enable the `unstable` feature to make use of them.
+**Unstable features are NOT covered by semver.** These features may be incomplete, may change in breaking versions in non-breaking semver bumps, and might even be incomplete. I'm doing this so I don't have to mess with commenting out features and stuff whenever I have something else that I'm publishing >.> You must also enable the `unstable` feature to make use of them.
 
 ## Features
 
