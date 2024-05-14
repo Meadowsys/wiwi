@@ -1,17 +1,7 @@
 //! Prelude module, exporting types from enabled features
 
-// TODO: basex exports here
-
-#[cfg(all(feature = "clock-timer", not(feature = "clock-timer-2")))]
+#[cfg(feature = "clock-timer")]
 pub use crate::clock_timer::{
-	ClockTimer,
-	ClockTimerError,
-	TimeDelta,
-	Timelike
-};
-
-#[cfg(all(feature = "clock-timer-2", not(feature = "clock-timer")))]
-pub use crate::clock_timer_2::{
 	ClockTimer,
 	Tick,
 	chrono::{

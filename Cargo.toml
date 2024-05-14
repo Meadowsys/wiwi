@@ -67,10 +67,6 @@ auth = [
 # ]
 chaining = []
 clock-timer = [
-	"dep:chrono",
-	"dep:thiserror"
-]
-clock-timer-2 = [
 	"dep:chrono"
 ]
 debounce = [
@@ -139,7 +135,7 @@ features = [
 
 	# features
 	"chaining",
-	"clock-timer-2",
+	"clock-timer",
 	"debounce",
 	"h",
 	"hex",

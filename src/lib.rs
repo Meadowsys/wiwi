@@ -32,14 +32,14 @@ mod encoding_utils;
 pub mod auth;
 unstable_feature!("auth");
 
-#[cfg(feature = "base16")]
-pub mod base16;
+// #[cfg(feature = "base16")]
+// pub mod base16;
 
-#[cfg(feature = "base32")]
-pub mod base32;
+// #[cfg(feature = "base32")]
+// pub mod base32;
 
-#[cfg(feature = "base64")]
-pub mod base64;
+// #[cfg(feature = "base64")]
+// pub mod base64;
 
 #[cfg(feature = "chaining")]
 pub mod chaining;
@@ -47,9 +47,6 @@ unstable_feature!("chaining");
 
 #[cfg(feature = "clock-timer")]
 pub mod clock_timer;
-
-#[cfg(feature = "clock-timer-2")]
-pub mod clock_timer_2;
 
 #[cfg(feature = "debounce")]
 pub mod debounce;
@@ -79,8 +76,8 @@ unstable_feature!("serialiser");
 #[cfg(feature = "string-pool")]
 pub mod string_pool;
 
-#[cfg(feature = "ws")]
-pub mod ws;
+// #[cfg(feature = "ws")]
+// pub mod ws;
 
 #[cfg(feature = "z85")]
 pub mod z85;
@@ -105,9 +102,6 @@ cfg_if! {
 }
 
 // misc other checks
-
-#[cfg(all(feature = "clock-timer", feature = "clock-timer-2"))]
-compile_error!("Cannot have both `clock-timer` and `clock-timer-2` features enabled");
 
 // macros and stuff
 

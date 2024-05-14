@@ -16,7 +16,7 @@ jobs:
       matrix:
         featureflags:
         # Make sure to check README and Cargo.toml too
-        - unstable,auth,chaining,clock-timer-2,debounce,h,hex,id,lazy-wrap,lsl,serialiser,string-pool,z85
+        - unstable,auth,chaining,clock-timer,debounce,h,hex,id,lazy-wrap,lsl,serialiser,string-pool,z85
 
         runtimes:
         - tokio
