@@ -41,6 +41,10 @@ pub mod base32;
 #[cfg(feature = "base64")]
 pub mod base64;
 
+#[cfg(feature = "chaining")]
+pub mod chaining;
+unstable_feature!("chaining");
+
 #[cfg(feature = "clock-timer")]
 pub mod clock_timer;
 

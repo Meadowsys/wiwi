@@ -65,6 +65,7 @@ auth = [
 # base64 = [
 # 	"dep:thiserror"
 # ]
+chaining = []
 clock-timer = [
 	"dep:chrono",
 	"dep:thiserror"
@@ -137,6 +138,7 @@ features = [
 	"unstable",
 
 	# features
+	"chaining",
 	"clock-timer-2",
 	"debounce",
 	"h",

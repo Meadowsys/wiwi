@@ -11,6 +11,7 @@ All exposed features are gated behind features, none of which are enabled by def
 <!-- make sure to check Cargo.toml and workflow files too -->
 
 - **`auth`** (unstable) - Some lower(ish) level utilities to aid in writing an authentication system, in which the client password is never sent across the wire. Quite heavily inspired by [Tuta's authentication/encryption system](https://tuta.com/nl/encryption).
+- **`chaining`** (unstable) - zero-cost wrappers that provide chaining APIs for structs
 - **`clock-timer-2`** - An interval tracking clock, yielding ticks at specified intervals and doing so for a specified duration. **Requires an async runtime**
 - **`debounce`** - Delay calling a function until a certain time period has passed since the last time it was called. **Requires an async runtime**
 - **`h`** - h
