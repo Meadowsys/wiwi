@@ -4,8 +4,6 @@ A lil lib containing misc utilities, and Stuff™. Contains some useful things, 
 
 All exposed features are gated behind features, none of which are enabled by default.
 
-**Unstable features are NOT covered by semver.** These features may be incomplete, may change in breaking versions in non-breaking semver bumps, and might even be incomplete. I'm doing this so I don't have to mess with commenting out features and stuff whenever I have something else that I'm publishing >.> You must also enable the `unstable` feature to make use of them.
-
 ## Features
 
 <!-- make sure to check Cargo.toml and workflow files too -->
@@ -22,6 +20,14 @@ All exposed features are gated behind features, none of which are enabled by def
 - **`serialiser`** (unstable) - self describing, stable (once finished) binary serialiser, aiming for small output size by exploiting common patterns in real world data
 - **`string-pool`** - Global immutable string pool and String type
 - **`z85`** - A fast (faster than `z85` crate[^2]) implementation of [ZeroMQ]'s [z85] format, a format to represent binary data as printable ASCII text. Think base64, but more efficient in encoded size. This implementation is not fully to spec, as it handles padding text to the correct length where the spec says the application code must handle it instead.
+
+### Unstable features
+
+**Unstable features are NOT covered by semver.** These features may be incomplete, may change in breaking ways in non-breaking version bumps, and might even be incomplete. I'm doing this so I don't have to mess with commenting out features and stuff whenever I have something else that I'm publishing but still have unfinished work somewhere else >.>
+
+You must also enable the `unstable` feature to make use of them.
+
+**NOTE:**: Just because a feature is not "unstable", doesn't mean it won't break, ever. It can break, but of course that will be accompanied by a major version bump, so no surprises there. Just don't be surprised when bumping a patch version causes an unstable feature to break everything. :p
 
 ### Addon features
 

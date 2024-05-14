@@ -1,17 +1,23 @@
+//! Fast and efficient implementation of hex encoding.
 use crate::encoding_utils::UnsafeBufWriteGuard;
 
+/// Length of encoding table. Not actually used in encoding/decoding data.
 pub const TABLE_ENCODER_LEN: usize = 16;
+/// Encoding table of lowercased characters. Not actually used in encoding/decoding data.
 pub const TABLE_ENCODER_LOWER: [u8; TABLE_ENCODER_LEN] = *b"0123456789abcdef";
+/// Encoding table of uppercased characters. Not actually used in encoding/decoding data.
 pub const TABLE_ENCODER_UPPER: [u8; TABLE_ENCODER_LEN] = *b"0123456789ABCDEF";
 
 mod encode;
 mod decode;
 
+/// Encodes a slice of bytes into a String, using lowercase characters.
 #[inline]
 pub fn encode_hex(bytes: &[u8]) -> String {
 	_encode::<false>(bytes)
 }
 
+/// Encodes a slice of bytes into a String, using uppercase characters.
 #[inline]
 pub fn encode_hex_upper(bytes: &[u8]) -> String {
 	_encode::<true>(bytes)
@@ -53,6 +59,8 @@ fn _encode<const UPPER: bool>(bytes: &[u8]) -> String {
 	unsafe { String::from_utf8_unchecked(vec) }
 }
 
+/// Decodes a slice of hex bytes into a byte vector. This function handles and
+/// supports both uppercase and lowercase characters.
 pub fn decode_hex(bytes: &[u8]) -> Result<Vec<u8>, DecodeError> {
 	// AND 0b1 is chopping off all the other bits; last bit will
 	// always be 0 or 1, depending on odd or even
@@ -70,10 +78,14 @@ pub fn decode_hex(bytes: &[u8]) -> Result<Vec<u8>, DecodeError> {
 	Ok(unsafe { dest.into_full_vec() })
 }
 
+/// Errors that can be encountered on decoding data (encoding data does not error)
+// TODO: these errors could be improved.
 #[derive(Debug, thiserror::Error)]
 pub enum DecodeError {
+	/// Invalid length. Length is expected to be a multiple of two
 	#[error("invalid length")]
 	InvalidLength,
+	/// Invalid character. Characters are only allowed to be in `0-9`, `a-f`, `A-F`
 	#[error("invalid character")]
 	InvalidChar
 }

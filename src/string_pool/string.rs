@@ -1,3 +1,5 @@
+//! The String type
+
 use super::pool::{ GlobalPool, Pool, SlicesWrap };
 use std::borrow::Borrow;
 use std::ffi::OsStr;
@@ -7,6 +9,7 @@ use std::path::Path;
 use std::string::{ self as std_string, String as StdString };
 use std::str as std_str;
 
+/// A string, whose contents are stored in a string pool.
 pub struct String<P: Pool = GlobalPool> {
 	raw: P::Raw,
 	pool: P

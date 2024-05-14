@@ -1,3 +1,8 @@
+//! Backing pools. Contains the default global pool, as well as the [`Pool`] trait
+//! for writing your own string pool implementations that can plug into the [`String`] type.
+//!
+//! [`String`]: crate::string_pool::String
+
 use std::fmt::Debug;
 use std::hash::{ Hash, Hasher };
 
@@ -5,11 +10,19 @@ mod global;
 
 pub use global::GlobalPool;
 
+/// Trait implemented by all pools, providing low-level manipulation of UTF-8 byte
+/// arrays in the pool. [`String`] accepts any pool that implements this trait.
+///
+/// [`String`]: crate::string_pool::String
 pub trait Pool: Clone + Debug + Default {
+	/// Pool's raw element. Can be anything (that is [`Sized`]), but should be a
+	/// reference to, or otherwise represent one single underlying UTF-8 byte sequence.
 	type Raw;
 
 	// --- required functions ---
 
+	/// Creates or retrieves a raw element for multiple slices of bytes
+	///
 	/// # Safety
 	///
 	/// The provided slices, when joined together using [`SlicesWrap::to_boxed_slice`],
@@ -18,14 +31,16 @@ pub trait Pool: Clone + Debug + Default {
 	/// even though it is quite likely that they will be.
 	unsafe fn raw_from_slices(&self, slices: SlicesWrap) -> Self::Raw;
 
+	/// Takes a pool's raw element and returns the byte slice that it represents.
 	fn raw_to_slice<'r>(&self, raw: &'r Self::Raw) -> &'r [u8];
 
 	// --- can-be-optimised functions ---
 	// these can be overridden if it can create a more efficient implementation
 
-	/// note to implementors: The default implementation
-	/// of this function is usually enough; however this can be overridden
-	/// for optimisation reasons.
+	/// Creates or retrieves a raw element for a single slice.
+	///
+	/// note to implementors: A default implementation is provided;
+	/// however this can be overridden for optimisation reasons.
 	///
 	/// # Safety
 	///
@@ -34,9 +49,10 @@ pub trait Pool: Clone + Debug + Default {
 		self.raw_from_slices(SlicesWrap(&[slice]))
 	}
 
-	/// note to implementors: The default implementation
-	/// of this function is usually enough; however this can be overridden
-	/// for optimisation reasons.
+	/// Creates or retrieves a raw element for a byte vec
+	///
+	/// note to implementors: A default implementation is provided;
+	/// however this can be overridden for optimisation reasons.
 	///
 	/// # Safety
 	///
@@ -45,30 +61,38 @@ pub trait Pool: Clone + Debug + Default {
 		self.raw_from_slice(&vec)
 	}
 
-	/// note to implementors: The default implementation
-	/// of this function is usually enough; however this can be overridden
-	/// for optimisation reasons.
+	/// Creates or retrieves a raw element that represents an empty slice
+	/// (ie. an empty string)
+	///
+	/// note to implementors: A default implementation is provided;
+	/// however this can be overridden for optimisation reasons.
 	fn raw_empty(&self) -> Self::Raw {
 		unsafe { self.raw_from_slice(&[]) }
 	}
 
-	/// note to implementors: The default implementation
-	/// of this function is usually enough; however this can be overridden
-	/// for optimisation reasons.
+	/// Returns a UTF-8 byte sequence, in a byte vec, that the given raw element
+	/// represents.
+	///
+	/// note to implementors: A default implementation is provided;
+	/// however this can be overridden for optimisation reasons.
 	fn raw_into_vec(&self, raw: Self::Raw) -> Vec<u8> {
 		self.raw_to_slice(&raw).to_vec()
 	}
 
-	/// note to implementors: The default implementation
-	/// of this function is usually enough; however this can be overridden
-	/// for optimisation reasons.
+	/// Returns a UTF-8 byte sequence, in a boxed byte array, that the given raw
+	/// element represents.
+	///
+	/// note to implementors: A default implementation is provided;
+	/// however this can be overridden for optimisation reasons.
 	fn raw_into_boxed_slice(&self, raw: Self::Raw) -> Box<[u8]> {
 		self.raw_into_vec(raw).into_boxed_slice()
 	}
 
-	/// note to implementors: The default implementation
-	/// of this function is usually enough; however this can be overridden
-	/// for optimisation reasons.
+	/// Clones a raw element. The returned raw element should represent identical
+	/// byte sequence that the given raw element does.
+	///
+	/// note to implementors: A default implementation is provided;
+	/// however this can be overridden for optimisation reasons.
 	fn raw_clone(&self, raw: &Self::Raw) -> Self::Raw {
 		let slice = self.raw_to_slice(raw);
 		unsafe { self.raw_from_slice(slice) }
@@ -86,6 +110,7 @@ pub trait Pool: Clone + Debug + Default {
 pub struct SlicesWrap<'h>(pub &'h [&'h [u8]]);
 
 impl<'h> SlicesWrap<'h> {
+	/// Joins the slices in sequence, returning a vector of bytes.
 	pub fn to_vec(&self) -> Vec<u8> {
 		self.into_iter().collect()
 	}

@@ -138,9 +138,11 @@ impl Tick {
 	}
 }
 
+/// [`ClockTimer`] builder structs
 pub mod builder {
 	use super::*;
 
+	/// Builder for [`ClockTimer`].
 	pub struct Builder {
 		__private: ()
 	}
@@ -150,6 +152,7 @@ pub mod builder {
 		#[inline]
 		pub fn new() -> Self {
 			// its gonna optimise away to be noop lol
+			// I think it provides a good API though,
 			Self { __private: () }
 		}
 
