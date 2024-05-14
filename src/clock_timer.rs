@@ -60,6 +60,8 @@ impl ClockTimer {
 			return Some(tick)
 		}
 
+		// we checked above and returned if `delta` is lte zero,
+		// so this won't panic
 		sleep(delta.to_std().unwrap()).await;
 		Some(tick)
 	}
