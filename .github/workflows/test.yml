@@ -18,9 +18,6 @@ jobs:
         # Make sure to check README and Cargo.toml too
         - unstable,auth,chaining,clock-timer,debounce,h,hex,id,lazy-wrap,lsl,serialiser,string-pool,z85
 
-        runtimes:
-        - tokio
-
     steps:
     - name: checkout code
       uses: actions/checkout@b4ffde65f46336ab88eb53be808477a3936bae11 # v4.1.1
@@ -29,10 +26,10 @@ jobs:
       run: rustc --version
 
     - name: build
-      run: cargo build --verbose --features ${{ matrix.featureflags }} --features ${{ matrix.runtimes }}
+      run: cargo build --verbose --features ${{ matrix.featureflags }}
 
     - name: test
-      run: cargo test --verbose --features ${{ matrix.featureflags }} --features ${{ matrix.runtimes }}
+      run: cargo test --verbose --features ${{ matrix.featureflags }}
       env:
         CARGO_INCREMENTAL: "0"
         LLVM_PROFILE_FILE: "target/coverage/test-file.profraw"

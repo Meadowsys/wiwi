@@ -12,8 +12,8 @@ All exposed features are gated behind features, none of which are enabled by def
 
 - **`auth`** (unstable) - Some lower(ish) level utilities to aid in writing an authentication system, in which the client password is never sent across the wire. Quite heavily inspired by [Tuta's authentication/encryption system](https://tuta.com/nl/encryption).
 - **`chaining`** (unstable) - zero-cost wrappers that provide chaining APIs for structs
-- **`clock-timer`** - An interval tracking clock, yielding ticks at specified intervals and doing so for a specified duration. **Requires an async runtime**
-- **`debounce`** - Delay calling a function until a certain time period has passed since the last time it was called. **Requires an async runtime**
+- **`clock-timer`** - An interval tracking clock, yielding ticks at specified intervals and doing so for a specified duration.
+- **`debounce`** - Delay calling a function until a certain time period has passed since the last time it was called.
 - **`h`** - h
 - **`hex`** - Fast (faster than `hex` crate[^1]) implementation of hex encoding, supporting upper hex and lower hex.
 - **`id`** - ID generator, with all IDs generated from one generater guaranteed to be monotonically increasing
@@ -30,12 +30,6 @@ These features enable things specific to 3rd-party crates and features you have 
 - **`hashbrown`**
 - **`image`**
 - **`serde-json`**
-
-### Async runtime features
-
-Only one can be enabled at a time. utility implementations for **`tokio`** will be prioritised over other runtimes, if/when they are added.
-
-- **`tokio`** - Currently the only available runtime.
 
 ### Feature configuration features
 

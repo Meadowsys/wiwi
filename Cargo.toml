@@ -67,10 +67,12 @@ auth = [
 # ]
 chaining = []
 clock-timer = [
-	"dep:chrono"
+	"dep:chrono",
+	"dep:tokio"
 ]
 debounce = [
-	"dep:chrono"
+	"dep:chrono",
+	"dep:tokio"
 ]
 h = [
 	"dep:thiserror"
@@ -112,9 +114,6 @@ hashbrown = ["dep:hashbrown"]
 image = ["dep:image"]
 serde-json = ["dep:serde_json"]
 
-# runtime selection features
-tokio = ["dep:tokio"]
-
 # config options for certain features
 # compiler errors if the feature its for isn't enabled
 debounce-dyn-fn = []
@@ -129,7 +128,6 @@ lto = "thin"
 [package.metadata.docs.rs]
 # https://docs.rs/about/metadata
 
-# all features, and only tokio for runtime feature
 features = [
 	"unstable",
 
@@ -145,9 +143,6 @@ features = [
 	"serialiser",
 	"string-pool",
 	"z85",
-
-	# rt
-	"tokio",
 
 	# addon features
 	"image"

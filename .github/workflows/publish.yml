@@ -16,9 +16,6 @@ jobs:
         - unstable,auth,chaining,clock-timer,debounce,h,hex,id,lazy-wrap,lsl,serialiser,string-pool,z85
         - unstable,auth,chaining,clock-timer,debounce,h,hex,id,lazy-wrap,lsl,serialiser,string-pool,z85,debounce-dyn-fn
 
-        runtimes:
-        - tokio
-
     steps:
     - name: checkout code
       uses: actions/checkout@b4ffde65f46336ab88eb53be808477a3936bae11 # v4.1.1
@@ -27,12 +24,12 @@ jobs:
       run: rustc --version
 
     - name: build
-      run: cargo build --release --verbose --features ${{ matrix.featureflags }} --features ${{ matrix.runtimes }}
+      run: cargo build --release --verbose --features ${{ matrix.featureflags }}
 
     - name: test
-      run: cargo test --verbose --features ${{ matrix.featureflags }} --features ${{ matrix.runtimes }}
+      run: cargo test --verbose --features ${{ matrix.featureflags }}
     - name: test in release
-      run: cargo test --release --verbose --features ${{ matrix.featureflags }} --features ${{ matrix.runtimes }}
+      run: cargo test --release --verbose --features ${{ matrix.featureflags }}
 
   publish:
     name: publish crate
