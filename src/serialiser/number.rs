@@ -13,8 +13,8 @@ macro_rules! impl_num_serialise {
 		$(impl_num_serialise! { @internal $num: $signed })*
 	};
 
+	// unsigned
 	(@internal $num:ty: false) => {
-		// unsigned
 		impl Serialise for $num {
 			fn serialise<B: BufferWrite>(&self, output: &mut B, options: &SerialiseOptions) {
 				match *self {
@@ -36,8 +36,8 @@ macro_rules! impl_num_serialise {
 		}
 	};
 
+	// signed
 	(@internal $num:ty: true) => {
-		// signed
 		impl Serialise for $num {
 			fn serialise<B: BufferWrite>(&self, output: &mut B, options: &SerialiseOptions) {
 				match *self {
