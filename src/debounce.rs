@@ -1,7 +1,6 @@
 //! A debounced function; or a function that won't actually get called until
 //! there haven't been calls to it for a certain amount of time.
 
-use super::dyn_fn;
 use chrono::{ Local, NaiveDateTime, TimeDelta };
 use std::{ mem::swap, sync::Arc };
 use tokio::runtime::Handle;
