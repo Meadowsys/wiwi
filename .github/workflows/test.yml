@@ -12,12 +12,6 @@ jobs:
     name: run
     runs-on: ubuntu-22.04
 
-    strategy:
-      matrix:
-        featureflags:
-        # Make sure to check README and Cargo.toml too
-        - unstable,auth,chaining,clock-timer,debounce,h,hex,id,lazy-wrap,lsl,serialiser,string-pool,z85
-
     steps:
     - name: checkout code
       uses: actions/checkout@b4ffde65f46336ab88eb53be808477a3936bae11 # v4.1.1
@@ -26,10 +20,10 @@ jobs:
       run: rustc --version
 
     - name: build
-      run: cargo build --verbose --features ${{ matrix.featureflags }}
+      run: cargo build --verbose --features all-unstable
 
     - name: test
-      run: cargo test --verbose --features ${{ matrix.featureflags }}
+      run: cargo test --verbose --features all-unstable
       env:
         CARGO_INCREMENTAL: "0"
         LLVM_PROFILE_FILE: "target/coverage/test-file.profraw"
