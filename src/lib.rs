@@ -66,7 +66,7 @@ pub mod lsl;
 #[cfg(feature = "serialiser-unstable")]
 pub mod serialiser;
 
-#[cfg(feature = "string-pool")]
+#[cfg(feature = "string-pool-unstable")]
 pub mod string_pool;
 
 // #[cfg(feature = "ws")]

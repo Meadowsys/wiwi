@@ -48,7 +48,6 @@ all = [
 	"h",
 	"hex",
 	"lazy-wrap",
-	"string-pool",
 	"z85"
 ]
 all-unstable = [
@@ -58,7 +57,8 @@ all-unstable = [
 	"chaining-unstable",
 	"id-unstable",
 	"lsl-unstable",
-	"serialiser-unstable"
+	"serialiser-unstable",
+	"string-pool-unstable"
 ]
 
 auth-unstable = [
@@ -112,7 +112,7 @@ lsl-unstable = [
 serialiser-unstable = [
 	"dep:ordered-float"
 ]
-string-pool = [
+string-pool-unstable = [
 	"dep:hashbrown",
 	"lazy-wrap"
 ]
