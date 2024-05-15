@@ -26,7 +26,7 @@ jobs:
       run: cargo test --verbose --features all-unstable
       env:
         CARGO_INCREMENTAL: "0"
-        LLVM_PROFILE_FILE: "target/coverage/test-file.profraw"
+        LLVM_PROFILE_FILE: "target/coverage/test-%m-%p.profraw"
 
     - name: fetch/run grcov
       run: |
