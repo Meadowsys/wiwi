@@ -244,6 +244,8 @@ impl<T> VecChain<T> {
 	// TODO: extract_if
 }
 
+// TODO: check docs trait impls
+
 // TODO: These... should probably deref to our chaining slice API? if we add it
 
 // // TODO: allocator param
@@ -296,6 +298,7 @@ impl<T> AsMut<Vec<T>> for VecChain<T> {
 	}
 }
 
+// TODO: allocator param
 impl<T> AsRef<[T]> for VecChain<T> {
 	#[inline]
 	fn as_ref(&self) -> &[T] {
@@ -303,6 +306,7 @@ impl<T> AsRef<[T]> for VecChain<T> {
 	}
 }
 
+// TODO: allocator param
 impl<T> AsMut<[T]> for VecChain<T> {
 	#[inline]
 	fn as_mut(&mut self) -> &mut [T] {
