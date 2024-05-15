@@ -147,20 +147,7 @@ lto = "thin"
 # https://docs.rs/about/metadata
 
 features = [
-	"unstable",
-
-	# features
-	"chaining",
-	"clock-timer",
-	"debounce",
-	"h",
-	"hex",
-	"id",
-	"lazy-wrap",
-	"lsl",
-	"serialiser",
-	"string-pool",
-	"z85",
+	"all",
 
 	# addon features
 	"hashbrown",
