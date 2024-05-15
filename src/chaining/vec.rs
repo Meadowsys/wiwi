@@ -1,5 +1,6 @@
 use std::collections::TryReserveError;
 use std::ops::{ Deref, DerefMut, RangeBounds };
+use super::SliceChain;
 
 // TODO: allocator param
 #[must_use = include_str!("./must-use-msg.txt")]
@@ -81,17 +82,15 @@ impl<T> VecChain<T> {
 		self
 	}
 
-	// TODO: as_chain_slice?
+	#[inline]
+	pub fn as_slice(&self) -> &SliceChain<T> {
+		(&*self.inner).into()
+	}
 
-	// #[inline]
-	// pub fn as_slice(&self) -> &[T] {
-	// 	&self.inner
-	// }
-
-	// #[inline]
-	// pub fn as_mut_slice(&mut self) -> &mut [T] {
-	// 	&mut self.inner
-	// }
+	#[inline]
+	pub fn as_mut_slice(&mut self) -> &mut SliceChain<T> {
+		(&mut *self.inner).into()
+	}
 
 	// #[inline]
 	// pub fn as_ptr(&self) -> *const T {
