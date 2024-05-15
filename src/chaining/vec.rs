@@ -1,5 +1,5 @@
 use std::collections::TryReserveError;
-use std::ops::{ Deref, DerefMut, RangeBounds };
+use std::ops::RangeBounds;
 use super::SliceChain;
 
 // TODO: allocator param
@@ -244,26 +244,6 @@ impl<T> VecChain<T> {
 }
 
 // TODO: check docs trait impls
-
-// TODO: These... should probably deref to our chaining slice API? if we add it
-
-// // TODO: allocator param
-// impl<T> Deref for VecChain<T> {
-// 	type Target = Vec<T>;
-//
-// 	#[inline]
-// 	fn deref(&self) -> &Vec<T> {
-// 		&self.inner
-// 	}
-// }
-
-// // TODO: allocator param
-// impl<T> DerefMut for VecChain<T> {
-// 	#[inline]
-// 	fn deref_mut(&mut self) -> &mut Vec<T> {
-// 		&mut self.inner
-// 	}
-// }
 
 // TODO: allocator param
 impl<T> AsRef<VecChain<T>> for VecChain<T> {
