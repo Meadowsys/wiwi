@@ -13,8 +13,8 @@ jobs:
       matrix:
         featureflags:
         # Make sure to check README and Cargo.toml too
-        - all-unstable
-        - all-unstable,debounce-dyn-fn
+        - all
+        - all,debounce-dyn-fn
 
     steps:
     - name: checkout code
