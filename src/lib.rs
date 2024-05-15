@@ -14,8 +14,6 @@
 	unused_variables
 )]
 
-use cfg_if::cfg_if;
-
 pub mod prelude;
 
 // TODO: expose this?
@@ -82,11 +80,7 @@ pub mod string_pool;
 #[cfg(feature = "z85")]
 pub mod z85;
 
-// misc other checks
-
-// macros and stuff
-
-/// has to be run in this module and not in the feature modules themselves
+/// has to be run in root module and not in the feature modules themselves
 /// because then, if this *should have* triggered an error, it won't because
 /// the feature is off and module excluded from compilation lol
 macro_rules! feature_cfg_compile_check {
