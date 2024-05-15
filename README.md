@@ -23,11 +23,11 @@ All exposed features are gated behind features, none of which are enabled by def
 
 ### Unstable features
 
-**Unstable features are NOT covered by semver.** These features may be incomplete, may change in breaking ways in non-breaking version bumps, and might even be incomplete. I'm doing this so I don't have to mess with commenting out features and stuff whenever I have something else that I'm publishing but still have unfinished work somewhere else >.>
+**Unstable features are NOT covered by semver.** These features may change in breaking ways in non-breaking version bumps, and might even be incomplete. I'm doing this so I don't have to mess with commenting out features and stuff whenever I have something else that I'm publishing but still have unfinished work somewhere else >.>
 
-You must also enable the `unstable` feature to make use of them.
+Unstable features have `-unstable` appended to their name. For example, if I have feature `thingie`, while it is unstable the feature is named `thingie-unstable`. The `-unstable` suffix will be removed once the feature is stabilised.
 
-**NOTE:**: Just because a feature is not "unstable", doesn't mean it won't break, ever. It can break, but of course that will be accompanied by a major version bump, so no surprises there. Just don't be surprised when bumping a patch version causes an unstable feature to break everything. :p
+**NOTE:**: Just because a feature is _not_ "unstable", doesn't mean it won't break, _ever_. It can break, but of course that will be accompanied by a major version bump, so no surprises there. Just don't be surprised when bumping a patch version causes an unstable feature to break everything. :p
 
 ### Addon features
 

@@ -53,17 +53,15 @@ all = [
 ]
 all-unstable = [
 	"all",
-	"unstable",
 
-	"auth",
-	"chaining",
-	"id",
-	"lsl",
-	"serialiser"
+	"auth-unstable",
+	"chaining-unstable",
+	"id-unstable",
+	"lsl-unstable",
+	"serialiser-unstable"
 ]
 
-unstable = []
-auth = [
+auth-unstable = [
 	"dep:argon2",
 	"dep:chacha20poly1305",
 	"dep:chrono",
@@ -83,7 +81,7 @@ auth = [
 # base64 = [
 # 	"dep:thiserror"
 # ]
-chaining = []
+chaining-unstable = []
 clock-timer = [
 	"dep:chrono",
 	"dep:tokio"
@@ -98,20 +96,20 @@ h = [
 hex = [
 	"dep:thiserror"
 ]
-id = [
+id-unstable = [
 	"dep:rand"
 ]
 lazy-wrap = [
 	"dep:parking_lot"
 ]
-lsl = [
+lsl-unstable = [
 	"dep:hashbrown",
 	"dep:spin_sleep",
 	"dep:uuid",
 	"hex",
-	"id"
+	"id-unstable"
 ]
-serialiser = [
+serialiser-unstable = [
 	"dep:ordered-float"
 ]
 string-pool = [

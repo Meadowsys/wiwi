@@ -26,9 +26,8 @@ pub mod prelude;
 ))]
 mod encoding_utils;
 
-#[cfg(feature = "auth")]
+#[cfg(feature = "auth-unstable")]
 pub mod auth;
-unstable_feature!("auth");
 
 // #[cfg(feature = "base16")]
 // pub mod base16;
@@ -39,9 +38,8 @@ unstable_feature!("auth");
 // #[cfg(feature = "base64")]
 // pub mod base64;
 
-#[cfg(feature = "chaining")]
+#[cfg(feature = "chaining-unstable")]
 pub mod chaining;
-unstable_feature!("chaining");
 
 #[cfg(feature = "clock-timer")]
 pub mod clock_timer;
@@ -56,20 +54,17 @@ pub mod h;
 #[cfg(feature = "hex")]
 pub mod hex;
 
-#[cfg(feature = "id")]
+#[cfg(feature = "id-unstable")]
 pub mod id;
-unstable_feature!("id");
 
 #[cfg(feature = "lazy-wrap")]
 pub mod lazy_wrap;
 
-#[cfg(feature = "lsl")]
+#[cfg(feature = "lsl-unstable")]
 pub mod lsl;
-unstable_feature!("lsl");
 
-#[cfg(feature = "serialiser")]
+#[cfg(feature = "serialiser-unstable")]
 pub mod serialiser;
-unstable_feature!("serialiser");
 
 #[cfg(feature = "string-pool")]
 pub mod string_pool;
@@ -93,14 +88,3 @@ macro_rules! feature_cfg_compile_check {
 	}
 }
 use feature_cfg_compile_check;
-
-macro_rules! unstable_feature {
-	($feature:literal) => {
-		#[cfg(all(
-			not(feature = "unstable"),
-			feature = $feature
-		))]
-		compile_error!(concat!("`", $feature, "` is an unstable feature, and you must have the `unstable` feature enabled to use it"));
-	}
-}
-use unstable_feature;
