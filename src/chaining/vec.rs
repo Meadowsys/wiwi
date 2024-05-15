@@ -243,7 +243,8 @@ impl<T> VecChain<T> {
 	// TODO: extract_if
 }
 
-// TODO: check docs trait impls
+// TODO: the thing about methods from Deref<[T]> (do after slice chain impl)
+// TODO: other trait impls
 
 // TODO: allocator param
 impl<T> AsRef<VecChain<T>> for VecChain<T> {
