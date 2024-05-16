@@ -1,4 +1,6 @@
-use std::mem::{ forget, MaybeUninit, size_of };
+use std::mem::{ self, MaybeUninit};
+use std::ops::RangeBounds;
+use std::{ slice, vec };
 use super::{ IntoChainer, SliceMutChain, SliceRefChain, ToMaybeUninit as _ };
 
 // TODO: allocator param
@@ -36,6 +38,24 @@ impl<T> VecChain<T> {
 	// TODO: nightly into_raw_parts
 	// TODO: nightly into_raw_parts_with_alloc
 
+	pub fn len(self, out: &mut usize) -> Self {
+		self.len_uninit(out.to_maybeuninit_mut())
+	}
+
+	pub fn len_uninit(self, out: &mut MaybeUninit<usize>) -> Self {
+		out.write(self.inner.len());
+		self
+	}
+
+	pub fn is_empty(self, out: &mut bool) -> Self {
+		self.is_empty_uninit(out.to_maybeuninit_mut())
+	}
+
+	pub fn is_empty_uninit(self, out: &mut MaybeUninit<bool>) -> Self {
+		out.write(self.inner.is_empty());
+		self
+	}
+
 	pub fn capacity(self, out: &mut usize) -> Self {
 		self.capacity_uninit(out.to_maybeuninit_mut())
 	}
@@ -55,12 +75,8 @@ impl<T> VecChain<T> {
 		self
 	}
 
-	// TODO: figure out try_methods and errors
-	// cause if it errors, the thing is just gonna get consumed?
-	// maybe we return (Error, Self)? but that's clunky hmm
-
-	// try_reserve
-	// try_reserve_exact
+	// TODO: try_reserve
+	// TODO: try_reserve_exact
 
 	pub fn shrink_to_fit(mut self) -> Self {
 		self.inner.shrink_to_fit();
@@ -78,33 +94,163 @@ impl<T> VecChain<T> {
 		self.inner.truncate(len);
 		self
 	}
+
+	pub unsafe fn set_len(mut self, new_len: usize) -> Self {
+		self.inner.set_len(new_len);
+		self
+	}
+
+	pub fn with_first<F>(mut self, f: F) -> Self
+	where
+		F: FnOnce(Option<&mut T>)
+	{
+		f(self.inner.first_mut());
+		self
+	}
+
+	pub fn swap_remove(mut self, index: usize, out: &mut T) -> Self {
+		self.swap_remove_uninit(index, out.to_maybeuninit_mut())
+	}
+
+	pub fn swap_remove_uninit(mut self, index: usize, out: &mut MaybeUninit<T>) -> Self {
+		out.write(self.inner.swap_remove(index));
+		self
+	}
+
+	pub fn insert(mut self, index: usize, element: T) -> Self {
+		self.inner.insert(index, element);
+		self
+	}
+
+	pub fn remove(mut self, index: usize, out: &mut T) -> Self {
+		self.remove_uninit(index, out.to_maybeuninit_mut())
+	}
+
+	pub fn remove_uninit(mut self, index: usize, out: &mut MaybeUninit<T>) -> Self {
+		out.write(self.inner.remove(index));
+		self
+	}
+
+	pub fn retain<F>(mut self, f: F) -> Self
+	where
+		F: FnMut(&T) -> bool
+	{
+		self.inner.retain(f);
+		self
+	}
+
+	pub fn retain_mut<F>(mut self, f: F) -> Self
+	where
+		F: FnMut(&mut T) -> bool
+	{
+		self.inner.retain_mut(f);
+		self
+	}
+
+	pub fn dedup_by<F>(mut self, same_bucket: F) -> Self
+	where
+		F: FnMut(&mut T, &mut T) -> bool
+	{
+		self.inner.dedup_by(same_bucket);
+		self
+	}
+
+	pub fn dedup_by_key<F, K>(mut self, key: F) -> Self
+	where
+		F: FnMut(&mut T) -> K,
+		K: PartialEq
+	{
+		self.inner.dedup_by_key(key);
+		self
+	}
+
+	pub fn push(mut self, value: T) -> Self {
+		self.inner.push(value);
+		self
+	}
+
+	// TODO: push_within_capacity
+
+	pub fn pop(mut self, out: &mut Option<T>) -> Self {
+		self.pop_uninit(out.to_maybeuninit_mut())
+	}
+
+	pub fn pop_uninit(mut self, out: &mut MaybeUninit<Option<T>>) -> Self {
+		out.write(self.inner.pop());
+		self
+	}
+
+	pub fn append(mut self, other: &mut Self) -> Self {
+		self.inner.append(&mut other.inner);
+		self
+	}
+
+	pub fn append_vec(mut self, other: &mut Vec<T>) -> Self {
+		self.inner.append(other);
+		self
+	}
+
+	pub fn drain_with<R, F>(mut self, range: R, f: F) -> Self
+	where
+		R: RangeBounds<usize>,
+		F: FnOnce(vec::Drain<T>)
+	{
+		f(self.inner.drain(range));
+		self
+	}
+
+	pub fn clear(mut self) -> Self {
+		self.inner.clear();
+		self
+	}
+
+	// TODO: split_off
+
+	pub fn resize_with<F>(mut self, new_len: usize, f: F) -> Self
+	where
+		F: FnMut() -> T
+	{
+		self.inner.resize_with(new_len, f);
+		self
+	}
+
+	pub fn leak<'h>(self) -> &'h mut SliceMutChain<T> {
+		self.inner.leak().into()
+	}
+
+	pub fn with_spare_capacity_mut<F>(mut self, f: F) -> Self
+	where
+		F: FnOnce(&mut SliceMutChain<MaybeUninit<T>>)
+	{
+		f(self.inner.spare_capacity_mut().into());
+		self
+	}
+
+	pub fn with_split_at_spare_mut<F>(mut self, f: F) -> Self
+	where
+		F: FnOnce(&mut SliceMutChain<T>, &mut SliceMutChain<MaybeUninit<T>>)
+	{
+		// TODO: call Vec impl when stabilised
+		let (init, spare) = unsafe {
+			let ptr = self.inner.as_mut_ptr();
+			let len = self.inner.len();
+
+			let spare_ptr = ptr.add(len) as *mut MaybeUninit<T>;
+			let spare_len = self.inner.capacity() - len;
+
+			(
+				slice::from_raw_parts_mut(ptr, len),
+				slice::from_raw_parts_mut(spare_ptr, spare_len)
+			)
+		};
+
+		f(init.into(), spare.into());
+		self
+	}
+
 	/*
-	as_slice/as_mut_slice
-	as_ptr/as_mut_ptr
-	nightly allocator
-	set_len
-	swap_remove
-	insert
-	remove
-	retain/mut
-	dedup_by
-	dedup_by_key
-	push
-	push_within_capacity????
-	pop
-	append
-	drain
-	clear
-	len
-	is_empty
-	split_off
-	resize_with
-	leak?
-	spare_capacity_mut
-	split_at_spare_mut?
 	splice
 	extract_if
-
 
 	as_str
 	as_bytes
@@ -216,6 +362,11 @@ impl<T> VecChain<T> {
 	pub fn as_mut_slice_chainer(&mut self) -> &mut SliceMutChain<T> {
 		(&mut *self.inner).into()
 	}
+
+	// TODO: as_ptr / as_mut_ptr?
+	// TODO: nightly allocator
+	// I dunno where else to put these, I'll figure it out when the time comes lol
+	// maybe allocator goes with len/capacity/etc?
 }
 
 // TODO: allocator param
@@ -230,7 +381,7 @@ impl<T: Clone> VecChain<T> {
 // TODO: allocator param
 impl<T, const N: usize> VecChain<[T; N]> {
 	pub fn flatten(mut self) -> VecChain<T> {
-		let (len, cap) = if size_of::<T>() == 0 {
+		let (len, cap) = if mem::size_of::<T>() == 0 {
 			let len = self.inner.len()
 				.checked_mul(N)
 				.expect("vec len overflow");
@@ -246,7 +397,7 @@ impl<T, const N: usize> VecChain<[T; N]> {
 		// let (ptr, _len, _capacity) = self.inner.into_raw_parts();
 
 		let ptr = self.inner.as_mut_ptr();
-		forget(self);
+		mem::forget(self);
 
 		let ptr = ptr as *mut T;
 		unsafe { Vec::from_raw_parts(ptr, len, cap).into() }
@@ -255,7 +406,10 @@ impl<T, const N: usize> VecChain<[T; N]> {
 
 // TODO: allocator param
 impl<T: PartialEq> VecChain<T> {
-	// dedup
+	pub fn dedup(mut self) -> Self {
+		self.inner.dedup();
+		self
+	}
 }
 
 impl<T> IntoChainer for Vec<T> {
