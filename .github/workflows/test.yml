@@ -38,7 +38,21 @@ jobs:
 
     - name: fetch/run grcov
       run: |
-        curl -Lo grcov.bz2 https://github.com/mozilla/grcov/releases/download/v0.8.19/grcov-x86_64-unknown-linux-musl.tar.bz2
+        platform=$(uname)
+        case $platform in
+          Darwin)
+            # macos-14 runners run on apple silicon, so aarch64
+            curl -Lo grcov.bz2 https://github.com/mozilla/grcov/releases/download/v0.8.19/grcov-aarch64-apple-darwin.tar.bz2
+            ;;
+          Linux)
+            curl -Lo grcov.bz2 https://github.com/mozilla/grcov/releases/download/v0.8.19/grcov-x86_64-unknown-linux-musl.tar.bz2
+            ;;
+          *)
+            echo weird
+            exit 1
+            ;;
+        esac
+
         tar xvf grcov.bz2
         rm grcov.bz2
 
