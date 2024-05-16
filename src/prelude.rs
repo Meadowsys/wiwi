@@ -6,7 +6,9 @@
 #[cfg(feature = "chaining-unstable")]
 pub use crate::chaining::{
 	ArrayChain,
-	SliceChain,
+	SliceBoxedChain,
+	SliceMutChain,
+	SliceRefChain,
 	VecChain
 };
 
