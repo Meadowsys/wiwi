@@ -4,6 +4,33 @@ pub struct ArrayChain<T, const N: usize> {
 	inner: [T; N]
 }
 
+impl<const N: usize> ArrayChain<u8, N> {
+	/*
+	as_ascii/unchecked
+	transpose (to uninit array)
+	map, try map
+	as_slice
+	as_mut_slice
+	each_ref
+	each_mut
+	split_array_ref
+	split_array_mut
+	rsplit_array_ref
+	rsplit_array_mut
+	*/
+}
+
+/*
+AsRef/AsMut for itself, [T; N], [T], other chain types
+arraylike?????? (and for boxed version of )
+
+asref/mut to self, slice, slice chainers
+borrow/mut
+clone, debug, default
+from array for cow slice?, &/mut [T; N] for Vec
+
+TODO: next: btreemap thing
+*/
 
 
 

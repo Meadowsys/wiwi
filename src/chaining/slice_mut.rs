@@ -53,3 +53,5 @@ impl<T> From<&mut [T]> for &mut SliceMutChain<T> {
 		unsafe { &mut *(value as *mut [T] as *mut SliceMutChain<T>) }
 	}
 }
+
+// TODO: trait impls (see boxed slice chainer)

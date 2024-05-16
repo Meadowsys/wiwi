@@ -24,10 +24,6 @@ impl<T> VecChain<T> {
 
 // TODO: allocator param
 impl<T> VecChain<T> {
-	pub fn from_vec(vec: Vec<T>) -> Self {
-		vec.into()
-	}
-
 	// TODO: nightly new_in
 	// TODO: nightly with_capacity_in
 	// TODO: nightly try_with_capacity_in
@@ -77,6 +73,140 @@ impl<T> VecChain<T> {
 		self.inner.truncate(len);
 		self
 	}
+	/*
+	as_slice/as_mut_slice
+	as_ptr/as_mut_ptr
+	nightly allocator
+	set_len
+	swap_remove
+	insert
+	remove
+	retain/mut
+	dedup_by
+	dedup_by_key
+	push
+	push_within_capacity????
+	pop
+	append
+	drain
+	clear
+	len
+	is_empty
+	split_off
+	resize_with
+	leak?
+	spare_capacity_mut
+	split_at_spare_mut?
+	splice
+	extract_if
+
+
+	as_str
+	as_bytes
+	flatten/mut
+	len
+	is_empty
+	first/mut
+	split_first/mut
+	split_last/mut
+	last
+	last_mut
+	first_chunk/mut
+	split_first_chunk/mut
+	split_last_chunk/mut
+	last_chunk/mut
+	get/mut
+	get_unchecked/mut
+	swap_unchecked (checked/panic?????)
+	reverse
+	iter/mut
+	windows
+	chunks/mut
+	chunks_exact/mut
+	as_chunks_unchecked
+	as_chunks
+	as_rchunks
+	array_chunks/mut
+	as_chunks_unchecked_mut
+	as_chunks_mut
+	as_rchunks_mut
+	array_windows
+	rchunks/mut
+	rchunks_exact/mut
+	chunk_by/mut
+	split_at/mut
+	split_at_unchecked
+	split_at_mut_unchecked
+	split_at_checked
+	split_at_mut_checked
+	split/mut
+	split_inclusive/mut
+	rsplit/mut
+	splitn/mut
+	rsplitn/mut
+	split_once
+	rsplit_once
+	contains
+	starts_with
+	ends_with
+	strip_prefix/suffix
+	binary_search/by/key
+	sort_unstable/by/key
+	select_nth_unstable/by/key
+	partition_dedup/by/key
+	rotate_left/right
+	fill
+	fill_with
+	clone_from_slice
+	copy_from_slice
+	copy_within
+	clone_within (not in std)?
+	swap_with_slice
+	align_to/mut
+	nightly as_simd/mut
+	is_sorted/by/key
+	partition_point
+	take/mut
+	take_first/mut
+	take_last/mut
+	get_many_unchecked_mut
+	get_many_mut
+	get_many/get_many_unchecked (non mut? not in std?)
+	sort_floats
+	is_ascii
+	as_ascii/unchecked
+	eq_ignore_ascii_case
+	make_ascii_uppercase/lowercase
+	escape_ascii
+	trim_ascii
+	trim_ascii_start/end
+	sort/by/key
+	sort_by_cached_key
+	to_vec/in????? no lol just clone?
+	repeat
+	concat
+	join
+	to_ascii_uppercase/lowercase
+	*/
+}
+
+// TODO: allocator param
+impl<T: Clone> VecChain<T> {
+	/*
+	resize
+	extend_from_slice
+	extend_from_within
+	*/
+}
+
+// TODO: allocator param
+impl<T, const N: usize> VecChain<[T; N]> {
+	// into_flattened
+}
+
+// TODO: allocator param
+impl<T: PartialEq> VecChain<T> {
+	// dedup
 }
 
 impl<T> From<Vec<T>> for VecChain<T> {
@@ -85,6 +215,24 @@ impl<T> From<Vec<T>> for VecChain<T> {
 		Self { inner }
 	}
 }
+/*
+AsRef/AsMut for itself, Vec<T>, [T], other chain types
+Borrow/mut for slice chainer?
+whatever ArrayLike is
+clone debug default
+drop?? nah
+extend T, &T
+from &[T], &[T; N], other chainers, cow<[T]>
+from muts?
+from str, String
+from owned array
+from binary heap? boxed slice and chainer, cstring for u8? cow slice?
+from nonzero u8 for cstring (probably some other crate, I dunno, if we cstring support?)
+from vec for cow
+from rc, arc,
+TODO: stopped around here (from vec for Rc<[T]> something like that)
+*/
+
 
 
 

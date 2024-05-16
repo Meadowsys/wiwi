@@ -1,4 +1,4 @@
-use std::mem::MaybeUninit;
+use std::mem::{ MaybeUninit, size_of };
 use std::slice;
 use super::ToMaybeUninit as _;
 
@@ -12,6 +12,7 @@ pub struct SliceBoxedChain<T> {
 impl<T> SliceBoxedChain<T> {
 	pub fn new_uninit_slice(len: usize) -> SliceBoxedChain<MaybeUninit<T>> {
 		// TODO: refactor to use chaining vec?
+		// with_capacity in vec won't allocate if T is ZST (capacity is lorge)
 		let mut vec = Vec::with_capacity(len);
 
 		// SAFETY: MaybeUninit<T> doesn't have any initialisation requirement
@@ -86,18 +87,16 @@ impl<T> SliceBoxedChain<T> {
 	windows
 	chunks/mut
 	chunks_exact/mut
-	as_chunks_unchecked
-	as_chunks
+	as_chunks/unchecked
 	as_rchunks
-	array_chunks
+	array_chunks/mut
 	as_chunks_unchecked_mut
 	as_chunks_mut
 	as_rchunks_mut
-	array_chunks_mut
 	array_windows
 	r_chunks/mut
 	r_chunks_exact/mut
-	chunk_by_mut
+	chunk_by_mut(non mut?)
 	split_at/mut/unchecked
 	split_at_checked/split_at_checked_mut
 	split/mut
@@ -122,7 +121,7 @@ impl<T> SliceBoxedChain<T> {
 	clone_within (not in std???)
 	swap_with_slice
 	align_to/mut
-	as_simd/mut?
+	nightly as_simd/mut?
 	is_sorted/by/key
 	partition_point
 	take/mut
@@ -130,8 +129,7 @@ impl<T> SliceBoxedChain<T> {
 	take_last/mut
 	get_many_unchecked_mut
 	get_many_mut
-	get_many_unchecked_mut (not in std??????????????????)
-	get_many_mut (not in std??????????????????)
+	get_many/unchecked (not in std??????????????????)
 	sort/by/key
 	sort_by_cached_key
 	to_vec/in
@@ -158,7 +156,15 @@ impl<T, const N: usize> SliceBoxedChain<[T; N]> {
 	pub fn flatten(self) -> SliceBoxedChain<T> {
 		// TODO: look into flatten fn in std?
 
-		let len = self.inner.len() * N;
+		// taken from std's flatten fn
+		// TODO: use SizedTypeProperties or slice `flatten`, whichever gets stabilised first
+		let len = if size_of::<T>() == 0 {
+			self.inner.len()
+				.checked_mul(N)
+				.expect("slice len overflow")
+		} else {
+			unsafe { self.inner.len().unchecked_mul(N) }
+		};
 
 		let raw = Box::into_raw(self.inner);
 		let raw = raw as *mut [T] as *mut T;
@@ -180,11 +186,14 @@ impl SliceBoxedChain<f64> {
 
 impl SliceBoxedChain<u8> {
 	// is_ascii
-	// as_ascii_unchecked
+	// nightly as_ascii
+	// nightly as_ascii_unchecked
 	// eq_ignore_ascii_case
 	// make_ascii_uppercase/lowercase
 	// escape_ascii
+	// trim_ascii
 	// trim_ascii/start/end
+
 	// to_ascii_uppercase/lowercase
 }
 
@@ -196,6 +205,12 @@ impl<T> From<Box<[T]>> for SliceBoxedChain<T> {
 	}
 }
 
+// AsRef/AsMut for itself, Box<[T]>, [T], the other chain types
+// bufread for &[u8]?
+// Clone, Copy, Debug, default, From<&[T]> where clone,
+// Concat?
+// ? from arc, rc, cow?
+// TODO: not done looking for traits
 
 
 

@@ -63,7 +63,7 @@ impl<T> From<&[T]> for &SliceRefChain<T> {
 	}
 }
 
-
+// TODO: trait impls (see boxed slice chainer)
 
 
 
