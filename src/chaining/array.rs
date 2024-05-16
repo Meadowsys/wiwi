@@ -1,5 +1,5 @@
 use std::{ mem::MaybeUninit, ptr };
-use super::{ IntoChainer, ToMaybeUninit as _ };
+use super::{ IntoChainer, SliceMutChain, SliceRefChain, ToMaybeUninit as _ };
 
 #[must_use = include_str!("./must-use-msg.txt")]
 #[repr(transparent)]
@@ -7,6 +7,7 @@ pub struct ArrayChain<T, const N: usize> {
 	inner: [T; N]
 }
 
+/// Constructor functions
 impl<T, const N: usize> ArrayChain<T, N> {
 	pub fn new_uninit(len: usize) -> ArrayChain<MaybeUninit<T>, N> {
 		unsafe { MaybeUninit::<[MaybeUninit<T>; N]>::uninit().assume_init().into() }
@@ -19,6 +20,7 @@ impl<T, const N: usize> ArrayChain<T, N> {
 	// from_fn, from_mut, from_ref, try_from_fn
 }
 
+/// Chaining functions
 impl<T, const N: usize> ArrayChain<T, N> {
 	pub fn len(self, out: &mut usize) -> Self {
 		self.len_uninit(out.to_maybeuninit_mut())
@@ -58,6 +60,37 @@ impl<T, const N: usize> ArrayChain<T, N> {
 	rsplit_array_ref
 	rsplit_array_mut
 	*/
+}
+
+/// Conversion functions
+impl<T, const N: usize> ArrayChain<T, N> {
+	pub fn into_inner(self) -> [T; N] {
+		self.inner
+	}
+
+	pub fn as_array(&self) -> &[T; N] {
+		&self.inner
+	}
+
+	pub fn as_mut_array(&mut self) -> &mut [T; N] {
+		&mut self.inner
+	}
+
+	pub fn as_slice(&self) -> &[T] {
+		&self.inner
+	}
+
+	pub fn as_mut_slice(&mut self) -> &mut [T] {
+		&mut self.inner
+	}
+
+	pub fn as_ref_slice_chainer(&self) -> &SliceRefChain<T> {
+		(&self.inner as &[T]).into()
+	}
+
+	pub fn as_mut_slice_chainer(&mut self) -> &mut SliceMutChain<T> {
+		(&mut self.inner as &mut [T]).into()
+	}
 }
 
 impl<const N: usize> ArrayChain<u8, N> {

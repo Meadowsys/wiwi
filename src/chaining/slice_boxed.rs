@@ -1,6 +1,6 @@
 use std::mem::{ MaybeUninit, size_of };
 use std::slice;
-use super::{ IntoChainer, ToMaybeUninit as _ };
+use super::{ IntoChainer, SliceMutChain, SliceRefChain, ToMaybeUninit as _ };
 
 // TODO: allocator param
 #[must_use = include_str!("./must-use-msg.txt")]
@@ -9,6 +9,7 @@ pub struct SliceBoxedChain<T> {
 	inner: Box<[T]>
 }
 
+/// Constructor functions
 impl<T> SliceBoxedChain<T> {
 	pub fn new_uninit(len: usize) -> SliceBoxedChain<MaybeUninit<T>> {
 		// TODO: refactor to use chaining vec?
@@ -35,12 +36,13 @@ impl<T> SliceBoxedChain<T> {
 	// TODO: nightly try_new_zeroed_slice
 }
 
-// TODO: allocator param
-impl<T> SliceBoxedChain<T> {
-	// TODO: nightly new_uninit_slice_in
-	// TODO: nightly new_zeroed_slice_in
-}
+// TODO: allocator constructors
+// impl<T> SliceBoxedChain<T> {
+// 	// TODO: nightly new_uninit_slice_in
+// 	// TODO: nightly new_zeroed_slice_in
+// }
 
+/// Chaining functions
 impl<T> SliceBoxedChain<T> {
 	pub fn len(self, out: &mut usize) -> Self {
 		self.len_uninit(out.to_maybeuninit_mut())
@@ -140,6 +142,29 @@ impl<T> SliceBoxedChain<T> {
 	*/
 }
 
+/// Conversion functions
+impl<T> SliceBoxedChain<T> {
+	pub fn into_inner(self) -> Box<[T]> {
+		self.inner
+	}
+
+	pub fn as_slice(&self) -> &[T] {
+		&self.inner
+	}
+
+	pub fn as_mut_slice(&mut self) -> &mut [T] {
+		&mut self.inner
+	}
+
+	pub fn as_ref_slice_chainer(&self) -> &SliceRefChain<T> {
+		(*self.inner).into()
+	}
+
+	pub fn as_mut_slice_chainer(&mut self) -> &mut SliceMutChain<T> {
+		(&mut *self.inner).into()
+	}
+}
+
 // TODO: allocator param
 impl<T> SliceBoxedChain<MaybeUninit<T>> {
 	pub unsafe fn assume_init(self) -> SliceBoxedChain<T> {
@@ -216,33 +241,3 @@ impl<T> From<Box<[T]>> for SliceBoxedChain<T> {
 // Concat?
 // ? from arc, rc, cow?
 // TODO: not done looking for traits
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-// // TODO: allocator param
-// impl<T> BoxedSliceChain<T> {
-// 	// TODO: nightly new_uninit_slice_in
-// 	// TODO: nightly new_zeroed_slice_in
-// }
-
-// // TODO: allocator param
-// impl<T> BoxedSliceChain<MaybeUninit<T>> {
-// 	// TODO: nightly assume_init
-// }

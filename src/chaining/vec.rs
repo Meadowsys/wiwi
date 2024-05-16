@@ -1,5 +1,5 @@
 use std::mem::{ forget, MaybeUninit, size_of };
-use super::{ IntoChainer, ToMaybeUninit as _ };
+use super::{ IntoChainer, SliceMutChain, SliceRefChain, ToMaybeUninit as _ };
 
 // TODO: allocator param
 #[must_use = include_str!("./must-use-msg.txt")]
@@ -8,6 +8,7 @@ pub struct VecChain<T> {
 	inner: Vec<T>
 }
 
+/// Constructor functions
 impl<T> VecChain<T> {
 	pub const fn new() -> Self {
 		Self { inner: Vec::new() }
@@ -21,13 +22,17 @@ impl<T> VecChain<T> {
 
 	// TODO: from_raw_parts
 }
+// TODO: allocator constructors
+// impl<T> VecChain<T> {
+// 	// TODO: nightly new_in
+// 	// TODO: nightly with_capacity_in
+// 	// TODO: nightly try_with_capacity_in
+// 	// TODO: nightly from_raw_parts_in
+// }
 
+/// Chaining functions
 // TODO: allocator param
 impl<T> VecChain<T> {
-	// TODO: nightly new_in
-	// TODO: nightly with_capacity_in
-	// TODO: nightly try_with_capacity_in
-	// TODO: nightly from_raw_parts_in
 	// TODO: nightly into_raw_parts
 	// TODO: nightly into_raw_parts_with_alloc
 
@@ -188,6 +193,29 @@ impl<T> VecChain<T> {
 	join
 	to_ascii_uppercase/lowercase
 	*/
+}
+
+/// Conversion functions
+impl<T> VecChain<T> {
+	pub fn into_inner(self) -> Vec<T> {
+		self.inner
+	}
+
+	pub fn as_slice(&self) -> &[T] {
+		&self.inner
+	}
+
+	pub fn as_mut_slice(&mut self) -> &mut [T] {
+		&mut self.inner
+	}
+
+	pub fn as_ref_slice_chainer(&self) -> &SliceRefChain<T> {
+		(*self.inner).into()
+	}
+
+	pub fn as_mut_slice_chainer(&mut self) -> &mut SliceMutChain<T> {
+		(&mut *self.inner).into()
+	}
 }
 
 // TODO: allocator param

@@ -1,6 +1,6 @@
 use std::mem::{ MaybeUninit, size_of };
 use std::slice;
-use super::{ IntoChainer, ToMaybeUninit as _ };
+use super::{ IntoChainer, SliceRefChain, ToMaybeUninit as _ };
 
 #[must_use = include_str!("./must-use-msg.txt")]
 #[repr(transparent)]
@@ -8,6 +8,10 @@ pub struct SliceMutChain<T> {
 	inner: [T]
 }
 
+/// Constructor functions
+impl<T> SliceMutChain<T> {}
+
+/// Chaining functions
 impl<T> SliceMutChain<T> {
 	pub fn len(&mut self, out: &mut usize) -> &mut Self {
 		self.len_uninit(out.to_maybeuninit_mut())
@@ -36,6 +40,21 @@ impl<T> SliceMutChain<T> {
 	}
 
 	// TODO: more (see SliceBoxedChain)
+}
+
+/// Conversion functions
+impl<T> SliceMutChain<T> {
+	pub fn as_slice(&self) -> &[T] {
+		&self.inner
+	}
+
+	pub fn as_mut_slice(&mut self) -> &mut [T] {
+		&mut self.inner
+	}
+
+	pub fn as_ref_slice_chainer(&self) -> &SliceRefChain<T> {
+		self.inner.into()
+	}
 }
 
 // TODO: [AsciiChar] as_str, as_bytes

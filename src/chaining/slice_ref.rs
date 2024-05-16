@@ -8,6 +8,10 @@ pub struct SliceRefChain<T> {
 	inner: [T]
 }
 
+/// Constructor functions
+impl<T> SliceRefChain<T> {}
+
+/// Chaining functions
 impl<T> SliceRefChain<T> {
 	pub fn len(&self, out: &mut usize) -> &Self {
 		self.len_uninit(out.to_maybeuninit_mut())
@@ -45,6 +49,13 @@ impl<T> SliceRefChain<T> {
 	}
 
 	// TODO: more (see SliceBoxedChain)
+}
+
+/// Conversion functions
+impl<T> SliceRefChain<T> {
+	pub fn as_slice(&self) -> &[T] {
+		&self.inner
+	}
 }
 
 // TODO: [AsciiChar] as_str, as_bytes
@@ -292,66 +303,3 @@ impl<T> From<&[T]> for &SliceRefChain<T> {
 
 // // AsciiChar is nightly
 // // impl SliceChain<AsciiChar>
-
-// impl<T, const N: usize> SliceChain<[T; N]> {
-// 	// TODO: nightly flatten
-// 	// TODO: nightly flatten_mut
-// }
-
-// // TODO: trait impls
-
-// impl<T> From<&[T]> for &SliceChain<T> {
-// 	#[inline]
-// 	fn from(value: &[T]) -> Self {
-// 		unsafe { &*(value as *const [T] as *const SliceChain<T>) }
-// 	}
-// }
-
-// impl<T> From<&mut [T]> for &mut SliceChain<T> {
-// 	#[inline]
-// 	fn from(value: &mut [T]) -> Self {
-// 		unsafe { &mut *(value as *mut [T] as *mut SliceChain<T>) }
-// 	}
-// }
-
-// impl<T> AsRef<SliceChain<T>> for SliceChain<T> {
-// 	#[inline]
-// 	fn as_ref(&self) -> &Self {
-// 		self
-// 	}
-// }
-
-// impl<T> AsMut<SliceChain<T>> for SliceChain<T> {
-// 	#[inline]
-// 	fn as_mut(&mut self) -> &mut Self {
-// 		self
-// 	}
-// }
-
-// impl<T> AsRef<[T]> for SliceChain<T> {
-// 	#[inline]
-// 	fn as_ref(&self) -> &[T] {
-// 		&self.inner
-// 	}
-// }
-
-// impl<T> AsMut<[T]> for SliceChain<T> {
-// 	#[inline]
-// 	fn as_mut(&mut self) -> &mut [T] {
-// 		&mut self.inner
-// 	}
-// }
-
-// impl<T> SliceChain<T> {
-// 	#[inline]
-// 	pub fn as_slice(&self) -> &[T] {
-// 		unsafe { &*(self as *const Self as *const [T]) }
-// 	}
-
-// 	#[inline]
-// 	pub fn as_mut_slice(&mut self) -> &mut [T] {
-// 		unsafe { &mut *(self as *mut Self as *mut [T]) }
-// 	}
-
-// 	// TODO: into_inner.....??? probably needs boxed slice I dunno
-// }
