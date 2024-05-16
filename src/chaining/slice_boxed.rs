@@ -154,8 +154,6 @@ impl<T> SliceBoxedChain<MaybeUninit<T>> {
 
 impl<T, const N: usize> SliceBoxedChain<[T; N]> {
 	pub fn flatten(self) -> SliceBoxedChain<T> {
-		// TODO: look into flatten fn in std?
-
 		// taken from std's flatten fn
 		// TODO: use SizedTypeProperties or slice `flatten`, whichever gets stabilised first
 		let len = if size_of::<T>() == 0 {

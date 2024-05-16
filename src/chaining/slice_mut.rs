@@ -1,4 +1,4 @@
-use std::mem::MaybeUninit;
+use std::mem::{ MaybeUninit, size_of };
 use std::slice;
 use super::{ IntoChainer, ToMaybeUninit as _ };
 
@@ -42,7 +42,16 @@ impl<T> SliceMutChain<T> {
 
 impl<T, const N: usize> SliceMutChain<[T; N]> {
 	pub fn flatten(&mut self) -> &mut SliceMutChain<T> {
-		let len = self.inner.len() * N;
+		// taken from std's flatten fn
+		// TODO: use SizedTypeProperties or slice `flatten`, whichever gets stabilised first
+		let len = if size_of::<T>() == 0 {
+			self.inner.len()
+				.checked_mul(N)
+				.expect("slice len overflow")
+		} else {
+			unsafe { self.inner.len().unchecked_mul(N) }
+		};
+
 		let ptr = self as *mut SliceMutChain<[T; N]> as *mut T;
 		unsafe { slice::from_raw_parts_mut(ptr, len).into() }
 	}

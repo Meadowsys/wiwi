@@ -1,4 +1,4 @@
-use std::mem::MaybeUninit;
+use std::mem::{ forget, MaybeUninit, size_of };
 use super::{ IntoChainer, ToMaybeUninit as _ };
 
 // TODO: allocator param
@@ -201,7 +201,28 @@ impl<T: Clone> VecChain<T> {
 
 // TODO: allocator param
 impl<T, const N: usize> VecChain<[T; N]> {
-	// into_flattened
+	pub fn flatten(mut self) -> VecChain<T> {
+		let (len, cap) = if size_of::<T>() == 0 {
+			let len = self.inner.len()
+				.checked_mul(N)
+				.expect("vec len overflow");
+			(len, usize::MAX)
+		} else {
+			unsafe { (
+				self.inner.len().unchecked_mul(N),
+				self.inner.capacity().unchecked_mul(N)
+			) }
+		};
+
+		// TODO: switch to into_raw_parts impl when stabilised
+		// let (ptr, _len, _capacity) = self.inner.into_raw_parts();
+
+		let ptr = self.inner.as_mut_ptr();
+		forget(self);
+
+		let ptr = ptr as *mut T;
+		unsafe { Vec::from_raw_parts(ptr, len, cap).into() }
+	}
 }
 
 // TODO: allocator param
