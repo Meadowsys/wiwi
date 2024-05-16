@@ -259,7 +259,7 @@ impl<T> VecChain<T> {
 	where
 		F: FnOnce(&mut SliceMutChain<T>, &mut SliceMutChain<MaybeUninit<T>>)
 	{
-		// TODO: call Vec impl when stabilised
+		// TODO: call Vec impl when it is stabilised
 		let (init, spare) = unsafe {
 			let ptr = self.inner.as_mut_ptr();
 			let len = self.inner.len();
@@ -394,7 +394,7 @@ impl<T, const N: usize> VecChain<[T; N]> {
 			) }
 		};
 
-		// TODO: switch to into_raw_parts impl when stabilised
+		// TODO: switch to into_raw_parts impl when it is stabilised
 		// let (ptr, _len, _capacity) = self.inner.into_raw_parts();
 
 		let ptr = self.inner.as_mut_ptr();

@@ -109,6 +109,7 @@ impl<T, const N: usize> ArrayChain<MaybeUninit<T>, N> {
 }
 
 // o.0
+// cannot use generic params in expressions (yet?), so cannot make return type
 // impl<T, const N: usize, const N2: usize> ArrayChain<[T; N2], N> {
 // 	pub fn flatten(self) -> ArrayChain<T, { N * N2 }> {}
 // }
