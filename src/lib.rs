@@ -1,5 +1,86 @@
 #![doc = include_str!("../README.md")]
 
+#![cfg_attr(not(feature = "docs-rs-notouchie-dont-use-this"), doc = "")]
+#![cfg_attr(
+	all(feature = "all-unstable", not(feature = "docs-rs-notouchie-dont-use-this")),
+	doc = "## Enabled features (`all-unstable` is enabled)"
+)]
+#![cfg_attr(
+	all(feature = "all", not(feature = "all-unstable"), not(feature = "docs-rs-notouchie-dont-use-this")),
+	doc = "## Enabled features (`all` is enabled)"
+)]
+#![cfg_attr(
+	all(not(feature = "all"), not(feature = "all-unstable"), not(feature = "docs-rs-notouchie-dont-use-this")),
+	doc = "## Enabled features"
+)]
+#![cfg_attr(not(feature = "docs-rs-notouchie-dont-use-this"), doc = "")]
+
+#![cfg_attr(
+	all(feature = "auth-unstable", not(feature = "docs-rs-notouchie-dont-use-this")),
+	doc = "- `auth` (unstable)"
+)]
+#![cfg_attr(
+	all(feature = "chaining-unstable", not(feature = "docs-rs-notouchie-dont-use-this")),
+	doc = "- `chaining` (unstable)"
+)]
+#![cfg_attr(
+	all(feature = "clock-timer", not(feature = "docs-rs-notouchie-dont-use-this")),
+	doc = "- `clock-timer`"
+)]
+#![cfg_attr(
+	all(feature = "debounce", not(feature = "docs-rs-notouchie-dont-use-this")),
+	doc = "- `debounce`"
+)]
+#![cfg_attr(
+	all(feature = "h", not(feature = "docs-rs-notouchie-dont-use-this")),
+	doc = "- `h`"
+)]
+#![cfg_attr(
+	all(feature = "hex", not(feature = "docs-rs-notouchie-dont-use-this")),
+	doc = "- `hex`"
+)]
+#![cfg_attr(
+	all(feature = "id-unstable", not(feature = "docs-rs-notouchie-dont-use-this")),
+	doc = "- `id` (unstable)"
+)]
+#![cfg_attr(
+	all(feature = "lazy-wrap", not(feature = "docs-rs-notouchie-dont-use-this")),
+	doc = "- `lazy-wrap`"
+)]
+#![cfg_attr(
+	all(feature = "lsl-unstable", not(feature = "docs-rs-notouchie-dont-use-this")),
+	doc = "- `lsl` (unstable)"
+)]
+#![cfg_attr(
+	all(feature = "serialiser-unstable", not(feature = "docs-rs-notouchie-dont-use-this")),
+	doc = "- `serialiser` (unstable)"
+)]
+#![cfg_attr(
+	all(feature = "string-pool-unstable", not(feature = "docs-rs-notouchie-dont-use-this")),
+	doc = "- `string-pool` (unstable)"
+)]
+#![cfg_attr(
+	all(feature = "z85", feature = "docs-rs-notouchie-dont-use-this"),
+	doc = "- `z85`"
+)]
+
+// ...yes, I'm doing it
+#![cfg_attr(all(
+	not(feature = "auth-unstable"),
+	not(feature = "chaining-unstable"),
+	not(feature = "clock-timer"),
+	not(feature = "debounce"),
+	not(feature = "h"),
+	not(feature = "hex"),
+	not(feature = "id-unstable"),
+	not(feature = "lazy-wrap"),
+	not(feature = "lsl-unstable"),
+	not(feature = "serialiser-unstable"),
+	not(feature = "string-pool-unstable"),
+	not(feature = "z85"),
+	not(feature = "docs-rs-notouchie-dont-use-this")
+), doc = "No features enabled! (you should probably enable something, otherwise this crate does nothing :p)")]
+
 #![allow(clippy::missing_safety_doc)]
 #![allow(clippy::new_without_default)]
 #![allow(clippy::should_implement_trait)]

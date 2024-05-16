@@ -39,8 +39,28 @@ rand = "0.8.5"
 z85 = "3.0.5"
 
 [features]
-# Make sure to check README and workflow files too
-# Also check below, docs.rs config
+# Adding new unstable feature:
+# - append `-unstable` to its name
+# - document it in README (note it is unstable by putting parens after name)
+# - make sure to add to `all-unstable` feature
+# - check doc cfg_attrs at top of lib.rs
+# - make sure to add it to "No features enabled!" thing
+# - make sure the `pub mod` declaration in lib.rs has the right feature attr on it
+#
+# Graduating feature out of unstable:
+# - remove `-unstable` from feature name below
+# - update its entry in README
+# - move it from `all-unstable` to `all`
+# - rename it in cfg_attrs at top of lib.rs
+# - rename it in "No features enabled!" thing
+# - update its name in the feature gate of its `pub mod` declaration in lib.rs
+#
+# No longer necessary (but good to do anyways I guess):
+# - check workflow files
+# - check below docs.rs config
+#
+# It would be good to occasionally check the dependencies too, update them,
+# remove ones that aren't part of any feature anymore, etc
 
 all = [
 	"clock-timer",
@@ -134,6 +154,11 @@ serde-json = ["dep:serde_json"]
 # compiler errors if the feature its for isn't enabled
 debounce-dyn-fn = []
 
+# no touch, not public API
+# currently only used to hide "enabled features" section from docs when
+# building for docs.rs
+docs-rs-notouchie-dont-use-this = []
+
 [[bench]]
 name = "hex-and-z85"
 harness = false
@@ -150,7 +175,9 @@ features = [
 	# addon features
 	"hashbrown",
 	"image",
-	"serde-json"
+	"serde-json",
+
+	"docs-rs-notouchie-dont-use-this"
 ]
 
 targets = [
