@@ -32,3 +32,8 @@ impl<T> ToMaybeUninit for T {
 		unsafe { &mut *(self as *mut T as *mut MaybeUninit<T>) }
 	}
 }
+
+pub trait IntoChainer {
+	type Chain;
+	fn into_chainer(self) -> Self::Chain;
+}

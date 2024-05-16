@@ -1,6 +1,6 @@
 use std::mem::MaybeUninit;
 use std::slice;
-use super::ToMaybeUninit as _;
+use super::{ IntoChainer, ToMaybeUninit as _ };
 
 #[must_use = include_str!("./must-use-msg.txt")]
 #[repr(transparent)]

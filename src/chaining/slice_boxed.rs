@@ -1,6 +1,6 @@
 use std::mem::{ MaybeUninit, size_of };
 use std::slice;
-use super::ToMaybeUninit as _;
+use super::{ IntoChainer, ToMaybeUninit as _ };
 
 // TODO: allocator param
 #[must_use = include_str!("./must-use-msg.txt")]
@@ -195,6 +195,13 @@ impl SliceBoxedChain<u8> {
 	// trim_ascii/start/end
 
 	// to_ascii_uppercase/lowercase
+}
+
+impl<T> IntoChainer for Box<[T]> {
+	type Chain = SliceBoxedChain<T>;
+	fn into_chainer(self) -> SliceBoxedChain<T> {
+		self.into()
+	}
 }
 
 // TODO: allocator param

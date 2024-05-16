@@ -1,5 +1,5 @@
 use std::mem::MaybeUninit;
-use super::ToMaybeUninit as _;
+use super::{ IntoChainer, ToMaybeUninit as _ };
 
 // TODO: allocator param
 #[must_use = include_str!("./must-use-msg.txt")]
@@ -207,6 +207,13 @@ impl<T, const N: usize> VecChain<[T; N]> {
 // TODO: allocator param
 impl<T: PartialEq> VecChain<T> {
 	// dedup
+}
+
+impl<T> IntoChainer for Vec<T> {
+	type Chain = VecChain<T>;
+	fn into_chainer(self) -> VecChain<T> {
+		self.into()
+	}
 }
 
 impl<T> From<Vec<T>> for VecChain<T> {

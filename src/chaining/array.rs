@@ -1,3 +1,5 @@
+use super::{ IntoChainer, ToMaybeUninit as _ };
+
 #[must_use = include_str!("./must-use-msg.txt")]
 #[repr(transparent)]
 pub struct ArrayChain<T, const N: usize> {
@@ -18,6 +20,19 @@ impl<const N: usize> ArrayChain<u8, N> {
 	rsplit_array_ref
 	rsplit_array_mut
 	*/
+}
+
+impl<T, const N: usize> IntoChainer for [T; N] {
+	type Chain = ArrayChain<T, N>;
+	fn into_chainer(self) -> ArrayChain<T, N> {
+		self.into()
+	}
+}
+
+impl<T, const N: usize> From<[T; N]> for ArrayChain<T, N> {
+	fn from(inner: [T; N]) -> Self {
+		Self { inner }
+	}
 }
 
 /*
