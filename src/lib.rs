@@ -60,7 +60,7 @@
 	doc = "- `string-pool` (unstable)"
 )]
 #![cfg_attr(
-	all(feature = "z85", feature = "docs-rs-notouchie-dont-use-this"),
+	all(feature = "z85", not(feature = "docs-rs-notouchie-dont-use-this")),
 	doc = "- `z85`"
 )]
 
