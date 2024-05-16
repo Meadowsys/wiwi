@@ -1,3 +1,4 @@
+use std::{ mem::MaybeUninit, ptr };
 use super::{ IntoChainer, ToMaybeUninit as _ };
 
 #[must_use = include_str!("./must-use-msg.txt")]
@@ -6,10 +7,47 @@ pub struct ArrayChain<T, const N: usize> {
 	inner: [T; N]
 }
 
-impl<const N: usize> ArrayChain<u8, N> {
+impl<T, const N: usize> ArrayChain<T, N> {
+	pub fn new_uninit(len: usize) -> ArrayChain<MaybeUninit<T>, N> {
+		unsafe { MaybeUninit::<[MaybeUninit<T>; N]>::uninit().assume_init().into() }
+	}
+
+	pub fn new_zeroed(len: usize) -> ArrayChain<MaybeUninit<T>, N> {
+		unsafe { MaybeUninit::<[MaybeUninit<T>; N]>::zeroed().assume_init().into() }
+	}
+
+	// from_fn, from_mut, from_ref, try_from_fn
+}
+
+impl<T, const N: usize> ArrayChain<T, N> {
+	pub fn len(self, out: &mut usize) -> Self {
+		self.len_uninit(out.to_maybeuninit_mut())
+	}
+
+	pub fn len_uninit(self, out: &mut MaybeUninit<usize>) -> Self {
+		out.write(N);
+		self
+	}
+
+	pub fn is_empty(self, out: &mut bool) -> Self {
+		self.is_empty_uninit(out.to_maybeuninit_mut())
+	}
+
+	pub fn is_empty_uninit(mut self, out: &mut MaybeUninit<bool>) -> Self {
+		let mut len = MaybeUninit::uninit();
+		self = self.len_uninit(&mut len);
+		out.write(unsafe { len.assume_init() == 0 });
+		self
+	}
+
+	pub fn with_first<F>(mut self, f: F) -> Self
+	where
+		F: FnOnce(Option<&mut T>)
+	{
+		f(self.inner.first_mut());
+		self
+	}
 	/*
-	as_ascii/unchecked
-	transpose (to uninit array)
 	map, try map
 	as_slice
 	as_mut_slice
@@ -21,6 +59,26 @@ impl<const N: usize> ArrayChain<u8, N> {
 	rsplit_array_mut
 	*/
 }
+
+impl<const N: usize> ArrayChain<u8, N> {
+	// as_ascii/unchecked
+}
+
+impl<T, const N: usize> ArrayChain<MaybeUninit<T>, N> {
+	pub unsafe fn assume_init(self) -> ArrayChain<T, N> {
+		// TODO: this is subpar (its copying), but I can't find a better way to do it?
+		// all ways to do it seem to be unstable (transmute is too dumb, transmute_unchecked
+		// is unstable and likely won't ever be stable, MaybeUninit::array_assume_init
+		// is unstable (it uses transmute_unchecked internally))
+		ptr::read(&self.inner as *const [MaybeUninit<T>; N] as *const [T; N]).into()
+	}
+	// transpose
+}
+
+// o.0
+// impl<T, const N: usize, const N2: usize> ArrayChain<[T; N2], N> {
+// 	pub fn flatten(self) -> ArrayChain<T, { N * N2 }> {}
+// }
 
 impl<T, const N: usize> IntoChainer for [T; N] {
 	type Chain = ArrayChain<T, N>;
@@ -46,182 +104,3 @@ from array for cow slice?, &/mut [T; N] for Vec
 
 TODO: next: btreemap thing
 */
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-// // TODO: why do I need this?
-// // impl<T> ArrayChain<T, 1> {
-// // 	pub fn from_ref(s: &T) -> &Self {
-// // 		array::from_ref(s).into()
-// // 	}
-// //
-// // 	pub fn from_mut(s: &mut T) -> &mut Self {
-// // 		array::from_mut(s).into()
-// // 	}
-// // }
-
-// impl<T, const N: usize> ArrayChain<T, N> {
-// 	#[inline]
-// 	pub fn from_array(array: [T; N]) -> Self {
-// 		Self { inner: array }
-// 	}
-
-// 	#[inline]
-// 	pub fn from_fn<F>(cb: F) -> Self
-// 	where
-// 		F: FnMut(usize) -> T
-// 	{
-// 		array::from_fn(cb).into()
-// 	}
-
-// 	#[inline]
-// 	pub fn map<F, U>(self, f: F) -> ArrayChain<U, N>
-// 	where
-// 		F: FnMut(T) -> U
-// 	{
-// 		self.inner.map(f).into()
-// 	}
-
-// 	// TODO: nightly try_map
-
-// 	#[inline]
-// 	pub fn as_slice(&self) -> &SliceChain<T> {
-// 		// <&SliceChain<T>>::from(&self.inner as &[T])
-// 		(&self.inner as &[T]).into()
-// 	}
-
-// 	#[inline]
-// 	pub fn as_mut_slice(&mut self) -> &mut SliceChain<T> {
-// 		(&mut self.inner as &mut [T]).into()
-// 	}
-
-// 	// TODO: upgrade toolchain then each_ref
-// 	// TODO: upgrade toolchain then each_mut
-// 	// TODO: nightly split_array_ref
-// 	// TODO: nightly split_array_mut
-// 	// TODO: nightly rsplit_array_ref
-// 	// TODO: nightly rsplit_array_mut
-// }
-
-// // TODO: trait impls
-
-// impl<T, const N: usize> From<[T; N]> for ArrayChain<T, N> {
-// 	#[inline]
-// 	fn from(inner: [T; N]) -> Self {
-// 		Self { inner }
-// 	}
-// }
-
-// // TODO: why do I need this?
-// // impl<T, const N: usize> From<&[T; N]> for &ArrayChain<T, N> {
-// // 	fn from(value: &[T; N]) -> Self {
-// // 		unsafe { &*(value as *const [T; N] as *const ArrayChain<T, N>) }
-// // 	}
-// // }
-
-// // impl<T, const N: usize> From<&mut [T; N]> for &mut ArrayChain<T, N> {
-// // 	fn from(value: &mut [T; N]) -> Self {
-// // 		unsafe { &mut *(value as *mut [T; N] as *mut ArrayChain<T, N>) }
-// // 	}
-// // }
-
-// impl<const N: usize> ArrayChain<u8, N> {
-// 	// TODO: nightly as_ascii
-// 	// TODO: nightly as_ascii_unchecked
-// }
-
-// impl<T, const N: usize> ArrayChain<MaybeUninit<T>, N> {
-// 	// TODO: nightly transpose
-// }
-
-// impl<T, const N: usize> AsRef<ArrayChain<T, N>> for ArrayChain<T, N> {
-// 	#[inline]
-// 	fn as_ref(&self) -> &Self {
-// 		self
-// 	}
-// }
-
-// impl<T, const N: usize> AsMut<ArrayChain<T, N>> for ArrayChain<T, N> {
-// 	#[inline]
-// 	fn as_mut(&mut self) -> &mut Self {
-// 		self
-// 	}
-// }
-
-// impl<T, const N: usize> AsRef<[T; N]> for ArrayChain<T, N> {
-// 	#[inline]
-// 	fn as_ref(&self) -> &[T; N] {
-// 		&self.inner
-// 	}
-// }
-
-// impl<T, const N: usize> AsMut<[T; N]> for ArrayChain<T, N> {
-// 	#[inline]
-// 	fn as_mut(&mut self) -> &mut [T; N] {
-// 		&mut self.inner
-// 	}
-// }
-
-// impl<T, const N: usize> AsRef<SliceChain<T>> for ArrayChain<T, N> {
-// 	#[inline]
-// 	fn as_ref(&self) -> &SliceChain<T> {
-// 		self.as_slice()
-// 	}
-// }
-
-// impl<T, const N: usize> AsMut<SliceChain<T>> for ArrayChain<T, N> {
-// 	#[inline]
-// 	fn as_mut(&mut self) -> &mut SliceChain<T> {
-// 		self.as_mut_slice()
-// 	}
-// }
-
-// impl<T, const N: usize> AsRef<[T]> for ArrayChain<T, N> {
-// 	#[inline]
-// 	fn as_ref(&self) -> &[T] {
-// 		&self.inner
-// 	}
-// }
-
-// impl<T, const N: usize> AsMut<[T]> for ArrayChain<T, N> {
-// 	#[inline]
-// 	fn as_mut(&mut self) -> &mut [T] {
-// 		&mut self.inner
-// 	}
-// }
-
-// impl<T, const N: usize> ArrayChain<T, N> {
-// 	#[inline]
-// 	pub fn as_array(&self) -> &[T; N] {
-// 		&self.inner
-// 	}
-
-// 	#[inline]
-// 	pub fn as_mut_array(&mut self) -> &mut [T; N] {
-// 		&mut self.inner
-// 	}
-
-// 	#[inline]
-// 	pub fn into_inner(self) -> [T; N] {
-// 		self.inner
-// 	}
-// }

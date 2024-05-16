@@ -10,7 +10,7 @@ pub struct SliceBoxedChain<T> {
 }
 
 impl<T> SliceBoxedChain<T> {
-	pub fn new_uninit_slice(len: usize) -> SliceBoxedChain<MaybeUninit<T>> {
+	pub fn new_uninit(len: usize) -> SliceBoxedChain<MaybeUninit<T>> {
 		// TODO: refactor to use chaining vec?
 		// with_capacity in vec won't allocate if T is ZST (capacity is lorge)
 		let mut vec = Vec::with_capacity(len);
@@ -21,8 +21,8 @@ impl<T> SliceBoxedChain<T> {
 		vec.into_boxed_slice().into()
 	}
 
-	pub fn new_zeroed_slice(len: usize) -> SliceBoxedChain<MaybeUninit<T>> {
-		let mut slice = Self::new_uninit_slice(len);
+	pub fn new_zeroed(len: usize) -> SliceBoxedChain<MaybeUninit<T>> {
+		let mut slice = Self::new_uninit(len);
 
 		// SAFETY: MaybeUninit<T> doesn't have any initialisation requirement
 		// (so zeroed is fine)
