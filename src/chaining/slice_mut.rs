@@ -9,7 +9,9 @@ pub struct SliceMutChain<T> {
 }
 
 /// Constructor functions
-impl<T> SliceMutChain<T> {}
+impl<T> SliceMutChain<T> {
+	// from_ref, from_raw_parts, from_ptr_range, (nightly) range
+}
 
 /// Chaining functions
 impl<T> SliceMutChain<T> {

@@ -9,7 +9,9 @@ pub struct SliceRefChain<T> {
 }
 
 /// Constructor functions
-impl<T> SliceRefChain<T> {}
+impl<T> SliceRefChain<T> {
+	// from_ref, from_raw_parts, from_ptr_range, (nightly) range
+}
 
 /// Chaining functions
 impl<T> SliceRefChain<T> {
