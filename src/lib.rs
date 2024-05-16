@@ -60,6 +60,10 @@
 	doc = "- `string-pool` (unstable)"
 )]
 #![cfg_attr(
+	all(feature = "superstring-unstable", not(feature = "docs-rs-notouchie-dont-use-this")),
+	doc = "- `superstring` (unstable)"
+)]
+#![cfg_attr(
 	all(feature = "z85", not(feature = "docs-rs-notouchie-dont-use-this")),
 	doc = "- `z85`"
 )]
@@ -77,6 +81,7 @@
 	not(feature = "lsl-unstable"),
 	not(feature = "serialiser-unstable"),
 	not(feature = "string-pool-unstable"),
+	not(feature = "superstring-unstable"),
 	not(feature = "z85"),
 	not(feature = "docs-rs-notouchie-dont-use-this")
 ), doc = "No features enabled! (you should probably enable something, otherwise this crate does nothing :p)")]
@@ -149,6 +154,9 @@ pub mod serialiser;
 
 #[cfg(feature = "string-pool-unstable")]
 pub mod string_pool;
+
+#[cfg(feature = "superstring-unstable")]
+pub mod superstring;
 
 // #[cfg(feature = "ws")]
 // pub mod ws;

@@ -78,7 +78,8 @@ all-unstable = [
 	"id-unstable",
 	"lsl-unstable",
 	"serialiser-unstable",
-	"string-pool-unstable"
+	"string-pool-unstable",
+	"superstring-unstable"
 ]
 
 auth-unstable = [
@@ -136,6 +137,7 @@ string-pool-unstable = [
 	"dep:hashbrown",
 	"lazy-wrap"
 ]
+superstring-unstable = []
 # ws = [
 # 	"dep:httparse",
 # 	"dep:thiserror",
