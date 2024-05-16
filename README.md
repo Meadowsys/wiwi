@@ -47,6 +47,10 @@ These don't change the exposed API or program behaviour at all, only some intern
 
 - **`debounce-dyn-fn`** - Wraps functions into a `Box<dyn Fn>`, rather than monomorphising. This will cause calls to the underlying function (not the returned one) to be a bit slower than static dispatch, but also reduces the binary size depending on how many different concrete types the debounce functions are called with.
 
+## Platform support
+
+This package will only _officially_ support macOS and Linux. Windows support will only be on best effort basis. Still do submit issues, I just can't guarantee I can fix them etc (but you can PR me, if you'd like!).
+
 [zeromq]: https://zeromq.org
 [z85]: https://rfc.zeromq.org/spec/32
 

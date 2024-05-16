@@ -7,7 +7,7 @@ on:
 jobs:
   test:
     name: test
-    runs-on: ubuntu-22.04
+    runs-on: ${{ matrix.runs-on }}
 
     strategy:
       matrix:
@@ -15,6 +15,11 @@ jobs:
         # Make sure to check README and Cargo.toml too
         - all
         - all,debounce-dyn-fn
+
+        runs-on:
+        - ubuntu-22.04
+        - ubuntu-24.04
+        - macos-14
 
     steps:
     - name: checkout code
@@ -34,7 +39,7 @@ jobs:
   publish:
     name: publish crate
     needs: test
-    runs-on: ubuntu-22.04
+    runs-on: macos-14
 
     steps:
     - name: checkout code
