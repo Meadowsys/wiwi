@@ -96,8 +96,8 @@ impl<T> SliceBoxedChain<T> {
 	as_chunks_mut
 	as_rchunks_mut
 	array_windows
-	r_chunks/mut
-	r_chunks_exact/mut
+	rchunks/mut
+	rchunks_exact/mut
 	chunk_by_mut(non mut?)
 	split_at/mut/unchecked
 	split_at_checked/split_at_checked_mut
