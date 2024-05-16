@@ -13,6 +13,13 @@ impl<T> SliceRefChain<T> {
 	// from_ref, from_raw_parts, from_ptr_range, (nightly) range
 }
 
+/// Conversion functions
+impl<T> SliceRefChain<T> {
+	pub fn as_slice(&self) -> &[T] {
+		&self.inner
+	}
+}
+
 /// Chaining functions
 impl<T> SliceRefChain<T> {
 	pub fn len(&self, out: &mut usize) -> &Self {
@@ -53,13 +60,6 @@ impl<T> SliceRefChain<T> {
 	// TODO: more (see SliceBoxedChain)
 }
 
-/// Conversion functions
-impl<T> SliceRefChain<T> {
-	pub fn as_slice(&self) -> &[T] {
-		&self.inner
-	}
-}
-
 // TODO: [AsciiChar] as_str, as_bytes
 
 impl<T, const N: usize> SliceRefChain<[T; N]> {
@@ -76,6 +76,13 @@ impl<T, const N: usize> SliceRefChain<[T; N]> {
 
 		let ptr = self as *const SliceRefChain<[T; N]> as *const T;
 		unsafe { slice::from_raw_parts(ptr, len).into() }
+	}
+}
+
+impl<'h, T> IntoChainer for &'h [T] {
+	type Chain = &'h SliceRefChain<T>;
+	fn into_chainer(self) -> &'h SliceRefChain<T> {
+		self.into()
 	}
 }
 

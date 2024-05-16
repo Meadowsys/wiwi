@@ -13,6 +13,21 @@ impl<T> SliceMutChain<T> {
 	// from_ref, from_raw_parts, from_ptr_range, (nightly) range
 }
 
+/// Conversion functions
+impl<T> SliceMutChain<T> {
+	pub fn as_slice(&self) -> &[T] {
+		&self.inner
+	}
+
+	pub fn as_mut_slice(&mut self) -> &mut [T] {
+		&mut self.inner
+	}
+
+	pub fn as_ref_slice_chainer(&self) -> &SliceRefChain<T> {
+		self.inner.into()
+	}
+}
+
 /// Chaining functions
 impl<T> SliceMutChain<T> {
 	pub fn len(&mut self, out: &mut usize) -> &mut Self {
@@ -44,21 +59,6 @@ impl<T> SliceMutChain<T> {
 	// TODO: more (see SliceBoxedChain)
 }
 
-/// Conversion functions
-impl<T> SliceMutChain<T> {
-	pub fn as_slice(&self) -> &[T] {
-		&self.inner
-	}
-
-	pub fn as_mut_slice(&mut self) -> &mut [T] {
-		&mut self.inner
-	}
-
-	pub fn as_ref_slice_chainer(&self) -> &SliceRefChain<T> {
-		self.inner.into()
-	}
-}
-
 // TODO: [AsciiChar] as_str, as_bytes
 
 impl<T, const N: usize> SliceMutChain<[T; N]> {
@@ -75,6 +75,13 @@ impl<T, const N: usize> SliceMutChain<[T; N]> {
 
 		let ptr = self as *mut SliceMutChain<[T; N]> as *mut T;
 		unsafe { slice::from_raw_parts_mut(ptr, len).into() }
+	}
+}
+
+impl<'h, T> IntoChainer for &'h mut [T] {
+	type Chain = &'h mut SliceMutChain<T>;
+	fn into_chainer(self) -> &'h mut SliceMutChain<T> {
+		self.into()
 	}
 }
 

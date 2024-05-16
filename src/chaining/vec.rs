@@ -24,6 +24,7 @@ impl<T> VecChain<T> {
 
 	// TODO: from_raw_parts
 }
+
 // TODO: allocator constructors
 // impl<T> VecChain<T> {
 // 	// TODO: nightly new_in
@@ -31,6 +32,34 @@ impl<T> VecChain<T> {
 // 	// TODO: nightly try_with_capacity_in
 // 	// TODO: nightly from_raw_parts_in
 // }
+
+/// Conversion functions
+impl<T> VecChain<T> {
+	pub fn into_inner(self) -> Vec<T> {
+		self.inner
+	}
+
+	pub fn as_slice(&self) -> &[T] {
+		&self.inner
+	}
+
+	pub fn as_mut_slice(&mut self) -> &mut [T] {
+		&mut self.inner
+	}
+
+	pub fn as_ref_slice_chainer(&self) -> &SliceRefChain<T> {
+		(*self.inner).into()
+	}
+
+	pub fn as_mut_slice_chainer(&mut self) -> &mut SliceMutChain<T> {
+		(&mut *self.inner).into()
+	}
+
+	// TODO: as_ptr / as_mut_ptr?
+	// TODO: nightly allocator
+	// I dunno where else to put these, I'll figure it out when the time comes lol
+	// maybe allocator goes with len/capacity/etc?
+}
 
 /// Chaining functions
 // TODO: allocator param
@@ -341,34 +370,6 @@ impl<T> VecChain<T> {
 	*/
 }
 
-/// Conversion functions
-impl<T> VecChain<T> {
-	pub fn into_inner(self) -> Vec<T> {
-		self.inner
-	}
-
-	pub fn as_slice(&self) -> &[T] {
-		&self.inner
-	}
-
-	pub fn as_mut_slice(&mut self) -> &mut [T] {
-		&mut self.inner
-	}
-
-	pub fn as_ref_slice_chainer(&self) -> &SliceRefChain<T> {
-		(*self.inner).into()
-	}
-
-	pub fn as_mut_slice_chainer(&mut self) -> &mut SliceMutChain<T> {
-		(&mut *self.inner).into()
-	}
-
-	// TODO: as_ptr / as_mut_ptr?
-	// TODO: nightly allocator
-	// I dunno where else to put these, I'll figure it out when the time comes lol
-	// maybe allocator goes with len/capacity/etc?
-}
-
 // TODO: allocator param
 impl<T: Clone> VecChain<T> {
 	/*
@@ -425,6 +426,7 @@ impl<T> From<Vec<T>> for VecChain<T> {
 		Self { inner }
 	}
 }
+
 /*
 AsRef/AsMut for itself, Vec<T>, [T], other chain types
 Borrow/mut for slice chainer?

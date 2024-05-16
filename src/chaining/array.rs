@@ -20,6 +20,37 @@ impl<T, const N: usize> ArrayChain<T, N> {
 	// from_fn, from_mut, from_ref, try_from_fn
 }
 
+/// Conversion functions
+impl<T, const N: usize> ArrayChain<T, N> {
+	pub fn into_inner(self) -> [T; N] {
+		self.inner
+	}
+
+	pub fn as_array(&self) -> &[T; N] {
+		&self.inner
+	}
+
+	pub fn as_mut_array(&mut self) -> &mut [T; N] {
+		&mut self.inner
+	}
+
+	pub fn as_slice(&self) -> &[T] {
+		&self.inner
+	}
+
+	pub fn as_mut_slice(&mut self) -> &mut [T] {
+		&mut self.inner
+	}
+
+	pub fn as_ref_slice_chainer(&self) -> &SliceRefChain<T> {
+		(&self.inner as &[T]).into()
+	}
+
+	pub fn as_mut_slice_chainer(&mut self) -> &mut SliceMutChain<T> {
+		(&mut self.inner as &mut [T]).into()
+	}
+}
+
 /// Chaining functions
 impl<T, const N: usize> ArrayChain<T, N> {
 	pub fn len(self, out: &mut usize) -> Self {
@@ -60,37 +91,6 @@ impl<T, const N: usize> ArrayChain<T, N> {
 	rsplit_array_ref
 	rsplit_array_mut
 	*/
-}
-
-/// Conversion functions
-impl<T, const N: usize> ArrayChain<T, N> {
-	pub fn into_inner(self) -> [T; N] {
-		self.inner
-	}
-
-	pub fn as_array(&self) -> &[T; N] {
-		&self.inner
-	}
-
-	pub fn as_mut_array(&mut self) -> &mut [T; N] {
-		&mut self.inner
-	}
-
-	pub fn as_slice(&self) -> &[T] {
-		&self.inner
-	}
-
-	pub fn as_mut_slice(&mut self) -> &mut [T] {
-		&mut self.inner
-	}
-
-	pub fn as_ref_slice_chainer(&self) -> &SliceRefChain<T> {
-		(&self.inner as &[T]).into()
-	}
-
-	pub fn as_mut_slice_chainer(&mut self) -> &mut SliceMutChain<T> {
-		(&mut self.inner as &mut [T]).into()
-	}
 }
 
 impl<const N: usize> ArrayChain<u8, N> {

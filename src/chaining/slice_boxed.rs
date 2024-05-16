@@ -42,6 +42,29 @@ impl<T> SliceBoxedChain<T> {
 // 	// TODO: nightly new_zeroed_slice_in
 // }
 
+/// Conversion functions
+impl<T> SliceBoxedChain<T> {
+	pub fn into_inner(self) -> Box<[T]> {
+		self.inner
+	}
+
+	pub fn as_slice(&self) -> &[T] {
+		&self.inner
+	}
+
+	pub fn as_mut_slice(&mut self) -> &mut [T] {
+		&mut self.inner
+	}
+
+	pub fn as_ref_slice_chainer(&self) -> &SliceRefChain<T> {
+		(*self.inner).into()
+	}
+
+	pub fn as_mut_slice_chainer(&mut self) -> &mut SliceMutChain<T> {
+		(&mut *self.inner).into()
+	}
+}
+
 /// Chaining functions
 impl<T> SliceBoxedChain<T> {
 	pub fn len(self, out: &mut usize) -> Self {
@@ -140,29 +163,6 @@ impl<T> SliceBoxedChain<T> {
 	concat
 	join
 	*/
-}
-
-/// Conversion functions
-impl<T> SliceBoxedChain<T> {
-	pub fn into_inner(self) -> Box<[T]> {
-		self.inner
-	}
-
-	pub fn as_slice(&self) -> &[T] {
-		&self.inner
-	}
-
-	pub fn as_mut_slice(&mut self) -> &mut [T] {
-		&mut self.inner
-	}
-
-	pub fn as_ref_slice_chainer(&self) -> &SliceRefChain<T> {
-		(*self.inner).into()
-	}
-
-	pub fn as_mut_slice_chainer(&mut self) -> &mut SliceMutChain<T> {
-		(&mut *self.inner).into()
-	}
 }
 
 // TODO: allocator param

@@ -1,3 +1,13 @@
+// dunno why I felt the need to document it, but...
+// mod layout:
+// - use statements (of course)
+// - struct
+// - impl block: constructor fns
+// - impl block: conversion fns
+// - impl block: chaining fns
+// - impl blocks: specific types (eg. ArrayChain<MaybeUninit<T>>)
+// - impl IntoChainer, From, AsRef/AsMut, others
+
 mod array;
 pub use array::ArrayChain;
 
