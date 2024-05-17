@@ -78,6 +78,7 @@ all-unstable = [
 	"chainer-unstable",
 	"id-unstable",
 	"lsl-unstable",
+	"path-unstable",
 	"serialiser-unstable",
 	"string-pool-unstable",
 	"superstring-unstable"
@@ -131,6 +132,7 @@ lsl-unstable = [
 	"hex",
 	"id-unstable"
 ]
+path-unstable = []
 serialiser-unstable = [
 	"dep:ordered-float"
 ]

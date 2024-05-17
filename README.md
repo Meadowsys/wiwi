@@ -19,6 +19,7 @@ In addition to the features listed below, there exists a feature `all` that will
 - **`id`** (unstable) - ID generator, with all IDs generated from one generater guaranteed to be monotonically increasing
 - **`lazy-wrap`** - Wrapper around an initialisation function to lazily initialise a value on first access (can be used in statics)
 - **`lsl`** (unstable) - experimental lib to help with writing Second Life scripts in Rust... because yes, I got fed up with it very quickly and immediately missed Rust lol >< It is really only built for a dedicated crate just to write the script, rather than as part of another lib/app.
+- **`path`** (unstable) - UTF-8 only path manipulation utilities written from scratch
 - **`serialiser`** (unstable) - self describing, stable (once finished) binary serialiser, aiming for small output size by exploiting common patterns in real world data
 - **`string-pool`** (unstable) - Global immutable string pool and String type
 - **`superstring`** (unstable) - Implementation of [superstring](https://github.com/pulsar-edit/superstring)

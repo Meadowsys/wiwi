@@ -66,6 +66,10 @@
 	doc = "- `lsl` (unstable)"
 )]
 #![cfg_attr(
+	all(feature = "path-unstable", not(feature = "docs-rs-notouchie-dont-use-this")),
+	doc = "- `path` (unstable)"
+)]
+#![cfg_attr(
 	all(feature = "serialiser-unstable", not(feature = "docs-rs-notouchie-dont-use-this")),
 	doc = "- `serialiser` (unstable)"
 )]
@@ -94,6 +98,7 @@
 	not(feature = "id-unstable"),
 	not(feature = "lazy-wrap"),
 	not(feature = "lsl-unstable"),
+	not(feature = "path-unstable"),
 	not(feature = "serialiser-unstable"),
 	not(feature = "string-pool-unstable"),
 	not(feature = "superstring-unstable"),
@@ -163,6 +168,9 @@ pub mod lazy_wrap;
 
 #[cfg(feature = "lsl-unstable")]
 pub mod lsl;
+
+#[cfg(feature = "path-unstable")]
+pub mod path;
 
 #[cfg(feature = "serialiser-unstable")]
 pub mod serialiser;

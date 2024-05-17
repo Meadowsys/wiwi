@@ -9,6 +9,7 @@
 	not(feature = "id-unstable"),
 	not(feature = "lazy-wrap"),
 	not(feature = "lsl-unstable"),
+	not(feature = "path-unstable"),
 	not(feature = "serialiser-unstable"),
 	not(feature = "string-pool-unstable"),
 	not(feature = "superstring-unstable"),
