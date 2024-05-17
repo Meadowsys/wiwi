@@ -1,6 +1,7 @@
 use std::mem::{ self, MaybeUninit};
 use std::ops::RangeBounds;
-use std::{ slice, vec };
+use std::slice::{ self, SliceIndex };
+use std::{ ptr, vec };
 use super::{ IntoChainer, SliceMutChain, SliceRefChain, ToMaybeUninit as _ };
 
 // TODO: allocator param
@@ -129,14 +130,6 @@ impl<T> VecChain<T> {
 		self
 	}
 
-	pub fn with_first<F>(mut self, f: F) -> Self
-	where
-		F: FnOnce(Option<&mut T>)
-	{
-		f(self.inner.first_mut());
-		self
-	}
-
 	pub fn swap_remove(mut self, index: usize, out: &mut T) -> Self {
 		self.swap_remove_uninit(index, out.to_maybeuninit_mut())
 	}
@@ -176,7 +169,16 @@ impl<T> VecChain<T> {
 		self
 	}
 
-	pub fn dedup_by<F>(mut self, same_bucket: F) -> Self
+	pub fn dedup_by<F>(mut self, mut same_bucket: F) -> Self
+	where
+		F: FnMut(&T, &T) -> bool
+	{
+		// let rust coerce &mut T to &T
+		self.inner.dedup_by(move |a, b| same_bucket(a, b));
+		self
+	}
+
+	pub fn dedup_by_mut<F>(mut self, same_bucket: F) -> Self
 	where
 		F: FnMut(&mut T, &mut T) -> bool
 	{
@@ -184,7 +186,17 @@ impl<T> VecChain<T> {
 		self
 	}
 
-	pub fn dedup_by_key<F, K>(mut self, key: F) -> Self
+	pub fn dedup_by_key<F, K>(mut self, mut key: F) -> Self
+	where
+		F: FnMut(&T) -> K,
+		K: PartialEq
+	{
+		// let rust coerce &mut T to &T
+		self.inner.dedup_by_key(|v| key(v));
+		self
+	}
+
+	pub fn dedup_by_key_mut<F, K>(mut self, key: F) -> Self
 	where
 		F: FnMut(&mut T) -> K,
 		K: PartialEq
@@ -210,8 +222,7 @@ impl<T> VecChain<T> {
 	}
 
 	pub fn append(mut self, other: &mut Self) -> Self {
-		self.inner.append(&mut other.inner);
-		self
+		self.append_vec(&mut other.inner)
 	}
 
 	pub fn append_vec(mut self, other: &mut Vec<T>) -> Self {
@@ -277,40 +288,224 @@ impl<T> VecChain<T> {
 		self
 	}
 
-	/*
-	splice
-	extract_if
+	pub fn splice_with<R, I, F>(mut self, range: R, replace_with: I, f: F) -> Self
+	where
+		R: RangeBounds<usize>,
+		I: IntoIterator<Item = T>,
+		F: FnOnce(vec::Splice<I::IntoIter>)
+	{
+		f(self.inner.splice(range, replace_with));
+		self
+	}
 
-	as_str
-	as_bytes
-	flatten/mut
-	len
-	is_empty
-	first/mut
-	split_first/mut
-	split_last/mut
-	last
-	last_mut
-	first_chunk/mut
-	split_first_chunk/mut
-	split_last_chunk/mut
-	last_chunk/mut
-	get/mut
-	get_unchecked/mut
-	swap_unchecked (checked/panic?????)
-	reverse
-	iter/mut
-	windows
-	chunks/mut
-	chunks_exact/mut
-	as_chunks_unchecked
-	as_chunks
-	as_rchunks
-	array_chunks/mut
-	as_chunks_unchecked_mut
-	as_chunks_mut
-	as_rchunks_mut
-	array_windows
+	// TODO: nightly feature, would have to roll our own if we wanted it right now
+	// TODO: name's kinda weird, do I wanna change it?
+	// TODO: mut/nonmut versions?
+	// pub fn extract_if_with<F, F2>(mut self, filter: F, f: F) -> Self
+	// where
+	// 	F: FnMut(&mut T) -> bool,
+	// 	F2: FnOnce(vec::ExtractIf<T, F>)
+	// {
+	// 	f(self.inner.extract_if(filter));
+	// 	self
+	// }
+
+
+	// TODO: (nightly) as_str
+	// TODO: (nightly) as_bytes
+	// ^ think those are for AsciiChar
+
+	pub fn with_first<F>(self, f: F) -> Self
+	where
+		F: FnOnce(Option<&T>)
+	{
+		f(self.inner.first());
+		self
+	}
+
+	pub fn with_first_mut<F>(mut self, f: F) -> Self
+	where
+		F: FnOnce(Option<&mut T>)
+	{
+		f(self.inner.first_mut());
+		self
+	}
+
+	pub fn with_last<F>(self, f: F) -> Self
+	where
+		F: FnOnce(Option<&T>)
+	{
+		f(self.inner.last());
+		self
+	}
+
+	pub fn with_last_mut<F>(mut self, f: F) -> Self
+	where
+		F: FnOnce(Option<&mut T>)
+	{
+		f(self.inner.last_mut());
+		self
+	}
+
+	pub fn split_first_with<F>(self, f: F) -> Self
+	where
+		F: FnOnce(Option<(&T, &SliceRefChain<T>)>)
+	{
+		f(self.inner.split_first().map(|(a, b)| (a, b.into())));
+		self
+	}
+
+	pub fn split_first_mut_with<F>(mut self, f: F) -> Self
+	where
+		F: FnOnce(Option<(&mut T, &mut SliceMutChain<T>)>)
+	{
+		f(self.inner.split_first_mut().map(|(a, b)| (a, b.into())));
+		self
+	}
+
+	pub fn split_last_with<F>(self, f: F) -> Self
+	where
+		F: FnOnce(Option<(&T, &SliceRefChain<T>)>)
+	{
+		f(self.inner.split_last().map(|(a, b)| (a, b.into())));
+		self
+	}
+
+	pub fn split_last_mut_with<F>(mut self, f: F) -> Self
+	where
+		F: FnOnce(Option<(&mut T, &mut SliceMutChain<T>)>)
+	{
+		f(self.inner.split_last_mut().map(|(a, b)| (a, b.into())));
+		self
+	}
+
+	// TODO: do once we have array ref chainers
+	// doc link: https://doc.rust-lang.org/std/vec/struct.Vec.html#method.first_chunk
+	// pub fn with_first_chunk<F, const N: usize>(self, f: F) -> Self
+	// pub fn with_first_chunk_mut<F, const N: usize>(mut self, f: F) -> Self
+	// pub fn with_last_chunk<F, const N: usize>(self, f: F) -> Self
+	// pub fn with_last_chunk_mut<F, const N: usize>(mut self, f: F) -> Self
+	// pub fn split_first_chunk_with<F, const N: usize>(self, f: F) -> Self
+	// pub fn split_first_chunk_mut_with<F, const N: usize>(mut self, f: F) -> Self
+	// pub fn split_last_chunk_with<F, const N: usize>(self, f: F) -> Self
+	// pub fn split_last_chunk_mut_with<F, const N: usize>(mut self, f: F) -> Self
+
+	pub fn with<I, F>(self, index: I, f: F) -> Self
+	where
+		I: SliceIndex<[T]>,
+		F: FnOnce(Option<&I::Output>)
+	{
+		f(self.inner.get(index));
+		self
+	}
+
+	pub fn with_mut<I, F>(mut self, index: I, f: F) -> Self
+	where
+		I: SliceIndex<[T]>,
+		F: FnOnce(Option<&mut I::Output>)
+	{
+		f(self.inner.get_mut(index));
+		self
+	}
+
+	pub unsafe fn with_unchecked<I, F>(self, index: I, f: F) -> Self
+	where
+		I: SliceIndex<[T]>,
+		F: FnOnce(&I::Output)
+	{
+		f(self.inner.get_unchecked(index));
+		self
+	}
+
+	pub unsafe fn with_unchecked_mut<I, F>(mut self, index: I, f: F) -> Self
+	where
+		I: SliceIndex<[T]>,
+		F: FnOnce(&mut I::Output)
+	{
+		f(self.inner.get_unchecked_mut(index));
+		self
+	}
+
+	pub fn swap(mut self, a: usize, b: usize) -> Self {
+		self.inner.swap(a, b);
+		self
+	}
+
+	pub unsafe fn swap_unchecked(mut self, a: usize, b: usize) -> Self {
+		// TODO: replace with Vec::swap_unchecked call when it's stabilised
+		let ptr = self.inner.as_mut_ptr();
+		ptr::swap(ptr.add(a), ptr.add(b));
+		self
+	}
+
+	// TODO: swap_with_slice (chains and self and slice?)
+
+	pub fn reverse(mut self) -> Self {
+		self.inner.reverse();
+		self
+	}
+
+	pub fn with_iter<F>(self, f: F) -> Self
+	where
+		F: FnOnce(slice::Iter<T>)
+	{
+		f(self.inner.iter());
+		self
+	}
+
+	pub fn with_iter_mut<F>(mut self, f: F) -> Self
+	where
+		F: FnOnce(slice::IterMut<T>)
+	{
+		f(self.inner.iter_mut());
+		self
+	}
+
+	pub fn with_windows<F>(self, size: usize, f: F) -> Self
+	where
+		F: FnOnce(slice::Windows<T>)
+	{
+		f(self.inner.windows(size));
+		self
+	}
+
+	// TODO: nightly array_windows
+
+	pub fn with_chunks<F>(self, chunk_size: usize, f: F) -> Self
+	where
+		F: FnOnce(slice::Chunks<T>)
+	{
+		f(self.inner.chunks(chunk_size));
+		self
+	}
+
+	pub fn with_chunks_mut<F>(mut self, chunk_size: usize, f: F) -> Self
+	where
+		F: FnOnce(slice::ChunksMut<T>)
+	{
+		f(self.inner.chunks_mut(chunk_size));
+		self
+	}
+
+	pub fn with_chunks_exact<F>(self, chunk_size: usize, f: F) -> Self
+	where
+		F: FnOnce(slice::ChunksExact<T>)
+	{
+		f(self.inner.chunks_exact(chunk_size));
+		self
+	}
+
+	pub fn with_chunks_exact_mut<F>(mut self, chunk_size: usize, f: F) -> Self
+	where
+		F: FnOnce(slice::ChunksExactMut<T>)
+	{
+		f(self.inner.chunks_exact_mut(chunk_size));
+		self
+	}
+
+	// TODO: nightly as_chunks/unchecked, as_chunks_mut/unchecked, as_rchunks/mut, array_chunks/mut
+
+	/*
 	rchunks/mut
 	rchunks_exact/mut
 	chunk_by/mut
@@ -341,7 +536,6 @@ impl<T> VecChain<T> {
 	copy_from_slice
 	copy_within
 	clone_within (not in std)?
-	swap_with_slice
 	align_to/mut
 	nightly as_simd/mut
 	is_sorted/by/key
@@ -372,11 +566,32 @@ impl<T> VecChain<T> {
 
 // TODO: allocator param
 impl<T: Clone> VecChain<T> {
-	/*
-	resize
-	extend_from_slice
-	extend_from_within
-	*/
+	pub fn resize(mut self, new_len: usize, value: T) -> Self {
+		self.inner.resize(new_len, value);
+		self
+	}
+
+	pub fn extend_from_slice(mut self, other: &[T]) -> Self {
+		self.inner.extend_from_slice(other);
+		self
+	}
+
+	pub fn extend_from_ref_slice_chainer(mut self, other: &SliceRefChain<T>) -> Self {
+		self.inner.extend_from_slice(other.as_slice());
+		self
+	}
+	pub fn extend_from_mut_slice_chainer(mut self, other: &mut SliceMutChain<T>) -> Self {
+		self.inner.extend_from_slice(other.as_slice());
+		self
+	}
+
+	pub fn extend_from_within<R>(mut self, src: R) -> Self
+	where
+		R: RangeBounds<usize>
+	{
+		self.inner.extend_from_within(src);
+		self
+	}
 }
 
 // TODO: allocator param
