@@ -1,4 +1,14 @@
+mod adapter;
+pub use adapter::{
+	AsStdIterator,
+	AsWiwiIter,
+	IntoStdIterator,
+	IntoWiwiIter,
+	IterAdapter
+};
+
 mod into_iter;
+pub use into_iter::IntoIter;
 
 pub trait Iter {
 	type Item;
@@ -6,7 +16,6 @@ pub trait Iter {
 	fn next(&mut self) -> Option<Self::Item>;
 
 	/*
-	fn as_std_iter
 	next_chunk
 	size_hint
 	count
@@ -103,4 +112,11 @@ pub trait Iter {
 	from_coroutine
 	repeat_n
 	*/
+}
+
+impl<I: Iter> Iter for &mut I {
+	type Item = I::Item;
+	fn next(&mut self) -> Option<I::Item> {
+		(**self).next()
+	}
 }

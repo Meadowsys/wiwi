@@ -4,7 +4,7 @@ pub trait IntoIter {
 	type Item;
 	type Iter: Iter<Item = Self::Item>;
 
-	fn into_wiwi_iter(self) -> Self::Iter;
+	fn into_iter(self) -> Self::Iter;
 }
 
 impl<I: Iter> IntoIter for I {
@@ -12,7 +12,7 @@ impl<I: Iter> IntoIter for I {
 	type Iter = Self;
 
 	#[inline]
-	fn into_wiwi_iter(self) -> Self {
+	fn into_iter(self) -> Self {
 		self
 	}
 }
