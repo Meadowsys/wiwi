@@ -20,8 +20,8 @@
 	doc = "- `auth` (unstable)"
 )]
 #![cfg_attr(
-	all(feature = "chaining-unstable", not(feature = "docs-rs-notouchie-dont-use-this")),
-	doc = "- `chaining` (unstable)"
+	all(feature = "chainer-unstable", not(feature = "docs-rs-notouchie-dont-use-this")),
+	doc = "- `chainer` (unstable)"
 )]
 #![cfg_attr(
 	all(feature = "clock-timer", not(feature = "docs-rs-notouchie-dont-use-this")),
@@ -71,7 +71,7 @@
 // ...yes, I'm doing it
 #![cfg_attr(all(
 	not(feature = "auth-unstable"),
-	not(feature = "chaining-unstable"),
+	not(feature = "chainer-unstable"),
 	not(feature = "clock-timer"),
 	not(feature = "debounce"),
 	not(feature = "h"),
@@ -124,8 +124,8 @@ pub mod auth;
 // #[cfg(feature = "base64")]
 // pub mod base64;
 
-#[cfg(feature = "chaining-unstable")]
-pub mod chaining;
+#[cfg(feature = "chainer-unstable")]
+pub mod chainer;
 
 #[cfg(feature = "clock-timer")]
 pub mod clock_timer;

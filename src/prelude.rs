@@ -3,8 +3,8 @@
 // TODO auth prelude
 // #[cfg(feature = "auth-unstable")]
 
-#[cfg(feature = "chaining-unstable")]
-pub use crate::chaining::{
+#[cfg(feature = "chainer-unstable")]
+pub use crate::chainer::{
 	ArrayChain,
 	SliceBoxedChain,
 	SliceMutChain,

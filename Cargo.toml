@@ -74,7 +74,7 @@ all-unstable = [
 	"all",
 
 	"auth-unstable",
-	"chaining-unstable",
+	"chainer-unstable",
 	"id-unstable",
 	"lsl-unstable",
 	"serialiser-unstable",
@@ -102,7 +102,7 @@ auth-unstable = [
 # base64 = [
 # 	"dep:thiserror"
 # ]
-chaining-unstable = []
+chainer-unstable = []
 clock-timer = [
 	"dep:chrono",
 	"dep:tokio"
