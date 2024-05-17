@@ -1,6 +1,6 @@
 #![doc = include_str!("../README.md")]
 
-#![cfg_attr(not(feature = "docs-rs-notouchie-dont-use-this"), doc = "")]
+#![doc = ""]
 #![cfg_attr(
 	all(feature = "all-unstable", not(feature = "docs-rs-notouchie-dont-use-this")),
 	doc = "## Enabled features (`all-unstable` is enabled)"
@@ -13,7 +13,21 @@
 	all(not(feature = "all"), not(feature = "all-unstable"), not(feature = "docs-rs-notouchie-dont-use-this")),
 	doc = "## Enabled features"
 )]
-#![cfg_attr(not(feature = "docs-rs-notouchie-dont-use-this"), doc = "")]
+#![cfg_attr(
+	feature = "docs-rs-notouchie-dont-use-this",
+	doc = "## Enabled features (docs.rs)"
+)]
+#![doc = ""]
+
+#![cfg_attr(
+	feature = "docs-rs-notouchie-dont-use-this",
+	doc = "On docs.rs, the feature `all` is enabled. This means that all stable features, and only stable features, will appear in these docs."
+)]
+#![cfg_attr(feature = "docs-rs-notouchie-dont-use-this", doc = "")]
+#![cfg_attr(
+	feature = "docs-rs-notouchie-dont-use-this",
+	doc = "If you would like to see documentation for unstable features, please use `cargo doc` to build them locally (or alternatively `cargo doc --open` to open the locally built docs in your default browser)."
+)]
 
 #![cfg_attr(
 	all(feature = "auth-unstable", not(feature = "docs-rs-notouchie-dont-use-this")),
