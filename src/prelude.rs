@@ -7,6 +7,7 @@
 	not(feature = "h"),
 	not(feature = "hex"),
 	not(feature = "id-unstable"),
+	not(feature = "iter-unstable"),
 	not(feature = "lazy-wrap"),
 	not(feature = "lsl-unstable"),
 	not(feature = "path-unstable"),

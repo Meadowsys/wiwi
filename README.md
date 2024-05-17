@@ -17,6 +17,7 @@ In addition to the features listed below, there exists a feature `all` that will
 - **`h`** - h
 - **`hex`** - Fast (faster than `hex` crate[^1]) implementation of hex encoding, supporting upper hex and lower hex.
 - **`id`** (unstable) - ID generator, with all IDs generated from one generater guaranteed to be monotonically increasing
+- **`iter`** (unstable) - iter stuff
 - **`lazy-wrap`** - Wrapper around an initialisation function to lazily initialise a value on first access (can be used in statics)
 - **`lsl`** (unstable) - experimental lib to help with writing Second Life scripts in Rust... because yes, I got fed up with it very quickly and immediately missed Rust lol >< It is really only built for a dedicated crate just to write the script, rather than as part of another lib/app.
 - **`path`** (unstable) - UTF-8 only path manipulation utilities written from scratch

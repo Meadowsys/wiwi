@@ -36,6 +36,7 @@
 #![cfg_attr(all(not(feature = "docs-rs-notouchie-dont-use-this"), feature = "h"),                    doc = "- `h`"                     )]
 #![cfg_attr(all(not(feature = "docs-rs-notouchie-dont-use-this"), feature = "hex"),                  doc = "- `hex`"                   )]
 #![cfg_attr(all(not(feature = "docs-rs-notouchie-dont-use-this"), feature = "id-unstable"),          doc = "- `id` (unstable)"         )]
+#![cfg_attr(all(not(feature = "docs-rs-notouchie-dont-use-this"), feature = "iter-unstable"),        doc = "- `iter` (unstable)"       )]
 #![cfg_attr(all(not(feature = "docs-rs-notouchie-dont-use-this"), feature = "lazy-wrap"),            doc = "- `lazy-wrap`"             )]
 #![cfg_attr(all(not(feature = "docs-rs-notouchie-dont-use-this"), feature = "lsl-unstable"),         doc = "- `lsl` (unstable)"        )]
 #![cfg_attr(all(not(feature = "docs-rs-notouchie-dont-use-this"), feature = "path-unstable"),        doc = "- `path` (unstable)"       )]
@@ -54,6 +55,7 @@
 	not(feature = "h"),
 	not(feature = "hex"),
 	not(feature = "id-unstable"),
+	not(feature = "iter-unstable"),
 	not(feature = "lazy-wrap"),
 	not(feature = "lsl-unstable"),
 	not(feature = "path-unstable"),
@@ -120,6 +122,9 @@ pub mod hex;
 
 #[cfg(feature = "id-unstable")]
 pub mod id;
+
+#[cfg(feature = "iter-unstable")]
+pub mod iter;
 
 #[cfg(feature = "lazy-wrap")]
 pub mod lazy_wrap;

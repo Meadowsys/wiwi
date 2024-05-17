@@ -44,15 +44,21 @@ z85 = "3.0.5"
 # - document it in README (note it is unstable by putting parens after name)
 # - make sure to add to `all-unstable` feature
 # - check doc cfg_attrs at top of lib.rs
-# - make sure to add it to "No features enabled!" thing, in prelude too
+# - make sure to add it to "No features enabled!" thing
+# - also check the top of the prelude module
 # - make sure the `pub mod` declaration in lib.rs has the right feature attr on it
+# In total: the module addition should have 1 change in README, 2 changes in
+# Cargo.toml, 3 changes in lib.rs, 1 change in prelude.rs, and of course
+# the module file itself
+# TODO: write something similar for below graduating feats out of unstable
 #
 # Graduating feature out of unstable:
 # - remove `-unstable` from feature name below
 # - update its entry in README
 # - move it from `all-unstable` to `all`
 # - rename it in cfg_attrs at top of lib.rs
-# - rename it in "No features enabled!" thing, in prelude too
+# - rename it in "No features enabled!" thing
+# - also check the top of the prelude module
 # - update its name in the feature gate of its `pub mod` declaration in lib.rs
 # - check/add/update its prelude entries
 #
@@ -77,6 +83,7 @@ all-unstable = [
 	"auth-unstable",
 	"chainer-unstable",
 	"id-unstable",
+	"iter-unstable",
 	"lsl-unstable",
 	"path-unstable",
 	"serialiser-unstable",
@@ -122,6 +129,7 @@ hex = [
 id-unstable = [
 	"dep:rand"
 ]
+iter-unstable = []
 lazy-wrap = [
 	"dep:parking_lot"
 ]
