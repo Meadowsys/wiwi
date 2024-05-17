@@ -29,13 +29,19 @@ pub fn basename(path: &str) -> &str {
 	unsafe { substring_unchecked(path, start, end) }
 }
 
+/// # Safety
+///
+/// - `start` must be less than or equal to `end`
+/// - `start` and `end` must both be within bounds of the provided `str` (ie.
+///   both within `0..=s.len()`) and lie on UTF-8 character boundaries
+///   (ex. the indices returned by `char_indices()` will be valid)
 unsafe fn substring_unchecked(s: &str, start: usize, end: usize) -> &str {
 	debug_assert!(end <= s.len());
 	debug_assert!(s.is_char_boundary(start));
 	debug_assert!(s.is_char_boundary(end));
 
 	let ptr = s.as_ptr();
-	let len = end - start;
+	let len = end.unchecked_sub(start);
 
 	str::from_utf8_unchecked(slice::from_raw_parts(ptr.add(start), len))
 }
