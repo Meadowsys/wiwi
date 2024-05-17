@@ -29,62 +29,20 @@
 	doc = "If you would like to see documentation for unstable features, please use `cargo doc` to build them locally (or alternatively `cargo doc --open` to open the locally built docs in your default browser)."
 )]
 
-#![cfg_attr(
-	all(feature = "auth-unstable", not(feature = "docs-rs-notouchie-dont-use-this")),
-	doc = "- `auth` (unstable)"
-)]
-#![cfg_attr(
-	all(feature = "chainer-unstable", not(feature = "docs-rs-notouchie-dont-use-this")),
-	doc = "- `chainer` (unstable)"
-)]
-#![cfg_attr(
-	all(feature = "clock-timer", not(feature = "docs-rs-notouchie-dont-use-this")),
-	doc = "- `clock-timer`"
-)]
-#![cfg_attr(
-	all(feature = "debounce", not(feature = "docs-rs-notouchie-dont-use-this")),
-	doc = "- `debounce`"
-)]
-#![cfg_attr(
-	all(feature = "h", not(feature = "docs-rs-notouchie-dont-use-this")),
-	doc = "- `h`"
-)]
-#![cfg_attr(
-	all(feature = "hex", not(feature = "docs-rs-notouchie-dont-use-this")),
-	doc = "- `hex`"
-)]
-#![cfg_attr(
-	all(feature = "id-unstable", not(feature = "docs-rs-notouchie-dont-use-this")),
-	doc = "- `id` (unstable)"
-)]
-#![cfg_attr(
-	all(feature = "lazy-wrap", not(feature = "docs-rs-notouchie-dont-use-this")),
-	doc = "- `lazy-wrap`"
-)]
-#![cfg_attr(
-	all(feature = "lsl-unstable", not(feature = "docs-rs-notouchie-dont-use-this")),
-	doc = "- `lsl` (unstable)"
-)]
-#![cfg_attr(
-	all(feature = "path-unstable", not(feature = "docs-rs-notouchie-dont-use-this")),
-	doc = "- `path` (unstable)"
-)]
-#![cfg_attr(
-	all(feature = "serialiser-unstable", not(feature = "docs-rs-notouchie-dont-use-this")),
-	doc = "- `serialiser` (unstable)"
-)]
-#![cfg_attr(
-	all(feature = "string-pool-unstable", not(feature = "docs-rs-notouchie-dont-use-this")),
-	doc = "- `string-pool` (unstable)"
-)]
-#![cfg_attr(
-	all(feature = "superstring-unstable", not(feature = "docs-rs-notouchie-dont-use-this")),
-	doc = "- `superstring` (unstable)"
-)]
-#![cfg_attr(
-	all(feature = "z85", not(feature = "docs-rs-notouchie-dont-use-this")),
-	doc = "- `z85`"
-)]
+#![cfg_attr(all(not(feature = "docs-rs-notouchie-dont-use-this"), feature = "auth-unstable"),        doc = "- `auth` (unstable)"       )]
+#![cfg_attr(all(not(feature = "docs-rs-notouchie-dont-use-this"), feature = "chainer-unstable"),     doc = "- `chainer` (unstable)"    )]
+#![cfg_attr(all(not(feature = "docs-rs-notouchie-dont-use-this"), feature = "clock-timer"),          doc = "- `clock-timer`"           )]
+#![cfg_attr(all(not(feature = "docs-rs-notouchie-dont-use-this"), feature = "debounce"),             doc = "- `debounce`"              )]
+#![cfg_attr(all(not(feature = "docs-rs-notouchie-dont-use-this"), feature = "h"),                    doc = "- `h`"                     )]
+#![cfg_attr(all(not(feature = "docs-rs-notouchie-dont-use-this"), feature = "hex"),                  doc = "- `hex`"                   )]
+#![cfg_attr(all(not(feature = "docs-rs-notouchie-dont-use-this"), feature = "id-unstable"),          doc = "- `id` (unstable)"         )]
+#![cfg_attr(all(not(feature = "docs-rs-notouchie-dont-use-this"), feature = "lazy-wrap"),            doc = "- `lazy-wrap`"             )]
+#![cfg_attr(all(not(feature = "docs-rs-notouchie-dont-use-this"), feature = "lsl-unstable"),         doc = "- `lsl` (unstable)"        )]
+#![cfg_attr(all(not(feature = "docs-rs-notouchie-dont-use-this"), feature = "path-unstable"),        doc = "- `path` (unstable)"       )]
+#![cfg_attr(all(not(feature = "docs-rs-notouchie-dont-use-this"), feature = "serialiser-unstable"),  doc = "- `serialiser` (unstable)" )]
+#![cfg_attr(all(not(feature = "docs-rs-notouchie-dont-use-this"), feature = "string-pool-unstable"), doc = "- `string-pool` (unstable)")]
+#![cfg_attr(all(not(feature = "docs-rs-notouchie-dont-use-this"), feature = "superstring-unstable"), doc = "- `superstring` (unstable)")]
+#![cfg_attr(all(not(feature = "docs-rs-notouchie-dont-use-this"), feature = "z85"),                  doc = "- `z85`"                   )]
 
 // ...yes, I'm doing it
 // (there's another one in prelude, copy/paste/modify for it)
