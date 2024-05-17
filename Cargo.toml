@@ -44,7 +44,7 @@ z85 = "3.0.5"
 # - document it in README (note it is unstable by putting parens after name)
 # - make sure to add to `all-unstable` feature
 # - check doc cfg_attrs at top of lib.rs
-# - make sure to add it to "No features enabled!" thing
+# - make sure to add it to "No features enabled!" thing, in prelude too
 # - make sure the `pub mod` declaration in lib.rs has the right feature attr on it
 #
 # Graduating feature out of unstable:
@@ -52,8 +52,9 @@ z85 = "3.0.5"
 # - update its entry in README
 # - move it from `all-unstable` to `all`
 # - rename it in cfg_attrs at top of lib.rs
-# - rename it in "No features enabled!" thing
+# - rename it in "No features enabled!" thing, in prelude too
 # - update its name in the feature gate of its `pub mod` declaration in lib.rs
+# - check/add/update its prelude entries
 #
 # No longer necessary (but good to do anyways I guess):
 # - check workflow files

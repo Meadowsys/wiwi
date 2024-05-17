@@ -83,6 +83,7 @@
 )]
 
 // ...yes, I'm doing it
+// (there's another one in prelude, copy/paste/modify for it)
 #![cfg_attr(all(
 	not(feature = "auth-unstable"),
 	not(feature = "chainer-unstable"),

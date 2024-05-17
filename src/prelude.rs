@@ -1,4 +1,19 @@
 //! Prelude module, exporting types from enabled features
+#![cfg_attr(all(
+	not(feature = "auth-unstable"),
+	not(feature = "chainer-unstable"),
+	not(feature = "clock-timer"),
+	not(feature = "debounce"),
+	not(feature = "h"),
+	not(feature = "hex"),
+	not(feature = "id-unstable"),
+	not(feature = "lazy-wrap"),
+	not(feature = "lsl-unstable"),
+	not(feature = "serialiser-unstable"),
+	not(feature = "string-pool-unstable"),
+	not(feature = "superstring-unstable"),
+	not(feature = "z85")
+), doc = "(... of which there are none lol)")]
 
 // TODO auth prelude
 // #[cfg(feature = "auth-unstable")]
