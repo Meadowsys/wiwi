@@ -50,10 +50,13 @@ unsafe fn substring_unchecked(s: &str, start: usize, end: usize) -> &str {
 mod tests {
 	#[test]
 	fn basename() {
-		// (path, expected)
 		let strs = [
+			// (path, expected)
 			("path", "path"),
 			("/path/kiwin/wiwi", "wiwi"),
+			("/path/kiwin/wiwi/", "wiwi"),
+			("/path/kiwin/wiwi//", "wiwi"),
+			("//path//kiwin//wiwi", "wiwi"),
 			("/path/kiwin/wiwi///////e/", "e"),
 			("/path/kiwin/wiwi///////", "wiwi")
 		];
