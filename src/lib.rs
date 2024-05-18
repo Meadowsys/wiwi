@@ -23,6 +23,8 @@
 	feature = "docs-rs-notouchie-dont-use-this",
 	doc = "On docs.rs, the feature `all` is enabled. This means that all stable features, and only stable features, will appear in these docs."
 )]
+// TODO: "these include: <move below list to here>"
+// and make note of "if there are any unstable features listed here, that is bug"
 #![cfg_attr(feature = "docs-rs-notouchie-dont-use-this", doc = "")]
 #![cfg_attr(
 	feature = "docs-rs-notouchie-dont-use-this",
