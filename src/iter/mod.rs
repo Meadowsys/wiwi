@@ -7,6 +7,12 @@ pub use adapter::{
 	IterAdapter
 };
 
+mod empty;
+pub use empty::{ empty, Empty };
+
+mod from_fn;
+pub use from_fn::{ from_fn, FromFn };
+
 mod into_iter;
 pub use into_iter::IntoIter;
 
@@ -15,9 +21,12 @@ pub trait Iter {
 
 	fn next(&mut self) -> Option<Self::Item>;
 
+	fn size_hint(&self) -> (Option<usize>, Option<usize>) {
+		(None, None)
+	}
+
 	/*
 	next_chunk
-	size_hint
 	count
 	last
 	advance_by

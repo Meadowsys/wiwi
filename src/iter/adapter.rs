@@ -8,7 +8,7 @@ use super::{ IntoIter, Iter };
 /// for [`into_wiwi_iter`](IntoWiwiIter::into_wiwi_iter)
 /// or [`into_std_iterator`](IntoStdIterator::into_std_iterator).
 ///
-/// If you want to borrow an iter as the other, you're probably looking
+/// If you want to borrow one type of iter as the other, you're probably looking
 /// for [`as_wiwi_iter`](AsWiwiIter::as_wiwi_iter)
 /// or [`as_std_iterator`](AsStdIterator::as_std_iterator)
 #[repr(transparent)]
@@ -21,12 +21,22 @@ impl<I: Iter> Iterator for IterAdapter<I> {
 	fn next(&mut self) -> Option<I::Item> {
 		self.inner.next()
 	}
+
+	fn size_hint(&self) -> (usize, Option<usize>) {
+		let (lower, upper) = self.inner.size_hint();
+		(lower.unwrap_or_default(), upper)
+	}
 }
 
 impl<I: Iterator> Iter for IterAdapter<I> {
 	type Item = I::Item;
 	fn next(&mut self) -> Option<I::Item> {
 		self.inner.next()
+	}
+
+	fn size_hint(&self) -> (Option<usize>, Option<usize>) {
+		let (lower, upper) = self.inner.size_hint();
+		(Some(lower), upper)
 	}
 }
 
