@@ -471,7 +471,7 @@ impl<T> VecChain<T> {
 
 	// TODO: nightly array_windows
 
-	pub fn with_chunks<F>(self, chunk_size: usize, f: F) -> Self
+	pub fn with_chunks_iter<F>(self, chunk_size: usize, f: F) -> Self
 	where
 		F: FnOnce(slice::Chunks<T>)
 	{
@@ -479,7 +479,7 @@ impl<T> VecChain<T> {
 		self
 	}
 
-	pub fn with_chunks_mut<F>(mut self, chunk_size: usize, f: F) -> Self
+	pub fn with_chunks_iter_mut<F>(mut self, chunk_size: usize, f: F) -> Self
 	where
 		F: FnOnce(slice::ChunksMut<T>)
 	{
@@ -487,7 +487,7 @@ impl<T> VecChain<T> {
 		self
 	}
 
-	pub fn with_chunks_exact<F>(self, chunk_size: usize, f: F) -> Self
+	pub fn with_chunks_exact_iter<F>(self, chunk_size: usize, f: F) -> Self
 	where
 		F: FnOnce(slice::ChunksExact<T>)
 	{
@@ -495,11 +495,37 @@ impl<T> VecChain<T> {
 		self
 	}
 
-	pub fn with_chunks_exact_mut<F>(mut self, chunk_size: usize, f: F) -> Self
+	pub fn with_chunks_exact_iter_mut<F>(mut self, chunk_size: usize, f: F) -> Self
 	where
 		F: FnOnce(slice::ChunksExactMut<T>)
 	{
 		f(self.inner.chunks_exact_mut(chunk_size));
+		self
+	}
+
+	pub fn with_chunks<F, const N: usize>(mut self, f: F) -> Self
+	where
+		F: FnOnce(&[[T; N]], &[T])
+	{
+		// TODO: call std equivalent after its stabilised
+
+		unsafe {
+			let mut len = MaybeUninit::uninit();
+			self = self.len_uninit(&mut len);
+			let len = len.assume_init();
+
+			let full_chunks = len / N;
+			let partial_len = len % N;
+
+			let ptr = self.inner.as_ptr();
+			let ptr_partial = ptr.add(full_chunks * N);
+
+			let full_chunks = slice::from_raw_parts(ptr as *const [T; N], full_chunks);
+			let partial_chunk = slice::from_raw_parts(ptr_partial, partial_len);
+
+			f(full_chunks, partial_chunk);
+		}
+
 		self
 	}
 
@@ -659,3 +685,44 @@ from vec for cow
 from rc, arc,
 TODO: stopped around here (from vec for Rc<[T]> something like that)
 */
+
+#[cfg(test)]
+mod tests {
+	use super::*;
+
+	#[test]
+	fn with_chunks() {
+		const N: usize = 5;
+
+		let slice = b"1234";
+
+		fn check<'h>(
+			expected_chunks: &'h [[u8; N]],
+			expected_remainder: &'h [u8]
+		) -> impl FnOnce(&[[u8; N]], &[u8]) + 'h {
+			move |chunks, rem| {
+				assert_eq!(expected_chunks.len(), chunks.len(), "wrong num of chunks");
+				assert_eq!(expected_remainder.len(), rem.len(), "wrong num of elements in remainder");
+
+				assert_eq!(expected_chunks, chunks);
+				assert_eq!(expected_remainder, rem);
+			}
+		}
+
+		let _ = VecChain::with_capacity(20)
+			.extend_from_slice(slice)
+			.with_chunks(check(&[], b"1234"))
+
+			.extend_from_slice(slice)
+			.with_chunks(check(&[*b"12341"], b"234"))
+
+			.extend_from_slice(slice)
+			.with_chunks(check(&[*b"12341", *b"23412"], b"34"))
+
+			.extend_from_slice(slice)
+			.with_chunks(check(&[*b"12341", *b"23412", *b"34123"], b"4"))
+
+			.extend_from_slice(slice)
+			.with_chunks(check(&[*b"12341", *b"23412", *b"34123", *b"41234"], b""));
+	}
+}
