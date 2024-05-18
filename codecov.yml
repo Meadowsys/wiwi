@@ -1,0 +1,14 @@
+codecov:
+  strict_yaml_branch: wiwi
+
+coverage:
+  status:
+    project:
+      default:
+        threshold: 3
+        if_ci_failed: success
+        informational: true
+    patch:
+      default:
+        threshold: 50 # ?
+        informational: true
