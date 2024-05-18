@@ -102,19 +102,20 @@ impl<'h> Equivalent<<GlobalPool as Pool>::Raw> for SlicesWrap<'h> {
 mod tests {
 	use super::*;
 	use hashbrown::hash_map::DefaultHashBuilder;
-	use rand::{ Rng, rngs::OsRng };
+	use rand::{ Rng, thread_rng };
 	use std::string::String as StdString;
 	use std::iter::repeat;
 	use std::hash::BuildHasher;
 
 	#[test]
 	fn slices_wrap_iter_hash_and_eq() {
+		let mut rng = thread_rng();
 		let hash_builder = hashbrown::hash_map::DefaultHashBuilder::default();
 
 		for _ in 0..1000 {
 			// generate vec of random length 0-10, with strings 0-100 chars
 			let strs = repeat(0u8)
-				.take(OsRng.gen_range(1..20))
+				.take(rng.gen_range(1..20))
 				.map(|_| rand_std_string())
 				.collect::<Vec<_>>();
 
@@ -154,8 +155,9 @@ mod tests {
 	}
 
 	fn rand_std_string() -> StdString {
-		let mut vec = vec![' '; OsRng.gen_range(1..100)];
-		OsRng.fill(&mut *vec);
+		let mut rng = thread_rng();
+		let mut vec = vec![' '; rng.gen_range(1..100)];
+		rng.fill(&mut *vec);
 		vec.into_iter().collect()
 	}
 

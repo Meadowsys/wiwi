@@ -561,7 +561,7 @@ impl<P: Pool> From<(&str, P)> for String<P> {
 mod tests {
 	use super::Pool;
 	use super::*;
-	use rand::{ Rng, rngs::OsRng };
+	use rand::{ Rng, thread_rng };
 	use std::fmt::Debug;
 
 	#[test]
@@ -647,8 +647,9 @@ mod tests {
 	}
 
 	fn rand_std_string() -> StdString {
-		let mut vec = vec![' '; OsRng.gen_range(50..100)];
-		OsRng.fill(&mut *vec);
+		let mut rng = thread_rng();
+		let mut vec = vec![' '; rng.gen_range(50..100)];
+		rng.fill(&mut *vec);
 		vec.into_iter().collect()
 	}
 }
