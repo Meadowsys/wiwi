@@ -67,9 +67,7 @@ impl<T, const N: usize> ArrayChain<T, N> {
 	}
 
 	pub fn is_empty_uninit(mut self, out: &mut MaybeUninit<bool>) -> Self {
-		let mut len = MaybeUninit::uninit();
-		self = self.len_uninit(&mut len);
-		out.write(unsafe { len.assume_init() == 0 });
+		out.write(N == 0);
 		self
 	}
 
