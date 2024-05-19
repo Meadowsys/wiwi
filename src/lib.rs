@@ -143,6 +143,8 @@ pub mod serialiser;
 #[cfg(feature = "string-pool-unstable")]
 pub mod string_pool;
 
+pub mod sudoku;
+
 #[cfg(feature = "superstring-unstable")]
 pub mod superstring;
 
