@@ -11,6 +11,12 @@
 mod array;
 pub use array::ArrayChain;
 
+mod array_mut;
+pub use array_mut::ArrayMutChain;
+
+mod array_ref;
+pub use array_ref::ArrayRefChain;
+
 mod slice_boxed;
 pub use slice_boxed::SliceBoxedChain;
 
