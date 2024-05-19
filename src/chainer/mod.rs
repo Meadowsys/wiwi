@@ -17,6 +17,12 @@ pub use array_mut::ArrayMutChain;
 mod array_ref;
 pub use array_ref::ArrayRefChain;
 
+#[cfg(feature = "bitstream-unstable")]
+#[cfg_attr(docsrs, doc(cfg(feature = "bitstream-unstable")))]
+mod bitstream;
+#[cfg(feature = "bitstream-unstable")]
+pub use bitstream::BitstreamEncoderChainer;
+
 mod slice_boxed;
 pub use slice_boxed::SliceBoxedChain;
 
