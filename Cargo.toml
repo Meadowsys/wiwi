@@ -153,7 +153,10 @@ string-pool-unstable = [
 	"dep:hashbrown",
 	"lazy-wrap"
 ]
-sudoku-unstable = []
+sudoku-unstable = [
+	"chainer-unstable",
+	"iter-unstable"
+]
 superstring-unstable = []
 to-maybeuninit = []
 # ws = [

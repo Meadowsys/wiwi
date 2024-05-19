@@ -116,7 +116,8 @@ impl UnsafeBufWriteGuard {
 	/// violating contract of [`Vec::set_len`].
 	#[inline(always)]
 	pub unsafe fn into_full_vec(mut self) -> Vec<u8> {
-		debug_assert!(self.bytes_written == self.requested_capacity);
+		#[cfg(debug_assertions)]
+		assert!(self.bytes_written == self.requested_capacity);
 
 		self.vec.set_len(self.requested_capacity);
 		self.vec
