@@ -25,6 +25,7 @@ In addition to the features listed below, there exists a feature `all` that will
 - **`string-pool`** (unstable) - Global immutable string pool and String type
 - **`sudoku`** (unstable) - Sudoku related... stuff
 - **`superstring`** (unstable) - Implementation of [superstring](https://github.com/pulsar-edit/superstring)
+- **`to-maybeuninit`** - Extension trait allowing converting from references to `MaybeUninit` references
 - **`z85`** - A fast (faster than `z85` crate[^2]) implementation of [ZeroMQ]'s [z85] format, a format to represent binary data as printable ASCII text. Think base64, but more efficient in encoded size. This implementation is not fully to spec, as it handles padding text to the correct length where the spec says the application code must handle it instead.
 
 ### Unstable features

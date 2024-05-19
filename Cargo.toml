@@ -75,6 +75,7 @@ all = [
 	"h",
 	"hex",
 	"lazy-wrap",
+	"to-maybeuninit",
 	"z85"
 ]
 all-unstable = [
@@ -112,7 +113,9 @@ auth-unstable = [
 # base64 = [
 # 	"dep:thiserror"
 # ]
-chainer-unstable = []
+chainer-unstable = [
+	"to-maybeuninit"
+]
 clock-timer = [
 	"dep:chrono",
 	"dep:tokio"
@@ -151,6 +154,7 @@ string-pool-unstable = [
 ]
 sudoku-unstable = []
 superstring-unstable = []
+to-maybeuninit = []
 # ws = [
 # 	"dep:httparse",
 # 	"dep:thiserror",
