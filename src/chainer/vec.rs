@@ -531,63 +531,61 @@ impl<T> VecChain<T> {
 
 	// TODO: nightly as_chunks/unchecked, as_chunks_mut/unchecked, as_rchunks/mut, array_chunks/mut
 
-	/*
-	rchunks/mut
-	rchunks_exact/mut
-	chunk_by/mut
-	split_at/mut
-	split_at_unchecked
-	split_at_mut_unchecked
-	split_at_checked
-	split_at_mut_checked
-	split/mut
-	split_inclusive/mut
-	rsplit/mut
-	splitn/mut
-	rsplitn/mut
-	split_once
-	rsplit_once
-	contains
-	starts_with
-	ends_with
-	strip_prefix/suffix
-	binary_search/by/key
-	sort_unstable/by/key
-	select_nth_unstable/by/key
-	partition_dedup/by/key
-	rotate_left/right
-	fill
-	fill_with
-	clone_from_slice
-	copy_from_slice
-	copy_within
-	clone_within (not in std)?
-	align_to/mut
-	nightly as_simd/mut
-	is_sorted/by/key
-	partition_point
-	take/mut
-	take_first/mut
-	take_last/mut
-	get_many_unchecked_mut
-	get_many_mut
-	get_many/get_many_unchecked (non mut? not in std?)
-	sort_floats
-	is_ascii
-	as_ascii/unchecked
-	eq_ignore_ascii_case
-	make_ascii_uppercase/lowercase
-	escape_ascii
-	trim_ascii
-	trim_ascii_start/end
-	sort/by/key
-	sort_by_cached_key
-	to_vec/in????? no lol just clone?
-	repeat
-	concat
-	join
-	to_ascii_uppercase/lowercase
-	*/
+	// TODO: rchunks/mut
+	// TODO: rchunks_exact/mut
+	// TODO: chunk_by/mut
+	// TODO: split_at/mut
+	// TODO: split_at_unchecked
+	// TODO: split_at_mut_unchecked
+	// TODO: split_at_checked
+	// TODO: split_at_mut_checked
+	// TODO: split/mut
+	// TODO: split_inclusive/mut
+	// TODO: rsplit/mut
+	// TODO: splitn/mut
+	// TODO: rsplitn/mut
+	// TODO: split_once
+	// TODO: rsplit_once
+	// TODO: contains
+	// TODO: starts_with
+	// TODO: ends_with
+	// TODO: strip_prefix/suffix
+	// TODO: binary_search/by/key
+	// TODO: sort_unstable/by/key
+	// TODO: select_nth_unstable/by/key
+	// TODO: partition_dedup/by/key
+	// TODO: rotate_left/right
+	// TODO: fill
+	// TODO: fill_with
+	// TODO: clone_from_slice
+	// TODO: copy_from_slice
+	// TODO: copy_within
+	// TODO: clone_within (not in std)?
+	// TODO: align_to/mut
+	// TODO: nightly as_simd/mut
+	// TODO: is_sorted/by/key
+	// TODO: partition_point
+	// TODO: take/mut
+	// TODO: take_first/mut
+	// TODO: take_last/mut
+	// TODO: get_many_unchecked_mut
+	// TODO: get_many_mut
+	// TODO: get_many/get_many_unchecked (non mut? not in std?)
+	// TODO: sort_floats
+	// TODO: is_ascii
+	// TODO: as_ascii/unchecked
+	// TODO: eq_ignore_ascii_case
+	// TODO: make_ascii_uppercase/lowercase
+	// TODO: escape_ascii
+	// TODO: trim_ascii
+	// TODO: trim_ascii_start/end
+	// TODO: sort/by/key
+	// TODO: sort_by_cached_key
+	// TODO: to_vec/in????? no lol just clone?
+	// TODO: repeat
+	// TODO: concat
+	// TODO: join
+	// TODO: to_ascii_uppercase/lowercase
 }
 
 // TODO: allocator param
