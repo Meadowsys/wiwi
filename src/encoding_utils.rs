@@ -11,6 +11,7 @@ use std::{ slice, ptr };
 pub struct UnsafeBufWriteGuard {
 	vec: Vec<u8>,
 	ptr: *mut u8,
+	requested_capacity: usize,
 	#[cfg(debug_assertions)]
 	bytes_written: usize
 }
@@ -30,6 +31,7 @@ impl UnsafeBufWriteGuard {
 		Self {
 			vec,
 			ptr,
+			requested_capacity: capacity,
 			#[cfg(debug_assertions)]
 			bytes_written: 0
 		}
@@ -118,7 +120,7 @@ impl UnsafeBufWriteGuard {
 		#[cfg(debug_assertions)]
 		assert!(self.bytes_written == self.vec.capacity());
 
-		self.vec.set_len(self.vec.capacity());
+		self.vec.set_len(self.requested_capacity);
 		self.vec
 	}
 }
