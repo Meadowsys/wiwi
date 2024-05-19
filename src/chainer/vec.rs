@@ -5,8 +5,10 @@ use std::slice::{ self, SliceIndex };
 use std::{ ptr, vec };
 use super::{ IntoChainer, SliceMutChain, SliceRefChain };
 
-/// Vec type that provides a chaining API. It contains similar methods as [`Vec`],
-/// but in some cases, the API needs to differ to accomodate the chaining API.
+/// Vec type that provides a chaining API.
+///
+/// It contains similar methods as [`Vec`], but in some cases, the API needs to
+/// differ to accomodate the chaining API.
 // TODO: allocator param
 #[must_use = include_str!("./must-use-msg.txt")]
 #[repr(transparent)]
@@ -16,10 +18,86 @@ pub struct VecChain<T> {
 
 /// Constructor functions
 impl<T> VecChain<T> {
+	/// Creates a new vector chain without allocating any capacity.
+	///
+	/// It will not allocate until it needs to, either by pushing an element,
+	/// calling the [`reserve`](Self::reserve) function to explicitly request
+	/// allocation, or something else.
+	///
+	/// # Examples
+	///
+	/// ```
+	/// # use wiwi::chainer::VecChain;
+	/// // a chain thingie! yay!...
+	/// let chain = VecChain::<String>::new();
+	/// ```
 	pub const fn new() -> Self {
 		Self { inner: Vec::new() }
 	}
 
+	/// Creates a new vector, and preallocate some memory.
+	///
+	/// The amount of memory allocated will be _at least_ enough to hold `capacity`
+	/// elements without reallocating. No allocation will happen if the provided
+	/// capacity is zero.
+	///
+	/// There is NO GUARANTEE that this function will allocate an exact amount
+	/// of memory. If knowing the actual allocated capacity is important, always
+	/// do so using the [`capacity`](Self::capacity) function.
+	///
+	/// If the element type (ie. `T`) is a ZST, the vector chainer will never
+	/// allocate, and will always have a capacity of `usize::MAX` bytes.
+	///
+	/// # Panics
+	///
+	/// Panics if the new capacity exceeds `isize::MAX` _bytes_ (not elements,
+	/// bytes). This is the same behaviour of [`Vec::with_capacity`].
+	///
+	/// # Examples
+	///
+	/// ```
+	/// # use wiwi::chainer::VecChain;
+	/// # let mut len = 0;
+	/// # let mut initial_capacity = 0;
+	/// # let mut capacity = 0;
+	/// let chain = VecChain::with_capacity(10)
+	///    // chaining methods to get the len and capacity of the vec chain
+	///    .len(&mut len)
+	///    .capacity(&mut initial_capacity);
+	///
+	/// // The vector chain contains zero elements, and at least room for 10 more
+	/// assert_eq!(len, 0);
+	/// assert!(initial_capacity >= 10);
+	///
+	/// // These are all done without reallocating
+	/// let chain = (0..10)
+	///    .fold(chain, |chain, i| chain.push(i))
+	///    .len(&mut len)
+	///    .capacity(&mut capacity);
+	///
+	/// assert_eq!(len, 10);
+	/// assert_eq!(capacity, initial_capacity);
+	///
+	/// // Now however, pushing another element can make the vector reallocate
+	/// let chain = chain
+	///    .push(11)
+	///    .len(&mut len)
+	///    .capacity(&mut capacity);
+	///
+	/// assert_eq!(len, 11);
+	/// assert!(capacity >= 11);
+	///
+	/// # let mut capacity1 = 0;
+	/// # let mut capacity2 = 0;
+	/// // ZSTs never allocate and always have a capacity of `usize::MAX`
+	/// let chain1 = VecChain::<()>::new()
+	///    .capacity(&mut capacity1);
+	/// let chain2 = VecChain::<()>::with_capacity(10)
+	///    .capacity(&mut capacity2);
+	///
+	/// assert_eq!(capacity1, usize::MAX);
+	/// assert_eq!(capacity2, usize::MAX);
+	/// ```
 	pub fn with_capacity(capacity: usize) -> Self {
 		Vec::with_capacity(capacity).into()
 	}
@@ -39,6 +117,15 @@ impl<T> VecChain<T> {
 
 /// Conversion functions
 impl<T> VecChain<T> {
+	/// Unwraps and retrieves the underlying [`Vec`] out.
+	///
+	/// # Examples
+	///
+	/// ```
+	/// # use wiwi::chainer::VecChain;
+	/// # let vec_chain = VecChain::<String>::new();
+	/// let regular_vec = vec_chain.into_inner();
+	/// ```
 	pub fn into_inner(self) -> Vec<T> {
 		self.inner
 	}
@@ -51,6 +138,10 @@ impl<T> VecChain<T> {
 		&mut self.inner
 	}
 
+	/// Borrow this vector chain immutably as a [`SliceRefChain`].
+	///
+	/// Note: this does not consume `self`, but only immutably borrow from it. So,
+	/// you will need to keep `self` in somewhere owned.
 	pub fn as_ref_slice_chainer(&self) -> &SliceRefChain<T> {
 		(*self.inner).into()
 	}
@@ -338,10 +429,66 @@ impl<T> VecChain<T> {
 		self
 	}
 
+	/// Consumes `self` and leaks it, returning a mutable reference to the content.
+	/// You may choose any lifetime `'h`, as long as `T` outlives `'h`. It can even
+	/// be `'static`.
+	///
+	/// The vector is shrunk as much as it can be (ie. [`shrink_to_fit`] is called),
+	/// but it might still have some excess capacity, in the same way [`with_capacity`]
+	/// and [`reserve`] can allocate more than is requested.
+	///
+	/// This function is mainly useful for something that needs to be kept for
+	/// the remainder of a program's life. As this function's name implies, if
+	/// you drop the returned reference, it will leak memory. Absence of memory
+	/// leaks is not part of Rust's memory model guarantees (for some reason...),
+	/// so this is safe.
+	///
+	/// # Examples
+	///
+	/// ```
+	/// # use wiwi::chainer::VecChain;
+	/// let static_ref = VecChain::new()
+	///    .extend_from_slice(&[1, 2, 3])
+	///    .leak::<'static>();
+	///
+	/// static_ref.as_mut_slice()[1] = 20;
+	/// assert_eq!(static_ref.as_slice(), [1, 20, 3]);
+	/// ```
+	///
+	/// [`shrink_to_fit`]: Self::shrink_to_fit
+	/// [`with_capacity`]: Self::with_capacity
+	/// [`reserve`]: Self::reserve
 	pub fn leak<'h>(self) -> &'h mut SliceMutChain<T> {
-		self.inner.leak().into()
+		self.shrink_to_fit().into_inner().leak().into()
 	}
 
+	/// Calls the provided closure with the spare capacity of the vector as
+	/// a [`SliceMutChain`] of [`MaybeUninit`]s.
+	///
+	/// # Examples
+	///
+	/// ```
+	/// # use wiwi::chainer::VecChain;
+	/// # let mut spare_len = 0;
+	/// let chain = VecChain::with_capacity(10)
+	///    .extend_from_slice(&[1, 2, 3, 4, 5])
+	///    .with_spare_capacity_mut(|mut spare| {
+	///       spare = spare.len(&mut spare_len);
+	///
+	///       // VecChain allocated at least 10 elements worth of space
+	///       // since we pushed 5 elements, it should have at least
+	///       // 5 elements of spare capacity left
+	///       assert!(spare_len >= 5);
+	///    })
+	///    .push(6)
+	///    .push(7)
+	///    .with_spare_capacity_mut(|mut spare| {
+	///       spare = spare.len(&mut spare_len);
+	///
+	///       // Just pushed 2 more elements...
+	///       assert!(spare_len >= 3);
+	///    });
+	/// ```
 	pub fn with_spare_capacity_mut<F>(mut self, f: F) -> Self
 	where
 		F: FnOnce(&mut SliceMutChain<MaybeUninit<T>>)
