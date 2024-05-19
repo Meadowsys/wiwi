@@ -71,6 +71,7 @@
 	unused_variables
 )]
 
+mod _internal;
 pub mod prelude;
 
 // TODO: expose this?
