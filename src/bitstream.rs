@@ -25,7 +25,7 @@ impl Encoder {
 		Self { output: vec, partial_bits: 0, num_partial_bits: 0 }
 	}
 
-	pub fn into_byte_vec(mut self) -> Vec<u8> {
+	pub fn into_bytes(mut self) -> Vec<u8> {
 		if self.num_partial_bits > 0 { self.output.push(self.partial_bits) }
 		self.output
 	}
