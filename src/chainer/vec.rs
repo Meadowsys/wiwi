@@ -893,6 +893,15 @@ impl<T: PartialEq> VecChain<T> {
 }
 
 impl<T> VecChain<T> {
+	/// Sorts, then dedups, the vector chain.
+	///
+	/// Suggested by my good friend [Silk Rose] c:
+	///
+	/// # Examples
+	///
+	/// TODO
+	///
+	/// [Silk Rose]: https://github.com/silkrose
 	pub fn sort_and_dedup(mut self) -> Self
 	where
 		T: Ord
