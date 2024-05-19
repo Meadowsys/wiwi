@@ -8,7 +8,8 @@
 #![cfg_attr(docsrs, doc = "## Enabled features (docs.rs)")]
 #![doc = ""]
 
-#![cfg_attr(docsrs, doc = "On docs.rs, the feature `all` is enabled. This means that all stable features, and only stable features, will appear in these docs. These include:")]
+#![cfg_attr(docsrs, doc = "On docs.rs, the feature `all` is enabled. This means that all stable features,")]
+#![cfg_attr(docsrs, doc = "and only stable features, will appear in these docs. These include:")]
 #![cfg_attr(docsrs, doc = "")]
 
 #![cfg_attr(all(feature = "auth-unstable"),        doc = "- `auth` (unstable)"       )]
@@ -31,9 +32,11 @@
 #![cfg_attr(all(feature = "z85"),                  doc = "- `z85`"                   )]
 
 #![cfg_attr(docsrs, doc = "")]
-#![cfg_attr(docsrs, doc = "If there were any unstable features listed there, please report!")]
-#![cfg_attr(docsrs, doc = "")]
-#![cfg_attr(docsrs, doc = "If you would like to see documentation for unstable features, please use `cargo doc` to build them locally (or alternatively `cargo doc --open` to open the locally built docs in your default browser).")]
+#![cfg_attr(docsrs, doc = "If you would like to see documentation for unstable features, please use")]
+#![cfg_attr(docsrs, doc = "`cargo doc` to build them locally (or alternatively `cargo doc --open` to")]
+#![cfg_attr(docsrs, doc = "open the locally built docs in your default browser). Running `cargo doc`")]
+#![cfg_attr(docsrs, doc = "will by default also generate documentation for all crates that yours depends")]
+#![cfg_attr(docsrs, doc = "on, so no need to clone the `wiwi` repository just for unstable feature docs.")]
 
 // ...yes, I'm doing it
 // (there's another one in prelude, copy/paste/modify for it)
