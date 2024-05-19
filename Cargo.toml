@@ -88,6 +88,7 @@ all-unstable = [
 	"path-unstable",
 	"serialiser-unstable",
 	"string-pool-unstable",
+	"sudoku-unstable",
 	"superstring-unstable"
 ]
 
@@ -148,6 +149,7 @@ string-pool-unstable = [
 	"dep:hashbrown",
 	"lazy-wrap"
 ]
+sudoku-unstable = []
 superstring-unstable = []
 # ws = [
 # 	"dep:httparse",

@@ -44,6 +44,7 @@
 #![cfg_attr(all(not(feature = "docs-rs-notouchie-dont-use-this"), feature = "path-unstable"),        doc = "- `path` (unstable)"       )]
 #![cfg_attr(all(not(feature = "docs-rs-notouchie-dont-use-this"), feature = "serialiser-unstable"),  doc = "- `serialiser` (unstable)" )]
 #![cfg_attr(all(not(feature = "docs-rs-notouchie-dont-use-this"), feature = "string-pool-unstable"), doc = "- `string-pool` (unstable)")]
+#![cfg_attr(all(not(feature = "docs-rs-notouchie-dont-use-this"), feature = "sudoku-unstable"),      doc = "- `sudoku` (unstable)"     )]
 #![cfg_attr(all(not(feature = "docs-rs-notouchie-dont-use-this"), feature = "superstring-unstable"), doc = "- `superstring` (unstable)")]
 #![cfg_attr(all(not(feature = "docs-rs-notouchie-dont-use-this"), feature = "z85"),                  doc = "- `z85`"                   )]
 
@@ -63,6 +64,7 @@
 	not(feature = "path-unstable"),
 	not(feature = "serialiser-unstable"),
 	not(feature = "string-pool-unstable"),
+	not(feature = "sudoku-unstable"),
 	not(feature = "superstring-unstable"),
 	not(feature = "z85"),
 	not(feature = "docs-rs-notouchie-dont-use-this")
@@ -143,6 +145,7 @@ pub mod serialiser;
 #[cfg(feature = "string-pool-unstable")]
 pub mod string_pool;
 
+#[cfg(feature = "sudoku-unstable")]
 pub mod sudoku;
 
 #[cfg(feature = "superstring-unstable")]
