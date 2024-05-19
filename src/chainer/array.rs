@@ -1,5 +1,6 @@
+use crate::to_maybeuninit::ToMaybeUninit as _;
 use std::{ mem::MaybeUninit, ptr };
-use super::{ IntoChainer, SliceMutChain, SliceRefChain, ToMaybeUninit as _ };
+use super::{ IntoChainer, SliceMutChain, SliceRefChain };
 
 #[must_use = include_str!("./must-use-msg.txt")]
 #[repr(transparent)]

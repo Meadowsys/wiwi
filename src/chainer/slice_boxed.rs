@@ -1,6 +1,7 @@
+use crate::to_maybeuninit::ToMaybeUninit as _;
 use std::mem::{ MaybeUninit, size_of };
 use std::slice;
-use super::{ IntoChainer, SliceMutChain, SliceRefChain, ToMaybeUninit as _ };
+use super::{ IntoChainer, SliceMutChain, SliceRefChain };
 
 // TODO: allocator param
 #[must_use = include_str!("./must-use-msg.txt")]

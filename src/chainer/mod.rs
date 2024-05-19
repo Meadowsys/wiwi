@@ -23,8 +23,6 @@ pub use slice_ref::SliceRefChain;
 mod vec;
 pub use vec::VecChain;
 
-use crate::to_maybeuninit::ToMaybeUninit;
-
 pub trait IntoChainer {
 	type Chain;
 	fn into_chainer(self) -> Self::Chain;

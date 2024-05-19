@@ -1,8 +1,9 @@
-use std::mem::{ self, MaybeUninit};
+use crate::to_maybeuninit::ToMaybeUninit as _;
+use std::mem::{ self, MaybeUninit };
 use std::ops::RangeBounds;
 use std::slice::{ self, SliceIndex };
 use std::{ ptr, vec };
-use super::{ IntoChainer, SliceMutChain, SliceRefChain, ToMaybeUninit as _ };
+use super::{ IntoChainer, SliceMutChain, SliceRefChain };
 
 // TODO: allocator param
 #[must_use = include_str!("./must-use-msg.txt")]
