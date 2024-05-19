@@ -6,10 +6,20 @@ edition = "2021"
 authors = ["Meadowsys"]
 repository = "https://github.com/meadowsys/wiwi"
 license = "MIT"
+categories = [
+	# "data-structures" # ?
+	# "internationalization" # ?
+	# "localization" # ?
+	# "mathematics" # ?
+	# "encoding" # ?
+	"rust-patterns"
+	# "wasm" # ?
+	# "web-programming" # ?
+]
 keywords = [
-	"decode",
-	"encode",
-	"hex",
+	"fundamental",
+	"general",
+	"general-purpose",
 	"z85"
 ]
 
