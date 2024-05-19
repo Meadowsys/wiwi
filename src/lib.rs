@@ -104,7 +104,7 @@ pub mod auth;
 pub mod bitstream;
 
 #[cfg(feature = "chainer-unstable")]
-#[cfg_attr(docsrs, doc(cfg(feature = "chainer")))]
+#[cfg_attr(docsrs, doc(cfg(feature = "chainer-unstable")))]
 pub mod chainer;
 
 #[cfg(feature = "clock-timer")]
