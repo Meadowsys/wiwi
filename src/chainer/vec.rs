@@ -580,6 +580,15 @@ impl<T> VecChain<T> {
 	// TODO: trim_ascii
 	// TODO: trim_ascii_start/end
 	// TODO: sort/by/key
+
+	pub fn sort(mut self) -> Self
+	where
+		T: Ord
+	{
+		self.inner.sort();
+		self
+	}
+
 	// TODO: sort_by_cached_key
 	// TODO: to_vec/in????? no lol just clone?
 	// TODO: repeat
@@ -649,6 +658,15 @@ impl<T: PartialEq> VecChain<T> {
 	pub fn dedup(mut self) -> Self {
 		self.inner.dedup();
 		self
+	}
+}
+
+impl<T> VecChain<T> {
+	pub fn sort_and_dedup(mut self) -> Self
+	where
+		T: Ord
+	{
+		self.sort().dedup()
 	}
 }
 
