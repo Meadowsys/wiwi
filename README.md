@@ -34,7 +34,7 @@ In addition to the features listed below, there exists a feature `all` that will
 
 Unstable features have `-unstable` appended to their name. For example, if I have feature `thingie`, while it is unstable the feature is named `thingie-unstable`. The `-unstable` suffix will be removed once the feature is stabilised.
 
-Because unstable features may break whenever, you may want to pin the version of `wiwi` to an exact version.
+Because unstable features may break whenever, if you use them, you may want to pin the version of `wiwi` to an exact version (ie. use the `=` semver operator).
 
 **NOTE:** Just because a feature is _not_ "unstable", doesn't mean it won't break, _ever_. It can break, but of course that will be accompanied by deprecation ahead of time and a major version bump, so no surprises there. Just don't be surprised when bumping a patch version causes an unstable feature to break everything. :p
 
