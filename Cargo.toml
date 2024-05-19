@@ -83,6 +83,7 @@ all-unstable = [
 	"all",
 
 	"auth-unstable",
+	"bitstream-unstable",
 	"chainer-unstable",
 	"id-unstable",
 	"iter-unstable",
@@ -114,6 +115,7 @@ auth-unstable = [
 # base64 = [
 # 	"dep:thiserror"
 # ]
+bitstream-unstable = []
 chainer-unstable = [
 	"to-maybeuninit"
 ]

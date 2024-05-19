@@ -12,6 +12,7 @@
 #![cfg_attr(docsrs, doc = "")]
 
 #![cfg_attr(all(feature = "auth-unstable"),        doc = "- `auth` (unstable)"       )]
+#![cfg_attr(all(feature = "bitstream-unstable"),   doc = "- `bitstream` (unstable)"  )]
 #![cfg_attr(all(feature = "chainer-unstable"),     doc = "- `chainer` (unstable)"    )]
 #![cfg_attr(all(feature = "clock-timer"),          doc = "- `clock-timer`"           )]
 #![cfg_attr(all(feature = "debounce"),             doc = "- `debounce`"              )]
@@ -38,6 +39,7 @@
 // (there's another one in prelude, copy/paste/modify for it)
 #![cfg_attr(all(
 	not(feature = "auth-unstable"),
+	not(feature = "bitstream-unstable"),
 	not(feature = "chainer-unstable"),
 	not(feature = "clock-timer"),
 	not(feature = "debounce"),
@@ -96,6 +98,10 @@ pub mod auth;
 
 // #[cfg(feature = "base64")]
 // pub mod base64;
+
+#[cfg(feature = "bitstream-unstable")]
+#[cfg_attr(docsrs, doc(cfg(feature = "bitstream-unstable")))]
+pub mod bitstream;
 
 #[cfg(feature = "chainer-unstable")]
 #[cfg_attr(docsrs, doc(cfg(feature = "chainer")))]
