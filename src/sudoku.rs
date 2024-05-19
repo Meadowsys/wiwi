@@ -144,85 +144,108 @@ impl Iter for CellUngivenValuesIter {
 	}
 }
 
-// TODO: offset table can be (space) optimised further:
-// right now its 2187 bytes. but instead, we can store every row, every col, and
-// every cell group, which would take up 3 * 81 bytes. Then in another table, we
-// could store a flattened array of cells, each containing an array (tuple?) with
-// index to the row, col, and cell group, which takes another 3 * 81 bytes. This
-// is total 486 bytes. If I really wanted I could get into bit packing...
+/// Indexing with board offset (`0..81`) will yield offsets to the other tables.
+/// 0 being row offsets, 1 being col offsets, 2 being group offsets
+// const OFFSET_TABLE: OffsetTable = generate_offsets();
+const OFFSET_TABLE: [[u8; 3]; 81] = generate_offsets();
 
-type OffsetTable = [[[u8; 9]; 3]; 81];
+const ROW_OFFSETS: [[u8; 9]; 9] = generate_rows_table();
+const COL_OFFSETS: [[u8; 9]; 9] = generate_cols_table();
+const GROUP_OFFSETS: [[u8; 9]; 9] = generate_groups_table();
 
-/// usage: `OFFSET_TABLE[board_offset][a][b]` where:
-///
-/// - row: 0-indexed row, 0 to 8 inclusive
-/// - col: 0-indexed col, 0 to 8 inclusive
-/// - `board_offset`: (row * 9) + col
-/// - `a`: 0 for offsets of cells in the same row, 1 for same but col, 2 for
-///   same but group
-/// - `b`: index 0 to 8, to retrieve offset of a cell in the same row/col/group
-static OFFSET_TABLE: OffsetTable = generate_offsets();
+const fn generate_offsets() -> [[u8; 3]; 81] {
+	let mut table = [[0u8; 3]; 81];
 
-const fn generate_offsets() -> OffsetTable {
-	let mut table = [[[0u8; 9]; 3]; 81];
-
-	// TODO: convert to for loops, once that's stabilised in const fns
-	let mut row = 0;
+	let mut row = 0usize;
 	while row < 9 {
-		let mut col = 0;
+		let mut col = 0usize;
 		while col < 9 {
-			let board_offset = (row * 9) + col;
-			// + 0 1 2 3 ...-> col
-			// 0 0 1 2 3
-			// 1 4 5 6 7
-			// 2 8 9 ...
-			// 3
-			// ...
-			// ↓
-			// row
-			//
-			// offset = (row * 9) + col
-			// row and col are 0 indexed
+			let offset = (row * 9) + col;
 
-			let mut i = 0;
-			while i < 9 {
-				table[board_offset][0][i] = ((row * 9) + i) as u8;
-				i += 1;
-			}
+			table[offset][0] = row as _;
+			table[offset][1] = col as _;
 
-			let mut i = 0;
-			while i < 9 {
-				table[board_offset][1][i] = ((i * 9) + col) as u8;
-				i += 1;
-			}
+			let g_row = row / 3;
+			let g_col = col / 3;
+			let g_offset = (g_row * 3) + g_col;
+			table[offset][2] = g_offset as _;
 
-			let row_group = match row {
-				0..=2 => { 0usize..=2 }
-				3..=5 => { 3..=5 }
-				6..=8 => { 6..=8 }
-				_ => { unreachable!() }
-			};
+			col += 1;
+		}
 
-			let col_group = match col {
-				0..=2 => { 0usize..=2 }
-				3..=5 => { 3..=5 }
-				6..=8 => { 6..=8 }
-				_ => { unreachable!() }
-			};
+		row += 1;
+	}
 
-			let mut i = 0;
+	table
+}
 
-			let mut row_offset = *row_group.start();
-			while row_offset <= *row_group.end() {
-				let mut col_offset = *col_group.start();
-				while col_offset <= *col_group.end() {
-					table[board_offset][2][i] = ((row_offset * 9) + col_offset) as u8;
-					i += 1;
+const fn generate_rows_table() -> [[u8; 9]; 9] {
+	let mut table = [[0u8; 9]; 9];
 
-					col_offset += 1;
+	let mut row = 0usize;
+	while row < 9 {
+		let mut col = 0usize;
+		while col < 9 {
+			let offset = (row * 9) + col;
+			table[row][col] = offset as _;
+
+			col += 1;
+		}
+
+		row += 1;
+	}
+
+	table
+}
+
+const fn generate_cols_table() -> [[u8; 9]; 9] {
+	let mut table = [[0u8; 9]; 9];
+
+	let mut row = 0usize;
+	while row < 9 {
+		let mut col = 0usize;
+		while col < 9 {
+			let offset = (row * 9) + col;
+			table[col][row] = offset as _;
+
+			col += 1;
+		}
+
+		row += 1;
+	}
+
+	table
+}
+
+const fn generate_groups_table() -> [[u8; 9]; 9] {
+	let mut table = [[0u8; 9]; 9];
+
+	let groups = [0u8..3, 3..6, 6..9];
+
+	let mut row = 0usize;
+	while row < 3 {
+		let mut col = 0usize;
+		while col < 3 {
+			let root_offset = (row * 3) + col;
+
+			let row_group = &groups[row];
+			let col_group = &groups[col];
+
+			let mut row = row_group.start;
+			while row < row_group.end {
+				let mut col = col_group.start;
+				while col < col_group.end {
+					let board_offset = (row * 9) + col;
+
+					let r = row - row_group.start;
+					let c = col - col_group.start;
+					let offset = (r * 3) + c;
+					table[root_offset][offset as usize] = board_offset;
+
+					col += 1;
 				}
 
-				row_offset += 1;
+				row += 1;
 			}
 
 			col += 1;
