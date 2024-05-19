@@ -19,13 +19,16 @@ pub use into_iter::IntoIter;
 mod repeat_per_item;
 pub use repeat_per_item::RepeatPerItem;
 
+mod size_hint;
+pub use size_hint::{ SizeHint, SizeHintBound, SizeHintConversion };
+
 pub trait Iter {
 	type Item;
 
 	fn next(&mut self) -> Option<Self::Item>;
 
-	fn size_hint(&self) -> (Option<usize>, Option<usize>) {
-		(None, None)
+	fn size_hint(&self) -> SizeHint {
+		SizeHint::unknown()
 	}
 
 	/// Takes every element emitted by the underlying iterator, and returns it

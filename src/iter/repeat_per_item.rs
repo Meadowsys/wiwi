@@ -1,4 +1,4 @@
-use super::{ IntoIter, Iter };
+use super::{ IntoIter, Iter, SizeHint, SizeHintBound };
 
 pub struct RepeatPerItem<T, I> {
 	iter: I,
@@ -94,14 +94,22 @@ where
 		}
 	}
 
-	fn size_hint(&self) -> (Option<usize>, Option<usize>) {
-		let (lower, upper) = self.iter.size_hint();
+	fn size_hint(&self) -> SizeHint {
+		use SizeHintBound::*;
 
-		// TODO: we have not specified what the extreme values mean
-		// also, make custom enum for size hint!
-		let lower = lower.map(|l| l.saturating_mul(self.count));
-		let upper = upper.map(|u| u.saturating_mul(self.count));
+		let (lower, upper) = self.iter.size_hint().split();
+		let hint = SizeHint::new();
 
-		(lower, upper)
+		let hint = match lower {
+			HardBound { bound } => unsafe { hint.lower_hard(bound * self.count) }
+			Estimate { estimate } => { hint.lower_estimate(estimate * self.count) }
+			Unknown => { hint.lower_unknown() }
+		};
+
+		match upper {
+			HardBound { bound } => unsafe { hint.upper_hard(bound * self.count) }
+			Estimate { estimate } => { hint.upper_estimate(estimate * self.count) }
+			Unknown => { hint.upper_unknown() }
+		}
 	}
 }
