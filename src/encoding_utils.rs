@@ -25,8 +25,7 @@ impl UnsafeBufWriteGuard {
 		let mut vec = Vec::with_capacity(capacity);
 		let ptr = vec.as_mut_ptr();
 
-		#[cfg(debug_assertions)]
-		assert_eq!(vec.capacity(), capacity);
+		debug_assert!(vec.capacity() >= capacity);
 
 		Self {
 			vec,
@@ -48,7 +47,7 @@ impl UnsafeBufWriteGuard {
 	pub unsafe fn write_bytes_const<const N: usize>(&mut self, src: *const u8) {
 		#[cfg(debug_assertions)] {
 			self.bytes_written += N;
-			assert!(self.bytes_written <= self.vec.capacity())
+			assert!(self.bytes_written <= self.requested_capacity)
 		}
 
 		ptr::copy_nonoverlapping(src, self.ptr, N);
@@ -64,7 +63,7 @@ impl UnsafeBufWriteGuard {
 	pub unsafe fn write_bytes(&mut self, src: *const u8, n: usize) {
 		#[cfg(debug_assertions)] {
 			self.bytes_written += n;
-			assert!(self.bytes_written <= self.vec.capacity())
+			assert!(self.bytes_written <= self.requested_capacity)
 		}
 
 		ptr::copy_nonoverlapping(src, self.ptr, n);
@@ -101,7 +100,7 @@ impl UnsafeBufWriteGuard {
 	pub unsafe fn add_byte_count(&mut self, n: usize) {
 		#[cfg(debug_assertions)] {
 			self.bytes_written += n;
-			assert!(self.bytes_written <= self.vec.capacity())
+			assert!(self.bytes_written <= self.requested_capacity)
 		}
 
 		self.ptr = self.ptr.add(n);
@@ -117,8 +116,7 @@ impl UnsafeBufWriteGuard {
 	/// violating contract of [`Vec::set_len`].
 	#[inline(always)]
 	pub unsafe fn into_full_vec(mut self) -> Vec<u8> {
-		#[cfg(debug_assertions)]
-		assert!(self.bytes_written == self.vec.capacity());
+		debug_assert!(self.bytes_written == self.requested_capacity);
 
 		self.vec.set_len(self.requested_capacity);
 		self.vec
@@ -146,8 +144,7 @@ impl<'h, const N: usize> ChunkedSlice<'h, N> {
 	/// `self.bytes` must have `N` or more bytes left in it,
 	/// otherwise invalid memory will be read from.
 	pub unsafe fn next_frame_unchecked(&mut self) -> &'h [u8; N] {
-		#[cfg(debug_assertions)]
-		assert!(self.bytes.len() >= N, "enough bytes left to form another whole frame");
+		debug_assert!(self.bytes.len() >= N, "enough bytes left to form another whole frame");
 
 		let self_ptr = self.bytes as *const [u8] as *const u8;
 		let self_len = self.bytes.len();
@@ -181,8 +178,7 @@ impl<'h, const N: usize> ChunkedSlice<'h, N> {
 	{
 		let len = self.bytes.len();
 
-		#[cfg(debug_assertions)]
-		assert!(len < N, "less than a whole frame remaining");
+		debug_assert!(len < N, "(strictly) less than a whole frame remaining");
 
 		// temp buffer of correct length, to add padding
 		let mut slice = [0u8; N];
@@ -203,12 +199,8 @@ impl<'h, const N: usize> ChunkedSlice<'h, N> {
 
 	/// If debug assertions are enabled, this asserts that the slice contained in
 	/// `self` is empty (ie. len 0), and panics if not. Otherwise, this does nothing.
-	///
-	/// When building with debug assertions off (ie. release mode), this function
-	/// does not exist.
-	#[cfg(debug_assertions)]
 	#[inline(always)]
 	pub fn debug_assert_is_empty(&self) {
-		assert!(self.bytes.is_empty(), "all bytes were consumed");
+		debug_assert!(self.bytes.is_empty(), "all bytes were consumed");
 	}
 }

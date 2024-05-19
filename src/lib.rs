@@ -1,53 +1,38 @@
+#![cfg_attr(docsrs, feature(doc_cfg))]
+
 #![doc = include_str!("../README.md")]
-
 #![doc = ""]
-#![cfg_attr(
-	all(feature = "all-unstable", not(feature = "docs-rs-notouchie-dont-use-this")),
-	doc = "## Enabled features (`all-unstable` is enabled)"
-)]
-#![cfg_attr(
-	all(feature = "all", not(feature = "all-unstable"), not(feature = "docs-rs-notouchie-dont-use-this")),
-	doc = "## Enabled features (`all` is enabled)"
-)]
-#![cfg_attr(
-	all(not(feature = "all"), not(feature = "all-unstable"), not(feature = "docs-rs-notouchie-dont-use-this")),
-	doc = "## Enabled features"
-)]
-#![cfg_attr(
-	feature = "docs-rs-notouchie-dont-use-this",
-	doc = "## Enabled features (docs.rs)"
-)]
+#![cfg_attr(all(not(docsrs), feature = "all-unstable"), doc = "## Enabled features (`all-unstable` is enabled)")]
+#![cfg_attr(all(not(docsrs), feature = "all", not(feature = "all-unstable")), doc = "## Enabled features (`all` is enabled)")]
+#![cfg_attr(all(not(docsrs), not(feature = "all"), not(feature = "all-unstable")), doc = "## Enabled features")]
+#![cfg_attr(docsrs, doc = "## Enabled features (docs.rs)")]
 #![doc = ""]
 
-#![cfg_attr(
-	feature = "docs-rs-notouchie-dont-use-this",
-	doc = "On docs.rs, the feature `all` is enabled. This means that all stable features, and only stable features, will appear in these docs."
-)]
-// TODO: "these include: <move below list to here>"
-// and make note of "if there are any unstable features listed here, that is bug"
-#![cfg_attr(feature = "docs-rs-notouchie-dont-use-this", doc = "")]
-#![cfg_attr(
-	feature = "docs-rs-notouchie-dont-use-this",
-	doc = "If you would like to see documentation for unstable features, please use `cargo doc` to build them locally (or alternatively `cargo doc --open` to open the locally built docs in your default browser)."
-)]
+#![cfg_attr(docsrs, doc = "On docs.rs, the feature `all` is enabled. This means that all stable features, and only stable features, will appear in these docs. These include:")]
+#![cfg_attr(docsrs, doc = "")]
 
-#![cfg_attr(all(not(feature = "docs-rs-notouchie-dont-use-this"), feature = "auth-unstable"),        doc = "- `auth` (unstable)"       )]
-#![cfg_attr(all(not(feature = "docs-rs-notouchie-dont-use-this"), feature = "chainer-unstable"),     doc = "- `chainer` (unstable)"    )]
-#![cfg_attr(all(not(feature = "docs-rs-notouchie-dont-use-this"), feature = "clock-timer"),          doc = "- `clock-timer`"           )]
-#![cfg_attr(all(not(feature = "docs-rs-notouchie-dont-use-this"), feature = "debounce"),             doc = "- `debounce`"              )]
-#![cfg_attr(all(not(feature = "docs-rs-notouchie-dont-use-this"), feature = "h"),                    doc = "- `h`"                     )]
-#![cfg_attr(all(not(feature = "docs-rs-notouchie-dont-use-this"), feature = "hex"),                  doc = "- `hex`"                   )]
-#![cfg_attr(all(not(feature = "docs-rs-notouchie-dont-use-this"), feature = "id-unstable"),          doc = "- `id` (unstable)"         )]
-#![cfg_attr(all(not(feature = "docs-rs-notouchie-dont-use-this"), feature = "iter-unstable"),        doc = "- `iter` (unstable)"       )]
-#![cfg_attr(all(not(feature = "docs-rs-notouchie-dont-use-this"), feature = "lazy-wrap"),            doc = "- `lazy-wrap`"             )]
-#![cfg_attr(all(not(feature = "docs-rs-notouchie-dont-use-this"), feature = "lsl-unstable"),         doc = "- `lsl` (unstable)"        )]
-#![cfg_attr(all(not(feature = "docs-rs-notouchie-dont-use-this"), feature = "path-unstable"),        doc = "- `path` (unstable)"       )]
-#![cfg_attr(all(not(feature = "docs-rs-notouchie-dont-use-this"), feature = "serialiser-unstable"),  doc = "- `serialiser` (unstable)" )]
-#![cfg_attr(all(not(feature = "docs-rs-notouchie-dont-use-this"), feature = "string-pool-unstable"), doc = "- `string-pool` (unstable)")]
-#![cfg_attr(all(not(feature = "docs-rs-notouchie-dont-use-this"), feature = "sudoku-unstable"),      doc = "- `sudoku` (unstable)"     )]
-#![cfg_attr(all(not(feature = "docs-rs-notouchie-dont-use-this"), feature = "superstring-unstable"), doc = "- `superstring` (unstable)")]
-#![cfg_attr(all(not(feature = "docs-rs-notouchie-dont-use-this"), feature = "to-maybeuninit"),       doc = "- `to-maybeuninit`"        )]
-#![cfg_attr(all(not(feature = "docs-rs-notouchie-dont-use-this"), feature = "z85"),                  doc = "- `z85`"                   )]
+#![cfg_attr(all(feature = "auth-unstable"),        doc = "- `auth` (unstable)"       )]
+#![cfg_attr(all(feature = "chainer-unstable"),     doc = "- `chainer` (unstable)"    )]
+#![cfg_attr(all(feature = "clock-timer"),          doc = "- `clock-timer`"           )]
+#![cfg_attr(all(feature = "debounce"),             doc = "- `debounce`"              )]
+#![cfg_attr(all(feature = "h"),                    doc = "- `h`"                     )]
+#![cfg_attr(all(feature = "hex"),                  doc = "- `hex`"                   )]
+#![cfg_attr(all(feature = "id-unstable"),          doc = "- `id` (unstable)"         )]
+#![cfg_attr(all(feature = "iter-unstable"),        doc = "- `iter` (unstable)"       )]
+#![cfg_attr(all(feature = "lazy-wrap"),            doc = "- `lazy-wrap`"             )]
+#![cfg_attr(all(feature = "lsl-unstable"),         doc = "- `lsl` (unstable)"        )]
+#![cfg_attr(all(feature = "path-unstable"),        doc = "- `path` (unstable)"       )]
+#![cfg_attr(all(feature = "serialiser-unstable"),  doc = "- `serialiser` (unstable)" )]
+#![cfg_attr(all(feature = "string-pool-unstable"), doc = "- `string-pool` (unstable)")]
+#![cfg_attr(all(feature = "sudoku-unstable"),      doc = "- `sudoku` (unstable)"     )]
+#![cfg_attr(all(feature = "superstring-unstable"), doc = "- `superstring` (unstable)")]
+#![cfg_attr(all(feature = "to-maybeuninit"),       doc = "- `to-maybeuninit`"        )]
+#![cfg_attr(all(feature = "z85"),                  doc = "- `z85`"                   )]
+
+#![cfg_attr(docsrs, doc = "")]
+#![cfg_attr(docsrs, doc = "If there were any unstable features listed there, please report!")]
+#![cfg_attr(docsrs, doc = "")]
+#![cfg_attr(docsrs, doc = "If you would like to see documentation for unstable features, please use `cargo doc` to build them locally (or alternatively `cargo doc --open` to open the locally built docs in your default browser).")]
 
 // ...yes, I'm doing it
 // (there's another one in prelude, copy/paste/modify for it)
@@ -69,7 +54,7 @@
 	not(feature = "superstring-unstable"),
 	not(feature = "to-maybeuninit"),
 	not(feature = "z85"),
-	not(feature = "docs-rs-notouchie-dont-use-this")
+	not(docsrs)
 ), doc = "No features enabled! (you should probably enable something, otherwise this crate does nothing :p)")]
 
 #![allow(clippy::missing_safety_doc)]
@@ -99,6 +84,7 @@ pub mod prelude;
 mod encoding_utils;
 
 #[cfg(feature = "auth-unstable")]
+#[cfg_attr(docsrs, doc(cfg(feature = "auth-unstable")))]
 pub mod auth;
 
 // #[cfg(feature = "base16")]
@@ -111,55 +97,71 @@ pub mod auth;
 // pub mod base64;
 
 #[cfg(feature = "chainer-unstable")]
+#[cfg_attr(docsrs, doc(cfg(feature = "chainer")))]
 pub mod chainer;
 
 #[cfg(feature = "clock-timer")]
+#[cfg_attr(docsrs, doc(cfg(feature = "clock-timer")))]
 pub mod clock_timer;
 
 #[cfg(feature = "debounce")]
+#[cfg_attr(docsrs, doc(cfg(feature = "debounce")))]
 pub mod debounce;
 feature_cfg_compile_check!("debounce-dyn-fn", cfg of "debounce");
 
 #[cfg(feature = "h")]
+#[cfg_attr(docsrs, doc(cfg(feature = "h")))]
 pub mod h;
 
 #[cfg(feature = "hex")]
+#[cfg_attr(docsrs, doc(cfg(feature = "hex")))]
 pub mod hex;
 
 #[cfg(feature = "id-unstable")]
+#[cfg_attr(docsrs, doc(cfg(feature = "id-unstable")))]
 pub mod id;
 
 #[cfg(feature = "iter-unstable")]
+#[cfg_attr(docsrs, doc(cfg(feature = "iter-unstable")))]
 pub mod iter;
 
 #[cfg(feature = "lazy-wrap")]
+#[cfg_attr(docsrs, doc(cfg(feature = "lazy-wrap")))]
 pub mod lazy_wrap;
 
 #[cfg(feature = "lsl-unstable")]
+#[cfg_attr(docsrs, doc(cfg(feature = "lsl-unstable")))]
 pub mod lsl;
 
 #[cfg(feature = "path-unstable")]
+#[cfg_attr(docsrs, doc(cfg(feature = "path-unstable")))]
 pub mod path;
 
 #[cfg(feature = "serialiser-unstable")]
+#[cfg_attr(docsrs, doc(cfg(feature = "serialiser-unstable")))]
 pub mod serialiser;
 
 #[cfg(feature = "string-pool-unstable")]
+#[cfg_attr(docsrs, doc(cfg(feature = "string-pool-unstable")))]
 pub mod string_pool;
 
 #[cfg(feature = "sudoku-unstable")]
+#[cfg_attr(docsrs, doc(cfg(feature = "sudoku-unstable")))]
 pub mod sudoku;
 
 #[cfg(feature = "superstring-unstable")]
+#[cfg_attr(docsrs, doc(cfg(feature = "superstring-unstable")))]
 pub mod superstring;
 
 #[cfg(feature = "to-maybeuninit")]
+#[cfg_attr(docsrs, doc(cfg(feature = "to-maybeuninit")))]
 pub mod to_maybeuninit;
 
 // #[cfg(feature = "ws")]
 // pub mod ws;
 
 #[cfg(feature = "z85")]
+#[cfg_attr(docsrs, doc(cfg(feature = "z85")))]
 pub mod z85;
 
 /// has to be run in root module and not in the feature modules themselves

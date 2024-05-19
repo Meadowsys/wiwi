@@ -1,10 +1,10 @@
-//! Fast and efficient implementation of Z85, but with nonstandard padding
-//! implemented, as the Z85 spec does not account for padding.
+//! Fast and efficient implementation of Z85
 //!
-//! ## Nonstandard padding implementation
+//! Includes nonstandard padding. The Z85 spec explicitly says that the application
+//! needs to handle padding the length to a multiple of 4. If input length is a
+//! multiple of 4, no padding is added.
 //!
-//! It may be worth noting that no extra bytes are added if the given input is
-//! to the correct length (multiple of 4).
+//! # Nonstandard padding implementation
 //!
 //! **Encoding**: If padding is needed, the amount of padding that was added in bytes
 //! is encoded (ex. 1B padding -> `1` since `TABLE_ENCODER[1] == b'1'`)
@@ -245,7 +245,6 @@ pub fn decode_z85(mut bytes: &[u8]) -> Result<Vec<u8>, DecodeError> {
 	}
 
 	// SAFETY: We have consumed all the input bytes (calculated)
-	#[cfg(debug_assertions)]
 	frames_iter.debug_assert_is_empty();
 
 	// SAFETY: We have written the exact amount of bytes we preallocated (calculated)
@@ -429,11 +428,6 @@ mod tests {
 				assert_eq!(decoded.len(), expected_input_len);
 
 				assert_eq!(original_input, decoded);
-
-				// this is enforced by debug_assert! in the code, so this already
-				// is validated if tests are run in debug, but still,
-				assert_eq!(encoded.len(), encoded.capacity());
-				assert_eq!(decoded.len(), decoded.capacity());
 			}
 		}
 	}

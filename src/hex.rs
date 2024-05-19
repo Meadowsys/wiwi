@@ -168,13 +168,6 @@ mod tests {
 					.expect("can round trip decode just encoded data");
 				assert_eq!(decoded_upper.len(), expected_input_len);
 				assert_eq!(original_input, decoded_upper);
-
-				// this is enforced by debug_assert! in the code, so this already
-				// is validated if tests are run in debug, but still,
-				assert_eq!(encoded_lower.len(), encoded_lower.capacity());
-				assert_eq!(decoded_lower.len(), decoded_lower.capacity());
-				assert_eq!(encoded_upper.len(), encoded_upper.capacity());
-				assert_eq!(decoded_upper.len(), decoded_upper.capacity());
 			}
 		}
 	}

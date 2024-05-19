@@ -47,6 +47,7 @@ z85 = "3.0.5"
 # - make sure to add it to "No features enabled!" thing
 # - also check the top of the prelude module
 # - make sure the `pub mod` declaration in lib.rs has the right feature attr on it
+# - `pub mod` declaration should also have the docsrs cfg attr on it
 # In total: the module addition should have 1 change in README, 2 changes in
 # Cargo.toml, 3 changes in lib.rs, 1 change in prelude.rs, and of course
 # the module file itself
@@ -59,7 +60,7 @@ z85 = "3.0.5"
 # - rename it in cfg_attrs at top of lib.rs
 # - rename it in "No features enabled!" thing
 # - also check the top of the prelude module
-# - update its name in the feature gate of its `pub mod` declaration in lib.rs
+# - update its name in the feature gate / doc attr of its `pub mod` declaration in lib.rs
 # - check/add/update its prelude entries
 #
 # No longer necessary (but good to do anyways I guess):
@@ -173,11 +174,6 @@ serde-json = ["dep:serde_json"]
 # compiler errors if the feature its for isn't enabled
 debounce-dyn-fn = []
 
-# no touch, not public API
-# currently only used to hide "enabled features" section from docs when
-# building for docs.rs
-docs-rs-notouchie-dont-use-this = []
-
 [[bench]]
 name = "hex-and-z85"
 harness = false
@@ -188,15 +184,16 @@ lto = "thin"
 [package.metadata.docs.rs]
 # https://docs.rs/about/metadata
 
+# https://users.rust-lang.org/t/how-to-document-optional-features-in-api-docs/64577
+rustdoc-args = ["--cfg", "docsrs"]
+
 features = [
 	"all",
 
 	# addon features
 	"hashbrown",
 	"image",
-	"serde-json",
-
-	"docs-rs-notouchie-dont-use-this"
+	"serde-json"
 ]
 
 targets = [
