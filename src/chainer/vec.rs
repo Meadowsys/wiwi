@@ -5,6 +5,8 @@ use std::slice::{ self, SliceIndex };
 use std::{ ptr, vec };
 use super::{ IntoChainer, SliceMutChain, SliceRefChain };
 
+/// Vec type that provides a chaining API. It contains similar methods as [`Vec`],
+/// but in some cases, the API needs to differ to accomodate the chaining API.
 // TODO: allocator param
 #[must_use = include_str!("./must-use-msg.txt")]
 #[repr(transparent)]
@@ -69,19 +71,100 @@ impl<T> VecChain<T> {
 	// TODO: nightly into_raw_parts
 	// TODO: nightly into_raw_parts_with_alloc
 
+	/// Writes the number of elements (also known as the length) in the vector
+	/// into `out`.
+	///
+	/// # Examples
+	///
+	/// ```
+	/// # use wiwi::chainer::VecChain;
+	/// let mut len = 0;
+	///
+	/// let chain = VecChain::new()
+	///    .extend_from_slice(&[1, 2, 3, 4, 5])
+	///    .len(&mut len);
+	///
+	/// assert_eq!(len, 5);
+	/// ```
 	pub fn len(self, out: &mut usize) -> Self {
 		self.len_uninit(out.to_maybeuninit_mut())
 	}
 
+	/// Writes the number of elements (also known as the length) in the vector
+	/// into `out`.
+	///
+	/// This function will always write to the output, so it is safe to call
+	/// [`assume_init`](MaybeUninit::assume_init) after invoking this function.
+	///
+	/// # Examples
+	///
+	/// ```
+	/// # use std::mem::MaybeUninit;
+	/// # use wiwi::chainer::VecChain;
+	/// let mut len = MaybeUninit::uninit();
+	///
+	/// let chain = VecChain::new()
+	///    .extend_from_slice(&[1, 2, 3, 4, 5])
+	///    .len_uninit(&mut len); // writes to `len`
+	///
+	/// // this is safe!
+	/// let len = unsafe { len.assume_init() };
+	/// assert_eq!(len, 5);
+	/// ```
 	pub fn len_uninit(self, out: &mut MaybeUninit<usize>) -> Self {
 		out.write(self.inner.len());
 		self
 	}
 
+	/// Writes `true` into the output if the vector contains no elements, and
+	/// false otherwise
+	///
+	/// # Examples
+	///
+	/// ```
+	/// # use wiwi::chainer::VecChain;
+	/// // output variables...
+	/// let mut before = false;
+	/// let mut after = false;
+	///
+	/// let chain = VecChain::new()
+	///    // chains are evaluated eagerly
+	///    .is_empty(&mut before)
+	///    .push(1)
+	///    .is_empty(&mut after);
+	///
+	/// assert!(before);
+	/// assert!(!after);
+	/// ```
 	pub fn is_empty(self, out: &mut bool) -> Self {
 		self.is_empty_uninit(out.to_maybeuninit_mut())
 	}
 
+	/// Writes `true` into the output if the vector contains no elements, and
+	/// false otherwise
+	///
+	/// # Examples
+	///
+	/// ```
+	/// # use std::mem::MaybeUninit;
+	/// # use wiwi::chainer::VecChain;
+	/// // output variables...
+	/// let mut before = MaybeUninit::uninit();
+	/// let mut after = MaybeUninit::uninit();
+	///
+	/// let chain = VecChain::new()
+	///    // chains are evaluated eagerly
+	///    .is_empty_uninit(&mut before)
+	///    .push(1)
+	///    .is_empty_uninit(&mut after);
+	///
+	/// // this is safe!
+	/// let before = unsafe { before.assume_init() };
+	/// let after = unsafe { after.assume_init() };
+	///
+	/// assert!(before);
+	/// assert!(!after);
+	/// ```
 	pub fn is_empty_uninit(self, out: &mut MaybeUninit<bool>) -> Self {
 		out.write(self.inner.is_empty());
 		self

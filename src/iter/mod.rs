@@ -48,7 +48,7 @@ pub trait Iter {
 	/// # Examples
 	///
 	/// ```
-	/// # use crate::wiwi::iter::{ IntoWiwiIter, Iter };
+	/// # use wiwi::iter::{ IntoWiwiIter, Iter };
 	/// let mut iter = [1, 2, 3]
 	///    .into_wiwi_iter()
 	///    .repeat_per_item(3);
@@ -71,7 +71,7 @@ pub trait Iter {
 	/// Passing in `0` for the count:
 	///
 	/// ```
-	/// # use crate::wiwi::iter::{ IntoWiwiIter, Iter };
+	/// # use wiwi::iter::{ IntoWiwiIter, Iter };
 	/// let mut iter = [1, 2, 3]
 	///    .into_wiwi_iter()
 	///    .repeat_per_item(0);
