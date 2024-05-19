@@ -36,7 +36,7 @@ Unstable features have `-unstable` appended to their name. For example, if I hav
 
 Because unstable features may break whenever, you may want to pin the version of `wiwi` to an exact version.
 
-**NOTE:** Just because a feature is _not_ "unstable", doesn't mean it won't break, _ever_. It can break, but of course that will be accompanied by a major version bump, so no surprises there. Just don't be surprised when bumping a patch version causes an unstable feature to break everything. :p
+**NOTE:** Just because a feature is _not_ "unstable", doesn't mean it won't break, _ever_. It can break, but of course that will be accompanied by deprecation ahead of time and a major version bump, so no surprises there. Just don't be surprised when bumping a patch version causes an unstable feature to break everything. :p
 
 ### Addon features
 
