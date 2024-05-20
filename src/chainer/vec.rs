@@ -283,13 +283,21 @@ impl<T> VecChain<T> {
 	// TODO: try_reserve
 	// TODO: try_reserve_exact
 
+	pub fn shrink_to(mut self, min_capacity: usize) -> Self {
+		self.inner.shrink_to(min_capacity);
+		self
+	}
+
 	pub fn shrink_to_fit(mut self) -> Self {
 		self.inner.shrink_to_fit();
 		self
 	}
 
-	pub fn shrink_to(mut self, min_capacity: usize) -> Self {
-		self.inner.shrink_to(min_capacity);
+	pub fn resize(mut self, new_len: usize, value: T) -> Self
+	where
+		T: Clone
+	{
+		self.inner.resize(new_len, value);
 		self
 	}
 
@@ -344,6 +352,14 @@ impl<T> VecChain<T> {
 		self
 	}
 
+	pub fn dedup(mut self) -> Self
+	where
+		T: PartialOrd
+	{
+		self.inner.dedup();
+		self
+	}
+
 	pub fn dedup_by<F>(mut self, mut same_bucket: F) -> Self
 	where
 		F: FnMut(&T, &T) -> bool
@@ -386,6 +402,38 @@ impl<T> VecChain<T> {
 	}
 
 	// TODO: push_within_capacity
+
+	pub fn extend_from_slice(mut self, other: &[T]) -> Self
+	where
+		T: Clone
+	{
+		self.inner.extend_from_slice(other);
+		self
+	}
+
+	pub fn extend_from_ref_slice_chainer(mut self, other: &SliceRefChain<T>) -> Self
+	where
+		T: Clone
+	{
+		self.inner.extend_from_slice(other.as_slice());
+		self
+	}
+	pub fn extend_from_mut_slice_chainer(mut self, other: &mut SliceMutChain<T>) -> Self
+	where
+		T: Clone
+	{
+		self.inner.extend_from_slice(other.as_slice());
+		self
+	}
+
+	pub fn extend_from_within<R>(mut self, src: R) -> Self
+	where
+		T: Clone,
+		R: RangeBounds<usize>
+	{
+		self.inner.extend_from_within(src);
+		self
+	}
 
 	pub fn pop(mut self, out: &mut Option<T>) -> Self {
 		self.pop_uninit(out.to_maybeuninit_mut())
@@ -502,20 +550,19 @@ impl<T> VecChain<T> {
 		F: FnOnce(&mut SliceMutChain<T>, &mut SliceMutChain<MaybeUninit<T>>)
 	{
 		// TODO: call Vec impl when it is stabilised
-		let (init, spare) = unsafe {
+		unsafe {
 			let ptr = self.inner.as_mut_ptr();
 			let len = self.inner.len();
 
 			let spare_ptr = ptr.add(len) as *mut MaybeUninit<T>;
 			let spare_len = self.inner.capacity() - len;
 
-			(
-				slice::from_raw_parts_mut(ptr, len),
-				slice::from_raw_parts_mut(spare_ptr, spare_len)
-			)
-		};
+			let init = slice::from_raw_parts_mut(ptr, len).into();
+			let spare = slice::from_raw_parts_mut(spare_ptr, spare_len).into();
 
-		f(init.into(), spare.into());
+			f(init, spare);
+		}
+
 		self
 	}
 
@@ -777,9 +824,52 @@ impl<T> VecChain<T> {
 	// TODO: rsplitn/mut
 	// TODO: split_once
 	// TODO: rsplit_once
-	// TODO: contains
-	// TODO: starts_with
-	// TODO: ends_with
+
+	pub fn contains(self, x: &T, out: &mut bool) -> Self
+	where
+		T: PartialEq
+	{
+		self.contains_uninit(x, out.to_maybeuninit_mut())
+	}
+
+	pub fn contains_uninit(self, x: &T, out: &mut MaybeUninit<bool>) -> Self
+	where
+		T: PartialEq
+	{
+		out.write(self.inner.contains(x));
+		self
+	}
+
+	pub fn starts_with(self, needle: &[T], out: &mut bool) -> Self
+	where
+		T: PartialEq
+	{
+		self.starts_with_uninit(needle, out.to_maybeuninit_mut())
+	}
+
+	pub fn starts_with_uninit(self, needle: &[T], out: &mut MaybeUninit<bool>) -> Self
+	where
+		T: PartialEq
+	{
+		out.write(self.inner.starts_with(needle));
+		self
+	}
+
+	pub fn ends_with(self, needle: &[T], out: &mut bool) -> Self
+	where
+		T: PartialEq
+	{
+		self.ends_with_uninit(needle, out.to_maybeuninit_mut())
+	}
+
+	pub fn ends_with_uninit(self, needle: &[T], out: &mut MaybeUninit<bool>) -> Self
+	where
+		T: PartialEq
+	{
+		out.write(self.inner.ends_with(needle));
+		self
+	}
+
 	// TODO: strip_prefix/suffix
 	// TODO: binary_search/by/key
 	// TODO: sort_unstable/by/key
@@ -829,36 +919,6 @@ impl<T> VecChain<T> {
 }
 
 // TODO: allocator param
-impl<T: Clone> VecChain<T> {
-	pub fn resize(mut self, new_len: usize, value: T) -> Self {
-		self.inner.resize(new_len, value);
-		self
-	}
-
-	pub fn extend_from_slice(mut self, other: &[T]) -> Self {
-		self.inner.extend_from_slice(other);
-		self
-	}
-
-	pub fn extend_from_ref_slice_chainer(mut self, other: &SliceRefChain<T>) -> Self {
-		self.inner.extend_from_slice(other.as_slice());
-		self
-	}
-	pub fn extend_from_mut_slice_chainer(mut self, other: &mut SliceMutChain<T>) -> Self {
-		self.inner.extend_from_slice(other.as_slice());
-		self
-	}
-
-	pub fn extend_from_within<R>(mut self, src: R) -> Self
-	where
-		R: RangeBounds<usize>
-	{
-		self.inner.extend_from_within(src);
-		self
-	}
-}
-
-// TODO: allocator param
 impl<T, const N: usize> VecChain<[T; N]> {
 	pub fn flatten(mut self) -> VecChain<T> {
 		let (len, cap) = if mem::size_of::<T>() == 0 {
@@ -881,14 +941,6 @@ impl<T, const N: usize> VecChain<[T; N]> {
 
 		let ptr = ptr as *mut T;
 		unsafe { Vec::from_raw_parts(ptr, len, cap).into() }
-	}
-}
-
-// TODO: allocator param
-impl<T: PartialEq> VecChain<T> {
-	pub fn dedup(mut self) -> Self {
-		self.inner.dedup();
-		self
 	}
 }
 
