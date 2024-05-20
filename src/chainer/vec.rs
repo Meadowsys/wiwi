@@ -1150,7 +1150,8 @@ mod tests {
 		let mut is_empty_new = false;
 		let mut is_empty_with_cap = false;
 
-		let _ = mk_test_chain()
+		let _ = VecChain::with_capacity(8)
+			.extend_from_slice(&[1, 2, 3, 4, 5, 6, 7, 8])
 			.len(&mut len1)
 			.capacity(&mut cap1)
 			.push(9)
@@ -1165,10 +1166,11 @@ mod tests {
 
 
 		assert_eq!(len1, 8);
-		assert_eq!(cap1, 8);
-		assert_eq!(len2, 10);
+		assert!(cap1 >= 8);
 
-		assert!(cap2 > 8);
+		assert_eq!(len2, 10);
+		assert!(cap2 >= 10);
+
 		assert!(!is_empty);
 		assert!(is_empty_new);
 		assert!(is_empty_with_cap);
@@ -1267,10 +1269,5 @@ mod tests {
 
 			.extend_from_slice(slice)
 			.with_chunks(check(&[*b"12341", *b"23412", *b"34123", *b"41234"], b""));
-	}
-
-	fn mk_test_chain() -> VecChain<u8> {
-		VecChain::with_capacity(8)
-			.extend_from_slice(&[1, 2, 3, 4, 5, 6, 7, 8])
 	}
 }
