@@ -101,8 +101,7 @@ all-unstable = [
 	"path-unstable",
 	"serialiser-unstable",
 	"string-pool-unstable",
-	"sudoku-unstable",
-	"superstring-unstable"
+	"sudoku-unstable"
 ]
 
 auth-unstable = [
@@ -169,7 +168,6 @@ sudoku-unstable = [
 	"chainer-unstable",
 	"iter-unstable"
 ]
-superstring-unstable = []
 to-maybeuninit = []
 # ws = [
 # 	"dep:httparse",

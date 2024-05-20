@@ -27,7 +27,6 @@
 #![cfg_attr(all(feature = "serialiser-unstable"),  doc = "- `serialiser` (unstable)" )]
 #![cfg_attr(all(feature = "string-pool-unstable"), doc = "- `string-pool` (unstable)")]
 #![cfg_attr(all(feature = "sudoku-unstable"),      doc = "- `sudoku` (unstable)"     )]
-#![cfg_attr(all(feature = "superstring-unstable"), doc = "- `superstring` (unstable)")]
 #![cfg_attr(all(feature = "to-maybeuninit"),       doc = "- `to-maybeuninit`"        )]
 #![cfg_attr(all(feature = "z85"),                  doc = "- `z85`"                   )]
 
@@ -56,7 +55,6 @@
 	not(feature = "serialiser-unstable"),
 	not(feature = "string-pool-unstable"),
 	not(feature = "sudoku-unstable"),
-	not(feature = "superstring-unstable"),
 	not(feature = "to-maybeuninit"),
 	not(feature = "z85"),
 	not(docsrs)
@@ -158,10 +156,6 @@ pub mod string_pool;
 #[cfg(feature = "sudoku-unstable")]
 #[cfg_attr(docsrs, doc(cfg(feature = "sudoku-unstable")))]
 pub mod sudoku;
-
-#[cfg(feature = "superstring-unstable")]
-#[cfg_attr(docsrs, doc(cfg(feature = "superstring-unstable")))]
-pub mod superstring;
 
 #[cfg(feature = "to-maybeuninit")]
 #[cfg_attr(docsrs, doc(cfg(feature = "to-maybeuninit")))]
