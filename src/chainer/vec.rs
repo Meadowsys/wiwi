@@ -927,10 +927,15 @@ impl<T, const N: usize> VecChain<[T; N]> {
 				.expect("vec len overflow");
 			(len, usize::MAX)
 		} else {
-			unsafe { (
-				self.inner.len().unchecked_mul(N),
-				self.inner.capacity().unchecked_mul(N)
-			) }
+			// TODO: wait until 1.79 when this is stabilised
+			// unsafe { (
+			// 	self.inner.len().unchecked_mul(N),
+			// 	self.inner.capacity().unchecked_mul(N)
+			// ) }
+			(
+				self.inner.len() * N,
+				self.inner.capacity() * N
+			)
 		};
 
 		// TODO: switch to into_raw_parts impl when it is stabilised

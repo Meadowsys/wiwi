@@ -187,7 +187,10 @@ impl<T, const N: usize> SliceBoxedChain<[T; N]> {
 				.checked_mul(N)
 				.expect("slice len overflow")
 		} else {
-			unsafe { self.inner.len().unchecked_mul(N) }
+			// TODO: wait until 1.79 when this is stabilised
+			// unsafe { self.inner.len().unchecked_mul(N) }
+
+			self.inner.len() * N
 		};
 
 		let raw = Box::into_raw(self.inner);

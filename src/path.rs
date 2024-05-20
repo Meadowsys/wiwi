@@ -41,7 +41,9 @@ unsafe fn substring_unchecked(s: &str, start: usize, end: usize) -> &str {
 	debug_assert!(s.is_char_boundary(end));
 
 	let ptr = s.as_ptr();
-	let len = end.unchecked_sub(start);
+	// TODO: wait until 1.79 when this is stabilised
+	// let len = end.unchecked_sub(start);
+	let len = end - start;
 
 	str::from_utf8_unchecked(slice::from_raw_parts(ptr.add(start), len))
 }

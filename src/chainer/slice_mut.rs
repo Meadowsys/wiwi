@@ -71,7 +71,10 @@ impl<T, const N: usize> SliceMutChain<[T; N]> {
 				.checked_mul(N)
 				.expect("slice len overflow")
 		} else {
-			unsafe { self.inner.len().unchecked_mul(N) }
+			// TODO: wait until 1.79 when this is stabilised
+			// unsafe { self.inner.len().unchecked_mul(N) }
+
+			self.inner.len() * N
 		};
 
 		let ptr = self as *mut SliceMutChain<[T; N]> as *mut T;
