@@ -958,7 +958,7 @@ impl<T> VecChain<T> {
 	where
 		T: Copy
 	{
-		// TODO: ...how can I do this more efficiently?
+		// TODO: ...this can be more efficient (done in place?)
 		self = self.inner.repeat(n).into();
 		self
 	}
