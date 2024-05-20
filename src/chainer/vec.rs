@@ -1,4 +1,5 @@
 use crate::to_maybeuninit::ToMaybeUninit as _;
+use std::cmp::Ordering;
 use std::mem::{ self, MaybeUninit };
 use std::ops::RangeBounds;
 use std::slice::{ self, SliceIndex };
@@ -871,6 +872,22 @@ impl<T> VecChain<T> {
 	}
 
 	// TODO: strip_prefix/suffix
+
+	pub fn binary_search(self, x: &T, out: &mut Result<usize, usize>) -> Self
+	where
+		T: Ord
+	{
+		self.binary_search_uninit(x, out.to_maybeuninit_mut())
+	}
+
+	pub fn binary_search_uninit(self, x: &T, out: &mut MaybeUninit<Result<usize, usize>>) -> Self
+	where
+		T: Ord
+	{
+		out.write(self.inner.binary_search(x));
+		self
+	}
+
 	// TODO: binary_search/by/key
 	// TODO: sort_unstable/by/key
 	// TODO: select_nth_unstable/by/key
@@ -900,7 +917,6 @@ impl<T> VecChain<T> {
 	// TODO: escape_ascii
 	// TODO: trim_ascii
 	// TODO: trim_ascii_start/end
-	// TODO: sort/by/key
 
 	pub fn sort(mut self) -> Self
 	where
@@ -910,9 +926,43 @@ impl<T> VecChain<T> {
 		self
 	}
 
-	// TODO: sort_by_cached_key
+	pub fn sort_by<F>(mut self, compare: F) -> Self
+	where
+		F: FnMut(&T, &T) -> Ordering
+	{
+		self.inner.sort_by(compare);
+		self
+	}
+
+	pub fn sort_by_key<K, F>(mut self, f: F) -> Self
+	where
+		F: FnMut(&T) -> K,
+		K: Ord
+	{
+		self.inner.sort_by_key(f);
+		self
+	}
+
+	pub fn sort_by_cached_key<K, F>(mut self, f: F) -> Self
+	where
+		F: FnMut(&T) -> K,
+		K: Ord
+	{
+		self.inner.sort_by_cached_key(f);
+		self
+	}
+
 	// TODO: to_vec/in????? no lol just clone?
-	// TODO: repeat
+
+	pub fn repeat(mut self, n: usize) -> Self
+	where
+		T: Copy
+	{
+		// TODO: ...how can I do this more efficiently?
+		self = self.inner.repeat(n).into();
+		self
+	}
+
 	// TODO: concat
 	// TODO: join
 	// TODO: to_ascii_uppercase/lowercase
@@ -978,6 +1028,54 @@ impl<T> From<Vec<T>> for VecChain<T> {
 	#[inline]
 	fn from(inner: Vec<T>) -> Self {
 		Self { inner }
+	}
+}
+
+impl<T> AsRef<VecChain<T>> for VecChain<T> {
+	fn as_ref(&self) -> &VecChain<T> {
+		self
+	}
+}
+
+impl<T> AsMut<VecChain<T>> for VecChain<T> {
+	fn as_mut(&mut self) -> &mut VecChain<T> {
+		self
+	}
+}
+
+impl<T> AsRef<Vec<T>> for VecChain<T> {
+	fn as_ref(&self) -> &Vec<T> {
+		&self.inner
+	}
+}
+
+impl<T> AsMut<Vec<T>> for VecChain<T> {
+	fn as_mut(&mut self) -> &mut Vec<T> {
+		&mut self.inner
+	}
+}
+
+impl<T> AsRef<[T]> for VecChain<T> {
+	fn as_ref(&self) -> &[T] {
+		&self.inner
+	}
+}
+
+impl<T> AsMut<[T]> for VecChain<T> {
+	fn as_mut(&mut self) -> &mut [T] {
+		&mut self.inner
+	}
+}
+
+impl<T> AsRef<SliceRefChain<T>> for VecChain<T> {
+	fn as_ref(&self) -> &SliceRefChain<T> {
+		(*self.inner).into()
+	}
+}
+
+impl<T> AsMut<SliceMutChain<T>> for VecChain<T> {
+	fn as_mut(&mut self) -> &mut SliceMutChain<T> {
+		(&mut *self.inner).into()
 	}
 }
 
