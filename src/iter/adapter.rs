@@ -54,12 +54,13 @@ impl<I: Iterator> Iter for IterAdapter<I> {
 /// blanket implementation provided, so it is available for all std iterators.
 pub trait AsWiwiIter<'h> {
 	type Iter: Iter + 'h;
-	fn as_wiwi_iter(&'h mut self) -> Self::Iter;
+	/// Borrow the std iterator as a wiwi iter.
+	fn borrow_std_as_wiwi_iter(&'h mut self) -> Self::Iter;
 }
 
 impl<'h, I: Iterator + 'h> AsWiwiIter<'h> for I {
 	type Iter = IterAdapter<&'h mut I>;
-	fn as_wiwi_iter(&'h mut self) -> IterAdapter<&'h mut Self> {
+	fn borrow_std_as_wiwi_iter(&'h mut self) -> IterAdapter<&'h mut Self> {
 		IterAdapter { inner: self }
 	}
 }
@@ -68,12 +69,13 @@ impl<'h, I: Iterator + 'h> AsWiwiIter<'h> for I {
 /// blanket implementation provided, so it is available for all wiwi iters.
 pub trait AsStdIterator<'h> {
 	type Iterator: Iterator + 'h;
-	fn as_std_iterator(&'h mut self) -> Self::Iterator;
+	/// Borrow the wiwi iter as an std iterator.
+	fn borrow_wiwi_as_std_iterator(&'h mut self) -> Self::Iterator;
 }
 
 impl<'h, I: Iter + 'h> AsStdIterator<'h> for I {
 	type Iterator = IterAdapter<&'h mut I>;
-	fn as_std_iterator(&'h mut self) -> IterAdapter<&'h mut Self> {
+	fn borrow_wiwi_as_std_iterator(&'h mut self) -> IterAdapter<&'h mut Self> {
 		IterAdapter { inner: self }
 	}
 }
@@ -83,12 +85,13 @@ impl<'h, I: Iter + 'h> AsStdIterator<'h> for I {
 /// implementation provided, so it is available for all std iterators.
 pub trait IntoWiwiIter {
 	type Iter: Iter;
-	fn into_wiwi_iter(self) -> Self::Iter;
+	/// Converts the std iterator into a wiwi iter.
+	fn convert_std_into_wiwi_iter(self) -> Self::Iter;
 }
 
 impl<I: IntoIterator> IntoWiwiIter for I {
 	type Iter = IterAdapter<I::IntoIter>;
-	fn into_wiwi_iter(self) -> IterAdapter<I::IntoIter> {
+	fn convert_std_into_wiwi_iter(self) -> IterAdapter<I::IntoIter> {
 		IterAdapter { inner: self.into_iter() }
 	}
 }
@@ -98,12 +101,13 @@ impl<I: IntoIterator> IntoWiwiIter for I {
 /// blanket implementation provided, so it is available for all wiwi iters.
 pub trait IntoStdIterator {
 	type Iterator: Iterator;
-	fn into_std_iterator(self) -> Self::Iterator;
+	/// Converts the wiwi iter into a std iterator.
+	fn convert_wiwi_into_std_iterator(self) -> Self::Iterator;
 }
 
 impl<I: IntoIter> IntoStdIterator for I {
 	type Iterator = IterAdapter<I::Iter>;
-	fn into_std_iterator(self) -> IterAdapter<I::Iter> {
-		IterAdapter { inner: self.into_iter() }
+	fn convert_wiwi_into_std_iterator(self) -> IterAdapter<I::Iter> {
+		IterAdapter { inner: self.into_wiwi_iter() }
 	}
 }

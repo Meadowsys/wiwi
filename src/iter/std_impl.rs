@@ -68,7 +68,7 @@ impl<T> IntoIter for Vec<T> {
 	type Item = T;
 	type Iter = VecIntoIter<T>;
 
-	fn into_iter(self) -> VecIntoIter<T> {
+	fn into_wiwi_iter(self) -> VecIntoIter<T> {
 		let me = ManuallyDrop::new(self);
 
 		let ptr = me.as_ptr();
