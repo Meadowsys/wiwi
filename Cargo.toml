@@ -93,6 +93,7 @@ all-unstable = [
 	"all",
 
 	"auth-unstable",
+	"bigint-unstable",
 	"bitstream-unstable",
 	"chainer-unstable",
 	"id-unstable",
@@ -114,6 +115,7 @@ auth-unstable = [
 	"dep:zeroize",
 	"z85"
 ]
+bigint-unstable = []
 # base16 = [
 # 	"dep:thiserror",
 # 	"hex"

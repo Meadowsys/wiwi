@@ -13,6 +13,7 @@
 #![cfg_attr(docsrs, doc = "")]
 
 #![cfg_attr(all(feature = "auth-unstable"),        doc = "- `auth` (unstable)"       )]
+#![cfg_attr(all(feature = "bigint-unstable"),      doc = "- `bigint` (unstable)"     )]
 #![cfg_attr(all(feature = "bitstream-unstable"),   doc = "- `bitstream` (unstable)"  )]
 #![cfg_attr(all(feature = "chainer-unstable"),     doc = "- `chainer` (unstable)"    )]
 #![cfg_attr(all(feature = "clock-timer"),          doc = "- `clock-timer`"           )]
@@ -41,6 +42,7 @@
 // (there's another one in prelude, copy/paste/modify for it)
 #![cfg_attr(all(
 	not(feature = "auth-unstable"),
+	not(feature = "bigint-unstable"),
 	not(feature = "bitstream-unstable"),
 	not(feature = "chainer-unstable"),
 	not(feature = "clock-timer"),
@@ -90,6 +92,10 @@ mod encoding_utils;
 #[cfg(feature = "auth-unstable")]
 #[cfg_attr(docsrs, doc(cfg(feature = "auth-unstable")))]
 pub mod auth;
+
+#[cfg(feature = "bigint-unstable")]
+#[cfg_attr(docsrs, doc(cfg(feature = "bigint-unstable")))]
+pub mod bigint;
 
 // #[cfg(feature = "base16")]
 // pub mod base16;

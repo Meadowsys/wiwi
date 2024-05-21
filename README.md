@@ -11,6 +11,7 @@ All exposed features are gated behind features, none of which are enabled by def
 In addition to the features listed below, there exists a feature `all` that will enable all (stable) features. The feature `all-unstable` will enable all stable and unstable features. Addon features are not included in any of these two features (for now, maybe).
 
 - **`auth`** (unstable) - Some lower(ish) level utilities to aid in writing an authentication system, in which the client password is never sent across the wire. Quite heavily inspired by [Tuta's authentication/encryption system](https://tuta.com/nl/encryption).
+- **`bigint`** (unstable) - bigint types
 - **`bitstream`** (unstable) - bit stream encoder/decoder
 - **`chainer`** (unstable) - zero-cost wrappers that provide chaining APIs
 - **`clock-timer`** - An interval tracking clock, yielding ticks at specified intervals and doing so for a specified duration.
