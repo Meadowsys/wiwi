@@ -1,3 +1,8 @@
+//! Chaining APIs for common Rust types
+
+mod into_chainer;
+pub use into_chainer::IntoChainer;
+
 mod vec;
 pub use vec::VecChain;
 
