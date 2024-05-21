@@ -1242,9 +1242,14 @@ mod tests {
 		let slice = b"1234";
 
 		fn check<'h>(
-			expected_chunks: &'h [[u8; N]],
+			expected_chunks: &[&[u8; N]],
 			expected_remainder: &'h [u8]
 		) -> impl FnOnce(&[[u8; N]], &[u8]) + 'h {
+			let expected_chunks = expected_chunks
+				.into_iter()
+				.map(|item| **item)
+				.collect::<Vec<_>>();
+
 			move |chunks, rem| {
 				assert_eq!(expected_chunks.len(), chunks.len(), "wrong num of chunks");
 				assert_eq!(expected_remainder.len(), rem.len(), "wrong num of elements in remainder");
@@ -1259,15 +1264,15 @@ mod tests {
 			.with_chunks(check(&[], b"1234"))
 
 			.extend_from_slice(slice)
-			.with_chunks(check(&[*b"12341"], b"234"))
+			.with_chunks(check(&[b"12341"], b"234"))
 
 			.extend_from_slice(slice)
-			.with_chunks(check(&[*b"12341", *b"23412"], b"34"))
+			.with_chunks(check(&[b"12341", b"23412"], b"34"))
 
 			.extend_from_slice(slice)
-			.with_chunks(check(&[*b"12341", *b"23412", *b"34123"], b"4"))
+			.with_chunks(check(&[b"12341", b"23412", b"34123"], b"4"))
 
 			.extend_from_slice(slice)
-			.with_chunks(check(&[*b"12341", *b"23412", *b"34123", *b"41234"], b""));
+			.with_chunks(check(&[b"12341", b"23412", b"34123", b"41234"], b""));
 	}
 }
