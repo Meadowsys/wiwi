@@ -19,6 +19,9 @@ pub use into_iter::IntoIter;
 mod map;
 pub use map::Map;
 
+mod peek;
+pub use peek::{ Peekable, Peek };
+
 mod repeat_per_item;
 pub use repeat_per_item::RepeatPerItem;
 
@@ -39,14 +42,6 @@ pub trait Iter {
 		SizeHint::default()
 	}
 
-	fn map<O, F>(self, f: F) -> Map<Self, F>
-	where
-		Self: Sized,
-		F: FnMut(Self::Item) -> O
-	{
-		Map::new(self, f)
-	}
-
 	fn for_each<F>(mut self, mut f: F)
 	where
 		Self: Sized,
@@ -56,6 +51,28 @@ pub trait Iter {
 			f(item)
 		}
 	}
+
+	fn peekable(self) -> Peek<Self, Self::Item>
+	where
+		Self: Sized
+	{
+		Peek::new(self)
+	}
+
+	fn map<O, F>(self, f: F) -> Map<Self, F>
+	where
+		Self: Sized,
+		F: FnMut(Self::Item) -> O
+	{
+		Map::new(self, f)
+	}
+
+	// fn map_peekable<O, Po, F, P>(self, f: F, peek_f: P) -> MapPeekable<Self, F, P>
+	// where
+	// 	Self: Sized + Peekable<'static>
+	// {
+	// 	MapPeekable::new(self, f, peek_f)
+	// }
 
 	/// Consumes the iter and returns the number of items that were emitted.
 	///
