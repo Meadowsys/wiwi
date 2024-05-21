@@ -20,7 +20,7 @@ mod repeat_per_item;
 pub use repeat_per_item::RepeatPerItem;
 
 mod size_hint;
-pub use size_hint::{ SizeHint, SizeHintBound, SizeHintConversion };
+pub use size_hint::{ SizeHint, SizeHintBound };
 
 pub trait Iter {
 	type Item;

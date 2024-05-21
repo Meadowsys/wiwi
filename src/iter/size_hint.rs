@@ -150,22 +150,3 @@ impl Default for SizeHint {
 		Self::new()
 	}
 }
-
-pub trait SizeHintConversion {
-	fn into_hint(self) -> SizeHint;
-}
-
-impl SizeHintConversion for (usize, Option<usize>) {
-	fn into_hint(self) -> SizeHint {
-		let (lower, upper) = self;
-
-		let bound = SizeHint::new()
-			.lower_estimate(lower);
-
-		if let Some(upper) = upper {
-			bound.upper_estimate(upper)
-		} else {
-			bound.upper_unknown()
-		}
-	}
-}
