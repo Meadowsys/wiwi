@@ -63,12 +63,10 @@ pub enum SizeHintBound {
 
 impl SizeHint {
 	pub fn new() -> Self {
-		let lower = SizeHintBound::Unknown;
-		let upper = SizeHintBound::Unknown;
-		Self { lower, upper }
+		Self::unknown()
 	}
 
-	pub fn into_hint(self) -> (usize, Option<usize>) {
+	pub fn into_std_hint(self) -> (usize, Option<usize>) {
 		use SizeHintBound::*;
 
 		let lower = match self.lower {
@@ -84,16 +82,36 @@ impl SizeHint {
 		(lower, upper)
 	}
 
-	pub fn estimate(estimate: usize) -> Self {
-		Self::new().lower_estimate(estimate).upper_estimate(estimate)
+	pub fn unknown() -> Self {
+		Self {
+			lower: SizeHintBound::Unknown,
+			upper: SizeHintBound::Unknown
+		}
 	}
 
-	pub fn lower_estimate(mut self, estimate: usize) -> Self {
+	pub fn with_lower_unknown(mut self) -> Self {
+		self.lower = SizeHintBound::Unknown;
+		self
+	}
+
+	pub fn with_upper_unknown(mut self) -> Self {
+		self.upper = SizeHintBound::Unknown;
+		self
+	}
+
+	pub fn estimate(estimate: usize) -> Self {
+		Self {
+			lower: SizeHintBound::Estimate { estimate },
+			upper: SizeHintBound::Estimate { estimate }
+		}
+	}
+
+	pub fn with_lower_estimate(mut self, estimate: usize) -> Self {
 		self.lower = SizeHintBound::Estimate { estimate };
 		self
 	}
 
-	pub fn upper_estimate(mut self, estimate: usize) -> Self {
+	pub fn with_upper_estimate(mut self, estimate: usize) -> Self {
 		self.upper = SizeHintBound::Estimate { estimate };
 		self
 	}
@@ -101,16 +119,19 @@ impl SizeHint {
 	/// # Safety
 	///
 	/// Consuming code is allow to rely on these bounds for safety/correctness.
-	/// The iter _must_ produce at least `lower` items and at most `upper` items.
-	pub unsafe fn hard(bound: usize) -> Self {
-		Self::new().lower_hard(bound).upper_hard(bound)
+	/// The iter _must_ produce _exactly_ `bound` items.
+	pub unsafe fn hard_bound(bound: usize) -> Self {
+		Self {
+			lower: SizeHintBound::HardBound { bound },
+			upper: SizeHintBound::HardBound { bound }
+		}
 	}
 
 	/// # Safety
 	///
 	/// Consuming code is allowed to rely on this value for safety/correctness.
 	/// The iter _must_ produce at least `bound` items.
-	pub unsafe fn lower_hard(mut self, bound: usize) -> Self {
+	pub unsafe fn with_lower_hard_bound(mut self, bound: usize) -> Self {
 		self.lower = SizeHintBound::HardBound { bound };
 		self
 	}
@@ -119,22 +140,8 @@ impl SizeHint {
 	///
 	/// Consuming code is allowed to rely on this value for safety/correctness.
 	/// The iter _must_ produce at most `bound` items.
-	pub unsafe fn upper_hard(mut self, bound: usize) -> Self {
+	pub unsafe fn with_upper_hard_bound(mut self, bound: usize) -> Self {
 		self.upper = SizeHintBound::HardBound { bound };
-		self
-	}
-
-	pub fn unknown() -> Self {
-		Self::new().lower_unknown().upper_unknown()
-	}
-
-	pub fn lower_unknown(mut self) -> Self {
-		self.lower = SizeHintBound::Unknown;
-		self
-	}
-
-	pub fn upper_unknown(mut self) -> Self {
-		self.upper = SizeHintBound::Unknown;
 		self
 	}
 
@@ -147,6 +154,6 @@ impl SizeHint {
 impl Default for SizeHint {
 	/// Returns default size hint, or `(Unknown, Unknown)`.
 	fn default() -> Self {
-		Self::new()
+		Self::unknown()
 	}
 }

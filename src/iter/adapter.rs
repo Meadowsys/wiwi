@@ -26,7 +26,7 @@ impl<I: Iter> Iterator for IterAdapter<I> {
 	}
 
 	fn size_hint(&self) -> (usize, Option<usize>) {
-		self.inner.size_hint().into_hint()
+		self.inner.size_hint().into_std_hint()
 	}
 }
 
@@ -40,12 +40,12 @@ impl<I: Iterator> Iter for IterAdapter<I> {
 		let (lower, upper) = self.inner.size_hint();
 
 		let bound = SizeHint::new()
-			.lower_estimate(lower);
+			.with_lower_estimate(lower);
 
 		if let Some(upper) = upper {
-			bound.upper_estimate(upper)
+			bound.with_upper_estimate(upper)
 		} else {
-			bound.upper_unknown()
+			bound.with_upper_unknown()
 		}
 	}
 }

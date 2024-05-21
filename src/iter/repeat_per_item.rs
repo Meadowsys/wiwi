@@ -101,15 +101,15 @@ where
 		let hint = SizeHint::new();
 
 		let hint = match lower {
-			HardBound { bound } => unsafe { hint.lower_hard(bound * self.count) }
-			Estimate { estimate } => { hint.lower_estimate(estimate * self.count) }
-			Unknown => { hint.lower_unknown() }
+			HardBound { bound } => unsafe { hint.with_lower_hard_bound(bound * self.count) }
+			Estimate { estimate } => { hint.with_lower_estimate(estimate * self.count) }
+			Unknown => { hint.with_lower_unknown() }
 		};
 
 		match upper {
-			HardBound { bound } => unsafe { hint.upper_hard(bound * self.count) }
-			Estimate { estimate } => { hint.upper_estimate(estimate * self.count) }
-			Unknown => { hint.upper_unknown() }
+			HardBound { bound } => unsafe { hint.with_upper_hard_bound(bound * self.count) }
+			Estimate { estimate } => { hint.with_upper_estimate(estimate * self.count) }
+			Unknown => { hint.with_upper_unknown() }
 		}
 	}
 }

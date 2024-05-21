@@ -28,7 +28,7 @@ pub trait Iter {
 	fn next(&mut self) -> Option<Self::Item>;
 
 	fn size_hint(&self) -> SizeHint {
-		SizeHint::unknown()
+		SizeHint::default()
 	}
 
 	/// Takes every element emitted by the underlying iterator, and returns it
