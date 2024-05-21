@@ -114,6 +114,10 @@ pub mod bitstream;
 #[cfg_attr(docsrs, doc(cfg(feature = "chainer-unstable")))]
 pub mod chainer;
 
+#[cfg(feature = "chainer-unstable")]
+#[cfg_attr(docsrs, doc(cfg(feature = "chainer-unstable")))]
+pub mod chainer_2;
+
 #[cfg(feature = "clock-timer")]
 #[cfg_attr(docsrs, doc(cfg(feature = "clock-timer")))]
 pub mod clock_timer;
