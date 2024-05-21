@@ -1,10 +1,10 @@
 #[repr(transparent)]
-pub struct SliceMutChain<T> {
-	inner: [T]
+pub struct SliceMutChain<'h, T> {
+	inner: &'h mut [T]
 }
 
-impl<'h, T> From<&'h mut [T]> for &'h mut SliceMutChain<T> {
+impl<'h, T> From<&'h mut [T]> for SliceMutChain<'h, T> {
 	fn from(value: &'h mut [T]) -> Self {
-		unsafe { &mut *(value as *mut [T] as *mut SliceMutChain<T>) }
+		Self { inner: value }
 	}
 }

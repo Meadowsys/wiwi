@@ -1,10 +1,10 @@
 #[repr(transparent)]
-pub struct SliceRefChain<T> {
-	inner: [T]
+pub struct SliceRefChain<'h, T> {
+	inner: &'h [T]
 }
 
-impl<'h, T> From<&'h [T]> for &'h SliceRefChain<T> {
+impl<'h, T> From<&'h [T]> for SliceRefChain<'h, T> {
 	fn from(value: &'h [T]) -> Self {
-		unsafe { &*(value as *const [T] as *const SliceRefChain<T>) }
+		Self { inner: value }
 	}
 }

@@ -47,11 +47,11 @@ impl<T> IntoChainer for Box<[T]> {
 }
 
 impl<'h, T> IntoChainer for &'h [T] {
-	type Chain = &'h SliceRefChain<T>;
+	type Chain = SliceRefChain<'h, T>;
 }
 
 impl<'h, T> IntoChainer for &'h mut [T] {
-	type Chain = &'h mut SliceMutChain<T>;
+	type Chain = SliceMutChain<'h, T>;
 }
 
 impl<T, const N: usize> IntoChainer for [T; N] {
@@ -59,9 +59,9 @@ impl<T, const N: usize> IntoChainer for [T; N] {
 }
 
 impl<'h, T, const N: usize> IntoChainer for &'h [T; N] {
-	type Chain = &'h ArrayRefChain<T, N>;
+	type Chain = ArrayRefChain<'h, T, N>;
 }
 
 impl<'h, T, const N: usize> IntoChainer for &'h mut [T; N] {
-	type Chain = &'h mut ArrayMutChain<T, N>;
+	type Chain = ArrayMutChain<'h, T, N>;
 }
