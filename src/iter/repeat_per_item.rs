@@ -1,6 +1,6 @@
 use super::{ IntoIter, Iter, SizeHint, SizeHintBound };
 
-pub struct RepeatPerItem<T, I> {
+pub struct RepeatPerItem<I, T> {
 	iter: I,
 	/// amount of times to emit each item
 	count: usize,
@@ -9,10 +9,10 @@ pub struct RepeatPerItem<T, I> {
 	remaining_count: usize
 }
 
-impl<T, I> RepeatPerItem<T, I>
+impl<I, T> RepeatPerItem<I, T>
 where
-	T: Clone,
-	I: Iter<Item = T>
+	I: Iter<Item = T>,
+	T: Clone
 {
 	/// Called by [`Iter::repeat_per_item`]
 	pub(super) fn new(iter: I, count: usize) -> Self {
@@ -30,19 +30,17 @@ where
 			remaining_count: 0
 		}
 	}
-}
 
-impl<T, I> RepeatPerItem<T, I> {
 	/// Consumes `self` and returns the underlying iterator.
 	pub fn into_inner(self) -> I {
 		self.iter
 	}
 }
 
-impl<T, I> Iter for RepeatPerItem<T, I>
+impl<I, T> Iter for RepeatPerItem<I, T>
 where
-	T: Clone,
-	I: Iter<Item = T>
+	I: Iter<Item = T>,
+	T: Clone
 {
 	type Item = I::Item;
 

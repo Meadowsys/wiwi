@@ -16,6 +16,9 @@ pub use from_fn::{ from_fn, FromFn };
 mod into_iter;
 pub use into_iter::IntoIter;
 
+mod map;
+pub use map::Map;
+
 mod repeat_per_item;
 pub use repeat_per_item::RepeatPerItem;
 
@@ -34,6 +37,24 @@ pub trait Iter {
 
 	fn size_hint(&self) -> SizeHint {
 		SizeHint::default()
+	}
+
+	fn map<O, F>(self, f: F) -> Map<Self, F>
+	where
+		Self: Sized,
+		F: FnMut(Self::Item) -> O
+	{
+		Map::new(self, f)
+	}
+
+	fn for_each<F>(mut self, mut f: F)
+	where
+		Self: Sized,
+		F: FnMut(Self::Item)
+	{
+		while let Some(item) = self.next() {
+			f(item)
+		}
 	}
 
 	/// Consumes the iter and returns the number of items that were emitted.
@@ -87,8 +108,9 @@ pub trait Iter {
 	///
 	/// ```
 	/// # use wiwi::iter::{ IntoWiwiIter, Iter };
+	/// # // TODO: replace `convert_std_into_wiwi_iter` with native IntoIter method
 	/// let mut iter = [1, 2, 3]
-	///    .into_wiwi_iter()
+	///    .convert_std_into_wiwi_iter()
 	///    .repeat_per_item(3);
 	///
 	/// assert_eq!(iter.next(), Some(1));
@@ -110,8 +132,9 @@ pub trait Iter {
 	///
 	/// ```
 	/// # use wiwi::iter::{ IntoWiwiIter, Iter };
+	/// # // TODO: replace `convert_std_into_wiwi_iter` with native IntoIter method
 	/// let mut iter = [1, 2, 3]
-	///    .into_wiwi_iter()
+	///    .convert_std_into_wiwi_iter()
 	///    .repeat_per_item(0);
 	///
 	/// // Never going to get anything out of it...
@@ -126,7 +149,7 @@ pub trait Iter {
 	/// assert_eq!(orig_iter.next(), Some(3));
 	/// assert_eq!(orig_iter.next(), None);
 	/// ```
-	fn repeat_per_item(self, count: usize) -> RepeatPerItem<Self::Item, Self>
+	fn repeat_per_item(self, count: usize) -> RepeatPerItem<Self, Self::Item>
 	where
 		Self: Sized,
 		Self::Item: Clone
@@ -145,7 +168,6 @@ pub trait Iter {
 	intersperse
 	intersperse_with
 	map
-	for_each
 	filter
 	filter_map
 	enumerate
