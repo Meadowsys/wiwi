@@ -22,6 +22,8 @@ pub use repeat_per_item::RepeatPerItem;
 mod size_hint;
 pub use size_hint::{ SizeHint, SizeHintBound };
 
+mod std_impl;
+
 // this will compiler error if something broke `Iter`'s object safety
 fn __iter_object_safe(_: &mut dyn Iter<Item = ()>) {}
 
@@ -32,6 +34,36 @@ pub trait Iter {
 
 	fn size_hint(&self) -> SizeHint {
 		SizeHint::default()
+	}
+
+	/// Consumes the iter and returns the number of items that were emitted.
+	///
+	/// This method won't advance the iter if it doesn't have to. If the iter's
+	/// [`size_hint`] returns [`HardBound`] for both lower and upper bound, and
+	/// the bounds are equal, this method can safetly return that length. Otherwise,
+	/// it will iterate through the entire iter, counting the number of iterations,
+	/// which it then returns.
+	///
+	/// # Examples
+	///
+	/// TODO
+	///
+	/// [`size_hint`]: Iter::size_hint
+	/// [`HardBound`]: SizeHintBound::HardBound
+	fn count(mut self) -> usize
+	where
+		Self: Sized
+	{
+		use SizeHintBound::*;
+		match self.size_hint().split() {
+			(HardBound { bound: u }, HardBound { bound: l }) if u == l && u != usize::MAX => { u }
+			_ => {
+				// TODO: impl based on fold?
+				let mut count = 0;
+				while self.next().is_some() { count += 1 }
+				count
+			}
+		}
 	}
 
 	/// Takes every element emitted by the underlying iterator, and returns it
@@ -100,36 +132,6 @@ pub trait Iter {
 		Self::Item: Clone
 	{
 		RepeatPerItem::new(self, count)
-	}
-
-	/// Consumes the iter and returns the number of items that were emitted.
-	///
-	/// This method won't advance the iter if it doesn't have to. If the iter's
-	/// [`size_hint`] returns [`HardBound`] for both lower and upper bound, and
-	/// the bounds are equal, this method can safetly return that length. Otherwise,
-	/// it will iterate through the entire iter, counting the number of iterations,
-	/// which it then returns.
-	///
-	/// # Examples
-	///
-	/// TODO
-	///
-	/// [`size_hint`]: Iter::size_hint
-	/// [`HardBound`]: SizeHintBound::HardBound
-	fn count(mut self) -> usize
-	where
-		Self: Sized
-	{
-		use SizeHintBound::*;
-		match self.size_hint().split() {
-			(HardBound { bound: u }, HardBound { bound: l }) if u == l && u != usize::MAX => { u }
-			_ => {
-				// TODO: impl based on fold?
-				let mut count = 0;
-				while self.next().is_some() { count += 1 }
-				count
-			}
-		}
 	}
 
 	/*
