@@ -191,6 +191,12 @@ debounce-dyn-fn = []
 
 [[bench]]
 name = "hex-and-z85"
+required-features = [
+	# "base32",
+	# "base64",
+	"hex",
+	"z85",
+]
 harness = false
 
 [profile.bench]
