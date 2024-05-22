@@ -1,3 +1,12 @@
+use std::collections::{
+	BTreeMap,
+	BTreeSet,
+	BinaryHeap,
+	HashMap,
+	HashSet,
+	LinkedList,
+	VecDeque
+};
 use super::{
 	SliceBoxChain,
 	SliceRefChain,
@@ -15,15 +24,6 @@ use super::{
 	BTreeMapChain,
 	BTreeSetChain,
 	BinaryHeapChain
-};
-use std::collections::{
-	BTreeMap,
-	BTreeSet,
-	BinaryHeap,
-	HashMap,
-	HashSet,
-	LinkedList,
-	VecDeque
 };
 
 /// Trait providing [`into_chainer`], to convert any
@@ -118,4 +118,9 @@ impl<T> IntoChainer for BTreeSet<T> {
 
 impl<T> IntoChainer for BinaryHeap<T> {
 	type Chain = BinaryHeapChain<T>;
+}
+
+#[cfg(feature = "bitstream-unstable")]
+impl IntoChainer for crate::bitstream::Encoder {
+	type Chain = super::BitstreamEncoderChain;
 }

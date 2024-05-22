@@ -43,3 +43,9 @@ use btree_set::BTreeSetChain;
 
 mod binary_heap;
 use binary_heap::BinaryHeapChain;
+
+#[cfg(feature = "bitstream-unstable")]
+#[cfg_attr(docsrs, doc(cfg(feature = "bitstream-unstable")))]
+mod bitstream;
+#[cfg(feature = "bitstream-unstable")]
+pub use bitstream::BitstreamEncoderChain;
