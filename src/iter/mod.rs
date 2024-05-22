@@ -153,13 +153,14 @@ pub trait Iter {
 	/// assert_eq!(iter.next(), None);
 	///
 	/// // ...but the original iter is indeed intact
-	/// let mut orig_iter = iter.into_inner();
+	/// let (mut orig_iter, item) = iter.into_inner();
 	/// assert_eq!(orig_iter.next(), Some(1));
 	/// assert_eq!(orig_iter.next(), Some(2));
 	/// assert_eq!(orig_iter.next(), Some(3));
 	/// assert_eq!(orig_iter.next(), None);
+	/// assert_eq!(item, Some(None));
 	/// ```
-	fn repeat_per_item(self, count: usize) -> RepeatPerItem<Self, Self::Item>
+	fn repeat_per_item(self, count: usize) -> RepeatPerItem<Self>
 	where
 		Self: Sized,
 		Self::Item: Clone

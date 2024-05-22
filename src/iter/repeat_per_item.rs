@@ -1,18 +1,18 @@
 use super::{ IntoIter, Iter, SizeHint, SizeHintBound };
 
-pub struct RepeatPerItem<I, T> {
+pub struct RepeatPerItem<I: Iter> {
 	iter: I,
 	/// amount of times to emit each item
 	count: usize,
-	item: Option<Option<T>>,
+	item: Option<Option<I::Item>>,
 	/// amount of times left to emit current item
 	remaining_count: usize
 }
 
-impl<I, T> RepeatPerItem<I, T>
+impl<I> RepeatPerItem<I>
 where
-	I: Iter<Item = T>,
-	T: Clone
+	I: Iter,
+	I::Item: Clone
 {
 	/// Called by [`Iter::repeat_per_item`]
 	pub(super) fn new(iter: I, count: usize) -> Self {
@@ -32,15 +32,15 @@ where
 	}
 
 	/// Consumes `self` and returns the underlying iterator.
-	pub fn into_inner(self) -> I {
-		self.iter
+	pub fn into_inner(self) -> (I, Option<Option<I::Item>>) {
+		(self.iter, self.item)
 	}
 }
 
-impl<I, T> Iter for RepeatPerItem<I, T>
+impl<I> Iter for RepeatPerItem<I>
 where
-	I: Iter<Item = T>,
-	T: Clone
+	I: Iter,
+	I::Item: Clone
 {
 	type Item = I::Item;
 
@@ -76,6 +76,8 @@ where
 				let item = item.take();
 				// triggers `None` branch on next iteration
 				self.item = None;
+				// for size_hint
+				self.remaining_count = 0;
 				item
 			}
 
@@ -115,5 +117,89 @@ where
 			}
 			Unknown => { hint.with_upper_unknown() }
 		}
+	}
+}
+
+#[cfg(test)]
+mod tests {
+	use crate::iter::{IntoStdIterator, IntoWiwiIter};
+	use super::*;
+
+	#[test]
+	fn repeat_per_item() {
+		let vec = vec![1, 2, 3]
+			.into_wiwi_iter()
+			.map(|i| i * 9)
+			.repeat_per_item(2)
+			// TODO: use our own
+			.convert_wiwi_into_std_iterator()
+			.collect::<Vec<_>>();
+		assert_eq!(vec, [9, 9, 18, 18, 27, 27]);
+	}
+
+	#[test]
+	fn into_inner() {
+		let iter = vec![1, 2, 3].into_wiwi_iter().repeat_per_item(2);
+
+		let (iter, item) = iter.into_inner();
+		// TODO: use our own
+		let iter = iter.convert_wiwi_into_std_iterator().collect::<Vec<_>>();
+		assert_eq!(item, None);
+		assert_eq!(iter, [1, 2, 3]);
+
+		let mut iter = vec![1, 2, 3].into_wiwi_iter().repeat_per_item(2);
+		let _ = iter.next();
+		let _ = iter.next();
+		let _ = iter.next();
+
+		let (iter, item) = iter.into_inner();
+		// TODO: use our own
+		let iter = iter.convert_wiwi_into_std_iterator().collect::<Vec<_>>();
+		assert_eq!(item, Some(Some(2)));
+		assert_eq!(iter, [3]);
+	}
+
+	#[test]
+	fn size_hint() {
+		let mut iter = vec![1, 2, 3]
+			.into_wiwi_iter()
+			.repeat_per_item(2);
+
+		assert_eq!(iter.size_hint(), unsafe { SizeHint::hard_bound(6) });
+		assert_eq!(iter.next(), Some(1));
+		assert_eq!(iter.size_hint(), unsafe { SizeHint::hard_bound(5) });
+		assert_eq!(iter.next(), Some(1));
+		assert_eq!(iter.size_hint(), unsafe { SizeHint::hard_bound(4) });
+		assert_eq!(iter.next(), Some(2));
+		assert_eq!(iter.size_hint(), unsafe { SizeHint::hard_bound(3) });
+		assert_eq!(iter.next(), Some(2));
+		assert_eq!(iter.size_hint(), unsafe { SizeHint::hard_bound(2) });
+		assert_eq!(iter.next(), Some(3));
+		assert_eq!(iter.size_hint(), unsafe { SizeHint::hard_bound(1) });
+		assert_eq!(iter.next(), Some(3));
+		assert_eq!(iter.size_hint(), unsafe { SizeHint::hard_bound(0) });
+		assert_eq!(iter.next(), None);
+
+		let mut iter = vec![1, 2, 3]
+			.into_iter()
+			.convert_std_into_wiwi_iter()
+			.repeat_per_item(2);
+
+		// same as above, but estimate only
+		// (since there's an std iterator adapter in there)
+		assert_eq!(iter.size_hint(), SizeHint::estimate(6));
+		assert_eq!(iter.next(), Some(1));
+		assert_eq!(iter.size_hint(), SizeHint::estimate(5));
+		assert_eq!(iter.next(), Some(1));
+		assert_eq!(iter.size_hint(), SizeHint::estimate(4));
+		assert_eq!(iter.next(), Some(2));
+		assert_eq!(iter.size_hint(), SizeHint::estimate(3));
+		assert_eq!(iter.next(), Some(2));
+		assert_eq!(iter.size_hint(), SizeHint::estimate(2));
+		assert_eq!(iter.next(), Some(3));
+		assert_eq!(iter.size_hint(), SizeHint::estimate(1));
+		assert_eq!(iter.next(), Some(3));
+		assert_eq!(iter.size_hint(), SizeHint::estimate(0));
+		assert_eq!(iter.next(), None);
 	}
 }

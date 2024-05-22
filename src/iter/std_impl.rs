@@ -80,3 +80,46 @@ impl<T> IntoIter for Vec<T> {
 		VecIntoIter { ptr, capacity, len, remaining, _marker }
 	}
 }
+
+#[cfg(test)]
+mod tests {
+	use super::*;
+	use crate::iter::IntoStdIterator;
+
+	#[test]
+	fn vec_into_iter() {
+		let mut iter = vec![1, 2, 3, 4, 5]
+			.into_wiwi_iter();
+
+		assert_eq!(iter.next(), Some(1));
+		assert_eq!(iter.next(), Some(2));
+		assert_eq!(iter.next(), Some(3));
+		assert_eq!(iter.next(), Some(4));
+		assert_eq!(iter.next(), Some(5));
+		assert_eq!(iter.next(), None);
+
+		let mut iter = vec![1, 2, 3, 4, 5]
+			.into_wiwi_iter();
+		let _ = iter.next();
+		let _ = iter.next();
+
+		let vec = Vec::from_iter(iter.convert_wiwi_into_std_iterator());
+		assert_eq!(vec, [3, 4, 5]);
+
+		let mut iter = vec
+			.into_wiwi_iter()
+			.map(|i| i * 2);
+		assert_eq!(iter.next(), Some(6));
+		assert_eq!(iter.next(), Some(8));
+		assert_eq!(iter.next(), Some(10));
+		assert_eq!(iter.next(), None);
+
+		let mut iter = vec![1, 2, 3, 4, 5].into_wiwi_iter();
+		let _ = iter.next();
+		let _ = iter.next();
+		let _ = iter.next();
+
+		// well, I'm not sure how to test this lol?
+		drop(iter);
+	}
+}

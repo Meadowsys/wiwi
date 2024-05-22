@@ -23,3 +23,25 @@ where
 		(self.inner)()
 	}
 }
+
+#[cfg(test)]
+mod tests {
+	use super::*;
+	fn from_fn() {
+		use super::*;
+
+		let mut i = 0;
+		let mut iter = from_fn(|| (i < 5).then(|| {
+			let old = i;
+			i += 1;
+			old
+		}));
+
+		assert_eq!(iter.next(), Some(0));
+		assert_eq!(iter.next(), Some(1));
+		assert_eq!(iter.next(), Some(2));
+		assert_eq!(iter.next(), Some(3));
+		assert_eq!(iter.next(), Some(4));
+		assert_eq!(iter.next(), None);
+	}
+}

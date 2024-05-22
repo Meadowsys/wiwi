@@ -111,3 +111,25 @@ impl<I: IntoIter> IntoStdIterator for I {
 		IterAdapter { inner: self.into_wiwi_iter() }
 	}
 }
+
+#[cfg(test)]
+mod tests {
+	use super::*;
+
+	#[test]
+	fn adapter() {
+		let vec = vec![1, 2, 3]
+			.into_wiwi_iter()
+			.into_wiwi_iter()
+			.convert_wiwi_into_std_iterator()
+			.convert_std_into_wiwi_iter()
+			.borrow_wiwi_as_std_iterator()
+			.borrow_std_as_wiwi_iter()
+			.into_wiwi_iter()
+			.convert_wiwi_into_std_iterator()
+			// many indirection layers later...
+			.collect::<Vec<_>>();
+
+		assert_eq!(vec, [1, 2, 3]);
+	}
+}

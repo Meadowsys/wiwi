@@ -1,4 +1,4 @@
-use super::{ Iter, Peekable, SizeHint };
+use super::{ Iter, SizeHint };
 
 pub struct Map<I, F> {
 	iter: I,
@@ -36,78 +36,29 @@ where
 	}
 }
 
+#[cfg(test)]
+mod tests {
+	use crate::iter::{ IntoIter, IntoStdIterator };
+	use super::*;
 
-impl<I, F, O> Peekable for Map<I, F>
-where
-	I: Peekable,
-	F: FnMut(I::Item) -> O
-{
-	type PeekItem = I::PeekItem;
+	#[test]
+	fn map() {
+		let vec = vec![1, 2, 3, 4, 5]
+			.into_wiwi_iter()
+			.map(|i| i + 8)
+			.convert_wiwi_into_std_iterator()
+			.collect::<Vec<_>>();
+		assert_eq!(vec, [9, 10, 11, 12, 13]);
+	}
 
-	fn peek(&mut self) -> Option<&I::PeekItem> {
-		self.iter.peek()
+	fn size_hint() {
+		let iter = vec![1, 2, 3, 4, 5]
+			.into_wiwi_iter();
+		let hint = iter.size_hint();
+
+		let iter = iter.map(|i| i + 8);
+		let map_hint = iter.size_hint();
+		assert_eq!(hint, map_hint);
+		assert_eq!(hint, unsafe { SizeHint::hard_bound(5) });
 	}
 }
-
-
-
-
-
-
-
-
-
-// pub struct MapPeekable<I, F, P> {
-// 	map: Map<I, F>,
-// 	peek_f: P
-// }
-
-// impl<'h, I, F, O, P> MapPeekable<I, F, P>
-// where
-// 	I: Peekable,
-// 	F: FnMut(I::Item) -> O
-// {
-// 	pub(super) fn new<Po>(iter: I, f: F, peek_f: P) -> Self
-// 	where
-// 		P: FnMut(I::PeekItem) -> Po,
-// 		Po: 'h
-// 	{
-// 		let map = Map::new(iter, f);
-// 		Self { map, peek_f }
-// 	}
-
-// 	pub fn into_inner(self) -> (I, F, P) {
-// 		let Self { map, peek_f } = self;
-// 		let Map { iter, f } = map;
-// 		(iter, f, peek_f)
-// 	}
-// }
-
-// impl<I, F, O, P> Iter for MapPeekable<I, F, P>
-// where
-// 	I: Peekable,
-// 	F: FnMut(I::Item) -> O
-// {
-// 	type Item = O;
-
-// 	fn next(&mut self) -> Option<O> {
-// 		self.map.next()
-// 	}
-
-// 	fn size_hint(&self) -> SizeHint {
-// 		self.map.size_hint()
-// 	}
-// }
-
-// impl<I, F, O, P, Po> Peekable for MapPeekable<I, F, P>
-// where
-// 	I: Peekable,
-// 	F: FnMut(I::Item) -> O,
-// 	P: FnMut(&I::PeekItem) -> &Po
-// {
-// 	type PeekItem = Po;
-
-// 	fn peek(&mut self) -> Option<&Po> {
-// 		self.map.iter.peek().map(&mut self.peek_f)
-// 	}
-// }

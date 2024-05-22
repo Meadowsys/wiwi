@@ -1,3 +1,5 @@
+#[derive(Debug)]
+#[cfg_attr(test, derive(PartialEq, Eq))]
 pub struct SizeHint {
 	lower: SizeHintBound,
 	upper: SizeHintBound
@@ -9,6 +11,8 @@ pub struct SizeHint {
 /// returned by [`SizeHint`] for consumers of an iter. You can construct instances
 /// of this, but they're kinda useless on their own. [`SizeHint`] has no methods
 /// that take instances of this enum directly.
+#[derive(Debug)]
+#[cfg_attr(test, derive(PartialEq, Eq))]
 pub enum SizeHintBound {
 	/// Hard bound, unsafe, reliable information for use in unsafe operations.
 	///
@@ -155,5 +159,90 @@ impl Default for SizeHint {
 	/// Returns default size hint, or `(Unknown, Unknown)`.
 	fn default() -> Self {
 		Self::unknown()
+	}
+}
+
+#[cfg(test)]
+mod tests {
+	use super::*;
+
+	#[test]
+	fn default() {
+		assert_eq!(SizeHint::default(), SizeHint::unknown());
+	}
+
+	#[test]
+	fn construction() {
+		#![deny(unused_unsafe)]
+
+		assert_eq!(SizeHint::new(), SizeHint::unknown());
+
+		assert_eq!(SizeHint::unknown(), SizeHint {
+			lower: SizeHintBound::Unknown,
+			upper: SizeHintBound::Unknown
+		});
+		assert_eq!(SizeHint::estimate(10), SizeHint {
+			lower: SizeHintBound::Estimate { estimate: 10 },
+			upper: SizeHintBound::Estimate { estimate: 10 }
+		});
+		assert_eq!(unsafe { SizeHint::hard_bound(10) }, SizeHint {
+			lower: SizeHintBound::HardBound { bound: 10 },
+			upper: SizeHintBound::HardBound { bound: 10 }
+		});
+
+		assert_eq!(SizeHint::estimate(10).with_lower_unknown(), SizeHint {
+			lower: SizeHintBound::Unknown,
+			upper: SizeHintBound::Estimate { estimate: 10 }
+		});
+		assert_eq!(SizeHint::estimate(10).with_upper_unknown(), SizeHint {
+			lower: SizeHintBound::Estimate { estimate: 10 },
+			upper: SizeHintBound::Unknown
+		});
+
+		assert_eq!(SizeHint::unknown().with_lower_estimate(10), SizeHint {
+			lower: SizeHintBound::Estimate { estimate: 10 },
+			upper: SizeHintBound::Unknown
+		});
+		assert_eq!(SizeHint::unknown().with_upper_estimate(10), SizeHint {
+			lower: SizeHintBound::Unknown,
+			upper: SizeHintBound::Estimate { estimate: 10 }
+		});
+
+		assert_eq!(unsafe { SizeHint::estimate(10).with_upper_hard_bound(25) }, SizeHint {
+			lower: SizeHintBound::Estimate { estimate: 10 },
+			upper: SizeHintBound::HardBound { bound: 25 }
+		});
+		assert_eq!(unsafe { SizeHint::estimate(10).with_lower_hard_bound(25) }, SizeHint {
+			lower: SizeHintBound::HardBound { bound: 25 },
+			upper: SizeHintBound::Estimate { estimate: 10 }
+		});
+
+		let hint = unsafe {
+			SizeHint::new()
+				.with_upper_unknown()
+				.with_upper_estimate(475783)
+				.with_lower_unknown()
+				.with_upper_hard_bound(3382)
+				.with_lower_estimate(334)
+				.with_upper_estimate(22222222)
+				.with_lower_unknown()
+		};
+		assert_eq!(hint, SizeHint {
+			lower: SizeHintBound::Unknown,
+			upper: SizeHintBound::Estimate { estimate: 22222222 }
+		});
+	}
+
+	#[test]
+	fn split() {
+		let hint = unsafe {
+			SizeHint::new()
+				.with_lower_estimate(10)
+				.with_upper_hard_bound(25)
+		};
+
+		let (lower, higher) = hint.split();
+		assert_eq!(lower, SizeHintBound::Estimate { estimate: 10 });
+		assert_eq!(higher, SizeHintBound::HardBound { bound: 25 });
 	}
 }
