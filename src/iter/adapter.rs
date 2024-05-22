@@ -8,12 +8,12 @@ use super::{ IntoIter, Iter, SizeHint };
 /// back and forth lol
 ///
 /// If you want to convert one type of iter to the other, you're probably looking
-/// for [`into_wiwi_iter`](IntoWiwiIter::into_wiwi_iter)
-/// or [`into_std_iterator`](IntoStdIterator::into_std_iterator).
+/// for [`convert_std_into_wiwi_iter`](IntoWiwiIter::convert_std_into_wiwi_iter)
+/// or [`convert_wiwi_into_std_iterator`](IntoStdIterator::convert_wiwi_into_std_iterator).
 ///
 /// If you want to borrow one type of iter as the other, you're probably looking
-/// for [`as_wiwi_iter`](AsWiwiIter::as_wiwi_iter)
-/// or [`as_std_iterator`](AsStdIterator::as_std_iterator)
+/// for [`borrow_std_as_wiwi_iter`](AsWiwiIter::borrow_std_as_wiwi_iter)
+/// or [`borrow_wiwi_as_std_iterator`](AsStdIterator::borrow_wiwi_as_std_iterator)
 #[repr(transparent)]
 pub struct IterAdapter<I> {
 	inner: I
