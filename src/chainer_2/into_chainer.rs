@@ -1,11 +1,27 @@
 use super::{
-	VecChain,
 	SliceBoxChain,
 	SliceRefChain,
 	SliceMutChain,
 	ArrayChain,
 	ArrayRefChain,
-	ArrayMutChain
+	ArrayMutChain,
+	VecChain,
+	VecDequeChain,
+	LinkedListChain,
+	HashMapChain,
+	HashSetChain,
+	BTreeMapChain,
+	BTreeSetChain,
+	BinaryHeapChain
+};
+use std::collections::{
+	BTreeMap,
+	BTreeSet,
+	BinaryHeap,
+	HashMap,
+	HashSet,
+	LinkedList,
+	VecDeque
 };
 
 /// Trait providing [`into_chainer`], to convert any
@@ -38,10 +54,6 @@ pub trait IntoChainer: Sized {
 	}
 }
 
-impl<T> IntoChainer for Vec<T> {
-	type Chain = VecChain<T>;
-}
-
 impl<T> IntoChainer for Box<[T]> {
 	type Chain = SliceBoxChain<T>;
 }
@@ -64,4 +76,36 @@ impl<'h, T, const N: usize> IntoChainer for &'h [T; N] {
 
 impl<'h, T, const N: usize> IntoChainer for &'h mut [T; N] {
 	type Chain = ArrayMutChain<'h, T, N>;
+}
+
+impl<T> IntoChainer for Vec<T> {
+	type Chain = VecChain<T>;
+}
+
+impl<T> IntoChainer for VecDeque<T> {
+	type Chain = VecDequeChain<T>;
+}
+
+impl<T> IntoChainer for LinkedList<T> {
+	type Chain = LinkedListChain<T>;
+}
+
+impl<K, V, S> IntoChainer for HashMap<K, V, S> {
+	type Chain = HashMapChain<K, V, S>;
+}
+
+impl<T, S> IntoChainer for HashSet<T, S> {
+	type Chain = HashSetChain<T, S>;
+}
+
+impl<K, V> IntoChainer for BTreeMap<K, V> {
+	type Chain = BTreeMapChain<K, V>;
+}
+
+impl<T> IntoChainer for BTreeSet<T> {
+	type Chain = BTreeSetChain<T>;
+}
+
+impl<T> IntoChainer for BinaryHeap<T> {
+	type Chain = BinaryHeapChain<T>;
 }
