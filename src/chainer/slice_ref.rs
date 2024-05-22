@@ -63,26 +63,6 @@ impl<T> SliceRefChain<T> {
 
 // TODO: [AsciiChar] as_str, as_bytes
 
-impl<T, const N: usize> SliceRefChain<[T; N]> {
-	pub fn flatten(&self) -> &SliceRefChain<T> {
-		// taken from std's flatten fn
-		// TODO: use SizedTypeProperties or slice `flatten`, whichever gets stabilised first
-		let len = if size_of::<T>() == 0 {
-			self.inner.len()
-				.checked_mul(N)
-				.expect("slice len overflow")
-		} else {
-			// TODO: wait until 1.79 when this is stabilised
-			// unsafe { self.inner.len().unchecked_mul(N) }
-
-			self.inner.len() * N
-		};
-
-		let ptr = self as *const SliceRefChain<[T; N]> as *const T;
-		unsafe { slice::from_raw_parts(ptr, len).into() }
-	}
-}
-
 impl<'h, T> IntoChainer for &'h [T] {
 	type Chain = &'h SliceRefChain<T>;
 	fn into_chainer(self) -> &'h SliceRefChain<T> {

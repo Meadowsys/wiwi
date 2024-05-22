@@ -523,9 +523,11 @@ impl<T> VecChain<T> {
 	/// let mut static_ref = VecChain::new()
 	///    .extend_from_slice(&[1, 2, 3])
 	///    .leak::<'static>();
+	/// # // TODO: make this use chainer?
+	/// let mut mut_slice = static_ref.as_mut_slice();
 	///
-	/// static_ref.as_mut_slice()[1] = 20;
-	/// assert_eq!(static_ref.as_slice(), [1, 20, 3]);
+	/// mut_slice[1] = 20;
+	/// assert_eq!(mut_slice, [1, 20, 3]);
 	/// ```
 	///
 	/// [`shrink_to_fit`]: Self::shrink_to_fit

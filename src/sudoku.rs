@@ -1,4 +1,4 @@
-use crate::chainer::SliceRefChain;
+use crate::chainer_2::SliceRefChain;
 use crate::iter::*;
 use std::mem::MaybeUninit;
 
@@ -20,7 +20,7 @@ struct CellValue {
 impl Board {
 	pub fn new(game: [[u8; 9]; 9]) -> Self {
 		debug_assert_eq!({
-			<&SliceRefChain<_>>::from(&game as &[_])
+			SliceRefChain::<_>::from(&game as &[_])
 				.flatten()
 				.as_slice()
 				.len()

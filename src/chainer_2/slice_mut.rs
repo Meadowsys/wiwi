@@ -1,3 +1,5 @@
+use crate::to_maybeuninit::ToMaybeUninit as _;
+use std::mem::MaybeUninit;
 use super::SliceRefChain;
 
 #[repr(transparent)]
@@ -20,6 +22,17 @@ impl<'h, T> SliceMutChain<'h, T> {
 
 	pub fn into_inner(self) -> &'h mut [T] {
 		self.inner
+	}
+}
+
+impl<'h, T> SliceMutChain<'h, T> {
+	pub fn len(self, out: &mut usize) -> Self {
+		self.len_uninit(out.to_maybeuninit_mut())
+	}
+
+	pub fn len_uninit(self, out: &mut MaybeUninit<usize>) -> Self {
+		out.write(self.inner.len());
+		self
 	}
 }
 
