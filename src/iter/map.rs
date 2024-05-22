@@ -51,6 +51,7 @@ mod tests {
 		assert_eq!(vec, [9, 10, 11, 12, 13]);
 	}
 
+	#[test]
 	fn size_hint() {
 		let iter = vec![1, 2, 3, 4, 5]
 			.into_wiwi_iter();
