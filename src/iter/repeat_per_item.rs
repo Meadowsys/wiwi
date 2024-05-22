@@ -17,7 +17,7 @@ where
 	/// Called by [`Iter::repeat_per_item`]
 	pub(super) fn new(iter: I, count: usize) -> Self {
 		let item = if count == 0 {
-			// this is this iter's exhausted state
+			// marks inner iter as "exhausted"
 			Some(None)
 		} else {
 			None
@@ -74,20 +74,18 @@ where
 			Some(item @ Some(_)) if self.remaining_count == 1 => {
 				// last iteration for this element
 				let item = item.take();
-				// triggers first branch
+				// triggers `None` branch on next iteration
 				self.item = None;
 				item
 			}
 
 			Some(Some(_)) => {
-				// special case for 1
-				// lets just leave the stored one in there,
-				// so it keeps triggering this branch
-				// except for None, we'll update it to trigger exhausted branch
+				// special case for 1, only way remaining_count will be 0
 
-				let item = self.iter.next();
-				if item.is_none() { self.item = Some(None) }
-				item
+				// we don't return again since there's 0 iters remaining for this elem
+				// drop it, iter again
+				self.item = None;
+				self.next()
 			}
 		}
 	}
@@ -99,14 +97,22 @@ where
 		let hint = SizeHint::new();
 
 		let hint = match lower {
-			HardBound { bound } => unsafe { hint.with_lower_hard_bound(bound * self.count) }
-			Estimate { estimate } => { hint.with_lower_estimate(estimate * self.count) }
+			HardBound { bound } => unsafe {
+				hint.with_lower_hard_bound((bound * self.count) + self.remaining_count)
+			}
+			Estimate { estimate } => {
+				hint.with_lower_estimate((estimate * self.count) + self.remaining_count)
+			}
 			Unknown => { hint.with_lower_unknown() }
 		};
 
 		match upper {
-			HardBound { bound } => unsafe { hint.with_upper_hard_bound(bound * self.count) }
-			Estimate { estimate } => { hint.with_upper_estimate(estimate * self.count) }
+			HardBound { bound } => unsafe {
+				hint.with_upper_hard_bound((bound * self.count) + self.remaining_count)
+			}
+			Estimate { estimate } => {
+				hint.with_upper_estimate((estimate * self.count) + self.remaining_count)
+			}
 			Unknown => { hint.with_upper_unknown() }
 		}
 	}

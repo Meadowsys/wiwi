@@ -67,13 +67,6 @@ pub trait Iter {
 		Map::new(self, f)
 	}
 
-	// fn map_peekable<O, Po, F, P>(self, f: F, peek_f: P) -> MapPeekable<Self, F, P>
-	// where
-	// 	Self: Sized + Peekable<'static>
-	// {
-	// 	MapPeekable::new(self, f, peek_f)
-	// }
-
 	/// Consumes the iter and returns the number of items that were emitted.
 	///
 	/// This method won't advance the iter if it doesn't have to. If the iter's
