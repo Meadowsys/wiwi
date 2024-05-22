@@ -45,6 +45,14 @@ impl<T> SliceBoxChain<T> {
 	}
 }
 
+impl<T> SliceBoxChain<MaybeUninit<T>> {
+	pub unsafe fn assume_init(self) -> SliceBoxChain<T> {
+		let raw = Box::into_raw(self.inner);
+		let raw = raw as *mut [T];
+		Box::from_raw(raw).into()
+	}
+}
+
 impl<T> From<Box<[T]>> for SliceBoxChain<T> {
 	fn from(value: Box<[T]>) -> Self {
 		Self { inner: value }
