@@ -27,6 +27,8 @@ where
 #[cfg(test)]
 mod tests {
 	use super::*;
+
+	#[test]
 	fn from_fn() {
 		use super::*;
 
