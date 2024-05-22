@@ -7,7 +7,7 @@ pub struct SliceRefChain<'h, T> {
 }
 
 impl<'h, T> SliceRefChain<'h, T> {
-	pub fn as_slice(&'h self) -> &'h [T] {
+	pub fn as_slice(&self) -> &[T] {
 		self.inner
 	}
 

@@ -8,11 +8,11 @@ pub struct SliceMutChain<'h, T> {
 }
 
 impl<'h, T> SliceMutChain<'h, T> {
-	pub fn as_slice(&'h self) -> &'h [T] {
+	pub fn as_slice(&self) -> &[T] {
 		self.inner
 	}
 
-	pub fn as_mut_slice(&'h mut self) -> &'h mut [T] {
+	pub fn as_mut_slice(&mut self) -> &mut [T] {
 		self.inner
 	}
 

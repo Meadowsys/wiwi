@@ -1,12 +1,19 @@
+use crate::iter::{ IterAdapter, IntoIter, IntoStdIterator };
 use crate::to_maybeuninit::ToMaybeUninit as _;
 use std::cmp::Ordering;
-use std::mem::{ ManuallyDrop, MaybeUninit };
+use std::mem::{ self, ManuallyDrop, MaybeUninit };
 use std::ops::RangeBounds;
 use std::slice::{ self, SliceIndex };
-use std::vec;
+use std::{ ptr, vec };
 use super::{ SliceBoxChain, SliceRefChain, SliceMutChain };
 
+/// Vec type that provides a chaining API.
+///
+/// It contains similar methods as [`Vec`], but in some cases, the API differs
+/// to accomodate the chaining API.
+// TODO: allocator param
 #[repr(transparent)]
+#[derive(Clone)]
 pub struct VecChain<T> {
 	inner: Vec<T>
 }
@@ -188,48 +195,258 @@ impl<T> VecChain<T> {
 }
 
 impl<T> VecChain<T> {
-	/// Writes the number of elements (also known as the length) in the vector
-	/// into `out`.
-	///
-	/// # Examples
-	///
-	/// ```
-	/// # use wiwi::chainer_2::VecChain;
-	/// let mut len = 0;
-	///
-	/// let chain = VecChain::new()
-	///    .extend_from_slice(&[1, 2, 3, 4, 5])
-	///    .len(&mut len);
-	///
-	/// assert_eq!(len, 5);
-	/// ```
-	pub fn len(self, out: &mut usize) -> Self {
-		self.len_uninit(out.to_maybeuninit_mut())
+	pub fn append(mut self, other: &mut Vec<T>) -> Self {
+		self.inner.append(other);
+		self
 	}
 
-	/// Writes the number of elements (also known as the length) in the vector
-	/// into `out`.
-	///
-	/// This function will always write to the output, so it is safe to call
-	/// [`assume_init`](MaybeUninit::assume_init) after invoking this function.
-	///
-	/// # Examples
-	///
-	/// ```
-	/// # use std::mem::MaybeUninit;
-	/// # use wiwi::chainer_2::VecChain;
-	/// let mut len = MaybeUninit::uninit();
-	///
-	/// let chain = VecChain::new()
-	///    .extend_from_slice(&[1, 2, 3, 4, 5])
-	///    .len_uninit(&mut len); // writes to `len`
-	///
-	/// // this is safe!
-	/// let len = unsafe { len.assume_init() };
-	/// assert_eq!(len, 5);
-	/// ```
-	pub fn len_uninit(self, out: &mut MaybeUninit<usize>) -> Self {
-		out.write(self.inner.len());
+	pub fn append_vec_chain(mut self, other: &mut Self) -> Self {
+		self.append(&mut other.inner)
+	}
+
+	pub fn as_chunks<F, const N: usize>(mut self, f: F) -> Self
+	where
+		F: FnOnce(&[[T; N]], &[T])
+	{
+		// TODO: call std equivalent after its stabilised
+
+		unsafe {
+			let mut len = MaybeUninit::uninit();
+			self = self.len_uninit(&mut len);
+			let len = len.assume_init();
+
+			let full_chunks = len / N;
+			let partial_len = len % N;
+
+			let ptr = self.inner.as_ptr();
+			let ptr_partial = ptr.add(full_chunks * N);
+
+			let full_chunks = slice::from_raw_parts(ptr as *const [T; N], full_chunks);
+			let partial_chunk = slice::from_raw_parts(ptr_partial, partial_len);
+
+			f(full_chunks, partial_chunk);
+		}
+
+		self
+	}
+
+	pub fn binary_search(self, x: &T, out: &mut Result<usize, usize>) -> Self
+	where
+		T: Ord
+	{
+		self.binary_search_uninit(x, out.to_maybeuninit_mut())
+	}
+
+	pub fn binary_search_uninit(self, x: &T, out: &mut MaybeUninit<Result<usize, usize>>) -> Self
+	where
+		T: Ord
+	{
+		out.write(self.inner.binary_search(x));
+		self
+	}
+
+	pub fn binary_search_by<F>(self, f: F, out: &mut Result<usize, usize>) -> Self
+	where
+		F: FnMut(&T) -> Ordering
+	{
+		self.binary_search_by_uninit(f, out.to_maybeuninit_mut())
+	}
+
+	pub fn binary_search_by_uninit<F>(self, f: F, out: &mut MaybeUninit<Result<usize, usize>>) -> Self
+	where
+		F: FnMut(&T) -> Ordering
+	{
+		out.write(self.inner.binary_search_by(f));
+		self
+	}
+
+	pub fn binary_search_by_key<B, F>(self, b: &B, f: F, out: &mut Result<usize, usize>) -> Self
+	where
+		F: FnMut(&T) -> B,
+		B: Ord
+	{
+		self.binary_search_by_key_uninit(b, f, out.to_maybeuninit_mut())
+	}
+
+	pub fn binary_search_by_key_uninit<B, F>(self, b: &B, f: F, out: &mut MaybeUninit<Result<usize, usize>>) -> Self
+	where
+		F: FnMut(&T) -> B,
+		B: Ord
+	{
+		out.write(self.inner.binary_search_by_key(b, f));
+		self
+	}
+
+	pub fn capacity(self, out: &mut usize) -> Self {
+		self.capacity_uninit(out.to_maybeuninit_mut())
+	}
+
+	pub fn capacity_uninit(self, out: &mut MaybeUninit<usize>) -> Self {
+		out.write(self.inner.capacity());
+		self
+	}
+
+	pub fn clear(mut self) -> Self {
+		self.inner.clear();
+		self
+	}
+
+	pub fn contains(self, x: &T, out: &mut bool) -> Self
+	where
+		T: PartialEq
+	{
+		self.contains_uninit(x, out.to_maybeuninit_mut())
+	}
+
+	pub fn contains_uninit(self, x: &T, out: &mut MaybeUninit<bool>) -> Self
+	where
+		T: PartialEq
+	{
+		out.write(self.inner.contains(x));
+		self
+	}
+
+	pub fn dedup(mut self) -> Self
+	where
+		T: PartialOrd
+	{
+		self.inner.dedup();
+		self
+	}
+
+	pub fn dedup_by<F>(mut self, mut same_bucket: F) -> Self
+	where
+		F: FnMut(&T, &T) -> bool
+	{
+		// let rust coerce &mut T to &T
+		self.inner.dedup_by(move |a, b| same_bucket(a, b));
+		self
+	}
+
+	pub fn dedup_by_mut<F>(mut self, same_bucket: F) -> Self
+	where
+		F: FnMut(&mut T, &mut T) -> bool
+	{
+		self.inner.dedup_by(same_bucket);
+		self
+	}
+
+	pub fn dedup_by_key<F, K>(mut self, mut key: F) -> Self
+	where
+		F: FnMut(&T) -> K,
+		K: PartialEq
+	{
+		// let rust coerce &mut T to &T
+		self.inner.dedup_by_key(|v| key(v));
+		self
+	}
+
+	pub fn dedup_by_key_mut<F, K>(mut self, key: F) -> Self
+	where
+		F: FnMut(&mut T) -> K,
+		K: PartialEq
+	{
+		self.inner.dedup_by_key(key);
+		self
+	}
+
+	pub fn drain<R, F>(mut self, range: R, f: F) -> Self
+	where
+		R: RangeBounds<usize>,
+		F: FnOnce(vec::Drain<T>)
+	{
+		f(self.inner.drain(range));
+		self
+	}
+
+	pub fn ends_with(self, needle: &[T], out: &mut bool) -> Self
+	where
+		T: PartialEq
+	{
+		self.ends_with_uninit(needle, out.to_maybeuninit_mut())
+	}
+
+	pub fn ends_with_uninit(self, needle: &[T], out: &mut MaybeUninit<bool>) -> Self
+	where
+		T: PartialEq
+	{
+		out.write(self.inner.ends_with(needle));
+		self
+	}
+
+	pub fn extend_from_slice(mut self, other: &[T]) -> Self
+	where
+		T: Clone
+	{
+		self.inner.extend_from_slice(other);
+		self
+	}
+
+	pub fn extend_from_within<R>(mut self, src: R) -> Self
+	where
+		T: Clone,
+		R: RangeBounds<usize>
+	{
+		self.inner.extend_from_within(src);
+		self
+	}
+
+	// TODO: extract_if
+
+	pub fn first<F>(self, f: F) -> Self
+	where
+		F: FnOnce(Option<&T>)
+	{
+		f(self.inner.first());
+		self
+	}
+
+	pub fn first_mut<F>(mut self, f: F) -> Self
+	where
+		F: FnOnce(Option<&mut T>)
+	{
+		f(self.inner.first_mut());
+		self
+	}
+
+	pub fn get<I, F>(self, index: I, f: F) -> Self
+	where
+		I: SliceIndex<[T]>,
+		F: FnOnce(Option<&I::Output>)
+	{
+		f(self.inner.get(index));
+		self
+	}
+
+	pub fn get_mut<I, F>(mut self, index: I, f: F) -> Self
+	where
+		I: SliceIndex<[T]>,
+		F: FnOnce(Option<&mut I::Output>)
+	{
+		f(self.inner.get_mut(index));
+		self
+	}
+
+	pub unsafe fn get_unchecked<I, F>(self, index: I, f: F) -> Self
+	where
+		I: SliceIndex<[T]>,
+		F: FnOnce(&I::Output)
+	{
+		f(self.inner.get_unchecked(index));
+		self
+	}
+
+	pub unsafe fn get_unchecked_mut<I, F>(mut self, index: I, f: F) -> Self
+	where
+		I: SliceIndex<[T]>,
+		F: FnOnce(&mut I::Output)
+	{
+		f(self.inner.get_unchecked_mut(index));
+		self
+	}
+
+	pub fn insert(mut self, index: usize, element: T) -> Self {
+		self.inner.insert(index, element);
 		self
 	}
 
@@ -287,218 +504,19 @@ impl<T> VecChain<T> {
 		self
 	}
 
-	pub fn capacity(self, out: &mut usize) -> Self {
-		self.capacity_uninit(out.to_maybeuninit_mut())
-	}
-
-	pub fn capacity_uninit(self, out: &mut MaybeUninit<usize>) -> Self {
-		out.write(self.inner.capacity());
-		self
-	}
-
-	pub fn reserve(mut self, additional: usize) -> Self {
-		self.inner.reserve(additional);
-		self
-	}
-
-	pub fn reserve_exact(mut self, additional: usize) -> Self {
-		self.inner.reserve_exact(additional);
-		self
-	}
-
-	// TODO: try_reserve/exact
-
-	pub fn shrink_to_fit(mut self) -> Self {
-		self.inner.shrink_to_fit();
-		self
-	}
-
-	pub fn shrink_to(mut self, min_capacity: usize) -> Self {
-		self.inner.shrink_to(min_capacity);
-		self
-	}
-
-	pub fn resize(mut self, new_len: usize, value: T) -> Self
+	pub fn last<F>(self, f: F) -> Self
 	where
-		T: Clone
+		F: FnOnce(Option<&T>)
 	{
-		self.inner.resize(new_len, value);
+		f(self.inner.last());
 		self
 	}
 
-	pub fn truncate(mut self, len: usize) -> Self {
-		self.inner.truncate(len);
-		self
-	}
-
-	pub unsafe fn set_len(mut self, new_len: usize) -> Self {
-		self.inner.set_len(new_len);
-		self
-	}
-
-	pub fn swap_remove(mut self, index: usize, out: &mut T) -> Self {
-		self.swap_remove_uninit(index, out.to_maybeuninit_mut())
-	}
-
-	pub fn swap_remove_uninit(mut self, index: usize, out: &mut MaybeUninit<T>) -> Self {
-		out.write(self.inner.swap_remove(index));
-		self
-	}
-
-	pub fn insert(mut self, index: usize, element: T) -> Self {
-		self.inner.insert(index, element);
-		self
-	}
-
-	pub fn remove(mut self, index: usize, out: &mut T) -> Self {
-		self.remove_uninit(index, out.to_maybeuninit_mut())
-	}
-
-	pub fn remove_uninit(mut self, index: usize, out: &mut MaybeUninit<T>) -> Self {
-		out.write(self.inner.remove(index));
-		self
-	}
-
-	pub fn retain<F>(mut self, f: F) -> Self
+	pub fn last_mut<F>(mut self, f: F) -> Self
 	where
-		F: FnMut(&T) -> bool
+		F: FnOnce(Option<&mut T>)
 	{
-		self.inner.retain(f);
-		self
-	}
-
-	pub fn retain_mut<F>(mut self, f: F) -> Self
-	where
-		F: FnMut(&mut T) -> bool
-	{
-		self.inner.retain_mut(f);
-		self
-	}
-
-	pub fn dedup(mut self) -> Self
-	where
-		T: PartialOrd
-	{
-		self.inner.dedup();
-		self
-	}
-
-	pub fn dedup_by<F>(mut self, mut same_bucket: F) -> Self
-	where
-		F: FnMut(&T, &T) -> bool
-	{
-		// let rust coerce &mut T to &T
-		self.inner.dedup_by(move |a, b| same_bucket(a, b));
-		self
-	}
-
-	pub fn dedup_by_mut<F>(mut self, same_bucket: F) -> Self
-	where
-		F: FnMut(&mut T, &mut T) -> bool
-	{
-		self.inner.dedup_by(same_bucket);
-		self
-	}
-
-	pub fn dedup_by_key<F, K>(mut self, mut key: F) -> Self
-	where
-		F: FnMut(&T) -> K,
-		K: PartialEq
-	{
-		// let rust coerce &mut T to &T
-		self.inner.dedup_by_key(|v| key(v));
-		self
-	}
-
-	pub fn dedup_by_key_mut<F, K>(mut self, key: F) -> Self
-	where
-		F: FnMut(&mut T) -> K,
-		K: PartialEq
-	{
-		self.inner.dedup_by_key(key);
-		self
-	}
-
-	pub fn push(mut self, value: T) -> Self {
-		self.inner.push(value);
-		self
-	}
-
-	// TODO: push_within_capacity
-
-	pub fn extend_from_slice(mut self, other: &[T]) -> Self
-	where
-		T: Clone
-	{
-		self.inner.extend_from_slice(other);
-		self
-	}
-
-	pub fn extend_from_slice_ref_chainer(mut self, other: SliceRefChain<T>) -> Self
-	where
-		T: Clone
-	{
-		self.inner.extend_from_slice(other.as_slice());
-		self
-	}
-	pub fn extend_from_slice_mut_chainer(mut self, other: SliceMutChain<T>) -> Self
-	where
-		T: Clone
-	{
-		self.inner.extend_from_slice(other.as_slice());
-		self
-	}
-
-	pub fn extend_from_within<R>(mut self, src: R) -> Self
-	where
-		T: Clone,
-		R: RangeBounds<usize>
-	{
-		self.inner.extend_from_within(src);
-		self
-	}
-
-	pub fn pop(mut self, out: &mut Option<T>) -> Self {
-		self.pop_uninit(out.to_maybeuninit_mut())
-	}
-
-	pub fn pop_uninit(mut self, out: &mut MaybeUninit<Option<T>>) -> Self {
-		out.write(self.inner.pop());
-		self
-	}
-
-	// TODO: pop_if
-
-	pub fn append(mut self, other: &mut Vec<T>) -> Self {
-		self.inner.append(other);
-		self
-	}
-
-	pub fn append_vec_chain(mut self, other: &mut Self) -> Self {
-		self.append(&mut other.inner)
-	}
-
-	pub fn drain_with<R, F>(mut self, range: R, f: F) -> Self
-	where
-		R: RangeBounds<usize>,
-		F: FnOnce(vec::Drain<T>)
-	{
-		f(self.inner.drain(range));
-		self
-	}
-
-	pub fn clear(mut self) -> Self {
-		self.inner.clear();
-		self
-	}
-
-	// TODO: split_off
-
-	pub fn resize_with<F>(mut self, new_len: usize, f: F) -> Self
-	where
-		F: FnMut() -> T
-	{
-		self.inner.resize_with(new_len, f);
+		f(self.inner.last_mut());
 		self
 	}
 
@@ -523,11 +541,9 @@ impl<T> VecChain<T> {
 	/// let mut static_ref = VecChain::new()
 	///    .extend_from_slice(&[1, 2, 3])
 	///    .leak::<'static>();
-	/// # // TODO: make this use chainer?
-	/// let mut mut_slice = static_ref.as_mut_slice();
 	///
-	/// mut_slice[1] = 20;
-	/// assert_eq!(mut_slice, [1, 20, 3]);
+	/// static_ref.as_mut_slice()[1] = 20;
+	/// assert_eq!(static_ref.as_slice(), [1, 20, 3]);
 	/// ```
 	///
 	/// [`shrink_to_fit`]: Self::shrink_to_fit
@@ -537,6 +553,297 @@ impl<T> VecChain<T> {
 		self.shrink_to_fit().into_inner().leak().into()
 	}
 
+	/// Writes the number of elements (also known as the length) in the vector
+	/// into `out`.
+	///
+	/// # Examples
+	///
+	/// ```
+	/// # use wiwi::chainer_2::VecChain;
+	/// let mut len = 0;
+	///
+	/// let chain = VecChain::new()
+	///    .extend_from_slice(&[1, 2, 3, 4, 5])
+	///    .len(&mut len);
+	///
+	/// assert_eq!(len, 5);
+	/// ```
+	pub fn len(self, out: &mut usize) -> Self {
+		self.len_uninit(out.to_maybeuninit_mut())
+	}
+
+	/// Writes the number of elements (also known as the length) in the vector
+	/// into `out`.
+	///
+	/// This function will always write to the output, so it is safe to call
+	/// [`assume_init`](MaybeUninit::assume_init) after invoking this function.
+	///
+	/// # Examples
+	///
+	/// ```
+	/// # use std::mem::MaybeUninit;
+	/// # use wiwi::chainer_2::VecChain;
+	/// let mut len = MaybeUninit::uninit();
+	///
+	/// let chain = VecChain::new()
+	///    .extend_from_slice(&[1, 2, 3, 4, 5])
+	///    .len_uninit(&mut len); // writes to `len`
+	///
+	/// // this is safe!
+	/// let len = unsafe { len.assume_init() };
+	/// assert_eq!(len, 5);
+	/// ```
+	pub fn len_uninit(self, out: &mut MaybeUninit<usize>) -> Self {
+		out.write(self.inner.len());
+		self
+	}
+
+	pub fn pop(mut self, out: &mut Option<T>) -> Self {
+		self.pop_uninit(out.to_maybeuninit_mut())
+	}
+
+	pub fn pop_uninit(mut self, out: &mut MaybeUninit<Option<T>>) -> Self {
+		out.write(self.inner.pop());
+		self
+	}
+
+	// TODO: pop_if
+
+	pub fn push(mut self, value: T) -> Self {
+		self.inner.push(value);
+		self
+	}
+
+	// TODO: push_within_capacity
+
+	pub fn remove(mut self, index: usize, out: &mut T) -> Self {
+		self.remove_uninit(index, out.to_maybeuninit_mut())
+	}
+
+	pub fn remove_uninit(mut self, index: usize, out: &mut MaybeUninit<T>) -> Self {
+		out.write(self.inner.remove(index));
+		self
+	}
+
+	pub fn repeat(mut self, n: usize) -> Self
+	where
+		T: Copy
+	{
+		// TODO: ...this can be more efficient (done in place?)
+		self = self.inner.repeat(n).into();
+		self
+	}
+
+	pub fn reserve(mut self, additional: usize) -> Self {
+		self.inner.reserve(additional);
+		self
+	}
+
+	pub fn reserve_exact(mut self, additional: usize) -> Self {
+		self.inner.reserve_exact(additional);
+		self
+	}
+
+	pub fn resize(mut self, new_len: usize, value: T) -> Self
+	where
+		T: Clone
+	{
+		self.inner.resize(new_len, value);
+		self
+	}
+
+	pub fn resize_with<F>(mut self, new_len: usize, f: F) -> Self
+	where
+		F: FnMut() -> T
+	{
+		self.inner.resize_with(new_len, f);
+		self
+	}
+
+	pub fn retain<F>(mut self, f: F) -> Self
+	where
+		F: FnMut(&T) -> bool
+	{
+		self.inner.retain(f);
+		self
+	}
+
+	pub fn retain_mut<F>(mut self, f: F) -> Self
+	where
+		F: FnMut(&mut T) -> bool
+	{
+		self.inner.retain_mut(f);
+		self
+	}
+
+	pub fn reverse(mut self) -> Self {
+		self.inner.reverse();
+		self
+	}
+
+	pub unsafe fn set_len(mut self, new_len: usize) -> Self {
+		self.inner.set_len(new_len);
+		self
+	}
+
+	pub fn shrink_to_fit(mut self) -> Self {
+		self.inner.shrink_to_fit();
+		self
+	}
+
+	pub fn shrink_to(mut self, min_capacity: usize) -> Self {
+		self.inner.shrink_to(min_capacity);
+		self
+	}
+
+	pub fn sort(mut self) -> Self
+	where
+		T: Ord
+	{
+		self.inner.sort();
+		self
+	}
+
+	pub fn sort_by<F>(mut self, compare: F) -> Self
+	where
+		F: FnMut(&T, &T) -> Ordering
+	{
+		self.inner.sort_by(compare);
+		self
+	}
+
+	pub fn sort_by_cached_key<K, F>(mut self, f: F) -> Self
+	where
+		F: FnMut(&T) -> K,
+		K: Ord
+	{
+		self.inner.sort_by_cached_key(f);
+		self
+	}
+
+	pub fn sort_by_key<K, F>(mut self, f: F) -> Self
+	where
+		F: FnMut(&T) -> K,
+		K: Ord
+	{
+		self.inner.sort_by_key(f);
+		self
+	}
+
+	pub fn splice<R, I, F>(mut self, range: R, replace_with: I, f: F) -> Self
+	where
+		R: RangeBounds<usize>,
+		I: IntoIter<Item = T>,
+		F: FnOnce(vec::Splice<IterAdapter<I::Iter>>)
+	{
+		f(self.inner.splice(range, replace_with.convert_wiwi_into_std_iterator()));
+		self
+	}
+
+	pub fn split_at_spare_mut<F>(mut self, f: F) -> Self
+	where
+		F: FnOnce(SliceMutChain<T>, SliceMutChain<MaybeUninit<T>>)
+	{
+		// TODO: call Vec impl when it is stabilised
+		unsafe {
+			let ptr = self.inner.as_mut_ptr();
+			let len = self.inner.len();
+			let cap = self.inner.capacity();
+
+			let spare_ptr = ptr.add(len) as *mut MaybeUninit<T>;
+			let spare_len = cap - len;
+
+			let init = slice::from_raw_parts_mut(ptr, len).into();
+			let spare = slice::from_raw_parts_mut(spare_ptr, spare_len).into();
+
+			f(init, spare);
+		}
+
+		self
+	}
+
+	pub fn split_first<F>(self, f: F) -> Self
+	where
+		F: FnOnce(Option<(&T, SliceRefChain<T>)>)
+	{
+		f(self.inner.split_first().map(|(a, b)| (a, b.into())));
+		self
+	}
+
+	pub fn split_first_mut<F>(mut self, f: F) -> Self
+	where
+		F: FnOnce(Option<(&mut T, SliceMutChain<T>)>)
+	{
+		f(self.inner.split_first_mut().map(|(a, b)| (a, b.into())));
+		self
+	}
+
+	pub fn split_last<F>(self, f: F) -> Self
+	where
+		F: FnOnce(Option<(&T, SliceRefChain<T>)>)
+	{
+		f(self.inner.split_last().map(|(a, b)| (a, b.into())));
+		self
+	}
+
+	pub fn split_last_mut<F>(mut self, f: F) -> Self
+	where
+		F: FnOnce(Option<(&mut T, SliceMutChain<T>)>)
+	{
+		f(self.inner.split_last_mut().map(|(a, b)| (a, b.into())));
+		self
+	}
+
+	// TODO: split_off
+
+	pub fn starts_with(self, needle: &[T], out: &mut bool) -> Self
+	where
+		T: PartialEq
+	{
+		self.starts_with_uninit(needle, out.to_maybeuninit_mut())
+	}
+
+	pub fn starts_with_uninit(self, needle: &[T], out: &mut MaybeUninit<bool>) -> Self
+	where
+		T: PartialEq
+	{
+		out.write(self.inner.starts_with(needle));
+		self
+	}
+
+	pub fn swap(mut self, mut a: usize, b: usize) -> Self {
+		self.inner.swap(a, b);
+		self
+	}
+
+	pub unsafe fn swap_unchecked(mut self, a: usize, b: usize) -> Self {
+		// TODO: replace with Vec::swap_unchecked call when it's stabilised?
+		let ptr = self.inner.as_mut_ptr();
+		ptr::swap(ptr.add(a), ptr.add(b));
+		self
+	}
+
+	pub fn swap_remove(mut self, index: usize, out: &mut T) -> Self {
+		self.swap_remove_uninit(index, out.to_maybeuninit_mut())
+	}
+
+	pub fn swap_remove_uninit(mut self, index: usize, out: &mut MaybeUninit<T>) -> Self {
+		out.write(self.inner.swap_remove(index));
+		self
+	}
+
+	pub fn swap_with_slice(mut self, other: &mut [T]) -> Self {
+		self.inner.swap_with_slice(other);
+		self
+	}
+
+	pub fn truncate(mut self, len: usize) -> Self {
+		self.inner.truncate(len);
+		self
+	}
+
+	// TODO: try_reserve/exact
+
 	/// Calls the provided closure with the spare capacity of the vector as
 	/// a [`SliceMutChain`] of [`MaybeUninit`]s.
 	///
@@ -545,9 +852,10 @@ impl<T> VecChain<T> {
 	/// ```
 	/// # use wiwi::chainer_2::VecChain;
 	/// # let mut spare_len = 0;
+	/// # let mut new_spare_len = 0;
 	/// let chain = VecChain::with_capacity(10)
 	///    .extend_from_slice(&[1, 2, 3, 4, 5])
-	///    .with_spare_capacity_mut(|mut spare| {
+	///    .spare_capacity_mut(|mut spare| {
 	///       spare = spare.len(&mut spare_len);
 	///
 	///       // VecChain allocated at least 10 elements worth of space
@@ -557,24 +865,21 @@ impl<T> VecChain<T> {
 	///    })
 	///    .push(6)
 	///    .push(7)
-	///    .with_spare_capacity_mut(|mut spare| {
-	///       spare = spare.len(&mut spare_len);
+	///    .spare_capacity_mut(|mut spare| {
+	///       spare = spare.len(&mut new_spare_len);
 	///
 	///       // Just pushed 2 more elements...
 	///       assert!(spare_len >= 3);
+	///       assert_eq!(spare_len - 2, new_spare_len);
 	///    });
 	/// ```
-	pub fn with_spare_capacity_mut<F>(mut self, f: F) -> Self
+	pub fn spare_capacity_mut<F>(mut self, f: F) -> Self
 	where
 		F: FnOnce(SliceMutChain<MaybeUninit<T>>)
 	{
 		f(self.inner.spare_capacity_mut().into());
 		self
 	}
-
-	// TODO: resize
-	// TODO: splice
-	// TODO: extract_if
 
 	// TODO: utf8_chunks
 	// TODO: is_ascii
@@ -587,10 +892,7 @@ impl<T> VecChain<T> {
 	// TODO: trim_ascii_start/end
 	// TODO: trim_ascii
 	// TODO: sort_floats
-	// TODO: first/mut
-	// TODO: split_first/mut
-	// TODO: split_last/mut
-	// TODO: last/mut
+	// doc link: https://doc.rust-lang.org/std/vec/struct.Vec.html#method.first_chunk
 	// TODO: first_chunk/mut
 	// TODO: split_first_chunk/mut
 	// TODO: split_last_chunk/mut
@@ -629,7 +931,6 @@ impl<T> VecChain<T> {
 	// TODO: contains
 	// TODO: starts/ends_with
 	// TODO: strip_prefix/suffix
-	// TODO: binary_search/by/key
 	// TODO: sort_unstable/by/key
 	// TODO: select_nth_unstable/by/key
 	// TODO: partition_dedup/by/key
@@ -655,21 +956,135 @@ impl<T> VecChain<T> {
 	// TODO: as_str
 	// TODO: as_bytes
 	// TODO: to_ascii_uppercase/lowercase
-	// TODO: sort/by/key/cached_key
-	// TODO: sort_by_cached_key
 	// TODO: to_vec/in
 	// TODO: repeat
 	// TODO: concat
 	// TODO: join
+
+	// TODO: nightly as_chunks/unchecked, as_chunks_mut/unchecked, as_rchunks/mut, array_chunks/mut
+
+	// TODO: rchunks/mut
+	// TODO: rchunks_exact/mut
+	// TODO: chunk_by/mut
+	// TODO: split_at/mut
+	// TODO: split_at_unchecked
+	// TODO: split_at_mut_unchecked
+	// TODO: split_at_checked
+	// TODO: split_at_mut_checked
+	// TODO: split/mut
+	// TODO: split_inclusive/mut
+	// TODO: rsplit/mut
+	// TODO: splitn/mut
+	// TODO: rsplitn/mut
+	// TODO: split_once
+	// TODO: rsplit_once
+	// TODO: strip_prefix/suffix
+	// TODO: sort_unstable/by/key
+	// TODO: select_nth_unstable/by/key
+	// TODO: partition_dedup/by/key
+	// TODO: rotate_left/right
+	// TODO: fill
+	// TODO: fill_with
+	// TODO: clone_from_slice
+	// TODO: copy_from_slice
+	// TODO: copy_within
+	// TODO: clone_within (not in std)?
+	// TODO: align_to/mut
+	// TODO: nightly as_simd/mut
+	// TODO: is_sorted/by/key
+	// TODO: partition_point
+	// TODO: take/mut
+	// TODO: take_first/mut
+	// TODO: take_last/mut
+	// TODO: get_many_unchecked_mut
+	// TODO: get_many_mut
+	// TODO: get_many/get_many_unchecked (non mut? not in std?)
+	// TODO: sort_floats
+	// TODO: is_ascii
+	// TODO: as_ascii/unchecked
+	// TODO: eq_ignore_ascii_case
+	// TODO: make_ascii_uppercase/lowercase
+	// TODO: escape_ascii
+	// TODO: trim_ascii
+	// TODO: trim_ascii_start/end
 }
 
 impl<T, const N: usize> VecChain<[T; N]> {
-	// TODO: into_flattened
+	pub fn flatten(mut self) -> VecChain<T> {
+		let (len, cap) = if mem::size_of::<T>() == 0 {
+			let len = self.inner.len()
+				.checked_mul(N)
+				.expect("vec len overflow");
+			(len, usize::MAX)
+		} else {
+			// TODO: wait until 1.79 when this is stabilised
+			// unsafe { (
+			// 	self.inner.len().unchecked_mul(N),
+			// 	self.inner.capacity().unchecked_mul(N)
+			// ) }
+			(
+				self.inner.len() * N,
+				self.inner.capacity() * N
+			)
+		};
+
+		// TODO: switch to into_raw_parts impl when it is stabilised?
+		// let (ptr, _len, _capacity) = self.inner.into_raw_parts();
+
+		let ptr = self.inner.as_mut_ptr();
+		mem::forget(self);
+
+		let ptr = ptr as *mut T;
+		unsafe { Vec::from_raw_parts(ptr, len, cap).into() }
+	}
+}
+
+// nonstandard methods
+impl<T> VecChain<T> {
+	/// Sorts, then dedups, the vector chain.
+	///
+	/// Suggested by my good friend [Silk Rose] c:
+	///
+	/// # Examples
+	///
+	/// TODO
+	///
+	/// [Silk Rose]: https://github.com/silkrose
+	pub fn sort_and_dedup(mut self) -> Self
+	where
+		T: Ord
+	{
+		self.sort().dedup()
+	}
 }
 
 impl<T> From<Vec<T>> for VecChain<T> {
 	fn from(value: Vec<T>) -> Self {
 		Self { inner: value }
+	}
+}
+
+impl<T> AsRef<Vec<T>> for VecChain<T> {
+	fn as_ref(&self) -> &Vec<T> {
+		&self.inner
+	}
+}
+
+impl<T> AsMut<Vec<T>> for VecChain<T> {
+	fn as_mut(&mut self) -> &mut Vec<T> {
+		&mut self.inner
+	}
+}
+
+impl<T> AsRef<[T]> for VecChain<T> {
+	fn as_ref(&self) -> &[T] {
+		&self.inner
+	}
+}
+
+impl<T> AsMut<[T]> for VecChain<T> {
+	fn as_mut(&mut self) -> &mut [T] {
+		&mut self.inner
 	}
 }
 
@@ -754,103 +1169,103 @@ mod tests {
 		assert!(is_empty_with_cap);
 	}
 
-	// #[test]
-	// fn with_split_at_spare_mut() {
-	// 	let mut uninit_len = 0;
-	// 	let chain = VecChain::new()
-	// 		.extend_from_slice(&[1usize, 2, 3, 4, 5, 6, 7, 8])
-	// 		.reserve(8)
-	// 		.with_split_at_spare_mut(|slice, uninit| {
-	// 			let slice = slice.as_mut_slice();
-	// 			let uninit = uninit.as_mut_slice();
-	// 			uninit_len = uninit.len();
-	//
-	// 			assert_eq!(slice, &[1, 2, 3, 4, 5, 6, 7, 8]);
-	// 			assert!(uninit.len() >= 8);
-	//
-	// 			uninit.iter_mut()
-	// 				.enumerate()
-	// 				.take(4)
-	// 				.for_each(|(i, slot)| {
-	// 					slot.write(i);
-	// 				});
-	// 		});
-	//
-	// 	unsafe {
-	// 		let mut len = 0;
-	// 		let _ = chain
-	// 			.len(&mut len)
-	// 			.set_len(len + 4)
-	// 			.with_split_at_spare_mut(|slice, uninit| {
-	// 				let slice = slice.as_mut_slice();
-	// 				let uninit = uninit.as_mut_slice();
-	//
-	// 				assert_eq!(slice, &[1, 2, 3, 4, 5, 6, 7, 8, 0, 1, 2, 3]);
-	// 				assert_eq!(uninit_len - 4, uninit.len());
-	// 			});
-	// 	}
-	// }
+	#[test]
+	fn with_split_at_spare_mut() {
+		let mut uninit_len = 0;
+		let chain = VecChain::new()
+			.extend_from_slice(&[1usize, 2, 3, 4, 5, 6, 7, 8])
+			.reserve(8)
+			.split_at_spare_mut(|mut slice, mut uninit| {
+				let slice = slice.as_mut_slice();
+				let uninit = uninit.as_mut_slice();
+				uninit_len = uninit.len();
 
-	// #[test]
-	// fn swap_unchecked() {
-	// 	unsafe {
-	// 		let chain = VecChain::new()
-	// 			.extend_from_slice(&[1, 2, 3, 4, 5, 6, 7, 8])
-	// 			.swap_unchecked(4, 6)
-	// 			.swap_unchecked(0, 3)
-	// 			.swap_unchecked(1, 6)
-	// 			.swap_unchecked(6, 7)
-	// 			.swap_unchecked(2, 6);
-	// 		assert_eq!(chain.as_slice(), &[4, 5, 8, 1, 7, 6, 3, 2]);
-	// 	}
-	// }
+				assert_eq!(slice, &[1, 2, 3, 4, 5, 6, 7, 8]);
+				assert!(uninit.len() >= 8);
 
-	// #[test]
-	// fn reverse() {
-	// 	let chain = VecChain::new()
-	// 		.extend_from_slice(&[1, 2, 3, 4, 5, 6, 7, 8])
-	// 		.reverse();
-	// 	assert_eq!(chain.as_slice(), &[8, 7, 6, 5, 4, 3, 2, 1]);
-	// }
+				uninit.iter_mut()
+					.enumerate()
+					.take(4)
+					.for_each(|(i, slot)| {
+						slot.write(i);
+					});
+			});
 
-	// #[test]
-	// fn with_chunks() {
-	// 	const N: usize = 5;
-	//
-	// 	let slice = b"1234";
-	//
-	// 	fn check<'h>(
-	// 		expected_chunks: &[&[u8; N]],
-	// 		expected_remainder: &'h [u8]
-	// 	) -> impl FnOnce(&[[u8; N]], &[u8]) + 'h {
-	// 		let expected_chunks = expected_chunks
-	// 			.into_iter()
-	// 			.map(|item| **item)
-	// 			.collect::<Vec<_>>();
-	//
-	// 		move |chunks, rem| {
-	// 			assert_eq!(expected_chunks.len(), chunks.len(), "wrong num of chunks");
-	// 			assert_eq!(expected_remainder.len(), rem.len(), "wrong num of elements in remainder");
-	//
-	// 			assert_eq!(expected_chunks, chunks);
-	// 			assert_eq!(expected_remainder, rem);
-	// 		}
-	// 	}
-	//
-	// 	let _ = VecChain::with_capacity(20)
-	// 		.extend_from_slice(slice)
-	// 		.with_chunks(check(&[], b"1234"))
-	//
-	// 		.extend_from_slice(slice)
-	// 		.with_chunks(check(&[b"12341"], b"234"))
-	//
-	// 		.extend_from_slice(slice)
-	// 		.with_chunks(check(&[b"12341", b"23412"], b"34"))
-	//
-	// 		.extend_from_slice(slice)
-	// 		.with_chunks(check(&[b"12341", b"23412", b"34123"], b"4"))
-	//
-	// 		.extend_from_slice(slice)
-	// 		.with_chunks(check(&[b"12341", b"23412", b"34123", b"41234"], b""));
-	// }
+		unsafe {
+			let mut len = 0;
+			let _ = chain
+				.len(&mut len)
+				.set_len(len + 4)
+				.split_at_spare_mut(|mut slice, mut uninit| {
+					let slice = slice.as_mut_slice();
+					let uninit = uninit.as_mut_slice();
+
+					assert_eq!(slice, &[1, 2, 3, 4, 5, 6, 7, 8, 0, 1, 2, 3]);
+					assert_eq!(uninit_len - 4, uninit.len());
+				});
+		}
+	}
+
+	#[test]
+	fn swap_unchecked() {
+		unsafe {
+			let chain = VecChain::new()
+				.extend_from_slice(&[1, 2, 3, 4, 5, 6, 7, 8])
+				.swap_unchecked(4, 6)
+				.swap_unchecked(0, 3)
+				.swap_unchecked(1, 6)
+				.swap_unchecked(6, 7)
+				.swap_unchecked(2, 6);
+			assert_eq!(chain.as_slice(), &[4, 5, 8, 1, 7, 6, 3, 2]);
+		}
+	}
+
+	#[test]
+	fn reverse() {
+		let chain = VecChain::new()
+			.extend_from_slice(&[1, 2, 3, 4, 5, 6, 7, 8])
+			.reverse();
+		assert_eq!(chain.as_slice(), &[8, 7, 6, 5, 4, 3, 2, 1]);
+	}
+
+	#[test]
+	fn with_chunks() {
+		const N: usize = 5;
+
+		let slice = b"1234";
+
+		fn check<'h>(
+			expected_chunks: &[&[u8; N]],
+			expected_remainder: &'h [u8]
+		) -> impl FnOnce(&[[u8; N]], &[u8]) + 'h {
+			let expected_chunks = expected_chunks
+				.into_iter()
+				.map(|item| **item)
+				.collect::<Vec<_>>();
+
+			move |chunks, rem| {
+				assert_eq!(expected_chunks.len(), chunks.len(), "wrong num of chunks");
+				assert_eq!(expected_remainder.len(), rem.len(), "wrong num of elements in remainder");
+
+				assert_eq!(expected_chunks, chunks);
+				assert_eq!(expected_remainder, rem);
+			}
+		}
+
+		let _ = VecChain::with_capacity(20)
+			.extend_from_slice(slice)
+			.as_chunks(check(&[], b"1234"))
+
+			.extend_from_slice(slice)
+			.as_chunks(check(&[b"12341"], b"234"))
+
+			.extend_from_slice(slice)
+			.as_chunks(check(&[b"12341", b"23412"], b"34"))
+
+			.extend_from_slice(slice)
+			.as_chunks(check(&[b"12341", b"23412", b"34123"], b"4"))
+
+			.extend_from_slice(slice)
+			.as_chunks(check(&[b"12341", b"23412", b"34123", b"41234"], b""));
+	}
 }
