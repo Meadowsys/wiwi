@@ -3,7 +3,6 @@
 mod into_chainer;
 pub use into_chainer::IntoChainer;
 mod with_vars;
-use with_vars::WithVars;
 
 mod slice_box;
 pub use slice_box::SliceBoxChain;
@@ -25,6 +24,19 @@ mod vec_ref;
 pub use vec_ref::VecRefChain;
 mod vec_mut;
 pub use vec_mut::VecMutChain;
+
+mod string;
+pub use string::StringChain;
+mod string_mut;
+pub use string_mut::StringMutChain;
+mod string_ref;
+pub use string_ref::StringRefChain;
+mod str_box;
+pub use str_box::StrBoxChain;
+mod str_ref;
+pub use str_ref::StrRefChain;
+mod str_mut;
+pub use str_mut::StrMutChain;
 
 mod vec_deque;
 pub use vec_deque::VecDequeChain;
