@@ -6,6 +6,8 @@ use super::{
 	ArrayRefChain,
 	ArrayMutChain,
 	VecChain,
+	VecRefChain,
+	VecMutChain,
 	VecDequeChain,
 	LinkedListChain,
 	HashMapChain,
@@ -80,6 +82,14 @@ impl<'h, T, const N: usize> IntoChainer for &'h mut [T; N] {
 
 impl<T> IntoChainer for Vec<T> {
 	type Chain = VecChain<T>;
+}
+
+impl<'h, T> IntoChainer for &'h Vec<T> {
+	type Chain = VecRefChain<'h, T>;
+}
+
+impl<'h, T> IntoChainer for &'h mut Vec<T> {
+	type Chain = VecMutChain<'h, T>;
 }
 
 impl<T> IntoChainer for VecDeque<T> {

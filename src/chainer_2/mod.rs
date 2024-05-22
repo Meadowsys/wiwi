@@ -21,6 +21,11 @@ pub use array_mut::ArrayMutChain;
 
 mod vec;
 pub use vec::VecChain;
+mod vec_ref;
+pub use vec_ref::VecRefChain;
+mod vec_mut;
+pub use vec_mut::VecMutChain;
+
 mod vec_deque;
 pub use vec_deque::VecDequeChain;
 mod linked_list;
