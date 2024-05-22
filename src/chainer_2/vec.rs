@@ -38,6 +38,14 @@ impl<T> VecChain<T> {
 		(&mut *self.inner).into()
 	}
 
+	pub fn as_ptr(&self) -> *const T {
+		self.inner.as_ptr()
+	}
+
+	pub fn as_mut_ptr(&mut self) -> *mut T {
+		self.inner.as_mut_ptr()
+	}
+
 	pub fn as_vec(&self) -> &Vec<T> {
 		&self.inner
 	}
@@ -79,6 +87,7 @@ impl<T> VecChain<T> {
 	}
 
 	// TODO: into_raw_parts_with_alloc
+	// TODO: fn allocator
 }
 
 impl<T> VecChain<T> {
@@ -117,13 +126,126 @@ impl<T> VecChain<T> {
 		self.inner.truncate(len);
 		self
 	}
-}
 
-impl<T> VecChain<T> {
 	pub unsafe fn set_len(mut self, new_len: usize) -> Self {
 		self.inner.set_len(new_len);
 		self
 	}
+
+	// TODO: swap_remove
+	// TODO: insert
+	// TODO: remove
+	// TODO: retain
+	// TODO: retain_mut
+	// TODO: dedup/by/key
+	// TODO: push
+	// TODO: push_within_capacity
+	// TODO: pop
+	// TODO: pop_if
+	// TODO: append
+	// TODO: drain
+	// TODO: clear
+	// TODO: len/is_empty
+	// TODO: split_off
+	// TODO: resize_with
+	// TODO: leak
+	// TODO: spare_capacity_mut
+	// TODO: split_at_spare_mut
+	// TODO: resize
+	// TODO: extend_from_slice
+	// TODO: extend_from_within
+	// TODO: splice
+	// TODO: extract_if
+
+	// TODO: utf8_chunks
+	// TODO: is_ascii
+	// TODO: as_ascii
+	// TODO: as_ascii_unchecked
+	// TODO: eq_ignore_ascii_case
+	// TODO: make_ascii_uppercase
+	// TODO: make_ascii_lowercase
+	// TODO: escape_ascii
+	// TODO: trim_ascii_start/end
+	// TODO: trim_ascii
+	// TODO: sort_floats
+	// TODO: first/mut
+	// TODO: split_first/mut
+	// TODO: split_last/mut
+	// TODO: last/mut
+	// TODO: first_chunk/mut
+	// TODO: split_first_chunk/mut
+	// TODO: split_last_chunk/mut
+	// TODO: last_chunk/mut
+	// TODO: get/mut
+	// TODO: get_unchecked/mut
+	// TODO: as_ptr_range/as_mut_ptr_range
+	// TODO: swap/unchecked
+	// TODO: reverse
+	// TODO: iter/mut
+	// TODO: windows
+	// TODO: chunks/mut
+	// TODO: chunks_exact/mut
+	// TODO: as_chunks_unchecked
+	// TODO: as_chunks
+	// TODO: as_rchunks
+	// TODO: array_chunks
+	// TODO: as_chunks_unchecked_mut
+	// TODO: as_chunks_mut
+	// TODO: as_rchunks_mut
+	// TODO: array_chunks_mut
+	// TODO: array_windows
+	// TODO: rchunks/mut
+	// TODO: rchunks_exact/mut
+	// TODO: chunk_by/mut
+	// TODO: split_at/mut
+	// TODO: split_at_unchecked/mut
+	// TODO: split_at_checked/mut
+	// TODO: split/mut
+	// TODO: split_inclusive/mut
+	// TODO: rsplit/mut
+	// TODO: splitn/mut
+	// TODO: rsplitn/mut
+	// TODO: split_once/mut
+	// TODO: rsplit_once/mut
+	// TODO: contains
+	// TODO: starts/ends_with
+	// TODO: strip_prefix/suffix
+	// TODO: binary_search/by/key
+	// TODO: sort_unstable/by/key
+	// TODO: select_nth_unstable/by/key
+	// TODO: partition_dedup/by/key
+	// TODO: rotate_left/right
+	// TODO: fill/fill_with
+	// TODO: clone_from_slice
+	// TODO: copy_from_slice
+	// TODO: copy_within
+	// TODO: why std doesn't have clone_within?
+	// TODO: swap_with_slice
+	// TODO: align_to/mut
+	// TODO: as_simd/mut
+	// TODO: is_sorted/by/key
+	// TODO: partition_point
+	// TODO: take/mut
+	// TODO: take_first/mut
+	// TODO: take_last/mut
+	// TODO: get_many_unchecked_mut
+	// TODO: get_many_mut
+	// TODO: why not non-mut of the above 2?
+	// TODO: sort_floats
+	// TODO: flatten/mut
+	// TODO: as_str
+	// TODO: as_bytes
+	// TODO: to_ascii_uppercase/lowercase
+	// TODO: sort/by/key/cached_key
+	// TODO: sort_by_cached_key
+	// TODO: to_vec/in
+	// TODO: repeat
+	// TODO: concat
+	// TODO: join
+}
+
+impl<T, const N: usize> VecChain<[T; N]> {
+	// TODO: into_flattened
 }
 
 impl<T> From<Vec<T>> for VecChain<T> {
@@ -131,3 +253,5 @@ impl<T> From<Vec<T>> for VecChain<T> {
 		Self { inner: value }
 	}
 }
+
+// TODO: look through traits
