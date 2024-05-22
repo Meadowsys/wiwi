@@ -672,3 +672,183 @@ impl<T> From<Vec<T>> for VecChain<T> {
 }
 
 // TODO: look through traits
+
+#[cfg(test)]
+mod tests {
+	use super::*;
+
+	#[test]
+	fn creation() {
+		let mut new_len = 0;
+		let mut new_capacity = 0;
+		let mut with_capacity_len = 0;
+		let mut with_capacity_capacity = 0;
+		let mut zst_len = 0;
+		let mut zst_capacity = 0;
+
+		let _ = VecChain::<u8>::new()
+			.len(&mut new_len)
+			.capacity(&mut new_capacity);
+
+		let _ = VecChain::<u8>::with_capacity(30)
+			.len(&mut with_capacity_len)
+			.capacity(&mut with_capacity_capacity);
+
+		let _ = VecChain::<()>::with_capacity(30)
+			.len(&mut zst_len)
+			.capacity(&mut zst_capacity);
+
+		assert_eq!(new_len, 0);
+		assert_eq!(new_capacity, 0);
+		assert_eq!(with_capacity_len, 0);
+		assert_eq!(with_capacity_capacity, 30);
+		assert_eq!(zst_len, 0);
+		assert_eq!(zst_capacity, usize::MAX);
+	}
+
+	#[test]
+	fn conversion() {
+		let slice = &[1u8, 2, 3, 4, 5];
+		let mut chain = VecChain::new()
+			.extend_from_slice(slice);
+
+		assert_eq!(slice, chain.as_slice());
+		assert_eq!(slice, chain.as_mut_slice());
+	}
+
+	#[test]
+	fn len_and_capacity() {
+		let mut len1 = 0;
+		let mut cap1 = 0;
+		let mut len2 = 0;
+		let mut cap2 = 0;
+		let mut is_empty = true;
+		let mut is_empty_new = false;
+		let mut is_empty_with_cap = false;
+
+		let _ = VecChain::with_capacity(8)
+			.extend_from_slice(&[1, 2, 3, 4, 5, 6, 7, 8])
+			.len(&mut len1)
+			.capacity(&mut cap1)
+			.push(9)
+			.push(10)
+			.len(&mut len2)
+			.capacity(&mut cap2)
+			.is_empty(&mut is_empty);
+		let _ = VecChain::<u8>::new()
+			.is_empty(&mut is_empty_new);
+		let _ = VecChain::<u8>::with_capacity(8)
+			.is_empty(&mut is_empty_with_cap);
+
+
+		assert_eq!(len1, 8);
+		assert!(cap1 >= 8);
+
+		assert_eq!(len2, 10);
+		assert!(cap2 >= 10);
+
+		assert!(!is_empty);
+		assert!(is_empty_new);
+		assert!(is_empty_with_cap);
+	}
+
+	// #[test]
+	// fn with_split_at_spare_mut() {
+	// 	let mut uninit_len = 0;
+	// 	let chain = VecChain::new()
+	// 		.extend_from_slice(&[1usize, 2, 3, 4, 5, 6, 7, 8])
+	// 		.reserve(8)
+	// 		.with_split_at_spare_mut(|slice, uninit| {
+	// 			let slice = slice.as_mut_slice();
+	// 			let uninit = uninit.as_mut_slice();
+	// 			uninit_len = uninit.len();
+	//
+	// 			assert_eq!(slice, &[1, 2, 3, 4, 5, 6, 7, 8]);
+	// 			assert!(uninit.len() >= 8);
+	//
+	// 			uninit.iter_mut()
+	// 				.enumerate()
+	// 				.take(4)
+	// 				.for_each(|(i, slot)| {
+	// 					slot.write(i);
+	// 				});
+	// 		});
+	//
+	// 	unsafe {
+	// 		let mut len = 0;
+	// 		let _ = chain
+	// 			.len(&mut len)
+	// 			.set_len(len + 4)
+	// 			.with_split_at_spare_mut(|slice, uninit| {
+	// 				let slice = slice.as_mut_slice();
+	// 				let uninit = uninit.as_mut_slice();
+	//
+	// 				assert_eq!(slice, &[1, 2, 3, 4, 5, 6, 7, 8, 0, 1, 2, 3]);
+	// 				assert_eq!(uninit_len - 4, uninit.len());
+	// 			});
+	// 	}
+	// }
+
+	// #[test]
+	// fn swap_unchecked() {
+	// 	unsafe {
+	// 		let chain = VecChain::new()
+	// 			.extend_from_slice(&[1, 2, 3, 4, 5, 6, 7, 8])
+	// 			.swap_unchecked(4, 6)
+	// 			.swap_unchecked(0, 3)
+	// 			.swap_unchecked(1, 6)
+	// 			.swap_unchecked(6, 7)
+	// 			.swap_unchecked(2, 6);
+	// 		assert_eq!(chain.as_slice(), &[4, 5, 8, 1, 7, 6, 3, 2]);
+	// 	}
+	// }
+
+	// #[test]
+	// fn reverse() {
+	// 	let chain = VecChain::new()
+	// 		.extend_from_slice(&[1, 2, 3, 4, 5, 6, 7, 8])
+	// 		.reverse();
+	// 	assert_eq!(chain.as_slice(), &[8, 7, 6, 5, 4, 3, 2, 1]);
+	// }
+
+	// #[test]
+	// fn with_chunks() {
+	// 	const N: usize = 5;
+	//
+	// 	let slice = b"1234";
+	//
+	// 	fn check<'h>(
+	// 		expected_chunks: &[&[u8; N]],
+	// 		expected_remainder: &'h [u8]
+	// 	) -> impl FnOnce(&[[u8; N]], &[u8]) + 'h {
+	// 		let expected_chunks = expected_chunks
+	// 			.into_iter()
+	// 			.map(|item| **item)
+	// 			.collect::<Vec<_>>();
+	//
+	// 		move |chunks, rem| {
+	// 			assert_eq!(expected_chunks.len(), chunks.len(), "wrong num of chunks");
+	// 			assert_eq!(expected_remainder.len(), rem.len(), "wrong num of elements in remainder");
+	//
+	// 			assert_eq!(expected_chunks, chunks);
+	// 			assert_eq!(expected_remainder, rem);
+	// 		}
+	// 	}
+	//
+	// 	let _ = VecChain::with_capacity(20)
+	// 		.extend_from_slice(slice)
+	// 		.with_chunks(check(&[], b"1234"))
+	//
+	// 		.extend_from_slice(slice)
+	// 		.with_chunks(check(&[b"12341"], b"234"))
+	//
+	// 		.extend_from_slice(slice)
+	// 		.with_chunks(check(&[b"12341", b"23412"], b"34"))
+	//
+	// 		.extend_from_slice(slice)
+	// 		.with_chunks(check(&[b"12341", b"23412", b"34123"], b"4"))
+	//
+	// 		.extend_from_slice(slice)
+	// 		.with_chunks(check(&[b"12341", b"23412", b"34123", b"41234"], b""));
+	// }
+}
