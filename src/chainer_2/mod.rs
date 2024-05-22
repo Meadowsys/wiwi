@@ -2,6 +2,8 @@
 
 mod into_chainer;
 pub use into_chainer::IntoChainer;
+mod with_vars;
+use with_vars::WithVars;
 
 mod slice_box;
 pub use slice_box::SliceBoxChain;
