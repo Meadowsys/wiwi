@@ -23,14 +23,14 @@
 // TODO auth prelude
 // #[cfg(feature = "auth-unstable")]
 
-#[cfg(feature = "chainer-unstable")]
-pub use crate::chainer::{
-	ArrayChain,
-	SliceBoxedChain,
-	SliceMutChain,
-	SliceRefChain,
-	VecChain
-};
+// #[cfg(feature = "chainer-unstable")]
+// pub use crate::chainer::{
+// 	ArrayChain,
+// 	SliceBoxedChain,
+// 	SliceMutChain,
+// 	SliceRefChain,
+// 	VecChain
+// };
 
 #[cfg(feature = "clock-timer")]
 pub use crate::clock_timer::{

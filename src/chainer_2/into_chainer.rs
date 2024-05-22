@@ -44,7 +44,7 @@ pub trait IntoChainer: Sized {
 	///
 	/// ```
 	/// # // bruh
-	/// # use wiwi::chainer::{ IntoChainer, VecChain };
+	/// # use wiwi::chainer_2::{ IntoChainer, VecChain };
 	/// let vec: Vec<String> = Vec::new();
 	/// let chain: VecChain<String> = vec.into_chainer();
 	/// // ...
