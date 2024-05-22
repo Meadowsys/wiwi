@@ -82,12 +82,12 @@ impl<T> VecChain<T> {
 }
 
 impl<T> VecChain<T> {
-	pub fn capacity(self, capacity: &mut usize) -> Self {
-		self.capacity_uninit(capacity.to_maybeuninit_mut())
+	pub fn capacity(self, out: &mut usize) -> Self {
+		self.capacity_uninit(out.to_maybeuninit_mut())
 	}
 
-	pub fn capacity_uninit(self, capacity: &mut MaybeUninit<usize>) -> Self {
-		capacity.write(self.inner.capacity());
+	pub fn capacity_uninit(self, out: &mut MaybeUninit<usize>) -> Self {
+		out.write(self.inner.capacity());
 		self
 	}
 
