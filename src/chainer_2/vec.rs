@@ -8,10 +8,86 @@ pub struct VecChain<T> {
 }
 
 impl<T> VecChain<T> {
+	/// Creates a new vector chain without allocating any capacity.
+	///
+	/// It will not allocate until it needs to, either by pushing an element,
+	/// calling the [`reserve`](Self::reserve) function to explicitly request
+	/// allocation, or something else.
+	///
+	/// # Examples
+	///
+	/// ```
+	/// # use wiwi::chainer::VecChain;
+	/// // a chain thingie! yay!...
+	/// let chain = VecChain::<String>::new();
+	/// ```
 	pub fn new() -> Self {
 		Vec::new().into()
 	}
 
+	/// Creates a new vector, and preallocate some memory.
+	///
+	/// The amount of memory allocated will be _at least_ enough to hold `capacity`
+	/// elements without reallocating. No allocation will happen if the provided
+	/// capacity is zero.
+	///
+	/// There is NO GUARANTEE that this function will allocate an exact amount
+	/// of memory. If knowing the actual allocated capacity is important, always
+	/// do so using the [`capacity`](Self::capacity) function.
+	///
+	/// If the element type (ie. `T`) is a ZST, the vector chainer will never
+	/// allocate, and will always have a capacity of `usize::MAX` bytes.
+	///
+	/// # Panics
+	///
+	/// Panics if the new capacity exceeds `isize::MAX` _bytes_ (not elements,
+	/// bytes). This is the same behaviour of [`Vec::with_capacity`].
+	///
+	/// # Examples
+	///
+	/// ```
+	/// # use wiwi::chainer::VecChain;
+	/// # let mut len = 0;
+	/// # let mut initial_capacity = 0;
+	/// # let mut capacity = 0;
+	/// let chain = VecChain::with_capacity(10)
+	///    // chaining methods to get the len and capacity of the vec chain
+	///    .len(&mut len)
+	///    .capacity(&mut initial_capacity);
+	///
+	/// // The vector chain contains zero elements, and at least room for 10 more
+	/// assert_eq!(len, 0);
+	/// assert!(initial_capacity >= 10);
+	///
+	/// // These are all done without reallocating
+	/// let chain = (0..10)
+	///    .fold(chain, |chain, i| chain.push(i))
+	///    .len(&mut len)
+	///    .capacity(&mut capacity);
+	///
+	/// assert_eq!(len, 10);
+	/// assert_eq!(capacity, initial_capacity);
+	///
+	/// // Now however, pushing another element can make the vector reallocate
+	/// let chain = chain
+	///    .push(11)
+	///    .len(&mut len)
+	///    .capacity(&mut capacity);
+	///
+	/// assert_eq!(len, 11);
+	/// assert!(capacity >= 11);
+	///
+	/// # let mut capacity1 = 0;
+	/// # let mut capacity2 = 0;
+	/// // ZSTs never allocate and always have a capacity of `usize::MAX`
+	/// let chain1 = VecChain::<()>::new()
+	///    .capacity(&mut capacity1);
+	/// let chain2 = VecChain::<()>::with_capacity(10)
+	///    .capacity(&mut capacity2);
+	///
+	/// assert_eq!(capacity1, usize::MAX);
+	/// assert_eq!(capacity2, usize::MAX);
+	/// ```
 	pub fn with_capacity(capacity: usize) -> Self {
 		Vec::with_capacity(capacity).into()
 	}
@@ -30,10 +106,18 @@ impl<T> VecChain<T> {
 		&mut self.inner
 	}
 
+	/// Borrow this vector chain immutably as a [`SliceRefChain`].
+	///
+	/// Note: this does not consume `self`, but only immutably borrow from it. So,
+	/// you will need to keep `self` in somewhere owned.
 	pub fn as_slice_ref_chainer(&self) -> SliceRefChain<T> {
 		(*self.inner).into()
 	}
 
+	/// Borrow this vector chain mutably as a [`SliceMutChain`].
+	///
+	/// Note: this does not consume `self`, but only mutably borrow from it. So,
+	/// you will need to keep `self` in somewhere owned.
 	pub fn as_slice_mut_chainer(&mut self) -> SliceMutChain<T> {
 		(&mut *self.inner).into()
 	}
@@ -54,6 +138,15 @@ impl<T> VecChain<T> {
 		&mut self.inner
 	}
 
+	/// Unwraps and retrieves the underlying [`Vec`] out.
+	///
+	/// # Examples
+	///
+	/// ```
+	/// # use wiwi::chainer::VecChain;
+	/// # let vec_chain = VecChain::<String>::new();
+	/// let regular_vec = vec_chain.into_inner();
+	/// ```
 	pub fn into_inner(self) -> Vec<T> {
 		self.inner
 	}
