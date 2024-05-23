@@ -128,6 +128,7 @@ impl<T> IntoChainer for BinaryHeap<T> {
 }
 
 #[cfg(feature = "bitstream-unstable")]
+#[cfg_attr(docsrs, doc(cfg(feature = "bitstream-unstable")))]
 impl IntoChainer for crate::bitstream::Encoder {
 	type Chain = super::BitstreamEncoderChain;
 }

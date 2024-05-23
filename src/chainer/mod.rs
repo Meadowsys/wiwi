@@ -57,7 +57,7 @@ mod binary_heap;
 pub use binary_heap::BinaryHeapChain;
 
 #[cfg(feature = "bitstream-unstable")]
-#[cfg_attr(docsrs, doc(cfg(feature = "bitstream-unstable")))]
 mod bitstream;
+#[cfg_attr(docsrs, doc(cfg(feature = "bitstream-unstable")))]
 #[cfg(feature = "bitstream-unstable")]
 pub use bitstream::BitstreamEncoderChain;
