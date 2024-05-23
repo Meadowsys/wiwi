@@ -28,7 +28,7 @@ impl<T> VecChain<T> {
 	/// # Examples
 	///
 	/// ```
-	/// # use wiwi::chainer_2::VecChain;
+	/// # use wiwi::chainer::VecChain;
 	/// // a chain thingie! yay!...
 	/// let chain = VecChain::<String>::new();
 	/// ```
@@ -57,7 +57,7 @@ impl<T> VecChain<T> {
 	/// # Examples
 	///
 	/// ```
-	/// # use wiwi::chainer_2::VecChain;
+	/// # use wiwi::chainer::VecChain;
 	/// # let mut len = 0;
 	/// # let mut initial_capacity = 0;
 	/// # let mut capacity = 0;
@@ -154,7 +154,7 @@ impl<T> VecChain<T> {
 	/// # Examples
 	///
 	/// ```
-	/// # use wiwi::chainer_2::VecChain;
+	/// # use wiwi::chainer::VecChain;
 	/// # let vec_chain = VecChain::<String>::new();
 	/// let regular_vec = vec_chain.into_inner();
 	/// ```
@@ -456,7 +456,7 @@ impl<T> VecChain<T> {
 	/// # Examples
 	///
 	/// ```
-	/// # use wiwi::chainer_2::VecChain;
+	/// # use wiwi::chainer::VecChain;
 	/// // output variables...
 	/// let mut before = false;
 	/// let mut after = false;
@@ -481,7 +481,7 @@ impl<T> VecChain<T> {
 	///
 	/// ```
 	/// # use std::mem::MaybeUninit;
-	/// # use wiwi::chainer_2::VecChain;
+	/// # use wiwi::chainer::VecChain;
 	/// // output variables...
 	/// let mut before = MaybeUninit::uninit();
 	/// let mut after = MaybeUninit::uninit();
@@ -537,7 +537,7 @@ impl<T> VecChain<T> {
 	/// # Examples
 	///
 	/// ```
-	/// # use wiwi::chainer_2::VecChain;
+	/// # use wiwi::chainer::VecChain;
 	/// let mut static_ref = VecChain::new()
 	///    .extend_from_slice(&[1, 2, 3])
 	///    .leak::<'static>();
@@ -559,7 +559,7 @@ impl<T> VecChain<T> {
 	/// # Examples
 	///
 	/// ```
-	/// # use wiwi::chainer_2::VecChain;
+	/// # use wiwi::chainer::VecChain;
 	/// let mut len = 0;
 	///
 	/// let chain = VecChain::new()
@@ -582,7 +582,7 @@ impl<T> VecChain<T> {
 	///
 	/// ```
 	/// # use std::mem::MaybeUninit;
-	/// # use wiwi::chainer_2::VecChain;
+	/// # use wiwi::chainer::VecChain;
 	/// let mut len = MaybeUninit::uninit();
 	///
 	/// let chain = VecChain::new()
@@ -850,7 +850,7 @@ impl<T> VecChain<T> {
 	/// # Examples
 	///
 	/// ```
-	/// # use wiwi::chainer_2::VecChain;
+	/// # use wiwi::chainer::VecChain;
 	/// # let mut spare_len = 0;
 	/// # let mut new_spare_len = 0;
 	/// let chain = VecChain::with_capacity(10)

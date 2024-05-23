@@ -1,4 +1,4 @@
-use crate::chainer_2::SliceRefChain;
+use crate::chainer::SliceRefChain;
 use crate::iter::*;
 use std::mem::MaybeUninit;
 
