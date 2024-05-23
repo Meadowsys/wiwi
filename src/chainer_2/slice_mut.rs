@@ -1,5 +1,6 @@
 use crate::to_maybeuninit::ToMaybeUninit as _;
-use std::mem::MaybeUninit;
+use std::mem::{ self, MaybeUninit };
+use std::slice;
 use super::SliceRefChain;
 
 #[repr(transparent)]
@@ -33,6 +34,23 @@ impl<'h, T> SliceMutChain<'h, T> {
 	pub fn len_uninit(self, out: &mut MaybeUninit<usize>) -> Self {
 		out.write(self.inner.len());
 		self
+	}
+}
+
+impl<'h, T, const N: usize> SliceMutChain<'h, [T; N]> {
+	pub fn flatten(self) -> SliceMutChain<'h, T> {
+		// TODO: use SizedTypeProperties or slice `flatten`, whichever stabilises first
+		let len = if mem::size_of::<T>() == 0 {
+			self.inner.len()
+				.checked_mul(N)
+				.expect("slice len overflow")
+		} else {
+			// TODO: unchecked_mul when stable (1.79)
+			self.inner.len() * N
+		};
+
+		let ptr = self.inner as *mut [[T; N]] as *mut T;
+		unsafe { slice::from_raw_parts_mut(ptr, len).into() }
 	}
 }
 

@@ -1,5 +1,4 @@
-use std::mem::size_of;
-use std::slice;
+use std::{ mem, slice };
 
 #[repr(transparent)]
 pub struct SliceRefChain<'h, T> {
@@ -17,10 +16,10 @@ impl<'h, T> SliceRefChain<'h, T> {
 }
 
 impl<'h, T, const N: usize> SliceRefChain<'h, [T; N]> {
-	pub fn flatten(&self) -> SliceRefChain<'h, T> {
+	pub fn flatten(self) -> SliceRefChain<'h, T> {
 		// taken from std's flatten fn
 		// TODO: use SizedTypeProperties or slice `flatten`, whichever gets stabilised first
-		let len = if size_of::<T>() == 0 {
+		let len = if mem::size_of::<T>() == 0 {
 			self.inner.len()
 				.checked_mul(N)
 				.expect("slice len overflow")
@@ -31,7 +30,7 @@ impl<'h, T, const N: usize> SliceRefChain<'h, [T; N]> {
 			self.inner.len() * N
 		};
 
-		let ptr = self as *const SliceRefChain<[T; N]> as *const T;
+		let ptr = self.inner as *const [[T; N]] as *const T;
 		unsafe { slice::from_raw_parts(ptr, len).into() }
 	}
 }
