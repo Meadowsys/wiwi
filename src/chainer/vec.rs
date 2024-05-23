@@ -1,10 +1,10 @@
 use crate::iter::{ IterAdapter, IntoIter, IntoStdIterator };
 use crate::to_maybeuninit::ToMaybeUninit as _;
+use std::{ ptr, vec };
 use std::cmp::Ordering;
 use std::mem::{ self, ManuallyDrop, MaybeUninit };
 use std::ops::RangeBounds;
 use std::slice::{ self, SliceIndex };
-use std::{ ptr, vec };
 use super::{ SliceBoxChain, SliceRefChain, SliceMutChain };
 
 /// Vec type that provides a chaining API.
@@ -198,27 +198,128 @@ impl<T> VecChain<T> {
 		self.append(&mut other.inner)
 	}
 
-	pub fn as_chunks<CB, const N: usize>(mut self, cb: CB) -> Self
+	pub fn as_chunks<const N: usize, CB>(self, cb: CB) -> Self
 	where
 		CB: FnOnce(&[[T; N]], &[T])
+		// CB: FnOnce(SliceRefChain<>, &[T])
 	{
 		// TODO: call std equivalent after its stabilised
 
 		unsafe {
-			let mut len = MaybeUninit::uninit();
-			self = self.len_uninit(&mut len);
-			let len = len.assume_init();
+			let len = self.inner.len();
+			let remainder = len % N;
+			let ptr = self.as_ptr().add(len - remainder);
+			let partial_chunk = slice::from_raw_parts(ptr, remainder);
 
+			// SAFETY: our impl of this unchecked fn just uses int division
+			// (round down), so this is sound. However we're not promising this
+			// in the public API
+			self.as_chunks_unchecked(|chunks| cb(chunks, partial_chunk))
+		}
+	}
+
+	pub fn as_chunks_mut<const N: usize, CB>(mut self, cb: CB) -> Self
+	where
+		CB: FnOnce(&mut [[T; N]], &mut [T])
+	{
+		// TODO: call std equivalent when its stabilised
+
+		unsafe {
+			let len = self.inner.len();
+			let remainder = len % N;
+			let ptr = self.as_mut_ptr().add(len - remainder);
+			let partial_chunk = slice::from_raw_parts_mut(ptr, remainder);
+
+			// SAFETY: our impl of this unchecked fn just uses int division
+			// (round down), so this is sound. However we're not promising this
+			// in the public API
+			self.as_chunks_unchecked_mut(|chunks| cb(chunks, partial_chunk))
+		}
+	}
+
+	pub unsafe fn as_chunks_unchecked<const N: usize, CB>(self, cb: CB) -> Self
+	where
+		CB: FnOnce(&[[T; N]])
+	{
+		// TODO: call std equivalent after its stabilised
+
+		unsafe {
+			// SAFETY: the non-unsafe versions of this function is relying on this
+			// int (round down) division, rather than exact division
+			// (like std::intrinsics::exact_div). Do not change this without
+			// changing those uses also
+			let chunks = self.inner.len() / N;
+
+			let ptr = self.as_ptr() as *const [T; N];
+			let slice = slice::from_raw_parts(ptr, chunks);
+			cb(slice);
+		}
+
+		self
+	}
+
+	pub unsafe fn as_chunks_unchecked_mut<const N: usize, CB>(mut self, cb: CB) -> Self
+	where
+		CB: FnOnce(&mut [[T; N]])
+	{
+		// TODO: call std equivalent after its stabilised
+
+		unsafe {
+			// SAFETY: the non-unsafe versions of this function is relying on this
+			// int (round down) division, rather than exact division
+			// (like std::intrinsics::exact_div). Do not change this without
+			// changing those uses also
+			let chunks = self.inner.len() / N;
+
+			let ptr = self.as_mut_ptr() as *mut [T; N];
+			let slice = slice::from_raw_parts_mut(ptr, chunks);
+			cb(slice);
+		}
+
+		self
+	}
+
+	pub fn as_rchunks<const N: usize, CB>(self, cb: CB) -> Self
+	where
+		CB: FnOnce(&[T], &[[T; N]])
+	{
+		// TODO: call std equivalent after its stabilised
+
+		unsafe {
+			let len = self.inner.len();
+			let remainder = len % N;
 			let full_chunks = len / N;
-			let partial_len = len % N;
 
-			let ptr = self.inner.as_ptr();
-			let ptr_partial = ptr.add(full_chunks * N);
+			let partial_ptr = self.as_ptr();
+			let full_ptr = partial_ptr.add(remainder) as *const [T; N];
 
-			let full_chunks = slice::from_raw_parts(ptr as *const [T; N], full_chunks);
-			let partial_chunk = slice::from_raw_parts(ptr_partial, partial_len);
+			let partial = slice::from_raw_parts(partial_ptr, remainder);
+			let full = slice::from_raw_parts(full_ptr, full_chunks);
 
-			cb(full_chunks, partial_chunk);
+			cb(partial, full);
+		}
+
+		self
+	}
+
+	pub fn as_rchunks_mut<const N: usize, CB>(mut self, cb: CB) -> Self
+	where
+		CB: FnOnce(&mut [T], &mut [[T; N]])
+	{
+		// TODO: call std equivalent after its stabilised
+
+		unsafe {
+			let len = self.inner.len();
+			let remainder = len % N;
+			let full_chunks = len / N;
+
+			let partial_ptr = self.as_mut_ptr();
+			let full_ptr = partial_ptr.add(remainder) as *mut [T; N];
+
+			let partial = slice::from_raw_parts_mut(partial_ptr, remainder);
+			let full = slice::from_raw_parts_mut(full_ptr, full_chunks);
+
+			cb(partial, full);
 		}
 
 		self
@@ -904,7 +1005,6 @@ impl<T> VecChain<T> {
 	}
 
 	// TODO: utf8_chunks
-	// TODO: is_ascii
 	// TODO: as_ascii
 	// TODO: as_ascii_unchecked
 	// TODO: eq_ignore_ascii_case
@@ -927,13 +1027,7 @@ impl<T> VecChain<T> {
 	// TODO: windows
 	// TODO: chunks/mut
 	// TODO: chunks_exact/mut
-	// TODO: as_chunks_unchecked
-	// TODO: as_chunks
-	// TODO: as_rchunks
 	// TODO: array_chunks
-	// TODO: as_chunks_unchecked_mut
-	// TODO: as_chunks_mut
-	// TODO: as_rchunks_mut
 	// TODO: array_chunks_mut
 	// TODO: array_windows
 	// TODO: rchunks/mut
@@ -949,7 +1043,6 @@ impl<T> VecChain<T> {
 	// TODO: rsplitn/mut
 	// TODO: split_once/mut
 	// TODO: rsplit_once/mut
-	// TODO: contains
 	// TODO: starts/ends_with
 	// TODO: strip_prefix/suffix
 	// TODO: select_nth_unstable/by/key
@@ -980,7 +1073,7 @@ impl<T> VecChain<T> {
 	// TODO: concat
 	// TODO: join
 
-	// TODO: nightly as_chunks/unchecked, as_chunks_mut/unchecked, as_rchunks/mut, array_chunks/mut
+	// TODO: nightly array_chunks/mut
 
 	// TODO: rchunks/mut
 	// TODO: rchunks_exact/mut
@@ -1017,8 +1110,6 @@ impl<T> VecChain<T> {
 	// TODO: get_many_unchecked_mut
 	// TODO: get_many_mut
 	// TODO: get_many/get_many_unchecked (non mut? not in std?)
-	// TODO: is_ascii
-	// TODO: as_ascii/unchecked
 	// TODO: eq_ignore_ascii_case
 	// TODO: make_ascii_uppercase/lowercase
 	// TODO: escape_ascii
@@ -1036,6 +1127,19 @@ impl VecChain<f64> {
 	pub fn sort_floats(mut self) -> Self {
 		self.sort_unstable_by(f64::total_cmp)
 	}
+}
+
+impl VecChain<u8> {
+	pub fn is_ascii(self, out: &mut bool) -> Self {
+		self.is_ascii_uninit(out.to_maybeuninit_mut())
+	}
+
+	pub fn is_ascii_uninit(self, out: &mut MaybeUninit<bool>) -> Self {
+		out.write(self.inner.is_ascii());
+		self
+	}
+
+	// TODO: as_ascii/unchecked nightly
 }
 
 impl<T, const N: usize> VecChain<[T; N]> {
