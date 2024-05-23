@@ -1,13 +1,18 @@
 name: deploy docs
 on:
-  push:
+  workflow_run:
+    workflows:
+    - tests
+    types:
+    - completed
     branches:
-    - "wiwi"
+    - wiwi
 
 jobs:
   docs:
     name: run
     runs-on: ubuntu-24.04
+    if: ${{ github.event.workflow_run.conclusion == 'success' }}
 
     steps:
     - name: checkout code
@@ -15,11 +20,6 @@ jobs:
 
     - name: setup rust
       run: rustc --version
-
-    - name: quick build and test
-      run: |
-        cargo build --verbose --features all-unstable
-        cargo test --verbose --features all-unstable
 
     - name: install fish shell (lazy)
       run: |
