@@ -162,6 +162,12 @@ impl<T> VecChain<T> {
 		self.inner
 	}
 
+	pub fn into_raw_parts(self) -> (*mut T, usize, usize) {
+		// TODO: use vec impl when stabilised
+		let mut me = ManuallyDrop::new(self.inner);
+		(me.as_mut_ptr(), me.len(), me.capacity())
+	}
+
 	pub fn into_boxed_slice(self) -> Box<[T]> {
 		self.inner.into_boxed_slice()
 	}
@@ -178,18 +184,6 @@ impl<T> VecChain<T> {
 	// TODO: try_with_capacity_in
 	// TODO: from_raw_parts_in
 
-	pub fn into_raw_parts(self) -> (*mut T, usize, usize) {
-		// TODO: use std's version once stable
-
-		let mut me = ManuallyDrop::new(self);
-
-		let pointer = me.inner.as_mut_ptr();
-		let length = me.inner.len();
-		let capacity = me.inner.capacity();
-
-		(pointer, length, capacity)
-	}
-
 	// TODO: into_raw_parts_with_alloc
 	// TODO: fn allocator
 }
@@ -204,9 +198,9 @@ impl<T> VecChain<T> {
 		self.append(&mut other.inner)
 	}
 
-	pub fn as_chunks<F, const N: usize>(mut self, f: F) -> Self
+	pub fn as_chunks<CB, const N: usize>(mut self, cb: CB) -> Self
 	where
-		F: FnOnce(&[[T; N]], &[T])
+		CB: FnOnce(&[[T; N]], &[T])
 	{
 		// TODO: call std equivalent after its stabilised
 
@@ -224,7 +218,7 @@ impl<T> VecChain<T> {
 			let full_chunks = slice::from_raw_parts(ptr as *const [T; N], full_chunks);
 			let partial_chunk = slice::from_raw_parts(ptr_partial, partial_len);
 
-			f(full_chunks, partial_chunk);
+			cb(full_chunks, partial_chunk);
 		}
 
 		self
@@ -350,12 +344,12 @@ impl<T> VecChain<T> {
 		self
 	}
 
-	pub fn drain<R, F>(mut self, range: R, f: F) -> Self
+	pub fn drain<R, CB>(mut self, range: R, cb: CB) -> Self
 	where
 		R: RangeBounds<usize>,
-		F: FnOnce(vec::Drain<T>)
+		CB: FnOnce(vec::Drain<T>)
 	{
-		f(self.inner.drain(range));
+		cb(self.inner.drain(range));
 		self
 	}
 
@@ -392,56 +386,59 @@ impl<T> VecChain<T> {
 	}
 
 	// TODO: extract_if
+	// pub fn extract_if(mut self) {
+	// 	self.inner.extract_if(filter)
+	// }
 
-	pub fn first<F>(self, f: F) -> Self
+	pub fn first<CB>(self, cb: CB) -> Self
 	where
-		F: FnOnce(Option<&T>)
+		CB: FnOnce(Option<&T>)
 	{
-		f(self.inner.first());
+		cb(self.inner.first());
 		self
 	}
 
-	pub fn first_mut<F>(mut self, f: F) -> Self
+	pub fn first_mut<CB>(mut self, cb: CB) -> Self
 	where
-		F: FnOnce(Option<&mut T>)
+		CB: FnOnce(Option<&mut T>)
 	{
-		f(self.inner.first_mut());
+		cb(self.inner.first_mut());
 		self
 	}
 
-	pub fn get<I, F>(self, index: I, f: F) -> Self
+	pub fn get<I, CB>(self, index: I, cb: CB) -> Self
 	where
 		I: SliceIndex<[T]>,
-		F: FnOnce(Option<&I::Output>)
+		CB: FnOnce(Option<&I::Output>)
 	{
-		f(self.inner.get(index));
+		cb(self.inner.get(index));
 		self
 	}
 
-	pub fn get_mut<I, F>(mut self, index: I, f: F) -> Self
+	pub fn get_mut<I, CB>(mut self, index: I, cb: CB) -> Self
 	where
 		I: SliceIndex<[T]>,
-		F: FnOnce(Option<&mut I::Output>)
+		CB: FnOnce(Option<&mut I::Output>)
 	{
-		f(self.inner.get_mut(index));
+		cb(self.inner.get_mut(index));
 		self
 	}
 
-	pub unsafe fn get_unchecked<I, F>(self, index: I, f: F) -> Self
+	pub unsafe fn get_unchecked<I, CB>(self, index: I, cb: CB) -> Self
 	where
 		I: SliceIndex<[T]>,
-		F: FnOnce(&I::Output)
+		CB: FnOnce(&I::Output)
 	{
-		f(self.inner.get_unchecked(index));
+		cb(self.inner.get_unchecked(index));
 		self
 	}
 
-	pub unsafe fn get_unchecked_mut<I, F>(mut self, index: I, f: F) -> Self
+	pub unsafe fn get_unchecked_mut<I, CB>(mut self, index: I, cb: CB) -> Self
 	where
 		I: SliceIndex<[T]>,
-		F: FnOnce(&mut I::Output)
+		CB: FnOnce(&mut I::Output)
 	{
-		f(self.inner.get_unchecked_mut(index));
+		cb(self.inner.get_unchecked_mut(index));
 		self
 	}
 
@@ -504,19 +501,19 @@ impl<T> VecChain<T> {
 		self
 	}
 
-	pub fn last<F>(self, f: F) -> Self
+	pub fn last<CB>(self, cb: CB) -> Self
 	where
-		F: FnOnce(Option<&T>)
+		CB: FnOnce(Option<&T>)
 	{
-		f(self.inner.last());
+		cb(self.inner.last());
 		self
 	}
 
-	pub fn last_mut<F>(mut self, f: F) -> Self
+	pub fn last_mut<CB>(mut self, cb: CB) -> Self
 	where
-		F: FnOnce(Option<&mut T>)
+		CB: FnOnce(Option<&mut T>)
 	{
-		f(self.inner.last_mut());
+		cb(self.inner.last_mut());
 		self
 	}
 
@@ -730,19 +727,19 @@ impl<T> VecChain<T> {
 		self
 	}
 
-	pub fn splice<R, I, F>(mut self, range: R, replace_with: I, f: F) -> Self
+	pub fn splice<R, I, CB>(mut self, range: R, replace_with: I, cb: CB) -> Self
 	where
 		R: RangeBounds<usize>,
 		I: IntoIter<Item = T>,
-		F: FnOnce(vec::Splice<IterAdapter<I::Iter>>)
+		CB: FnOnce(vec::Splice<IterAdapter<I::Iter>>)
 	{
-		f(self.inner.splice(range, replace_with.convert_wiwi_into_std_iterator()));
+		cb(self.inner.splice(range, replace_with.convert_wiwi_into_std_iterator()));
 		self
 	}
 
-	pub fn split_at_spare_mut<F>(mut self, f: F) -> Self
+	pub fn split_at_spare_mut<CB>(mut self, cb: CB) -> Self
 	where
-		F: FnOnce(SliceMutChain<T>, SliceMutChain<MaybeUninit<T>>)
+		CB: FnOnce(SliceMutChain<T>, SliceMutChain<MaybeUninit<T>>)
 	{
 		// TODO: call Vec impl when it is stabilised
 		unsafe {
@@ -756,41 +753,41 @@ impl<T> VecChain<T> {
 			let init = slice::from_raw_parts_mut(ptr, len).into();
 			let spare = slice::from_raw_parts_mut(spare_ptr, spare_len).into();
 
-			f(init, spare);
+			cb(init, spare);
 		}
 
 		self
 	}
 
-	pub fn split_first<F>(self, f: F) -> Self
+	pub fn split_first<CB>(self, cb: CB) -> Self
 	where
-		F: FnOnce(Option<(&T, SliceRefChain<T>)>)
+		CB: FnOnce(Option<(&T, SliceRefChain<T>)>)
 	{
-		f(self.inner.split_first().map(|(a, b)| (a, b.into())));
+		cb(self.inner.split_first().map(|(a, b)| (a, b.into())));
 		self
 	}
 
-	pub fn split_first_mut<F>(mut self, f: F) -> Self
+	pub fn split_first_mut<CB>(mut self, cb: CB) -> Self
 	where
-		F: FnOnce(Option<(&mut T, SliceMutChain<T>)>)
+		CB: FnOnce(Option<(&mut T, SliceMutChain<T>)>)
 	{
-		f(self.inner.split_first_mut().map(|(a, b)| (a, b.into())));
+		cb(self.inner.split_first_mut().map(|(a, b)| (a, b.into())));
 		self
 	}
 
-	pub fn split_last<F>(self, f: F) -> Self
+	pub fn split_last<CB>(self, cb: CB) -> Self
 	where
-		F: FnOnce(Option<(&T, SliceRefChain<T>)>)
+		CB: FnOnce(Option<(&T, SliceRefChain<T>)>)
 	{
-		f(self.inner.split_last().map(|(a, b)| (a, b.into())));
+		cb(self.inner.split_last().map(|(a, b)| (a, b.into())));
 		self
 	}
 
-	pub fn split_last_mut<F>(mut self, f: F) -> Self
+	pub fn split_last_mut<CB>(mut self, cb: CB) -> Self
 	where
-		F: FnOnce(Option<(&mut T, SliceMutChain<T>)>)
+		CB: FnOnce(Option<(&mut T, SliceMutChain<T>)>)
 	{
-		f(self.inner.split_last_mut().map(|(a, b)| (a, b.into())));
+		cb(self.inner.split_last_mut().map(|(a, b)| (a, b.into())));
 		self
 	}
 
@@ -873,11 +870,11 @@ impl<T> VecChain<T> {
 	///       assert_eq!(spare_len - 2, new_spare_len);
 	///    });
 	/// ```
-	pub fn spare_capacity_mut<F>(mut self, f: F) -> Self
+	pub fn spare_capacity_mut<CB>(mut self, cb: CB) -> Self
 	where
-		F: FnOnce(SliceMutChain<MaybeUninit<T>>)
+		CB: FnOnce(SliceMutChain<MaybeUninit<T>>)
 	{
-		f(self.inner.spare_capacity_mut().into());
+		cb(self.inner.spare_capacity_mut().into());
 		self
 	}
 
