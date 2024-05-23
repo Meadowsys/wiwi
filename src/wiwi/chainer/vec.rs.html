@@ -1737,7 +1737,7 @@
 	</span><span class="kw">where
 		</span>T: Ord
 	{
-		<span class="self">self</span>.binary_search_uninit(x, out.to_maybeuninit_mut())
+		<span class="self">self</span>.binary_search_uninit(x, <span class="kw">unsafe </span>{ out.to_maybeuninit_drop() })
 	}
 
 	<span class="kw">pub fn </span>binary_search_uninit(<span class="self">self</span>, x: <span class="kw-2">&amp;</span>T, out: <span class="kw-2">&amp;mut </span>MaybeUninit&lt;<span class="prelude-ty">Result</span>&lt;usize, usize&gt;&gt;) -&gt; <span class="self">Self
@@ -1752,7 +1752,7 @@
 	</span><span class="kw">where
 		</span>F: FnMut(<span class="kw-2">&amp;</span>T) -&gt; Ordering
 	{
-		<span class="self">self</span>.binary_search_by_uninit(f, out.to_maybeuninit_mut())
+		<span class="self">self</span>.binary_search_by_uninit(f, <span class="kw">unsafe </span>{ out.to_maybeuninit_drop() })
 	}
 
 	<span class="kw">pub fn </span>binary_search_by_uninit&lt;F&gt;(<span class="self">self</span>, f: F, out: <span class="kw-2">&amp;mut </span>MaybeUninit&lt;<span class="prelude-ty">Result</span>&lt;usize, usize&gt;&gt;) -&gt; <span class="self">Self
@@ -1768,7 +1768,7 @@
 		</span>F: FnMut(<span class="kw-2">&amp;</span>T) -&gt; B,
 		B: Ord
 	{
-		<span class="self">self</span>.binary_search_by_key_uninit(b, f, out.to_maybeuninit_mut())
+		<span class="self">self</span>.binary_search_by_key_uninit(b, f, <span class="kw">unsafe </span>{ out.to_maybeuninit_drop() })
 	}
 
 	<span class="kw">pub fn </span>binary_search_by_key_uninit&lt;B, F&gt;(<span class="self">self</span>, b: <span class="kw-2">&amp;</span>B, f: F, out: <span class="kw-2">&amp;mut </span>MaybeUninit&lt;<span class="prelude-ty">Result</span>&lt;usize, usize&gt;&gt;) -&gt; <span class="self">Self
@@ -1781,7 +1781,7 @@
 	</span>}
 
 	<span class="kw">pub fn </span>capacity(<span class="self">self</span>, out: <span class="kw-2">&amp;mut </span>usize) -&gt; <span class="self">Self </span>{
-		<span class="self">self</span>.capacity_uninit(out.to_maybeuninit_mut())
+		<span class="self">self</span>.capacity_uninit(<span class="kw">unsafe </span>{ out.to_maybeuninit_drop() })
 	}
 
 	<span class="kw">pub fn </span>capacity_uninit(<span class="self">self</span>, out: <span class="kw-2">&amp;mut </span>MaybeUninit&lt;usize&gt;) -&gt; <span class="self">Self </span>{
@@ -1798,7 +1798,7 @@
 	</span><span class="kw">where
 		</span>T: PartialEq
 	{
-		<span class="self">self</span>.contains_uninit(x, out.to_maybeuninit_mut())
+		<span class="self">self</span>.contains_uninit(x, <span class="kw">unsafe </span>{ out.to_maybeuninit_drop() })
 	}
 
 	<span class="kw">pub fn </span>contains_uninit(<span class="self">self</span>, x: <span class="kw-2">&amp;</span>T, out: <span class="kw-2">&amp;mut </span>MaybeUninit&lt;bool&gt;) -&gt; <span class="self">Self
@@ -1866,7 +1866,7 @@
 	</span><span class="kw">where
 		</span>T: PartialEq
 	{
-		<span class="self">self</span>.ends_with_uninit(needle, out.to_maybeuninit_mut())
+		<span class="self">self</span>.ends_with_uninit(needle, <span class="kw">unsafe </span>{ out.to_maybeuninit_drop() })
 	}
 
 	<span class="kw">pub fn </span>ends_with_uninit(<span class="self">self</span>, needle: <span class="kw-2">&amp;</span>[T], out: <span class="kw-2">&amp;mut </span>MaybeUninit&lt;bool&gt;) -&gt; <span class="self">Self
@@ -1977,7 +1977,7 @@
 	/// assert!(!after);
 	/// ```
 	</span><span class="kw">pub fn </span>is_empty(<span class="self">self</span>, out: <span class="kw-2">&amp;mut </span>bool) -&gt; <span class="self">Self </span>{
-		<span class="self">self</span>.is_empty_uninit(out.to_maybeuninit_mut())
+		<span class="self">self</span>.is_empty_uninit(<span class="kw">unsafe </span>{ out.to_maybeuninit_drop() })
 	}
 
 	<span class="doccomment">/// Writes `true` into the output if the vector contains no elements, and
@@ -2075,7 +2075,7 @@
 	/// assert_eq!(len, 5);
 	/// ```
 	</span><span class="kw">pub fn </span>len(<span class="self">self</span>, out: <span class="kw-2">&amp;mut </span>usize) -&gt; <span class="self">Self </span>{
-		<span class="self">self</span>.len_uninit(out.to_maybeuninit_mut())
+		<span class="self">self</span>.len_uninit(<span class="kw">unsafe </span>{ out.to_maybeuninit_drop() })
 	}
 
 	<span class="doccomment">/// Writes the number of elements (also known as the length) in the vector
@@ -2105,7 +2105,7 @@
 	</span>}
 
 	<span class="kw">pub fn </span>pop(<span class="kw-2">mut </span><span class="self">self</span>, out: <span class="kw-2">&amp;mut </span><span class="prelude-ty">Option</span>&lt;T&gt;) -&gt; <span class="self">Self </span>{
-		<span class="self">self</span>.pop_uninit(out.to_maybeuninit_mut())
+		<span class="self">self</span>.pop_uninit(<span class="kw">unsafe </span>{ out.to_maybeuninit_drop() })
 	}
 
 	<span class="kw">pub fn </span>pop_uninit(<span class="kw-2">mut </span><span class="self">self</span>, out: <span class="kw-2">&amp;mut </span>MaybeUninit&lt;<span class="prelude-ty">Option</span>&lt;T&gt;&gt;) -&gt; <span class="self">Self </span>{
@@ -2123,7 +2123,7 @@
 	<span class="comment">// TODO: push_within_capacity
 
 	</span><span class="kw">pub fn </span>remove(<span class="kw-2">mut </span><span class="self">self</span>, index: usize, out: <span class="kw-2">&amp;mut </span>T) -&gt; <span class="self">Self </span>{
-		<span class="self">self</span>.remove_uninit(index, out.to_maybeuninit_mut())
+		<span class="self">self</span>.remove_uninit(index, <span class="kw">unsafe </span>{ out.to_maybeuninit_drop() })
 	}
 
 	<span class="kw">pub fn </span>remove_uninit(<span class="kw-2">mut </span><span class="self">self</span>, index: usize, out: <span class="kw-2">&amp;mut </span>MaybeUninit&lt;T&gt;) -&gt; <span class="self">Self </span>{
@@ -2331,7 +2331,7 @@
 	</span><span class="kw">where
 		</span>T: PartialEq
 	{
-		<span class="self">self</span>.starts_with_uninit(needle, out.to_maybeuninit_mut())
+		<span class="self">self</span>.starts_with_uninit(needle, <span class="kw">unsafe </span>{ out.to_maybeuninit_drop() })
 	}
 
 	<span class="kw">pub fn </span>starts_with_uninit(<span class="self">self</span>, needle: <span class="kw-2">&amp;</span>[T], out: <span class="kw-2">&amp;mut </span>MaybeUninit&lt;bool&gt;) -&gt; <span class="self">Self
@@ -2355,7 +2355,7 @@
 	</span>}
 
 	<span class="kw">pub fn </span>swap_remove(<span class="kw-2">mut </span><span class="self">self</span>, index: usize, out: <span class="kw-2">&amp;mut </span>T) -&gt; <span class="self">Self </span>{
-		<span class="self">self</span>.swap_remove_uninit(index, out.to_maybeuninit_mut())
+		<span class="self">self</span>.swap_remove_uninit(index, <span class="kw">unsafe </span>{ out.to_maybeuninit_drop() })
 	}
 
 	<span class="kw">pub fn </span>swap_remove_uninit(<span class="kw-2">mut </span><span class="self">self</span>, index: usize, out: <span class="kw-2">&amp;mut </span>MaybeUninit&lt;T&gt;) -&gt; <span class="self">Self </span>{
@@ -2536,7 +2536,7 @@
 
 <span class="kw">impl </span>VecChain&lt;u8&gt; {
 	<span class="kw">pub fn </span>is_ascii(<span class="self">self</span>, out: <span class="kw-2">&amp;mut </span>bool) -&gt; <span class="self">Self </span>{
-		<span class="self">self</span>.is_ascii_uninit(out.to_maybeuninit_mut())
+		<span class="self">self</span>.is_ascii_uninit(<span class="kw">unsafe </span>{ out.to_maybeuninit_drop() })
 	}
 
 	<span class="kw">pub fn </span>is_ascii_uninit(<span class="self">self</span>, out: <span class="kw-2">&amp;mut </span>MaybeUninit&lt;bool&gt;) -&gt; <span class="self">Self </span>{

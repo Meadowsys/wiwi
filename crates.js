@@ -1,1 +1,1 @@
-window.ALL_CRATES = ["wiwi"];
+window.ALL_CRATES = ["wiwi","wiwiwiwiwi"];

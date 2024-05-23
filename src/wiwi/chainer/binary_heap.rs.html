@@ -174,7 +174,7 @@
 	</span>}
 
 	<span class="kw">pub fn </span>pop(<span class="kw-2">mut </span><span class="self">self</span>, out: <span class="kw-2">&amp;mut </span><span class="prelude-ty">Option</span>&lt;T&gt;) -&gt; <span class="self">Self </span>{
-		<span class="self">self</span>.pop_uninit(out.to_maybeuninit_mut())
+		<span class="self">self</span>.pop_uninit(<span class="kw">unsafe </span>{ out.to_maybeuninit_drop() })
 	}
 
 	<span class="kw">pub fn </span>pop_uninit(<span class="kw-2">mut </span><span class="self">self</span>, out: <span class="kw-2">&amp;mut </span>MaybeUninit&lt;<span class="prelude-ty">Option</span>&lt;T&gt;&gt;) -&gt; <span class="self">Self </span>{
@@ -220,7 +220,7 @@
 	</span>}
 
 	<span class="kw">pub fn </span>capacity(<span class="self">self</span>, out: <span class="kw-2">&amp;mut </span>usize) -&gt; <span class="self">Self </span>{
-		<span class="self">self</span>.capacity_uninit(out.to_maybeuninit_mut())
+		<span class="self">self</span>.capacity_uninit(<span class="kw">unsafe </span>{ out.to_maybeuninit_drop() })
 	}
 
 	<span class="kw">pub fn </span>capacity_uninit(<span class="self">self</span>, out: <span class="kw-2">&amp;mut </span>MaybeUninit&lt;usize&gt;) -&gt; <span class="self">Self </span>{
