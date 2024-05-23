@@ -17,24 +17,25 @@
 #![cfg_attr(kiwingay, doc = "everything, including unstable features! These include:")]
 #![cfg_attr(kiwingay, doc = "")]
 
-#![cfg_attr(all(feature = "auth-unstable"),        doc = "- `auth` (unstable)"       )]
-#![cfg_attr(all(feature = "bigint-unstable"),      doc = "- `bigint` (unstable)"     )]
-#![cfg_attr(all(feature = "bitstream-unstable"),   doc = "- `bitstream` (unstable)"  )]
-#![cfg_attr(all(feature = "chainer-unstable"),     doc = "- `chainer` (unstable)"    )]
-#![cfg_attr(all(feature = "clock-timer"),          doc = "- `clock-timer`"           )]
-#![cfg_attr(all(feature = "debounce"),             doc = "- `debounce`"              )]
-#![cfg_attr(all(feature = "h"),                    doc = "- `h`"                     )]
-#![cfg_attr(all(feature = "hex"),                  doc = "- `hex`"                   )]
-#![cfg_attr(all(feature = "id-unstable"),          doc = "- `id` (unstable)"         )]
-#![cfg_attr(all(feature = "iter-unstable"),        doc = "- `iter` (unstable)"       )]
-#![cfg_attr(all(feature = "lazy-wrap"),            doc = "- `lazy-wrap`"             )]
-#![cfg_attr(all(feature = "lsl-unstable"),         doc = "- `lsl` (unstable)"        )]
-#![cfg_attr(all(feature = "path-unstable"),        doc = "- `path` (unstable)"       )]
-#![cfg_attr(all(feature = "serialiser-unstable"),  doc = "- `serialiser` (unstable)" )]
-#![cfg_attr(all(feature = "string-pool-unstable"), doc = "- `string-pool` (unstable)")]
-#![cfg_attr(all(feature = "sudoku-unstable"),      doc = "- `sudoku` (unstable)"     )]
-#![cfg_attr(all(feature = "to-maybeuninit"),       doc = "- `to-maybeuninit`"        )]
-#![cfg_attr(all(feature = "z85"),                  doc = "- `z85`"                   )]
+#![cfg_attr(all(feature = "auth-unstable"),         doc = "- `auth` (unstable)"        )]
+#![cfg_attr(all(feature = "bigint-unstable"),       doc = "- `bigint` (unstable)"      )]
+#![cfg_attr(all(feature = "bitstream-unstable"),    doc = "- `bitstream` (unstable)"   )]
+#![cfg_attr(all(feature = "chainer-unstable"),      doc = "- `chainer` (unstable)"     )]
+#![cfg_attr(all(feature = "clock-timer"),           doc = "- `clock-timer`"            )]
+#![cfg_attr(all(feature = "debounce"),              doc = "- `debounce`"               )]
+#![cfg_attr(all(feature = "h"),                     doc = "- `h`"                      )]
+#![cfg_attr(all(feature = "hex"),                   doc = "- `hex`"                    )]
+#![cfg_attr(all(feature = "id-unstable"),           doc = "- `id` (unstable)"          )]
+#![cfg_attr(all(feature = "iter-unstable"),         doc = "- `iter` (unstable)"        )]
+#![cfg_attr(all(feature = "lazy-wrap"),             doc = "- `lazy-wrap`"              )]
+#![cfg_attr(all(feature = "lsl-unstable"),          doc = "- `lsl` (unstable)"         )]
+#![cfg_attr(all(feature = "memory-usage-unstable"), doc = "- `memory-usage` (unstable)")]
+#![cfg_attr(all(feature = "path-unstable"),         doc = "- `path` (unstable)"        )]
+#![cfg_attr(all(feature = "serialiser-unstable"),   doc = "- `serialiser` (unstable)"  )]
+#![cfg_attr(all(feature = "string-pool-unstable"),  doc = "- `string-pool` (unstable)" )]
+#![cfg_attr(all(feature = "sudoku-unstable"),       doc = "- `sudoku` (unstable)"      )]
+#![cfg_attr(all(feature = "to-maybeuninit"),        doc = "- `to-maybeuninit`"         )]
+#![cfg_attr(all(feature = "z85"),                   doc = "- `z85`"                    )]
 
 #![cfg_attr(all(docsrs, not(kiwingay)), doc = "")]
 #![cfg_attr(all(docsrs, not(kiwingay)), doc = "If you would like to see documentation for unstable features, please use")]
@@ -62,6 +63,7 @@
 	not(feature = "iter-unstable"),
 	not(feature = "lazy-wrap"),
 	not(feature = "lsl-unstable"),
+	not(feature = "memory-usage-unstable"),
 	not(feature = "path-unstable"),
 	not(feature = "serialiser-unstable"),
 	not(feature = "string-pool-unstable"),
@@ -159,6 +161,10 @@ pub mod lazy_wrap;
 #[cfg(feature = "lsl-unstable")]
 #[cfg_attr(docsrs, doc(cfg(feature = "lsl-unstable")))]
 pub mod lsl;
+
+#[cfg(feature = "memory-usage-unstable")]
+#[cfg_attr(docsrs, doc(cfg(feature = "memory-usage-unstable")))]
+pub mod memory_usage;
 
 #[cfg(feature = "path-unstable")]
 #[cfg_attr(docsrs, doc(cfg(feature = "path-unstable")))]

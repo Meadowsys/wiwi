@@ -116,6 +116,7 @@ all-unstable = [
 	"id-unstable",
 	"iter-unstable",
 	"lsl-unstable",
+	"memory-usage-unstable",
 	"path-unstable",
 	"serialiser-unstable",
 	"string-pool-unstable",
@@ -176,6 +177,7 @@ lsl-unstable = [
 	"hex",
 	"id-unstable"
 ]
+memory-usage-unstable = []
 path-unstable = []
 serialiser-unstable = [
 	"dep:ordered-float"
