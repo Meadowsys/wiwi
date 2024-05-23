@@ -2,6 +2,7 @@ use crate::iter::{ IterAdapter, IntoIter, IntoStdIterator };
 use crate::to_maybeuninit::ToMaybeUninit as _;
 use std::{ ptr, vec };
 use std::cmp::Ordering;
+use std::marker::PhantomData;
 use std::mem::{ self, ManuallyDrop, MaybeUninit };
 use std::ops::RangeBounds;
 use std::slice::{ self, SliceIndex };
@@ -30,10 +31,15 @@ impl<T> VecChain<T> {
 	/// ```
 	/// # use wiwi::chainer::VecChain;
 	/// // a chain thingie! yay!...
-	/// let chain = VecChain::<String>::new();
+	/// let chain = VecChain::new();
+	/// # let chain: VecChain<String> = chain;
 	/// ```
 	pub fn new() -> Self {
 		Vec::new().into()
+	}
+
+	pub unsafe fn from_raw_parts(ptr: *mut T, length: usize, capacity: usize) -> Self {
+		Vec::from_raw_parts(ptr, length, capacity).into()
 	}
 
 	/// Creates a new vector, and preallocate some memory.
@@ -104,9 +110,26 @@ impl<T> VecChain<T> {
 	}
 
 	// TODO: try_with_capacity
+}
 
-	pub unsafe fn from_raw_parts(ptr: *mut T, length: usize, capacity: usize) -> Self {
-		Vec::from_raw_parts(ptr, length, capacity).into()
+// TODO: for alloc param
+impl<T> VecChain<T> {
+	// TODO: new_in
+	// TODO: with_capacity_in
+	// TODO: try_with_capacity_in
+	// TODO: from_raw_parts_in
+
+	// TODO: into_raw_parts_with_alloc
+	// TODO: fn allocator
+}
+
+impl<T> VecChain<T> {
+	pub fn as_ptr(&self) -> *const T {
+		self.inner.as_ptr()
+	}
+
+	pub fn as_mut_ptr(&mut self) -> *mut T {
+		self.inner.as_mut_ptr()
 	}
 
 	pub fn as_slice(&self) -> &[T] {
@@ -133,20 +156,20 @@ impl<T> VecChain<T> {
 		(&mut *self.inner).into()
 	}
 
-	pub fn as_ptr(&self) -> *const T {
-		self.inner.as_ptr()
-	}
-
-	pub fn as_mut_ptr(&mut self) -> *mut T {
-		self.inner.as_mut_ptr()
-	}
-
 	pub fn as_vec(&self) -> &Vec<T> {
 		&self.inner
 	}
 
 	pub fn as_mut_vec(&mut self) -> &mut Vec<T> {
 		&mut self.inner
+	}
+
+	pub fn into_boxed_slice(self) -> Box<[T]> {
+		self.inner.into_boxed_slice()
+	}
+
+	pub fn into_boxed_slice_chainer(self) -> SliceBoxChain<T> {
+		self.into_boxed_slice().into()
 	}
 
 	/// Unwraps and retrieves the underlying [`Vec`] out.
@@ -167,25 +190,6 @@ impl<T> VecChain<T> {
 		let mut me = ManuallyDrop::new(self.inner);
 		(me.as_mut_ptr(), me.len(), me.capacity())
 	}
-
-	pub fn into_boxed_slice(self) -> Box<[T]> {
-		self.inner.into_boxed_slice()
-	}
-
-	pub fn into_boxed_slice_chainer(self) -> SliceBoxChain<T> {
-		self.into_boxed_slice().into()
-	}
-}
-
-// TODO: for alloc param
-impl<T> VecChain<T> {
-	// TODO: new_in
-	// TODO: with_capacity_in
-	// TODO: try_with_capacity_in
-	// TODO: from_raw_parts_in
-
-	// TODO: into_raw_parts_with_alloc
-	// TODO: fn allocator
 }
 
 impl<T> VecChain<T> {
@@ -1022,7 +1026,6 @@ impl<T> VecChain<T> {
 	// TODO: get_unchecked/mut
 	// TODO: as_ptr_range/as_mut_ptr_range
 	// TODO: swap/unchecked
-	// TODO: reverse
 	// TODO: iter/mut
 	// TODO: windows
 	// TODO: chunks/mut

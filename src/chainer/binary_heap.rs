@@ -19,6 +19,12 @@ impl<T: Ord> BinaryHeapChain<T> {
 	pub fn with_capacity(capacity: usize) -> Self {
 		BinaryHeap::with_capacity(capacity).into()
 	}
+}
+
+impl<T: Ord> BinaryHeapChain<T> {
+	pub fn into_binary_heap(self) -> BinaryHeap<T> {
+		self.inner
+	}
 
 	pub fn into_sorted_vec(self) -> Vec<T> {
 		self.inner.into_sorted_vec()

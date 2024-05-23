@@ -16,12 +16,14 @@ impl BitstreamEncoderChain {
 	pub fn with_output_capacity(capacity: usize) -> Self {
 		Encoder::with_output_capacity(capacity).into()
 	}
+}
 
+impl BitstreamEncoderChain {
 	pub fn into_bytes(self) -> Vec<u8> {
 		self.inner.into_bytes()
 	}
 
-	pub fn into_byte_chainer(self) -> VecChain<u8> {
+	pub fn into_bytes_chainer(self) -> VecChain<u8> {
 		self.into_bytes().into()
 	}
 }

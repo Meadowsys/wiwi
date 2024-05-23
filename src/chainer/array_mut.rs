@@ -14,16 +14,16 @@ impl<'h, T, const N: usize> ArrayMutChain<'h, T, N> {
 		self.inner
 	}
 
+	pub fn as_array_ref_chainer(&'h self) -> ArrayRefChain<'h, T, N> {
+		(&*self.inner).into()
+	}
+
 	pub fn as_slice(&'h self) -> &'h [T] {
 		self.inner
 	}
 
 	pub fn as_mut_slice(&'h mut self) -> &'h mut [T] {
 		self.inner
-	}
-
-	pub fn as_array_ref_chainer(&'h self) -> ArrayRefChain<'h, T, N> {
-		(&*self.inner).into()
 	}
 
 	pub fn as_slice_ref_chainer(&'h self) -> SliceRefChain<'h, T> {
