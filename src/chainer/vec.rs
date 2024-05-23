@@ -727,6 +727,31 @@ impl<T> VecChain<T> {
 		self
 	}
 
+	pub fn sort_unstable(mut self) -> Self
+	where
+		T: Ord
+	{
+		self.inner.sort_unstable();
+		self
+	}
+
+	pub fn sort_unstable_by<F>(mut self, compare: F) -> Self
+	where
+		F: FnMut(&T, &T) -> Ordering
+	{
+		self.inner.sort_unstable_by(compare);
+		self
+	}
+
+	pub fn sort_unstable_by_key<K, F>(mut self, f: F) -> Self
+	where
+		F: FnMut(&T) -> K,
+		K: Ord
+	{
+		self.inner.sort_unstable_by_key(f);
+		self
+	}
+
 	pub fn splice<R, I, CB>(mut self, range: R, replace_with: I, cb: CB) -> Self
 	where
 		R: RangeBounds<usize>,
@@ -888,7 +913,6 @@ impl<T> VecChain<T> {
 	// TODO: escape_ascii
 	// TODO: trim_ascii_start/end
 	// TODO: trim_ascii
-	// TODO: sort_floats
 	// doc link: https://doc.rust-lang.org/std/vec/struct.Vec.html#method.first_chunk
 	// TODO: first_chunk/mut
 	// TODO: split_first_chunk/mut
@@ -928,7 +952,6 @@ impl<T> VecChain<T> {
 	// TODO: contains
 	// TODO: starts/ends_with
 	// TODO: strip_prefix/suffix
-	// TODO: sort_unstable/by/key
 	// TODO: select_nth_unstable/by/key
 	// TODO: partition_dedup/by/key
 	// TODO: rotate_left/right
@@ -948,7 +971,6 @@ impl<T> VecChain<T> {
 	// TODO: get_many_unchecked_mut
 	// TODO: get_many_mut
 	// TODO: why not non-mut of the above 2?
-	// TODO: sort_floats
 	// TODO: flatten/mut
 	// TODO: as_str
 	// TODO: as_bytes
@@ -976,7 +998,6 @@ impl<T> VecChain<T> {
 	// TODO: split_once
 	// TODO: rsplit_once
 	// TODO: strip_prefix/suffix
-	// TODO: sort_unstable/by/key
 	// TODO: select_nth_unstable/by/key
 	// TODO: partition_dedup/by/key
 	// TODO: rotate_left/right
@@ -996,7 +1017,6 @@ impl<T> VecChain<T> {
 	// TODO: get_many_unchecked_mut
 	// TODO: get_many_mut
 	// TODO: get_many/get_many_unchecked (non mut? not in std?)
-	// TODO: sort_floats
 	// TODO: is_ascii
 	// TODO: as_ascii/unchecked
 	// TODO: eq_ignore_ascii_case
@@ -1004,6 +1024,18 @@ impl<T> VecChain<T> {
 	// TODO: escape_ascii
 	// TODO: trim_ascii
 	// TODO: trim_ascii_start/end
+}
+
+impl VecChain<f32> {
+	pub fn sort_floats(mut self) -> Self {
+		self.sort_unstable_by(f32::total_cmp)
+	}
+}
+
+impl VecChain<f64> {
+	pub fn sort_floats(mut self) -> Self {
+		self.sort_unstable_by(f64::total_cmp)
+	}
 }
 
 impl<T, const N: usize> VecChain<[T; N]> {
@@ -1028,10 +1060,9 @@ impl<T, const N: usize> VecChain<[T; N]> {
 		// TODO: switch to into_raw_parts impl when it is stabilised?
 		// let (ptr, _len, _capacity) = self.inner.into_raw_parts();
 
-		let ptr = self.inner.as_mut_ptr();
+		let ptr = self.inner.as_mut_ptr() as *mut T;
 		mem::forget(self);
 
-		let ptr = ptr as *mut T;
 		unsafe { Vec::from_raw_parts(ptr, len, cap).into() }
 	}
 }
