@@ -5,12 +5,17 @@
 #![cfg_attr(all(not(docsrs), feature = "all-unstable"), doc = "## Enabled features (`all-unstable` is enabled)")]
 #![cfg_attr(all(not(docsrs), feature = "all", not(feature = "all-unstable")), doc = "## Enabled features (`all` is enabled)")]
 #![cfg_attr(all(not(docsrs), not(feature = "all"), not(feature = "all-unstable")), doc = "## Enabled features")]
-#![cfg_attr(docsrs, doc = "## Enabled features (docs.rs)")]
+#![cfg_attr(all(docsrs, not(kiwingay)), doc = "## Enabled features (docs.rs)")]
+#![cfg_attr(kiwingay, doc = "## Enabled features (wiwi.kiwin.gay)")]
 #![doc = ""]
 
-#![cfg_attr(docsrs, doc = "On docs.rs, the feature `all` is enabled. This means that all stable features,")]
-#![cfg_attr(docsrs, doc = "and only stable features, will appear in these docs. These include:")]
-#![cfg_attr(docsrs, doc = "")]
+#![cfg_attr(all(docsrs, not(kiwingay)), doc = "On docs.rs, the feature `all` is enabled. This means that all stable features,")]
+#![cfg_attr(all(docsrs, not(kiwingay)), doc = "and only stable features, will appear in these docs. These include:")]
+#![cfg_attr(all(docsrs, not(kiwingay)), doc = "")]
+
+#![cfg_attr(kiwingay, doc = "On wiwi.kiwin.gay, as many features as possible are enabled. This means ")]
+#![cfg_attr(kiwingay, doc = "everything, including unstable features! These include:")]
+#![cfg_attr(kiwingay, doc = "")]
 
 #![cfg_attr(all(feature = "auth-unstable"),        doc = "- `auth` (unstable)"       )]
 #![cfg_attr(all(feature = "bigint-unstable"),      doc = "- `bigint` (unstable)"     )]
@@ -31,12 +36,16 @@
 #![cfg_attr(all(feature = "to-maybeuninit"),       doc = "- `to-maybeuninit`"        )]
 #![cfg_attr(all(feature = "z85"),                  doc = "- `z85`"                   )]
 
-#![cfg_attr(docsrs, doc = "")]
-#![cfg_attr(docsrs, doc = "If you would like to see documentation for unstable features, please use")]
-#![cfg_attr(docsrs, doc = "`cargo doc` to build them locally (or alternatively `cargo doc --open` to")]
-#![cfg_attr(docsrs, doc = "open the locally built docs in your default browser). Running `cargo doc`")]
-#![cfg_attr(docsrs, doc = "will by default also generate documentation for all crates that yours depends")]
-#![cfg_attr(docsrs, doc = "on, so no need to clone the `wiwi` repository just for unstable feature docs.")]
+#![cfg_attr(all(docsrs, not(kiwingay)), doc = "")]
+#![cfg_attr(all(docsrs, not(kiwingay)), doc = "If you would like to see documentation for unstable features, please use")]
+#![cfg_attr(all(docsrs, not(kiwingay)), doc = "`cargo doc` to build them locally (or alternatively `cargo doc --open` to")]
+#![cfg_attr(all(docsrs, not(kiwingay)), doc = "open the locally built docs in your default browser). Running `cargo doc`")]
+#![cfg_attr(all(docsrs, not(kiwingay)), doc = "will by default also generate documentation for all crates that yours depends")]
+#![cfg_attr(all(docsrs, not(kiwingay)), doc = "on, so no need to clone the `wiwi` repository just for unstable feature docs.")]
+#![cfg_attr(all(docsrs, not(kiwingay)), doc = "")]
+#![cfg_attr(all(docsrs, not(kiwingay)), doc = "Unstable documentation for the in-development version of wiwi is available at [wiwi.kiwin.gay].")]
+#![cfg_attr(all(docsrs, not(kiwingay)), doc = "")]
+#![cfg_attr(all(docsrs, not(kiwingay)), doc = "[wiwi.kiwin.gay]: https://wiwi.kiwin.gay")]
 
 // ...yes, I'm doing it
 // (there's another one in prelude, copy/paste/modify for it)

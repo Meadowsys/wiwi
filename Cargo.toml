@@ -76,6 +76,7 @@ z85 = "3.0.5"
 # No longer necessary (but good to do anyways I guess):
 # - check workflow files
 # - check below docs.rs config
+# - NOTE: this _is_ good for the docs deploy workflow
 #
 # It would be good to occasionally check the dependencies too, update them,
 # remove ones that aren't part of any feature anymore, etc
