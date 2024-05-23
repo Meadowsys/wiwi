@@ -333,7 +333,7 @@ impl<T> VecChain<T> {
 	where
 		T: Ord
 	{
-		self.binary_search_uninit(x, out.to_maybeuninit_mut())
+		self.binary_search_uninit(x, unsafe { out.to_maybeuninit_drop() })
 	}
 
 	pub fn binary_search_uninit(self, x: &T, out: &mut MaybeUninit<Result<usize, usize>>) -> Self
@@ -348,7 +348,7 @@ impl<T> VecChain<T> {
 	where
 		F: FnMut(&T) -> Ordering
 	{
-		self.binary_search_by_uninit(f, out.to_maybeuninit_mut())
+		self.binary_search_by_uninit(f, unsafe { out.to_maybeuninit_drop() })
 	}
 
 	pub fn binary_search_by_uninit<F>(self, f: F, out: &mut MaybeUninit<Result<usize, usize>>) -> Self
@@ -364,7 +364,7 @@ impl<T> VecChain<T> {
 		F: FnMut(&T) -> B,
 		B: Ord
 	{
-		self.binary_search_by_key_uninit(b, f, out.to_maybeuninit_mut())
+		self.binary_search_by_key_uninit(b, f, unsafe { out.to_maybeuninit_drop() })
 	}
 
 	pub fn binary_search_by_key_uninit<B, F>(self, b: &B, f: F, out: &mut MaybeUninit<Result<usize, usize>>) -> Self
@@ -377,7 +377,7 @@ impl<T> VecChain<T> {
 	}
 
 	pub fn capacity(self, out: &mut usize) -> Self {
-		self.capacity_uninit(out.to_maybeuninit_mut())
+		self.capacity_uninit(unsafe { out.to_maybeuninit_drop() })
 	}
 
 	pub fn capacity_uninit(self, out: &mut MaybeUninit<usize>) -> Self {
@@ -394,7 +394,7 @@ impl<T> VecChain<T> {
 	where
 		T: PartialEq
 	{
-		self.contains_uninit(x, out.to_maybeuninit_mut())
+		self.contains_uninit(x, unsafe { out.to_maybeuninit_drop() })
 	}
 
 	pub fn contains_uninit(self, x: &T, out: &mut MaybeUninit<bool>) -> Self
@@ -462,7 +462,7 @@ impl<T> VecChain<T> {
 	where
 		T: PartialEq
 	{
-		self.ends_with_uninit(needle, out.to_maybeuninit_mut())
+		self.ends_with_uninit(needle, unsafe { out.to_maybeuninit_drop() })
 	}
 
 	pub fn ends_with_uninit(self, needle: &[T], out: &mut MaybeUninit<bool>) -> Self
@@ -573,7 +573,7 @@ impl<T> VecChain<T> {
 	/// assert!(!after);
 	/// ```
 	pub fn is_empty(self, out: &mut bool) -> Self {
-		self.is_empty_uninit(out.to_maybeuninit_mut())
+		self.is_empty_uninit(unsafe { out.to_maybeuninit_drop() })
 	}
 
 	/// Writes `true` into the output if the vector contains no elements, and
@@ -671,7 +671,7 @@ impl<T> VecChain<T> {
 	/// assert_eq!(len, 5);
 	/// ```
 	pub fn len(self, out: &mut usize) -> Self {
-		self.len_uninit(out.to_maybeuninit_mut())
+		self.len_uninit(unsafe { out.to_maybeuninit_drop() })
 	}
 
 	/// Writes the number of elements (also known as the length) in the vector
@@ -701,7 +701,7 @@ impl<T> VecChain<T> {
 	}
 
 	pub fn pop(mut self, out: &mut Option<T>) -> Self {
-		self.pop_uninit(out.to_maybeuninit_mut())
+		self.pop_uninit(unsafe { out.to_maybeuninit_drop() })
 	}
 
 	pub fn pop_uninit(mut self, out: &mut MaybeUninit<Option<T>>) -> Self {
@@ -719,7 +719,7 @@ impl<T> VecChain<T> {
 	// TODO: push_within_capacity
 
 	pub fn remove(mut self, index: usize, out: &mut T) -> Self {
-		self.remove_uninit(index, out.to_maybeuninit_mut())
+		self.remove_uninit(index, unsafe { out.to_maybeuninit_drop() })
 	}
 
 	pub fn remove_uninit(mut self, index: usize, out: &mut MaybeUninit<T>) -> Self {
@@ -927,7 +927,7 @@ impl<T> VecChain<T> {
 	where
 		T: PartialEq
 	{
-		self.starts_with_uninit(needle, out.to_maybeuninit_mut())
+		self.starts_with_uninit(needle, unsafe { out.to_maybeuninit_drop() })
 	}
 
 	pub fn starts_with_uninit(self, needle: &[T], out: &mut MaybeUninit<bool>) -> Self
@@ -951,7 +951,7 @@ impl<T> VecChain<T> {
 	}
 
 	pub fn swap_remove(mut self, index: usize, out: &mut T) -> Self {
-		self.swap_remove_uninit(index, out.to_maybeuninit_mut())
+		self.swap_remove_uninit(index, unsafe { out.to_maybeuninit_drop() })
 	}
 
 	pub fn swap_remove_uninit(mut self, index: usize, out: &mut MaybeUninit<T>) -> Self {
@@ -1132,7 +1132,7 @@ impl VecChain<f64> {
 
 impl VecChain<u8> {
 	pub fn is_ascii(self, out: &mut bool) -> Self {
-		self.is_ascii_uninit(out.to_maybeuninit_mut())
+		self.is_ascii_uninit(unsafe { out.to_maybeuninit_drop() })
 	}
 
 	pub fn is_ascii_uninit(self, out: &mut MaybeUninit<bool>) -> Self {

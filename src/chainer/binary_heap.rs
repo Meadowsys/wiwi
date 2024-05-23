@@ -51,7 +51,7 @@ impl<T: Ord> BinaryHeapChain<T> {
 	}
 
 	pub fn pop(mut self, out: &mut Option<T>) -> Self {
-		self.pop_uninit(out.to_maybeuninit_mut())
+		self.pop_uninit(unsafe { out.to_maybeuninit_drop() })
 	}
 
 	pub fn pop_uninit(mut self, out: &mut MaybeUninit<Option<T>>) -> Self {
@@ -97,7 +97,7 @@ impl<T> BinaryHeapChain<T> {
 	}
 
 	pub fn capacity(self, out: &mut usize) -> Self {
-		self.capacity_uninit(out.to_maybeuninit_mut())
+		self.capacity_uninit(unsafe { out.to_maybeuninit_drop() })
 	}
 
 	pub fn capacity_uninit(self, out: &mut MaybeUninit<usize>) -> Self {

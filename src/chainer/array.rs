@@ -66,7 +66,7 @@ impl<T, const N: usize> ArrayChain<T, N> {
 
 impl<T, const N: usize> ArrayChain<T, N> {
 	pub fn len(self, out: &mut usize) -> Self {
-		self.len_uninit(out.to_maybeuninit_mut())
+		self.len_uninit(unsafe { out.to_maybeuninit_drop() })
 	}
 
 	pub fn len_uninit(self, out: &mut MaybeUninit<usize>) -> Self {
@@ -75,7 +75,7 @@ impl<T, const N: usize> ArrayChain<T, N> {
 	}
 
 	pub fn is_empty(self, out: &mut bool) -> Self {
-		self.is_empty_uninit(out.to_maybeuninit_mut())
+		self.is_empty_uninit(unsafe { out.to_maybeuninit_drop() })
 	}
 
 	pub fn is_empty_uninit(mut self, out: &mut MaybeUninit<bool>) -> Self {

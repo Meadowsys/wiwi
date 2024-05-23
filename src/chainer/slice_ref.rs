@@ -47,7 +47,7 @@ impl<'h, T> SliceRefChain<'h, T> {
 	}
 
 	pub fn is_empty(self, out: &mut bool) -> Self {
-		self.is_empty_uninit(out.to_maybeuninit_mut())
+		self.is_empty_uninit(unsafe { out.to_maybeuninit_drop() })
 	}
 
 	pub fn is_empty_uninit(self, out: &mut MaybeUninit<bool>) -> Self {
@@ -56,7 +56,7 @@ impl<'h, T> SliceRefChain<'h, T> {
 	}
 
 	pub fn len(self, out: &mut usize) -> Self {
-		self.len_uninit(out.to_maybeuninit_mut())
+		self.len_uninit(unsafe { out.to_maybeuninit_drop() })
 	}
 
 	pub fn len_uninit(self, out: &mut MaybeUninit<usize>) -> Self {
