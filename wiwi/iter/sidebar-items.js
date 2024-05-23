@@ -1,0 +1,1 @@
+window.SIDEBAR_ITEMS = {"enum":["SizeHintBound"],"fn":["empty","from_fn"],"struct":["Empty","FromFn","IterAdapter","Map","Peek","RepeatPerItem","SizeHint"],"trait":["AsStdIterator","AsWiwiIter","IntoIter","IntoStdIterator","IntoWiwiIter","Iter","Peekable"]};

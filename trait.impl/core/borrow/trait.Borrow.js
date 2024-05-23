@@ -1,0 +1,3 @@
+(function() {var implementors = {
+"wiwi":[["impl&lt;P: <a class=\"trait\" href=\"wiwi/string_pool/trait.Pool.html\" title=\"trait wiwi::string_pool::Pool\">Pool</a>&gt; <a class=\"trait\" href=\"https://doc.rust-lang.org/nightly/core/borrow/trait.Borrow.html\" title=\"trait core::borrow::Borrow\">Borrow</a>&lt;<a class=\"primitive\" href=\"https://doc.rust-lang.org/nightly/std/primitive.str.html\">str</a>&gt; for <a class=\"struct\" href=\"wiwi/string_pool/struct.String.html\" title=\"struct wiwi::string_pool::String\">String</a>&lt;P&gt;"]]
+};if (window.register_implementors) {window.register_implementors(implementors);} else {window.pending_implementors = implementors;}})()

@@ -1,0 +1,1 @@
+window.SIDEBAR_ITEMS = {"mod":["pool","string"],"struct":["GlobalPool","String"],"trait":["Pool"]};

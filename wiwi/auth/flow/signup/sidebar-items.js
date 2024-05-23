@@ -1,0 +1,1 @@
+window.SIDEBAR_ITEMS = {"fn":["process_signup_client","process_signup_server"],"struct":["SignupRequest","StoredUnverifiedUserData"]};
