@@ -7,24 +7,7 @@ use std::collections::{
 	LinkedList,
 	VecDeque
 };
-use super::{
-	SliceBoxChain,
-	SliceRefChain,
-	SliceMutChain,
-	ArrayChain,
-	ArrayRefChain,
-	ArrayMutChain,
-	VecChain,
-	VecRefChain,
-	VecMutChain,
-	VecDequeChain,
-	LinkedListChain,
-	HashMapChain,
-	HashSetChain,
-	BTreeMapChain,
-	BTreeSetChain,
-	BinaryHeapChain
-};
+use super::*;
 
 /// Trait providing [`into_chainer`], to convert any
 /// supported type into one with a chaining API.
@@ -90,6 +73,30 @@ impl<'h, T> IntoChainer for &'h Vec<T> {
 
 impl<'h, T> IntoChainer for &'h mut Vec<T> {
 	type Chain = VecMutChain<'h, T>;
+}
+
+impl IntoChainer for String {
+	type Chain = StringChain;
+}
+
+impl<'h> IntoChainer for &'h String {
+	type Chain = StringRefChain<'h>;
+}
+
+impl<'h> IntoChainer for &'h mut String {
+	type Chain = StringMutChain<'h>;
+}
+
+impl IntoChainer for Box<str> {
+	type Chain = StrBoxChain;
+}
+
+impl<'h> IntoChainer for &'h str {
+	type Chain = StrRefChain<'h>;
+}
+
+impl<'h> IntoChainer for &'h mut str {
+	type Chain = StrMutChain<'h>;
 }
 
 impl<T> IntoChainer for VecDeque<T> {

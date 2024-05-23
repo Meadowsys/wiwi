@@ -6,6 +6,8 @@ pub struct VecDequeChain<T> {
 	inner: VecDeque<T>
 }
 
+// TODO: eventually ref/mut versions
+
 impl<T> VecDequeChain<T> {
 	pub fn new() -> Self {
 		VecDeque::new().into()

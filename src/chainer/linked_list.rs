@@ -5,6 +5,8 @@ pub struct LinkedListChain<T> {
 	inner: LinkedList<T>
 }
 
+// TODO: eventually ref/mut versions
+
 impl<T> LinkedListChain<T> {
 	pub fn new() -> Self {
 		LinkedList::new().into()

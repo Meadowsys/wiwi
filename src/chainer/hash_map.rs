@@ -6,6 +6,8 @@ pub struct HashMapChain<K, V, S = RandomState> {
 	inner: HashMap<K, V, S>
 }
 
+// TODO: eventually ref/mut versions
+
 impl<K, V> HashMapChain<K, V> {
 	pub fn new() -> Self {
 		HashMap::new().into()

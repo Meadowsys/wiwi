@@ -9,6 +9,8 @@ pub struct BinaryHeapChain<T> {
 	inner: BinaryHeap<T>
 }
 
+// TODO: eventually ref/mut versions
+
 impl<T: Ord> BinaryHeapChain<T> {
 	pub fn new() -> Self {
 		BinaryHeap::new().into()

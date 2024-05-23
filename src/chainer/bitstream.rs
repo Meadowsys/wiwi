@@ -6,6 +6,8 @@ pub struct BitstreamEncoderChain {
 	inner: Encoder
 }
 
+// TODO: eventually ref/mut versions
+
 impl BitstreamEncoderChain {
 	pub fn new() -> Self {
 		Encoder::new().into()

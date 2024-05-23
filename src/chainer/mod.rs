@@ -27,10 +27,10 @@ pub use vec_mut::VecMutChain;
 
 mod string;
 pub use string::StringChain;
-mod string_mut;
-pub use string_mut::StringMutChain;
 mod string_ref;
 pub use string_ref::StringRefChain;
+mod string_mut;
+pub use string_mut::StringMutChain;
 mod str_box;
 pub use str_box::StrBoxChain;
 mod str_ref;
@@ -49,12 +49,12 @@ mod hash_set;
 pub use hash_set::HashSetChain;
 
 mod btree_map;
-use btree_map::BTreeMapChain;
+pub use btree_map::BTreeMapChain;
 mod btree_set;
-use btree_set::BTreeSetChain;
+pub use btree_set::BTreeSetChain;
 
 mod binary_heap;
-use binary_heap::BinaryHeapChain;
+pub use binary_heap::BinaryHeapChain;
 
 #[cfg(feature = "bitstream-unstable")]
 #[cfg_attr(docsrs, doc(cfg(feature = "bitstream-unstable")))]

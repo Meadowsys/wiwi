@@ -6,6 +6,8 @@ pub struct HashSetChain<T, S = RandomState> {
 	inner: HashSet<T, S>
 }
 
+// TODO: eventually ref/mut versions
+
 impl<T> HashSetChain<T> {
 	pub fn new() -> Self {
 		HashSet::new().into()
