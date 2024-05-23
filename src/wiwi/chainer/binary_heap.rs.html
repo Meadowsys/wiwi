@@ -115,6 +115,12 @@
 <a href="#115" id="115">115</a>
 <a href="#116" id="116">116</a>
 <a href="#117" id="117">117</a>
+<a href="#118" id="118">118</a>
+<a href="#119" id="119">119</a>
+<a href="#120" id="120">120</a>
+<a href="#121" id="121">121</a>
+<a href="#122" id="122">122</a>
+<a href="#123" id="123">123</a>
 </pre></div><pre class="rust"><code><span class="kw">use </span><span class="kw">crate</span>::to_maybeuninit::ToMaybeUninit;
 <span class="kw">use </span>std::collections::BinaryHeap;
 <span class="kw">use </span>std::collections::binary_heap::PeekMut;
@@ -135,6 +141,12 @@
 
 	<span class="kw">pub fn </span>with_capacity(capacity: usize) -&gt; <span class="self">Self </span>{
 		BinaryHeap::with_capacity(capacity).into()
+	}
+}
+
+<span class="kw">impl</span>&lt;T: Ord&gt; BinaryHeapChain&lt;T&gt; {
+	<span class="kw">pub fn </span>into_binary_heap(<span class="self">self</span>) -&gt; BinaryHeap&lt;T&gt; {
+		<span class="self">self</span>.inner
 	}
 
 	<span class="kw">pub fn </span>into_sorted_vec(<span class="self">self</span>) -&gt; Vec&lt;T&gt; {

@@ -58,6 +58,8 @@
 <a href="#58" id="58">58</a>
 <a href="#59" id="59">59</a>
 <a href="#60" id="60">60</a>
+<a href="#61" id="61">61</a>
+<a href="#62" id="62">62</a>
 </pre></div><pre class="rust"><code><span class="kw">use </span><span class="kw">crate</span>::bitstream::Encoder;
 <span class="kw">use </span><span class="kw">super</span>::VecChain;
 
@@ -76,12 +78,14 @@
 	<span class="kw">pub fn </span>with_output_capacity(capacity: usize) -&gt; <span class="self">Self </span>{
 		Encoder::with_output_capacity(capacity).into()
 	}
+}
 
+<span class="kw">impl </span>BitstreamEncoderChain {
 	<span class="kw">pub fn </span>into_bytes(<span class="self">self</span>) -&gt; Vec&lt;u8&gt; {
 		<span class="self">self</span>.inner.into_bytes()
 	}
 
-	<span class="kw">pub fn </span>into_byte_chainer(<span class="self">self</span>) -&gt; VecChain&lt;u8&gt; {
+	<span class="kw">pub fn </span>into_bytes_chainer(<span class="self">self</span>) -&gt; VecChain&lt;u8&gt; {
 		<span class="self">self</span>.into_bytes().into()
 	}
 }

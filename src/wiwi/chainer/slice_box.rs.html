@@ -58,6 +58,14 @@
 <a href="#58" id="58">58</a>
 <a href="#59" id="59">59</a>
 <a href="#60" id="60">60</a>
+<a href="#61" id="61">61</a>
+<a href="#62" id="62">62</a>
+<a href="#63" id="63">63</a>
+<a href="#64" id="64">64</a>
+<a href="#65" id="65">65</a>
+<a href="#66" id="66">66</a>
+<a href="#67" id="67">67</a>
+<a href="#68" id="68">68</a>
 </pre></div><pre class="rust"><code><span class="kw">use </span>std::mem::MaybeUninit;
 <span class="kw">use super</span>::{ SliceRefChain, SliceMutChain, VecChain };
 
@@ -78,25 +86,33 @@
 
 	<span class="kw">pub fn </span>new_zeroed(len: usize) -&gt; SliceBoxChain&lt;MaybeUninit&lt;T&gt;&gt; {
 		<span class="kw">let </span><span class="kw-2">mut </span>this = <span class="self">Self</span>::new_uninit(len);
-		<span class="kw">unsafe </span>{ this.inner.as_mut_ptr().write_bytes(<span class="number">0</span>, len) }
+		<span class="kw">unsafe </span>{ this.as_ptr_mut().write_bytes(<span class="number">0</span>, len) }
 		this
 	}
 }
 
 <span class="kw">impl</span>&lt;T&gt; SliceBoxChain&lt;T&gt; {
+	<span class="kw">pub fn </span>as_ptr(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; <span class="kw-2">*const </span>T {
+		<span class="self">self</span>.inner.as_ptr()
+	}
+
+	<span class="kw">pub fn </span>as_ptr_mut(<span class="kw-2">&amp;mut </span><span class="self">self</span>) -&gt; <span class="kw-2">*mut </span>T {
+		<span class="self">self</span>.inner.as_mut_ptr()
+	}
+
 	<span class="kw">pub fn </span>as_slice(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; <span class="kw-2">&amp;</span>[T] {
 		<span class="kw-2">&amp;</span><span class="self">self</span>.inner
 	}
 
-	<span class="kw">pub fn </span>as_mut_slice(<span class="kw-2">&amp;mut </span><span class="self">self</span>) -&gt; <span class="kw-2">&amp;mut </span>[T] {
+	<span class="kw">pub fn </span>as_slice_mut(<span class="kw-2">&amp;mut </span><span class="self">self</span>) -&gt; <span class="kw-2">&amp;mut </span>[T] {
 		<span class="kw-2">&amp;mut </span><span class="self">self</span>.inner
 	}
 
-	<span class="kw">pub fn </span>as_slice_ref_chainer(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; SliceRefChain&lt;T&gt; {
+	<span class="kw">pub fn </span>as_slice_chainer_ref(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; SliceRefChain&lt;T&gt; {
 		(<span class="kw-2">*</span><span class="self">self</span>.inner).into()
 	}
 
-	<span class="kw">pub fn </span>as_slice_mut_chainer(<span class="kw-2">&amp;mut </span><span class="self">self</span>) -&gt; SliceMutChain&lt;T&gt; {
+	<span class="kw">pub fn </span>as_slice_chainer_mut(<span class="kw-2">&amp;mut </span><span class="self">self</span>) -&gt; SliceMutChain&lt;T&gt; {
 		(<span class="kw-2">&amp;mut *</span><span class="self">self</span>.inner).into()
 	}
 

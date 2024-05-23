@@ -44,7 +44,7 @@
 		<span class="self">self</span>.inner
 	}
 
-	<span class="kw">pub fn </span>as_slice_ref_chainer(<span class="kw-2">&amp;</span><span class="lifetime">'h </span><span class="self">self</span>) -&gt; SliceRefChain&lt;<span class="lifetime">'h</span>, T&gt; {
+	<span class="kw">pub fn </span>as_slice_chainer_ref(<span class="kw-2">&amp;</span><span class="lifetime">'h </span><span class="self">self</span>) -&gt; SliceRefChain&lt;<span class="lifetime">'h</span>, T&gt; {
 		(<span class="self">self</span>.inner <span class="kw">as </span><span class="kw-2">&amp;</span>[T]).into()
 	}
 

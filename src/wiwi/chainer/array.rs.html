@@ -137,7 +137,6 @@
 <a href="#137" id="137">137</a>
 <a href="#138" id="138">138</a>
 <a href="#139" id="139">139</a>
-<a href="#140" id="140">140</a>
 </pre></div><pre class="rust"><code><span class="kw">use </span><span class="kw">crate</span>::to_maybeuninit::ToMaybeUninit <span class="kw">as _</span>;
 <span class="kw">use </span>std::mem::{ <span class="self">self</span>, ManuallyDrop, MaybeUninit };
 <span class="kw">use </span>std::ptr;
@@ -171,31 +170,31 @@
 		<span class="kw-2">&amp;</span><span class="self">self</span>.inner
 	}
 
-	<span class="kw">pub fn </span>as_mut_array(<span class="kw-2">&amp;mut </span><span class="self">self</span>) -&gt; <span class="kw-2">&amp;mut </span>[T; N] {
+	<span class="kw">pub fn </span>as_array_mut(<span class="kw-2">&amp;mut </span><span class="self">self</span>) -&gt; <span class="kw-2">&amp;mut </span>[T; N] {
 		<span class="kw-2">&amp;mut </span><span class="self">self</span>.inner
+	}
+
+	<span class="kw">pub fn </span>as_array_chainer_ref(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; ArrayRefChain&lt;T, N&gt; {
+		(<span class="kw-2">&amp;</span><span class="self">self</span>.inner).into()
+	}
+
+	<span class="kw">pub fn </span>as_array_chainer_mut(<span class="kw-2">&amp;mut </span><span class="self">self</span>) -&gt; ArrayMutChain&lt;T, N&gt; {
+		(<span class="kw-2">&amp;mut </span><span class="self">self</span>.inner).into()
 	}
 
 	<span class="kw">pub fn </span>as_slice(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; <span class="kw-2">&amp;</span>[T] {
 		<span class="kw-2">&amp;</span><span class="self">self</span>.inner
 	}
 
-	<span class="kw">pub fn </span>as_mut_slice(<span class="kw-2">&amp;mut </span><span class="self">self</span>) -&gt; <span class="kw-2">&amp;mut </span>[T] {
+	<span class="kw">pub fn </span>as_slice_mut(<span class="kw-2">&amp;mut </span><span class="self">self</span>) -&gt; <span class="kw-2">&amp;mut </span>[T] {
 		<span class="kw-2">&amp;mut </span><span class="self">self</span>.inner
 	}
 
-	<span class="kw">pub fn </span>as_array_ref_chainer(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; ArrayRefChain&lt;T, N&gt; {
-		(<span class="kw-2">&amp;</span><span class="self">self</span>.inner).into()
-	}
-
-	<span class="kw">pub fn </span>as_array_mut_chainer(<span class="kw-2">&amp;mut </span><span class="self">self</span>) -&gt; ArrayMutChain&lt;T, N&gt; {
-		(<span class="kw-2">&amp;mut </span><span class="self">self</span>.inner).into()
-	}
-
-	<span class="kw">pub fn </span>as_slice_ref_chainer(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; SliceRefChain&lt;T&gt; {
+	<span class="kw">pub fn </span>as_slice_chainer_ref(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; SliceRefChain&lt;T&gt; {
 		(<span class="kw-2">&amp;</span><span class="self">self</span>.inner <span class="kw">as </span><span class="kw-2">&amp;</span>[T]).into()
 	}
 
-	<span class="kw">pub fn </span>as_slice_mut_chainer(<span class="kw-2">&amp;mut </span><span class="self">self</span>) -&gt; SliceMutChain&lt;T&gt; {
+	<span class="kw">pub fn </span>as_slice_chainer_mut(<span class="kw-2">&amp;mut </span><span class="self">self</span>) -&gt; SliceMutChain&lt;T&gt; {
 		(<span class="kw-2">&amp;mut </span><span class="self">self</span>.inner <span class="kw">as </span><span class="kw-2">&amp;mut </span>[T]).into()
 	}
 
@@ -240,8 +239,7 @@
 	</span>}
 
 	<span class="comment">// TODO: map, try map
-	// TODO: as_slice
-	// TODO: as_mut_slice
+	// TODO: as_slice/mut
 	// TODO: each_ref
 	// TODO: each_mut
 	// TODO: split_array_ref
