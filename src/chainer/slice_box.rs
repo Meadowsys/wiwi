@@ -18,25 +18,33 @@ impl<T> SliceBoxChain<T> {
 
 	pub fn new_zeroed(len: usize) -> SliceBoxChain<MaybeUninit<T>> {
 		let mut this = Self::new_uninit(len);
-		unsafe { this.inner.as_mut_ptr().write_bytes(0, len) }
+		unsafe { this.as_ptr_mut().write_bytes(0, len) }
 		this
 	}
 }
 
 impl<T> SliceBoxChain<T> {
+	pub fn as_ptr(&self) -> *const T {
+		self.inner.as_ptr()
+	}
+
+	pub fn as_ptr_mut(&mut self) -> *mut T {
+		self.inner.as_mut_ptr()
+	}
+
 	pub fn as_slice(&self) -> &[T] {
 		&self.inner
 	}
 
-	pub fn as_mut_slice(&mut self) -> &mut [T] {
+	pub fn as_slice_mut(&mut self) -> &mut [T] {
 		&mut self.inner
 	}
 
-	pub fn as_slice_ref_chainer(&self) -> SliceRefChain<T> {
+	pub fn as_slice_chainer_ref(&self) -> SliceRefChain<T> {
 		(*self.inner).into()
 	}
 
-	pub fn as_slice_mut_chainer(&mut self) -> SliceMutChain<T> {
+	pub fn as_slice_chainer_mut(&mut self) -> SliceMutChain<T> {
 		(&mut *self.inner).into()
 	}
 

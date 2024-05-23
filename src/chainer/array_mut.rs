@@ -10,11 +10,11 @@ impl<'h, T, const N: usize> ArrayMutChain<'h, T, N> {
 		self.inner
 	}
 
-	pub fn as_mut_array(&'h mut self) -> &'h mut [T; N] {
+	pub fn as_array_mut(&'h mut self) -> &'h mut [T; N] {
 		self.inner
 	}
 
-	pub fn as_array_ref_chainer(&'h self) -> ArrayRefChain<'h, T, N> {
+	pub fn as_array_chainer_ref(&'h self) -> ArrayRefChain<'h, T, N> {
 		(&*self.inner).into()
 	}
 
@@ -22,15 +22,15 @@ impl<'h, T, const N: usize> ArrayMutChain<'h, T, N> {
 		self.inner
 	}
 
-	pub fn as_mut_slice(&'h mut self) -> &'h mut [T] {
+	pub fn as_slice_mut(&'h mut self) -> &'h mut [T] {
 		self.inner
 	}
 
-	pub fn as_slice_ref_chainer(&'h self) -> SliceRefChain<'h, T> {
+	pub fn as_slice_chainer_ref(&'h self) -> SliceRefChain<'h, T> {
 		(self.inner as &[T]).into()
 	}
 
-	pub fn as_slice_mut_chainer(&'h mut self) -> SliceMutChain<'h, T> {
+	pub fn as_slice_chainer_mut(&'h mut self) -> SliceMutChain<'h, T> {
 		(self.inner as &mut [T]).into()
 	}
 

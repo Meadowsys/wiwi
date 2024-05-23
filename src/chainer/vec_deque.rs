@@ -19,7 +19,7 @@ impl<T> VecDequeChain<T> {
 }
 
 impl<T> VecDequeChain<T> {
-	pub fn as_mut_contiguous(&mut self) -> &mut [T] {
+	pub fn as_contiguous_mut(&mut self) -> &mut [T] {
 		self.inner.make_contiguous()
 	}
 
@@ -27,7 +27,7 @@ impl<T> VecDequeChain<T> {
 		&self.inner
 	}
 
-	pub fn as_mut_vec_deque(&mut self) -> &mut VecDeque<T> {
+	pub fn as_vec_deque_mut(&mut self) -> &mut VecDeque<T> {
 		&mut self.inner
 	}
 
@@ -35,17 +35,17 @@ impl<T> VecDequeChain<T> {
 		self.inner.as_slices()
 	}
 
-	pub fn as_mut_slices(&mut self) -> (&mut [T], &mut [T]) {
+	pub fn as_slices_mut(&mut self) -> (&mut [T], &mut [T]) {
 		self.inner.as_mut_slices()
 	}
 
-	pub fn as_slice_ref_chainers(&self) -> (SliceRefChain<T>, SliceRefChain<T>) {
+	pub fn as_slice_chainers_ref(&self) -> (SliceRefChain<T>, SliceRefChain<T>) {
 		let (s1, s2) = self.as_slices();
 		(s1.into(), s2.into())
 	}
 
-	pub fn as_slice_mut_chainers(&mut self) -> (SliceMutChain<T>, SliceMutChain<T>) {
-		let (s1, s2) = self.as_mut_slices();
+	pub fn as_slice_chainers_mut(&mut self) -> (SliceMutChain<T>, SliceMutChain<T>) {
+		let (s1, s2) = self.as_slices_mut();
 		(s1.into(), s2.into())
 	}
 

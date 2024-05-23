@@ -31,15 +31,15 @@ impl<T, const N: usize> ArrayChain<T, N> {
 		&self.inner
 	}
 
-	pub fn as_mut_array(&mut self) -> &mut [T; N] {
+	pub fn as_array_mut(&mut self) -> &mut [T; N] {
 		&mut self.inner
 	}
 
-	pub fn as_array_ref_chainer(&self) -> ArrayRefChain<T, N> {
+	pub fn as_array_chainer_ref(&self) -> ArrayRefChain<T, N> {
 		(&self.inner).into()
 	}
 
-	pub fn as_array_mut_chainer(&mut self) -> ArrayMutChain<T, N> {
+	pub fn as_array_chainer_mut(&mut self) -> ArrayMutChain<T, N> {
 		(&mut self.inner).into()
 	}
 
@@ -47,15 +47,15 @@ impl<T, const N: usize> ArrayChain<T, N> {
 		&self.inner
 	}
 
-	pub fn as_mut_slice(&mut self) -> &mut [T] {
+	pub fn as_slice_mut(&mut self) -> &mut [T] {
 		&mut self.inner
 	}
 
-	pub fn as_slice_ref_chainer(&self) -> SliceRefChain<T> {
+	pub fn as_slice_chainer_ref(&self) -> SliceRefChain<T> {
 		(&self.inner as &[T]).into()
 	}
 
-	pub fn as_slice_mut_chainer(&mut self) -> SliceMutChain<T> {
+	pub fn as_slice_chainer_mut(&mut self) -> SliceMutChain<T> {
 		(&mut self.inner as &mut [T]).into()
 	}
 
@@ -100,8 +100,7 @@ impl<T, const N: usize> ArrayChain<T, N> {
 	}
 
 	// TODO: map, try map
-	// TODO: as_slice
-	// TODO: as_mut_slice
+	// TODO: as_slice/mut
 	// TODO: each_ref
 	// TODO: each_mut
 	// TODO: split_array_ref

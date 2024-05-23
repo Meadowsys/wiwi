@@ -14,7 +14,7 @@ impl<'h, T, const N: usize> ArrayRefChain<'h, T, N> {
 		self.inner
 	}
 
-	pub fn as_slice_ref_chainer(&'h self) -> SliceRefChain<'h, T> {
+	pub fn as_slice_chainer_ref(&'h self) -> SliceRefChain<'h, T> {
 		(self.inner as &[T]).into()
 	}
 

@@ -14,11 +14,11 @@ impl<'h, T> SliceMutChain<'h, T> {
 		self.inner
 	}
 
-	pub fn as_mut_slice(&mut self) -> &mut [T] {
+	pub fn as_slice_mut(&mut self) -> &mut [T] {
 		self.inner
 	}
 
-	pub fn as_slice_ref_chainer(&'h self) -> SliceRefChain<'h, T> {
+	pub fn as_slice_chainer_ref(&'h self) -> SliceRefChain<'h, T> {
 		(*self.inner).into()
 	}
 }

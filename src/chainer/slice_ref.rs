@@ -87,9 +87,9 @@ impl<'h, T> SliceRefChain<'h, T> {
 	// TODO: get/mut
 	// TODO: get_unchecked/mut
 	// TODO: as_ptr
-	// TODO: as_mut_ptr
+	// TODO: as_ptr_mut
 	// TODO: as_ptr_range
-	// TODO: as_mut_ptr_range
+	// TODO: as_ptr_range_mut
 	// TODO: swap/unchecked
 	// TODO: reverse
 	// TODO: iter/mut

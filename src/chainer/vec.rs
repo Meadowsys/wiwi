@@ -128,7 +128,7 @@ impl<T> VecChain<T> {
 		self.inner.as_ptr()
 	}
 
-	pub fn as_mut_ptr(&mut self) -> *mut T {
+	pub fn as_ptr_mut(&mut self) -> *mut T {
 		self.inner.as_mut_ptr()
 	}
 
@@ -136,7 +136,7 @@ impl<T> VecChain<T> {
 		&self.inner
 	}
 
-	pub fn as_mut_slice(&mut self) -> &mut [T] {
+	pub fn as_slice_mut(&mut self) -> &mut [T] {
 		&mut self.inner
 	}
 
@@ -144,7 +144,7 @@ impl<T> VecChain<T> {
 	///
 	/// Note: this does not consume `self`, but only immutably borrow from it. So,
 	/// you will need to keep `self` in somewhere owned.
-	pub fn as_slice_ref_chainer(&self) -> SliceRefChain<T> {
+	pub fn as_slice_chainer_ref(&self) -> SliceRefChain<T> {
 		(*self.inner).into()
 	}
 
@@ -152,7 +152,7 @@ impl<T> VecChain<T> {
 	///
 	/// Note: this does not consume `self`, but only mutably borrow from it. So,
 	/// you will need to keep `self` in somewhere owned.
-	pub fn as_slice_mut_chainer(&mut self) -> SliceMutChain<T> {
+	pub fn as_slice_chainer_mut(&mut self) -> SliceMutChain<T> {
 		(&mut *self.inner).into()
 	}
 
@@ -160,7 +160,7 @@ impl<T> VecChain<T> {
 		&self.inner
 	}
 
-	pub fn as_mut_vec(&mut self) -> &mut Vec<T> {
+	pub fn as_vec_mut(&mut self) -> &mut Vec<T> {
 		&mut self.inner
 	}
 
@@ -231,7 +231,7 @@ impl<T> VecChain<T> {
 		unsafe {
 			let len = self.inner.len();
 			let remainder = len % N;
-			let ptr = self.as_mut_ptr().add(len - remainder);
+			let ptr = self.as_ptr_mut().add(len - remainder);
 			let partial_chunk = slice::from_raw_parts_mut(ptr, remainder);
 
 			// SAFETY: our impl of this unchecked fn just uses int division
@@ -275,7 +275,7 @@ impl<T> VecChain<T> {
 			// changing those uses also
 			let chunks = self.inner.len() / N;
 
-			let ptr = self.as_mut_ptr() as *mut [T; N];
+			let ptr = self.as_ptr_mut() as *mut [T; N];
 			let slice = slice::from_raw_parts_mut(ptr, chunks);
 			cb(slice);
 		}
@@ -317,7 +317,7 @@ impl<T> VecChain<T> {
 			let remainder = len % N;
 			let full_chunks = len / N;
 
-			let partial_ptr = self.as_mut_ptr();
+			let partial_ptr = self.as_ptr_mut();
 			let full_ptr = partial_ptr.add(remainder) as *mut [T; N];
 
 			let partial = slice::from_raw_parts_mut(partial_ptr, remainder);
@@ -644,7 +644,7 @@ impl<T> VecChain<T> {
 	///    .extend_from_slice(&[1, 2, 3])
 	///    .leak::<'static>();
 	///
-	/// static_ref.as_mut_slice()[1] = 20;
+	/// static_ref.as_slice_mut()[1] = 20;
 	/// assert_eq!(static_ref.as_slice(), [1, 20, 3]);
 	/// ```
 	///
@@ -873,7 +873,7 @@ impl<T> VecChain<T> {
 	{
 		// TODO: call Vec impl when it is stabilised
 		unsafe {
-			let ptr = self.inner.as_mut_ptr();
+			let ptr = self.as_ptr_mut();
 			let len = self.inner.len();
 			let cap = self.inner.capacity();
 
@@ -945,7 +945,7 @@ impl<T> VecChain<T> {
 
 	pub unsafe fn swap_unchecked(mut self, a: usize, b: usize) -> Self {
 		// TODO: replace with Vec::swap_unchecked call when it's stabilised?
-		let ptr = self.inner.as_mut_ptr();
+		let ptr = self.as_ptr_mut();
 		ptr::swap(ptr.add(a), ptr.add(b));
 		self
 	}
@@ -1024,7 +1024,7 @@ impl<T> VecChain<T> {
 	// TODO: last_chunk/mut
 	// TODO: get/mut
 	// TODO: get_unchecked/mut
-	// TODO: as_ptr_range/as_mut_ptr_range
+	// TODO: as_ptr_range/mut
 	// TODO: swap/unchecked
 	// TODO: iter/mut
 	// TODO: windows
@@ -1082,10 +1082,8 @@ impl<T> VecChain<T> {
 	// TODO: rchunks_exact/mut
 	// TODO: chunk_by/mut
 	// TODO: split_at/mut
-	// TODO: split_at_unchecked
-	// TODO: split_at_mut_unchecked
-	// TODO: split_at_checked
-	// TODO: split_at_mut_checked
+	// TODO: split_at_unchecked/mut
+	// TODO: split_at_checked/mut
 	// TODO: split/mut
 	// TODO: split_inclusive/mut
 	// TODO: rsplit/mut
@@ -1167,7 +1165,7 @@ impl<T, const N: usize> VecChain<[T; N]> {
 		// TODO: switch to into_raw_parts impl when it is stabilised?
 		// let (ptr, _len, _capacity) = self.inner.into_raw_parts();
 
-		let ptr = self.inner.as_mut_ptr() as *mut T;
+		let ptr = self.as_ptr_mut() as *mut T;
 		mem::forget(self);
 
 		unsafe { Vec::from_raw_parts(ptr, len, cap).into() }
@@ -1265,7 +1263,7 @@ mod tests {
 			.extend_from_slice(slice);
 
 		assert_eq!(slice, chain.as_slice());
-		assert_eq!(slice, chain.as_mut_slice());
+		assert_eq!(slice, chain.as_slice_mut());
 	}
 
 	#[test]
@@ -1311,8 +1309,8 @@ mod tests {
 			.extend_from_slice(&[1usize, 2, 3, 4, 5, 6, 7, 8])
 			.reserve(8)
 			.split_at_spare_mut(|mut slice, mut uninit| {
-				let slice = slice.as_mut_slice();
-				let uninit = uninit.as_mut_slice();
+				let slice = slice.as_slice_mut();
+				let uninit = uninit.as_slice_mut();
 				uninit_len = uninit.len();
 
 				assert_eq!(slice, &[1, 2, 3, 4, 5, 6, 7, 8]);
@@ -1332,8 +1330,8 @@ mod tests {
 				.len(&mut len)
 				.set_len(len + 4)
 				.split_at_spare_mut(|mut slice, mut uninit| {
-					let slice = slice.as_mut_slice();
-					let uninit = uninit.as_mut_slice();
+					let slice = slice.as_slice_mut();
+					let uninit = uninit.as_slice_mut();
 
 					assert_eq!(slice, &[1, 2, 3, 4, 5, 6, 7, 8, 0, 1, 2, 3]);
 					assert_eq!(uninit_len - 4, uninit.len());
