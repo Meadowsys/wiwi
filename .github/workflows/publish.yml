@@ -49,6 +49,12 @@ jobs:
     - name: setup rust
       run: rustc --version
 
+    - name: publish macro crate
+      working-directory: macro
+      run: cargo publish
+      env:
+        CARGO_REGISTRY_TOKEN: ${{ secrets.CARGO_REGISTRY_TOKEN }}
+
     - name: publish
       run: cargo publish
       env:

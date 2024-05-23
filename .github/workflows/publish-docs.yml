@@ -31,7 +31,7 @@ jobs:
       shell: fish {0}
       run: |
         set -gx RUSTDOCFLAGS "--cfg docsrs --cfg kiwingay -Z unstable-options --enable-index-page --theme "(pwd)"/.cargo/rustdoc-custom-theme/meadow.css"
-        cargo doc --verbose --no-deps --features "all-unstable hashbrown image serde-json"
+        cargo doc --verbose --no-deps --features "all-unstable hashbrown image serde-json" --lib -p wiwi -p wiwiwiwiwi
 
     - name: checkout gh-pages branch
       uses: actions/checkout@ac593985615ec2ede58e132d2e21d2b1cbd6127c # v3.3.0

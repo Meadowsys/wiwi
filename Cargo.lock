@@ -2188,6 +2188,7 @@ dependencies = [
  "tokio",
  "url",
  "uuid",
+ "wiwiwiwiwi",
  "z85",
  "zeroize",
 ]
@@ -2198,6 +2199,10 @@ version = "0.0.0"
 dependencies = [
  "wiwi",
 ]
+
+[[package]]
+name = "wiwiwiwiwi"
+version = "0.6.1"
 
 [[package]]
 name = "z85"

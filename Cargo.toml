@@ -1,11 +1,25 @@
-[package]
-name = "wiwi"
+
+[workspace]
+members = [
+	"macro",
+	"scripts"
+]
+
+[workspace.package]
 version = "0.6.1"
-description = "A library, of, Stuff™"
 edition = "2021"
 authors = ["Meadowsys"]
 repository = "https://github.com/meadowsys/wiwi"
 license = "MIT"
+
+[package]
+name = "wiwi"
+description = "A library, of, Stuff™"
+version = { workspace = true }
+edition = { workspace = true }
+authors = { workspace = true }
+repository = { workspace = true }
+license = { workspace = true }
 categories = [
 	# "data-structures" # ?
 	# "internationalization" # ?
@@ -24,6 +38,8 @@ keywords = [
 ]
 
 [dependencies]
+wiwiwiwiwi = { path = "macro", version = "=0.6.1" }
+
 argon2 = { version = "0.5.3", optional = true }
 chacha20poly1305 = { version = "0.10.1", optional = true }
 chrono = { version = "0.4.35", optional = true, features = ["clock"] }
@@ -228,9 +244,4 @@ targets = [
 	"x86_64-apple-darwin",
 	"x86_64-unknown-linux-gnu",
 	"x86_64-pc-windows-msvc"
-]
-
-[workspace]
-members = [
-	"scripts"
 ]

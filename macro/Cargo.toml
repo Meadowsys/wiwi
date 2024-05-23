@@ -1,0 +1,34 @@
+[package]
+name = "wiwiwiwiwi"
+description = "proc macros for wiwi, a library, of, Stuff™"
+version = { workspace = true }
+edition = { workspace = true }
+authors = { workspace = true }
+repository = { workspace = true }
+license = { workspace = true }
+
+[lib]
+proc-macro = true
+
+[dependencies]
+
+[features]
+
+[package.metadata.docs.rs]
+# https://docs.rs/about/metadata
+
+# https://users.rust-lang.org/t/how-to-document-optional-features-in-api-docs/64577
+rustdoc-args = [
+	"--cfg", "docsrs",
+	# this is relying on info found in docs.rs build log, might not be stable
+	"--theme", "/opt/rustwide/workdir/.cargo/rustdoc-custom-theme/meadow.css"
+]
+
+features = []
+
+targets = [
+	"aarch64-apple-darwin",
+	"x86_64-apple-darwin",
+	"x86_64-unknown-linux-gnu",
+	"x86_64-pc-windows-msvc"
+]
