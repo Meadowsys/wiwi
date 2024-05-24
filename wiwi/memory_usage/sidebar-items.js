@@ -1,1 +1,1 @@
-window.SIDEBAR_ITEMS = {"fn":["dynamic_mem_usage_of_val","static_mem_usage_of","static_mem_usage_of_val"],"trait":["Dynamic","Static"]};
+window.SIDEBAR_ITEMS = {"derive":["MemoryUsage"],"fn":["dynamic_mem_usage_of_val","dynamic_values_usage_of_val","static_mem_usage_of","static_mem_usage_of_val"],"trait":["Dynamic","Static"]};
