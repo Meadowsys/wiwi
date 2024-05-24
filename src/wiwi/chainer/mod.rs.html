@@ -61,67 +61,123 @@
 <a href="#61" id="61">61</a>
 <a href="#62" id="62">62</a>
 <a href="#63" id="63">63</a>
+<a href="#64" id="64">64</a>
+<a href="#65" id="65">65</a>
+<a href="#66" id="66">66</a>
+<a href="#67" id="67">67</a>
+<a href="#68" id="68">68</a>
+<a href="#69" id="69">69</a>
+<a href="#70" id="70">70</a>
+<a href="#71" id="71">71</a>
+<a href="#72" id="72">72</a>
+<a href="#73" id="73">73</a>
+<a href="#74" id="74">74</a>
+<a href="#75" id="75">75</a>
+<a href="#76" id="76">76</a>
+<a href="#77" id="77">77</a>
+<a href="#78" id="78">78</a>
+<a href="#79" id="79">79</a>
+<a href="#80" id="80">80</a>
+<a href="#81" id="81">81</a>
+<a href="#82" id="82">82</a>
+<a href="#83" id="83">83</a>
+<a href="#84" id="84">84</a>
+<a href="#85" id="85">85</a>
+<a href="#86" id="86">86</a>
+<a href="#87" id="87">87</a>
+<a href="#88" id="88">88</a>
+<a href="#89" id="89">89</a>
+<a href="#90" id="90">90</a>
+<a href="#91" id="91">91</a>
 </pre></div><pre class="rust"><code><span class="doccomment">//! Chaining APIs for common Rust types
+//!
+//! Temp status: the structs, [`IntoChainer`] impls, constructor / conversion
+//! functions, don't count in there
 
+</span><span class="comment">// TODO: remove these progress type comments when chainers are closer to done
+// TODO: move these comments to own module and add basic description for each one
 </span><span class="kw">mod </span>into_chainer;
 <span class="kw">pub use </span>into_chainer::IntoChainer;
 <span class="kw">mod </span>with_vars;
 
 <span class="kw">mod </span>slice_box;
-<span class="kw">pub use </span>slice_box::SliceBoxChain;
+<span class="doccomment">/// status: not started
+</span><span class="kw">pub use </span>slice_box::SliceBoxChain;
 <span class="kw">mod </span>slice_ref;
-<span class="kw">pub use </span>slice_ref::SliceRefChain;
+<span class="doccomment">/// status: started a bit
+</span><span class="kw">pub use </span>slice_ref::SliceRefChain;
 <span class="kw">mod </span>slice_mut;
-<span class="kw">pub use </span>slice_mut::SliceMutChain;
+<span class="doccomment">/// status: started a bit
+</span><span class="kw">pub use </span>slice_mut::SliceMutChain;
 
 <span class="kw">mod </span>array;
-<span class="kw">pub use </span>array::ArrayChain;
+<span class="doccomment">/// status: started a _tiny_ bit
+</span><span class="kw">pub use </span>array::ArrayChain;
 <span class="kw">mod </span>array_ref;
-<span class="kw">pub use </span>array_ref::ArrayRefChain;
+<span class="doccomment">/// status: not started
+</span><span class="kw">pub use </span>array_ref::ArrayRefChain;
 <span class="kw">mod </span>array_mut;
-<span class="kw">pub use </span>array_mut::ArrayMutChain;
+<span class="doccomment">/// status: not started
+</span><span class="kw">pub use </span>array_mut::ArrayMutChain;
 
 <span class="kw">mod </span>vec;
-<span class="kw">pub use </span>vec::VecChain;
+<span class="doccomment">/// status: significant functionality implemented, fully usable for most tasks
+</span><span class="kw">pub use </span>vec::VecChain;
 <span class="kw">mod </span>vec_ref;
-<span class="kw">pub use </span>vec_ref::VecRefChain;
+<span class="doccomment">/// status: not started
+</span><span class="kw">pub use </span>vec_ref::VecRefChain;
 <span class="kw">mod </span>vec_mut;
-<span class="kw">pub use </span>vec_mut::VecMutChain;
+<span class="doccomment">/// status: not started
+</span><span class="kw">pub use </span>vec_mut::VecMutChain;
 
 <span class="kw">mod </span>string;
-<span class="kw">pub use </span>string::StringChain;
+<span class="doccomment">/// status: a bit of basic functionality
+</span><span class="kw">pub use </span>string::StringChain;
 <span class="kw">mod </span>string_ref;
-<span class="kw">pub use </span>string_ref::StringRefChain;
+<span class="doccomment">/// status: not started
+</span><span class="kw">pub use </span>string_ref::StringRefChain;
 <span class="kw">mod </span>string_mut;
-<span class="kw">pub use </span>string_mut::StringMutChain;
+<span class="doccomment">/// status: not started
+</span><span class="kw">pub use </span>string_mut::StringMutChain;
 <span class="kw">mod </span>str_box;
-<span class="kw">pub use </span>str_box::StrBoxChain;
+<span class="doccomment">/// status: not started
+</span><span class="kw">pub use </span>str_box::StrBoxChain;
 <span class="kw">mod </span>str_ref;
-<span class="kw">pub use </span>str_ref::StrRefChain;
+<span class="doccomment">/// status: not started
+</span><span class="kw">pub use </span>str_ref::StrRefChain;
 <span class="kw">mod </span>str_mut;
-<span class="kw">pub use </span>str_mut::StrMutChain;
+<span class="doccomment">/// status: not started
+</span><span class="kw">pub use </span>str_mut::StrMutChain;
 
 <span class="kw">mod </span>vec_deque;
-<span class="kw">pub use </span>vec_deque::VecDequeChain;
+<span class="doccomment">/// status: not started
+</span><span class="kw">pub use </span>vec_deque::VecDequeChain;
 <span class="kw">mod </span>linked_list;
-<span class="kw">pub use </span>linked_list::LinkedListChain;
+<span class="doccomment">/// status: not started
+</span><span class="kw">pub use </span>linked_list::LinkedListChain;
 
 <span class="kw">mod </span>hash_map;
-<span class="kw">pub use </span>hash_map::HashMapChain;
+<span class="doccomment">/// status: not started
+</span><span class="kw">pub use </span>hash_map::HashMapChain;
 <span class="kw">mod </span>hash_set;
-<span class="kw">pub use </span>hash_set::HashSetChain;
+<span class="doccomment">/// status: not started
+</span><span class="kw">pub use </span>hash_set::HashSetChain;
 
 <span class="kw">mod </span>btree_map;
-<span class="kw">pub use </span>btree_map::BTreeMapChain;
+<span class="doccomment">/// status: not started
+</span><span class="kw">pub use </span>btree_map::BTreeMapChain;
 <span class="kw">mod </span>btree_set;
-<span class="kw">pub use </span>btree_set::BTreeSetChain;
+<span class="doccomment">/// status: not started
+</span><span class="kw">pub use </span>btree_set::BTreeSetChain;
 
 <span class="kw">mod </span>binary_heap;
-<span class="kw">pub use </span>binary_heap::BinaryHeapChain;
+<span class="doccomment">/// status: started a bit
+</span><span class="kw">pub use </span>binary_heap::BinaryHeapChain;
 
 <span class="attr">#[cfg(feature = <span class="string">"bitstream-unstable"</span>)]
 </span><span class="kw">mod </span>bitstream;
 <span class="attr">#[cfg_attr(docsrs, doc(cfg(feature = <span class="string">"bitstream-unstable"</span>)))]
 #[cfg(feature = <span class="string">"bitstream-unstable"</span>)]
+</span><span class="doccomment">/// status: need to implement the underlying bit stream encoder first, lol
 </span><span class="kw">pub use </span>bitstream::BitstreamEncoderChain;
 </code></pre></div></section></main></body></html>

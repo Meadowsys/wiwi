@@ -246,6 +246,31 @@
 <a href="#246" id="246">246</a>
 <a href="#247" id="247">247</a>
 <a href="#248" id="248">248</a>
+<a href="#249" id="249">249</a>
+<a href="#250" id="250">250</a>
+<a href="#251" id="251">251</a>
+<a href="#252" id="252">252</a>
+<a href="#253" id="253">253</a>
+<a href="#254" id="254">254</a>
+<a href="#255" id="255">255</a>
+<a href="#256" id="256">256</a>
+<a href="#257" id="257">257</a>
+<a href="#258" id="258">258</a>
+<a href="#259" id="259">259</a>
+<a href="#260" id="260">260</a>
+<a href="#261" id="261">261</a>
+<a href="#262" id="262">262</a>
+<a href="#263" id="263">263</a>
+<a href="#264" id="264">264</a>
+<a href="#265" id="265">265</a>
+<a href="#266" id="266">266</a>
+<a href="#267" id="267">267</a>
+<a href="#268" id="268">268</a>
+<a href="#269" id="269">269</a>
+<a href="#270" id="270">270</a>
+<a href="#271" id="271">271</a>
+<a href="#272" id="272">272</a>
+<a href="#273" id="273">273</a>
 </pre></div><pre class="rust"><code><span class="kw">use </span>std::mem::size_of;
 <span class="kw">pub use </span>wiwiwiwiwi::MemoryUsage;
 
@@ -355,6 +380,8 @@
 <span class="macro">impl_static_via_size_of!</span> {
 	<span class="macro-nonterminal">u8 </span>u16 u32 u64 u128 usize
 	i8 i16 i32 i64 i128 isize
+	f32 f64 <span class="comment">// f16 f128
+	</span>bool char
 }
 
 <span class="macro">macro_rules!</span> impl_dyn_mem_usage_tuple {
@@ -429,11 +456,13 @@
 
 <span class="kw">impl</span>&lt;T: Dynamic&gt; Dynamic <span class="kw">for </span>[T] {
 	<span class="kw">fn </span>calculate_memory_usage(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; usize {
-		<span class="self">self</span>.iter().map(T::calculate_memory_usage).sum()
+		<span class="kw">let </span>contents = <span class="self">self</span>.iter().map(T::calculate_memory_usage).sum::&lt;usize&gt;();
+		size_of::&lt;<span class="kw-2">&amp;</span>[T]&gt;() + contents
 	}
 
 	<span class="kw">fn </span>calculate_values_usage(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; usize {
-		<span class="self">self</span>.iter().map(T::calculate_values_usage).sum()
+		<span class="kw">let </span>contents = <span class="self">self</span>.iter().map(T::calculate_values_usage).sum::&lt;usize&gt;();
+		size_of::&lt;<span class="kw-2">&amp;</span>[T]&gt;() + contents
 	}
 }
 
@@ -492,6 +521,27 @@
 
 		check::&lt;usize&gt;();
 		check::&lt;isize&gt;();
+	}
+
+	<span class="attr">#[test]
+	</span><span class="kw">fn </span>vec_size() {
+		<span class="kw">let </span><span class="kw-2">mut </span>vec = Vec::&lt;i32&gt;::new();
+		<span class="comment">// ??? lol
+		</span><span class="kw">let </span>base_vec_usage = &lt;(<span class="kw-2">*const </span>i32, usize, usize)&gt;::calculate_memory_usage(<span class="kw-2">&amp;</span>(std::ptr::NonNull::dangling().as_ptr(), <span class="number">0</span>, <span class="number">0</span>));
+
+		<span class="macro">assert_eq!</span>(vec.calculate_memory_usage(), base_vec_usage);
+		<span class="macro">assert_eq!</span>(vec.calculate_values_usage(), base_vec_usage);
+
+		vec.reserve(<span class="number">32</span>);
+
+		<span class="kw">let </span>mem_use = vec.calculate_memory_usage();
+		<span class="kw">let </span>val_use = vec.calculate_values_usage();
+		<span class="macro">assert!</span>(mem_use &gt;= base_vec_usage + (<span class="number">32 </span>* i32::MEMORY_USAGE));
+		<span class="macro">assert_eq!</span>(val_use, base_vec_usage);
+
+		vec.extend([<span class="number">1</span>, <span class="number">2</span>, <span class="number">3</span>, <span class="number">4</span>, <span class="number">5</span>, <span class="number">6</span>, <span class="number">7</span>, <span class="number">8</span>]);
+		<span class="macro">assert_eq!</span>(vec.calculate_values_usage(), base_vec_usage + (<span class="number">8 </span>* i32::MEMORY_USAGE));
+		<span class="macro">assert_eq!</span>(vec.calculate_memory_usage(), mem_use);
 	}
 }
 </code></pre></div></section></main></body></html>

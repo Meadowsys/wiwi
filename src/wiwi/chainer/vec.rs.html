@@ -1412,11 +1412,11 @@
 <span class="kw">use </span>std::slice::{ <span class="self">self</span>, SliceIndex };
 <span class="kw">use super</span>::{ SliceBoxChain, SliceRefChain, SliceMutChain };
 
-<span class="doccomment">/// Vec type that provides a chaining API.
-///
-/// It contains similar methods as [`Vec`], but in some cases, the API differs
-/// to accomodate the chaining API.
-</span><span class="comment">// TODO: allocator param
+<span class="comment">// /// Vec type that provides a chaining API.
+// ///
+// /// It contains similar methods as [`Vec`], but in some cases, the API differs
+// /// to accomodate the chaining API.
+// TODO: allocator param
 </span><span class="attr">#[repr(transparent)]
 #[derive(Clone)]
 </span><span class="kw">pub struct </span>VecChain&lt;T&gt; {
