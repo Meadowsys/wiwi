@@ -87,7 +87,7 @@ pub fn dynamic_values_usage_of_val<T: Dynamic>(item: &T) -> usize {
 	item.calculate_values_usage()
 }
 
-impl<T: Static> Dynamic for T {
+impl<T: Static + ?Sized> Dynamic for T {
 	#[inline]
 	fn calculate_memory_usage(&self) -> usize {
 		Self::MEMORY_USAGE
