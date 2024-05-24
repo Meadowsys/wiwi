@@ -177,7 +177,9 @@ lsl-unstable = [
 	"hex",
 	"id-unstable"
 ]
-memory-usage-unstable = []
+memory-usage-unstable = [
+	"wiwiwiwiwi/memory-usage-unstable"
+]
 path-unstable = []
 serialiser-unstable = [
 	"dep:ordered-float"

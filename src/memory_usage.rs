@@ -1,4 +1,5 @@
 use std::mem::size_of;
+pub use wiwiwiwiwi::MemoryUsage;
 
 /// Trait implemented by types that, at compile time, use a
 /// known, fixed amount of memory.

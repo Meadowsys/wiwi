@@ -11,8 +11,14 @@ license = { workspace = true }
 proc-macro = true
 
 [dependencies]
+proc-macro2 = "1.0.83"
+quote = "1.0.36"
+syn = "2.0.66"
 
 [features]
+default = ["syn/full"]
+
+memory-usage-unstable = []
 
 [package.metadata.docs.rs]
 # https://docs.rs/about/metadata
@@ -20,7 +26,9 @@ proc-macro = true
 # https://users.rust-lang.org/t/how-to-document-optional-features-in-api-docs/64577
 rustdoc-args = ["--cfg", "docsrs"]
 
-features = []
+features = [
+	"memory-usage-unstable"
+]
 
 targets = [
 	"aarch64-apple-darwin",
