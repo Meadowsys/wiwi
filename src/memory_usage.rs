@@ -9,8 +9,8 @@
 /// Note: this is not the same as Rust's [`Sized`] trait. See the docs of the
 /// [`Dynamic`] trait for more information.
 ///
-/// Prefer to implement this trait over [`Dynamic`] and use [`Dynamic`] over
-/// this trait where possible, for maximum flexibility.
+/// Prefer to implement this trait over [`Dynamic`] and use [`Dynamic`] (in eg. trait
+/// bounds) over this trait where possible, for maximum flexibility.
 pub trait Static: Dynamic {
 	/// The memory usage of this type in bytes
 	const MEMORY_USAGE: usize;
@@ -29,8 +29,8 @@ pub trait Static: Dynamic {
 /// There is a blanket implementation of this trait for all types that implement
 /// [`Static`].
 ///
-/// Prefer to implement [`Static`] over this trait and use this trait over
-/// [`Static`] where possible, for maximum flexibility.
+/// Prefer to implement [`Static`] over this trait and use this trait (in eg. trait
+/// bounds) over [`Static`] where possible, for maximum flexibility.
 pub trait Dynamic {
 	/// Calculate the memory usage of this type in bytes
 	fn calculate_memory_usage(&self) -> usize;
