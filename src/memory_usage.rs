@@ -1,3 +1,5 @@
+use std::mem::size_of;
+
 /// Trait implemented by types that, at compile time, use a
 /// known, fixed amount of memory.
 ///
@@ -20,7 +22,7 @@ pub trait Static: Dynamic {
 /// have a known, fixed memory usage, but can still calculate it at runtime.
 ///
 /// For example, [`Vec<u8>`] isn't just 24 bytes (12 bytes on 32 bit), like what
-/// Rust's [`size_of`](std::mem::size_of) function would say... it stores
+/// Rust's [`size_of`] function would say... it stores
 /// elements on the heap, right? That's what this trait is for, and how it differs
 /// from Rust's [`Sized`] trait. This trait is implemented by types that can
 /// calculate their current actual memory usage, and not just stack usage. That
@@ -42,11 +44,11 @@ pub trait Dynamic {
 	/// Things like excess capacity would _not_ be
 	/// included here.
 	///
-	/// A default implementation is provided, which just calls. You should not rely
-	/// on this implementation if your type manages excess capacity, and other
-	/// similar things where there may be some memory that's not actually used to
-	/// store any data.
-	/// [`calculate_memory_usage`](Dynamic::calculate_memory_usage)
+	/// A default implementation is provided, which just calls
+	/// [`calculate_memory_usage`](Dynamic::calculate_memory_usage). You should
+	/// not rely on this default implementation if your type manages excess
+	/// capacity, and other similar things where there may be some memory that's
+	/// not actually used to store any data.
 	#[inline]
 	fn calculate_values_usage(&self) -> usize {
 		self.calculate_memory_usage()
@@ -56,7 +58,7 @@ pub trait Dynamic {
 /// Fetches the statically known memory usage of a type.
 ///
 /// For many types, this probably does
-/// the same thing as [`size_of`](std::mem::size_of). However, for many types
+/// the same thing as [`size_of`]. However, for many types
 /// like [`Vec`] that store elements on the heap, actual usage cannot be known
 /// at compile time.
 #[inline]
@@ -95,7 +97,7 @@ macro_rules! impl_static_via_size_of {
 	($($type:ty)*) => {
 		$(
 			impl Static for $type {
-				const MEMORY_USAGE: usize = ::std::mem::size_of::<$type>();
+				const MEMORY_USAGE: usize = size_of::<$type>();
 			}
 		)*
 	}
@@ -176,20 +178,45 @@ impl<T: Dynamic, const N: usize> Dynamic for [T; N] {
 	}
 }
 
+impl<T: Dynamic> Dynamic for [T] {
+	fn calculate_memory_usage(&self) -> usize {
+		self.iter().map(T::calculate_memory_usage).sum()
+	}
+
+	fn calculate_values_usage(&self) -> usize {
+		self.iter().map(T::calculate_values_usage).sum()
+	}
+}
+
 impl<T: ?Sized> Static for *const T {
-	const MEMORY_USAGE: usize = std::mem::size_of::<*const T>();
+	const MEMORY_USAGE: usize = size_of::<*const T>();
 }
 
 impl<T: ?Sized> Static for *mut T {
-	const MEMORY_USAGE: usize = std::mem::size_of::<*mut T>();
+	const MEMORY_USAGE: usize = size_of::<*mut T>();
 }
 
-impl<T: ?Sized> Static for &T {
-	const MEMORY_USAGE: usize = std::mem::size_of::<&T>();
+impl<T: Dynamic> Dynamic for Vec<T> {
+	fn calculate_memory_usage(&self) -> usize {
+		let contents = self.iter().map(T::calculate_memory_usage).sum::<usize>();
+		let uninit = (self.capacity() - self.len()) * size_of::<T>();
+		size_of::<Vec<T>>() + contents + uninit
+	}
+
+	fn calculate_values_usage(&self) -> usize {
+		let contents = self.iter().map(T::calculate_values_usage).sum::<usize>();
+		size_of::<Vec<T>>() + contents
+	}
 }
 
-impl<T: ?Sized> Static for &mut T {
-	const MEMORY_USAGE: usize = std::mem::size_of::<&mut T>();
+impl Dynamic for String {
+	fn calculate_memory_usage(&self) -> usize {
+		size_of::<String>() + self.capacity()
+	}
+
+	fn calculate_values_usage(&self) -> usize {
+		size_of::<String>() + self.len()
+	}
 }
 
 #[cfg(test)]
@@ -199,7 +226,7 @@ mod tests {
 	#[test]
 	fn static_types_and_std_sized() {
 		fn check<T: Static>() {
-			assert_eq!(T::MEMORY_USAGE, std::mem::size_of::<T>());
+			assert_eq!(T::MEMORY_USAGE, size_of::<T>());
 		}
 
 		check::<u8>();
