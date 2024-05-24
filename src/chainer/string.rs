@@ -36,7 +36,7 @@ impl StringChain {
 	// pub fn from_utf16le(v: &[u8]) -> Option<Self> {
 	// 	if v.len() % 2 != 0 { return None }
 	//
-	// 	match (cfg!(target_endian = "little"), unsafe { v.align_to::<u16>()}) {
+	// 	match (cfg!(target_endian = "little"), unsafe { v.align_to::<u16>() }) {
 	// 		(true, ([], v, [])) => { Self::from_utf16(v) }
 	// 		_ => {
 	// 			// need array chunks impl

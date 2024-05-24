@@ -31,7 +31,7 @@ where
 		}
 	}
 
-	/// Consumes `self` and returns the underlying iterator.
+	/// Consumes `self` and returns the underlying iter.
 	pub fn into_inner(self) -> (I, Option<Option<I::Item>>) {
 		(self.iter, self.item)
 	}
@@ -122,7 +122,7 @@ where
 
 #[cfg(test)]
 mod tests {
-	use crate::iter::{IntoStdIterator, IntoWiwiIter};
+	use crate::iter::{ IntoStdIterator, IntoWiwiIter };
 	use super::*;
 
 	#[test]
