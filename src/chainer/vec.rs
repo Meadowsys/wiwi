@@ -8,10 +8,10 @@ use std::ops::RangeBounds;
 use std::slice::{ self, SliceIndex };
 use super::{ SliceBoxChain, SliceRefChain, SliceMutChain };
 
-/// Vec type that provides a chaining API.
-///
-/// It contains similar methods as [`Vec`], but in some cases, the API differs
-/// to accomodate the chaining API.
+// /// Vec type that provides a chaining API.
+// ///
+// /// It contains similar methods as [`Vec`], but in some cases, the API differs
+// /// to accomodate the chaining API.
 // TODO: allocator param
 #[repr(transparent)]
 #[derive(Clone)]
