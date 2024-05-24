@@ -270,6 +270,9 @@
 <a href="#270" id="270">270</a>
 <a href="#271" id="271">271</a>
 <a href="#272" id="272">272</a>
+<a href="#273" id="273">273</a>
+<a href="#274" id="274">274</a>
+<a href="#275" id="275">275</a>
 </pre></div><pre class="rust"><code><span class="kw">mod </span>adapter;
 <span class="kw">pub use </span>adapter::{
 	AsStdIterator,
@@ -301,6 +304,9 @@
 <span class="kw">pub use </span>size_hint::{ SizeHint, SizeHintBound };
 
 <span class="kw">mod </span>std_impl;
+
+<span class="kw">mod </span>tuple;
+<span class="kw">pub use </span>tuple::<span class="kw-2">*</span>;
 
 <span class="comment">// this will compiler error if something broke `Iter`'s object safety
 </span><span class="kw">fn </span>__iter_object_safe(<span class="kw">_</span>: <span class="kw-2">&amp;mut </span><span class="kw">dyn </span>Iter&lt;Item = ()&gt;) {}
@@ -369,21 +375,21 @@
 		}
 	}
 
-	<span class="doccomment">/// Takes every element emitted by the underlying iterator, and returns it
+	<span class="doccomment">/// Takes every element emitted by the underlying iter, and returns it
 	/// `count` times via cloning.
 	///
 	/// If the count provided is 1, elements may be needlessly cloned.
 	</span><span class="comment">//  side note: I'm purposefully not specifying the exact behaviour
 	</span><span class="doccomment">///
-	/// If the count provided is 0, the iterator will never be advanced, and the
-	/// returned iterator will yield no elements.
+	/// If the count provided is 0, the iter will never be advanced, and the
+	/// returned iter will yield no elements.
 	</span><span class="comment">//  another side note: this... feels less expensive than checking for 0 every
 	//  iteration and does match the behaviour that one may expect of asking to
 	//  repeat every item 0 times lol (if everything comes out 0 times... nothing
 	//  comes out), and feels better to me than panicking. I mean, technically
 	//  it's not wrong to ask repeat every element 0 times...
 	</span><span class="doccomment">///
-	/// This iterator is fused, meaning this iterator will always yield `None`
+	/// This iter is fused, meaning it will always yield `None`
 	/// once the underlying iter does, and will never advance it again.
 	///
 	/// # Examples

@@ -247,7 +247,7 @@
 <a href="#247" id="247">247</a>
 <a href="#248" id="248">248</a>
 </pre></div><pre class="rust"><code><span class="attr">#[derive(Debug)]
-#[cfg_attr(test, derive(PartialEq, Eq))]
+#[cfg_attr(test, derive(Clone, PartialEq, Eq))]
 </span><span class="kw">pub struct </span>SizeHint {
 	lower: SizeHintBound,
 	upper: SizeHintBound
@@ -260,7 +260,7 @@
 /// of this, but they're kinda useless on their own. [`SizeHint`] has no methods
 /// that take instances of this enum directly.
 </span><span class="attr">#[derive(Debug)]
-#[cfg_attr(test, derive(PartialEq, Eq))]
+#[cfg_attr(test, derive(Clone, PartialEq, Eq))]
 </span><span class="kw">pub enum </span>SizeHintBound {
 	<span class="doccomment">/// Hard bound, unsafe, reliable information for use in unsafe operations.
 	///

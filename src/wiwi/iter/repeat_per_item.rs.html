@@ -236,7 +236,7 @@
 		</span>}
 	}
 
-	<span class="doccomment">/// Consumes `self` and returns the underlying iterator.
+	<span class="doccomment">/// Consumes `self` and returns the underlying iter.
 	</span><span class="kw">pub fn </span>into_inner(<span class="self">self</span>) -&gt; (I, <span class="prelude-ty">Option</span>&lt;<span class="prelude-ty">Option</span>&lt;I::Item&gt;&gt;) {
 		(<span class="self">self</span>.iter, <span class="self">self</span>.item)
 	}
@@ -327,7 +327,7 @@
 
 <span class="attr">#[cfg(test)]
 </span><span class="kw">mod </span>tests {
-	<span class="kw">use </span><span class="kw">crate</span>::iter::{IntoStdIterator, IntoWiwiIter};
+	<span class="kw">use </span><span class="kw">crate</span>::iter::{ IntoStdIterator, IntoWiwiIter };
 	<span class="kw">use super</span>::<span class="kw-2">*</span>;
 
 	<span class="attr">#[test]

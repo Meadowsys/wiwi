@@ -282,7 +282,7 @@
 	<span class="comment">// pub fn from_utf16le(v: &amp;[u8]) -&gt; Option&lt;Self&gt; {
 	// 	if v.len() % 2 != 0 { return None }
 	//
-	// 	match (cfg!(target_endian = "little"), unsafe { v.align_to::&lt;u16&gt;()}) {
+	// 	match (cfg!(target_endian = "little"), unsafe { v.align_to::&lt;u16&gt;() }) {
 	// 		(true, ([], v, [])) =&gt; { Self::from_utf16(v) }
 	// 		_ =&gt; {
 	// 			// need array chunks impl
