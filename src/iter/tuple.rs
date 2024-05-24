@@ -3,33 +3,49 @@ use super::{ IntoIter, Iter, SizeHint, SizeHintBound };
 macro_rules! iter_tuple_impl {
 	// input case
 	{
-		($next_s:ident $next_t:ident)
-		$(($input_s:ident $input_t:ident))*
+		($next_s:ident $next_t:ident $next_l:literal)
+		$(($input_s:ident $input_t:ident $input_l:literal))*
 	} => {
-		iter_tuple_impl!([$(($input_s $input_t))*] ($next_s $next_t));
+		iter_tuple_impl!([$(($input_s $input_t $input_l))*] ($next_s $next_t $next_l));
 	};
 
 	// base case (everything taken)
 	{
 		[]
-		($curr_s:ident $curr_t:ident)
-		$(($rem_s:ident $rem_t:ident))*
+		($curr_s:ident $curr_t:ident $curr_l:literal)
+		$(($rem_s:ident $rem_t:ident $rem_l:literal))*
 	} => {
-		iter_tuple_impl!(@impl $curr_s $curr_t $(($rem_s $rem_t))*);
+		iter_tuple_impl!(@impl $curr_s $curr_t $curr_l $(($rem_s $rem_t $rem_l))*);
 	};
 
 	// running case
 	{
-		[($next_s:ident $next_t:ident) $(($input_s:ident $input_t:ident))*]
-		($curr_s:ident $curr_t:ident)
-		$(($rem_s:ident $rem_t:ident))*
+		[($next_s:ident $next_t:ident $next_l:literal) $(($input_s:ident $input_t:ident $input_l:literal))*]
+		($curr_s:ident $curr_t:ident $curr_l:literal)
+		$(($rem_s:ident $rem_t:ident $rem_l:literal))*
 	} => {
-		iter_tuple_impl!([$(($input_s $input_t))*] ($next_s $next_t) $(($rem_s $rem_t))* ($curr_s $curr_t));
-		iter_tuple_impl!(@impl $curr_s $curr_t $(($rem_s $rem_t))*);
+		iter_tuple_impl!([$(($input_s $input_t $input_l))*] ($next_s $next_t $next_l) $(($rem_s $rem_t $rem_l))* ($curr_s $curr_t $curr_l));
+		iter_tuple_impl!(@impl $curr_s $curr_t $curr_l $(($rem_s $rem_t $rem_l))*);
 	};
 
 	// impl case
-	{ @impl $curr_s:ident $curr_t:ident $(($rem_s:ident $rem_t:ident))* } => {
+	{ @impl $curr_s:ident $curr_t:ident $curr_l:literal $(($rem_s:ident $rem_t:ident $rem_l:literal))* } => {
+		/// Iter for tuples of size
+		#[doc = concat!(stringify!($curr_l), ".")]
+		///
+		/// [`IntoIter`]
+		/// Other structs for other tuples of size up to 32 can be found
+		/// [here](super).
+		///
+		/// [`IntoIter`] implementations are available for tuples of up to size 32,
+		/// and their concrete struct types can be found [here](super). Obtain an
+		/// instance by calling [`into_wiwi_iter`](IntoIter::into_wiwi_iter)
+		/// on a tuple containing all iters (or structs implementing [`IntoIter`]).
+		/// At least for now, you must use [`IntoWiwiIter`] or [`AsWiwiIter`] for
+		/// std iterators.
+		///
+		/// [`IntoWiwiIter`]: super::IntoWiwiIter
+		/// [`AsWiwiIter`]: super::AsWiwiIter
 		pub struct $curr_s<$($rem_t,)* $curr_t>($($rem_t,)* $curr_t);
 
 		#[allow(non_snake_case)]
@@ -79,14 +95,14 @@ macro_rules! iter_tuple_impl {
 }
 
 iter_tuple_impl! {
-	(Tuple1 I1)   (Tuple2 I2)   (Tuple3 I3)   (Tuple4 I4)
-	(Tuple5 I5)   (Tuple6 I6)   (Tuple7 I7)   (Tuple8 I8)
-	(Tuple9 I9)   (Tuple10 I10) (Tuple11 I11) (Tuple12 I12)
-	(Tuple13 I13) (Tuple14 I14) (Tuple15 I15) (Tuple16 I16)
-	(Tuple17 I17) (Tuple18 I18) (Tuple19 I19) (Tuple20 I20)
-	(Tuple21 I21) (Tuple22 I22) (Tuple23 I23) (Tuple24 I24)
-	(Tuple25 I25) (Tuple26 I26) (Tuple27 I27) (Tuple28 I28)
-	(Tuple29 I29) (Tuple30 I30) (Tuple31 I31) (Tuple32 I32)
+	(Tuple1 I1 1)    (Tuple2 I2 2)    (Tuple3 I3 3)    (Tuple4 I4 4)
+	(Tuple5 I5 5)    (Tuple6 I6 6)    (Tuple7 I7 7)    (Tuple8 I8 8)
+	(Tuple9 I9 9)    (Tuple10 I10 10) (Tuple11 I11 11) (Tuple12 I12 12)
+	(Tuple13 I13 13) (Tuple14 I14 14) (Tuple15 I15 15) (Tuple16 I16 16)
+	(Tuple17 I17 17) (Tuple18 I18 18) (Tuple19 I19 19) (Tuple20 I20 20)
+	(Tuple21 I21 21) (Tuple22 I22 22) (Tuple23 I23 23) (Tuple24 I24 24)
+	(Tuple25 I25 25) (Tuple26 I26 26) (Tuple27 I27 27) (Tuple28 I28 28)
+	(Tuple29 I29 29) (Tuple30 I30 30) (Tuple31 I31 31) (Tuple32 I32 32)
 }
 
 unsafe fn min_size_hint(h1: SizeHint, h2: SizeHint) -> SizeHint {
