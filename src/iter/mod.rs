@@ -30,6 +30,9 @@ pub use size_hint::{ SizeHint, SizeHintBound };
 
 mod std_impl;
 
+mod tuple;
+pub use tuple::*;
+
 // this will compiler error if something broke `Iter`'s object safety
 fn __iter_object_safe(_: &mut dyn Iter<Item = ()>) {}
 

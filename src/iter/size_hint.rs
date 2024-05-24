@@ -1,5 +1,5 @@
 #[derive(Debug)]
-#[cfg_attr(test, derive(PartialEq, Eq))]
+#[cfg_attr(test, derive(Clone, PartialEq, Eq))]
 pub struct SizeHint {
 	lower: SizeHintBound,
 	upper: SizeHintBound
@@ -12,7 +12,7 @@ pub struct SizeHint {
 /// of this, but they're kinda useless on their own. [`SizeHint`] has no methods
 /// that take instances of this enum directly.
 #[derive(Debug)]
-#[cfg_attr(test, derive(PartialEq, Eq))]
+#[cfg_attr(test, derive(Clone, PartialEq, Eq))]
 pub enum SizeHintBound {
 	/// Hard bound, unsafe, reliable information for use in unsafe operations.
 	///
