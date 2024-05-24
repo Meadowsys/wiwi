@@ -33,16 +33,13 @@ macro_rules! iter_tuple_impl {
 		/// Iter for tuples of size
 		#[doc = concat!(stringify!($curr_l), ".")]
 		///
-		/// [`IntoIter`]
-		/// Other structs for other tuples of size up to 32 can be found
-		/// [here](super).
-		///
 		/// [`IntoIter`] implementations are available for tuples of up to size 32,
 		/// and their concrete struct types can be found [here](super). Obtain an
 		/// instance by calling [`into_wiwi_iter`](IntoIter::into_wiwi_iter)
 		/// on a tuple containing all iters (or structs implementing [`IntoIter`]).
 		/// At least for now, you must use [`IntoWiwiIter`] or [`AsWiwiIter`] for
-		/// std iterators.
+		/// std iterators before putting them into the tuple for the [`IntoIter`]
+		/// implementation to be available
 		///
 		/// [`IntoWiwiIter`]: super::IntoWiwiIter
 		/// [`AsWiwiIter`]: super::AsWiwiIter
