@@ -107,6 +107,8 @@ macro_rules! impl_static_via_size_of {
 impl_static_via_size_of! {
 	u8 u16 u32 u64 u128 usize
 	i8 i16 i32 i64 i128 isize
+	f32 f64 // f16 f128
+	bool char
 }
 
 macro_rules! impl_dyn_mem_usage_tuple {
@@ -181,11 +183,13 @@ impl<T: Dynamic, const N: usize> Dynamic for [T; N] {
 
 impl<T: Dynamic> Dynamic for [T] {
 	fn calculate_memory_usage(&self) -> usize {
-		self.iter().map(T::calculate_memory_usage).sum()
+		let contents = self.iter().map(T::calculate_memory_usage).sum::<usize>();
+		size_of::<&[T]>() + contents
 	}
 
 	fn calculate_values_usage(&self) -> usize {
-		self.iter().map(T::calculate_values_usage).sum()
+		let contents = self.iter().map(T::calculate_values_usage).sum::<usize>();
+		size_of::<&[T]>() + contents
 	}
 }
 
@@ -244,5 +248,26 @@ mod tests {
 
 		check::<usize>();
 		check::<isize>();
+	}
+
+	#[test]
+	fn vec_size() {
+		let mut vec = Vec::<i32>::new();
+		// ??? lol
+		let base_vec_usage = <(*const i32, usize, usize)>::calculate_memory_usage(&(std::ptr::NonNull::dangling().as_ptr(), 0, 0));
+
+		assert_eq!(vec.calculate_memory_usage(), base_vec_usage);
+		assert_eq!(vec.calculate_values_usage(), base_vec_usage);
+
+		vec.reserve(32);
+
+		let mem_use = vec.calculate_memory_usage();
+		let val_use = vec.calculate_values_usage();
+		assert!(mem_use >= base_vec_usage + (32 * i32::MEMORY_USAGE));
+		assert_eq!(val_use, base_vec_usage);
+
+		vec.extend([1, 2, 3, 4, 5, 6, 7, 8]);
+		assert_eq!(vec.calculate_values_usage(), base_vec_usage + (8 * i32::MEMORY_USAGE));
+		assert_eq!(vec.calculate_memory_usage(), mem_use);
 	}
 }
