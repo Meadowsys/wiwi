@@ -4,7 +4,7 @@ use std::{ ptr, vec };
 use std::cmp::Ordering;
 use std::marker::PhantomData;
 use std::mem::{ self, ManuallyDrop, MaybeUninit };
-use std::ops::RangeBounds;
+use std::ops::{ Range, RangeBounds };
 use std::slice::{ self, SliceIndex };
 use super::{ SliceBoxChain, SliceRefChain, SliceMutChain };
 
@@ -124,46 +124,6 @@ impl<T> VecChain<T> {
 }
 
 impl<T> VecChain<T> {
-	pub fn as_ptr(&self) -> *const T {
-		self.inner.as_ptr()
-	}
-
-	pub fn as_ptr_mut(&mut self) -> *mut T {
-		self.inner.as_mut_ptr()
-	}
-
-	pub fn as_slice(&self) -> &[T] {
-		&self.inner
-	}
-
-	pub fn as_slice_mut(&mut self) -> &mut [T] {
-		&mut self.inner
-	}
-
-	/// Borrow this vector chain immutably as a [`SliceRefChain`].
-	///
-	/// Note: this does not consume `self`, but only immutably borrow from it. So,
-	/// you will need to keep `self` in somewhere owned.
-	pub fn as_slice_chainer_ref(&self) -> SliceRefChain<T> {
-		(*self.inner).into()
-	}
-
-	/// Borrow this vector chain mutably as a [`SliceMutChain`].
-	///
-	/// Note: this does not consume `self`, but only mutably borrow from it. So,
-	/// you will need to keep `self` in somewhere owned.
-	pub fn as_slice_chainer_mut(&mut self) -> SliceMutChain<T> {
-		(&mut *self.inner).into()
-	}
-
-	pub fn as_vec(&self) -> &Vec<T> {
-		&self.inner
-	}
-
-	pub fn as_vec_mut(&mut self) -> &mut Vec<T> {
-		&mut self.inner
-	}
-
 	pub fn into_boxed_slice(self) -> Box<[T]> {
 		self.inner.into_boxed_slice()
 	}
@@ -190,6 +150,54 @@ impl<T> VecChain<T> {
 		let mut me = ManuallyDrop::new(self.inner);
 		(me.as_mut_ptr(), me.len(), me.capacity())
 	}
+
+	pub fn nonchain_ptr(&self) -> *const T {
+		self.inner.as_ptr()
+	}
+
+	pub fn nonchain_ptr_mut(&mut self) -> *mut T {
+		self.inner.as_mut_ptr()
+	}
+
+	pub fn nonchain_ptr_range(&self) -> Range<*const T> {
+		self.inner.as_ptr_range()
+	}
+
+	pub fn nonchain_ptr_range_mut(&mut self) -> Range<*mut T> {
+		self.inner.as_mut_ptr_range()
+	}
+
+	pub fn nonchain_slice(&self) -> &[T] {
+		&self.inner
+	}
+
+	pub fn nonchain_slice_mut(&mut self) -> &mut [T] {
+		&mut self.inner
+	}
+
+	/// Borrow this vector chain immutably as a [`SliceRefChain`].
+	///
+	/// Note: this does not consume `self`, but only immutably borrow from it. So,
+	/// you will need to keep `self` in somewhere owned.
+	pub fn nonchain_slice_chainer_ref(&self) -> SliceRefChain<T> {
+		(*self.inner).into()
+	}
+
+	/// Borrow this vector chain mutably as a [`SliceMutChain`].
+	///
+	/// Note: this does not consume `self`, but only mutably borrow from it. So,
+	/// you will need to keep `self` in somewhere owned.
+	pub fn nonchain_slice_chainer_mut(&mut self) -> SliceMutChain<T> {
+		(&mut *self.inner).into()
+	}
+
+	pub fn nonchain_vec(&self) -> &Vec<T> {
+		&self.inner
+	}
+
+	pub fn nonchain_vec_mut(&mut self) -> &mut Vec<T> {
+		&mut self.inner
+	}
 }
 
 impl<T> VecChain<T> {
@@ -212,7 +220,7 @@ impl<T> VecChain<T> {
 		unsafe {
 			let len = self.inner.len();
 			let remainder = len % N;
-			let ptr = self.as_ptr().add(len - remainder);
+			let ptr = self.nonchain_ptr().add(len - remainder);
 			let partial_chunk = slice::from_raw_parts(ptr, remainder);
 
 			// SAFETY: our impl of this unchecked fn just uses int division
@@ -231,7 +239,7 @@ impl<T> VecChain<T> {
 		unsafe {
 			let len = self.inner.len();
 			let remainder = len % N;
-			let ptr = self.as_ptr_mut().add(len - remainder);
+			let ptr = self.nonchain_ptr_mut().add(len - remainder);
 			let partial_chunk = slice::from_raw_parts_mut(ptr, remainder);
 
 			// SAFETY: our impl of this unchecked fn just uses int division
@@ -254,7 +262,7 @@ impl<T> VecChain<T> {
 			// changing those uses also
 			let chunks = self.inner.len() / N;
 
-			let ptr = self.as_ptr() as *const [T; N];
+			let ptr = self.nonchain_ptr() as *const [T; N];
 			let slice = slice::from_raw_parts(ptr, chunks);
 			cb(slice);
 		}
@@ -275,7 +283,7 @@ impl<T> VecChain<T> {
 			// changing those uses also
 			let chunks = self.inner.len() / N;
 
-			let ptr = self.as_ptr_mut() as *mut [T; N];
+			let ptr = self.nonchain_ptr_mut() as *mut [T; N];
 			let slice = slice::from_raw_parts_mut(ptr, chunks);
 			cb(slice);
 		}
@@ -294,7 +302,7 @@ impl<T> VecChain<T> {
 			let remainder = len % N;
 			let full_chunks = len / N;
 
-			let partial_ptr = self.as_ptr();
+			let partial_ptr = self.nonchain_ptr();
 			let full_ptr = partial_ptr.add(remainder) as *const [T; N];
 
 			let partial = slice::from_raw_parts(partial_ptr, remainder);
@@ -317,7 +325,7 @@ impl<T> VecChain<T> {
 			let remainder = len % N;
 			let full_chunks = len / N;
 
-			let partial_ptr = self.as_ptr_mut();
+			let partial_ptr = self.nonchain_ptr_mut();
 			let full_ptr = partial_ptr.add(remainder) as *mut [T; N];
 
 			let partial = slice::from_raw_parts_mut(partial_ptr, remainder);
@@ -511,6 +519,22 @@ impl<T> VecChain<T> {
 		self
 	}
 
+	pub fn first_chunk<const N: usize, CB>(self, cb: CB) -> Self
+	where
+		CB: FnOnce(Option<&[T; N]>)
+	{
+		cb(self.inner.first_chunk());
+		self
+	}
+
+	pub fn first_chunk_mut<const N: usize, CB>(mut self, cb: CB) -> Self
+	where
+		CB: FnOnce(Option<&mut [T; N]>)
+	{
+		cb(self.inner.first_chunk_mut());
+		self
+	}
+
 	pub fn get<I, CB>(self, index: I, cb: CB) -> Self
 	where
 		I: SliceIndex<[T]>,
@@ -619,6 +643,22 @@ impl<T> VecChain<T> {
 		CB: FnOnce(Option<&mut T>)
 	{
 		cb(self.inner.last_mut());
+		self
+	}
+
+	pub fn last_chunk<const N: usize, CB>(self, cb: CB) -> Self
+	where
+		CB: FnOnce(Option<&[T; N]>)
+	{
+		cb(self.inner.last_chunk());
+		self
+	}
+
+	pub fn last_chunk_mut<const N: usize, CB>(mut self, cb: CB) -> Self
+	where
+		CB: FnOnce(Option<&mut [T; N]>)
+	{
+		cb(self.inner.last_chunk_mut());
 		self
 	}
 
@@ -873,7 +913,7 @@ impl<T> VecChain<T> {
 	{
 		// TODO: call Vec impl when it is stabilised
 		unsafe {
-			let ptr = self.as_ptr_mut();
+			let ptr = self.nonchain_ptr_mut();
 			let len = self.inner.len();
 			let cap = self.inner.capacity();
 
@@ -905,6 +945,21 @@ impl<T> VecChain<T> {
 		self
 	}
 
+	pub fn split_first_chunk<const N: usize, CB>(self, cb: CB) -> Self
+	where
+		CB: FnOnce(Option<(&[T; N], &[T])>)
+	{
+		cb(self.inner.split_first_chunk());
+		self
+	}
+	pub fn split_first_chunk_mut<const N: usize, CB>(mut self, cb: CB) -> Self
+	where
+		CB: FnOnce(Option<(&mut [T; N], &mut [T])>)
+	{
+		cb(self.inner.split_first_chunk_mut());
+		self
+	}
+
 	pub fn split_last<CB>(self, cb: CB) -> Self
 	where
 		CB: FnOnce(Option<(&T, SliceRefChain<T>)>)
@@ -918,6 +973,22 @@ impl<T> VecChain<T> {
 		CB: FnOnce(Option<(&mut T, SliceMutChain<T>)>)
 	{
 		cb(self.inner.split_last_mut().map(|(a, b)| (a, b.into())));
+		self
+	}
+
+	pub fn split_last_chunk<const N: usize, CB>(self, cb: CB) -> Self
+	where
+		CB: FnOnce(Option<(&[T], &[T; N])>)
+	{
+		cb(self.inner.split_last_chunk());
+		self
+	}
+
+	pub fn split_last_chunk_mut<const N: usize, CB>(mut self, cb: CB) -> Self
+	where
+		CB: FnOnce(Option<(&mut [T], &mut [T; N])>)
+	{
+		cb(self.inner.split_last_chunk_mut());
 		self
 	}
 
@@ -945,7 +1016,7 @@ impl<T> VecChain<T> {
 
 	pub unsafe fn swap_unchecked(mut self, a: usize, b: usize) -> Self {
 		// TODO: replace with Vec::swap_unchecked call when it's stabilised?
-		let ptr = self.as_ptr_mut();
+		let ptr = self.nonchain_ptr_mut();
 		ptr::swap(ptr.add(a), ptr.add(b));
 		self
 	}
@@ -1009,23 +1080,12 @@ impl<T> VecChain<T> {
 	}
 
 	// TODO: utf8_chunks
-	// TODO: as_ascii
-	// TODO: as_ascii_unchecked
 	// TODO: eq_ignore_ascii_case
-	// TODO: make_ascii_uppercase
-	// TODO: make_ascii_lowercase
 	// TODO: escape_ascii
 	// TODO: trim_ascii_start/end
 	// TODO: trim_ascii
+
 	// doc link: https://doc.rust-lang.org/std/vec/struct.Vec.html#method.first_chunk
-	// TODO: first_chunk/mut
-	// TODO: split_first_chunk/mut
-	// TODO: split_last_chunk/mut
-	// TODO: last_chunk/mut
-	// TODO: get/mut
-	// TODO: get_unchecked/mut
-	// TODO: as_ptr_range/mut
-	// TODO: swap/unchecked
 	// TODO: iter/mut
 	// TODO: windows
 	// TODO: chunks/mut
@@ -1140,6 +1200,16 @@ impl VecChain<u8> {
 		self
 	}
 
+	pub fn make_ascii_lowercase(mut self) -> Self {
+		self.inner.make_ascii_lowercase();
+		self
+	}
+
+	pub fn make_ascii_uppercase(mut self) -> Self {
+		self.inner.make_ascii_uppercase();
+		self
+	}
+
 	// TODO: as_ascii/unchecked nightly
 }
 
@@ -1165,7 +1235,7 @@ impl<T, const N: usize> VecChain<[T; N]> {
 		// TODO: switch to into_raw_parts impl when it is stabilised?
 		// let (ptr, _len, _capacity) = self.inner.into_raw_parts();
 
-		let ptr = self.as_ptr_mut() as *mut T;
+		let ptr = self.nonchain_ptr_mut() as *mut T;
 		mem::forget(self);
 
 		unsafe { Vec::from_raw_parts(ptr, len, cap).into() }

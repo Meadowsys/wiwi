@@ -6,20 +6,20 @@ pub struct ArrayRefChain<'h, T, const N: usize> {
 }
 
 impl<'h, T, const N: usize> ArrayRefChain<'h, T, N> {
-	pub fn as_array(&'h self) -> &'h [T; N] {
-		self.inner
-	}
-
-	pub fn as_slice(&'h self) -> &'h [T] {
-		self.inner
-	}
-
-	pub fn as_slice_chainer_ref(&'h self) -> SliceRefChain<'h, T> {
-		(self.inner as &[T]).into()
-	}
-
 	pub fn into_inner(self) -> &'h [T; N] {
 		self.inner
+	}
+
+	pub fn nonchain_array(&'h self) -> &'h [T; N] {
+		self.inner
+	}
+
+	pub fn nonchain_slice(&'h self) -> &'h [T] {
+		self.inner
+	}
+
+	pub fn nonchain_slice_chainer_ref(&'h self) -> SliceRefChain<'h, T> {
+		(self.inner as &[T]).into()
 	}
 }
 

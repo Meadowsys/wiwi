@@ -18,38 +18,38 @@ impl<T> SliceBoxChain<T> {
 
 	pub fn new_zeroed(len: usize) -> SliceBoxChain<MaybeUninit<T>> {
 		let mut this = Self::new_uninit(len);
-		unsafe { this.as_ptr_mut().write_bytes(0, len) }
+		unsafe { this.nonchain_ptr_mut().write_bytes(0, len) }
 		this
 	}
 }
 
 impl<T> SliceBoxChain<T> {
-	pub fn as_ptr(&self) -> *const T {
+	pub fn into_inner(self) -> Box<[T]> {
+		self.inner
+	}
+
+	pub fn nonchain_ptr(&self) -> *const T {
 		self.inner.as_ptr()
 	}
 
-	pub fn as_ptr_mut(&mut self) -> *mut T {
+	pub fn nonchain_ptr_mut(&mut self) -> *mut T {
 		self.inner.as_mut_ptr()
 	}
 
-	pub fn as_slice(&self) -> &[T] {
+	pub fn nonchain_slice(&self) -> &[T] {
 		&self.inner
 	}
 
-	pub fn as_slice_mut(&mut self) -> &mut [T] {
+	pub fn nonchain_slice_mut(&mut self) -> &mut [T] {
 		&mut self.inner
 	}
 
-	pub fn as_slice_chainer_ref(&self) -> SliceRefChain<T> {
+	pub fn nonchain_slice_chainer_ref(&self) -> SliceRefChain<T> {
 		(*self.inner).into()
 	}
 
-	pub fn as_slice_chainer_mut(&mut self) -> SliceMutChain<T> {
+	pub fn nonchain_slice_chainer_mut(&mut self) -> SliceMutChain<T> {
 		(&mut *self.inner).into()
-	}
-
-	pub fn into_inner(self) -> Box<[T]> {
-		self.inner
 	}
 }
 

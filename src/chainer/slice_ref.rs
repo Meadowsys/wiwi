@@ -9,12 +9,6 @@ pub struct SliceRefChain<'h, T> {
 }
 
 impl<'h, T> SliceRefChain<'h, T> {
-	pub fn as_slice(&self) -> &[T] {
-		self.inner
-	}
-}
-
-impl<'h, T> SliceRefChain<'h, T> {
 	pub fn into_inner(self) -> &'h [T] {
 		self.inner
 	}
@@ -24,6 +18,10 @@ impl<'h, T> SliceRefChain<'h, T> {
 		T: Clone
 	{
 		self.inner.to_vec().into()
+	}
+
+	pub fn nonchain_slice(&self) -> &[T] {
+		self.inner
 	}
 }
 

@@ -6,36 +6,36 @@ pub struct ArrayMutChain<'h, T, const N: usize> {
 }
 
 impl<'h, T, const N: usize> ArrayMutChain<'h, T, N> {
-	pub fn as_array(&'h self) -> &'h [T; N] {
+	pub fn into_inner(self) -> &'h mut [T; N] {
 		self.inner
 	}
 
-	pub fn as_array_mut(&'h mut self) -> &'h mut [T; N] {
+	pub fn nonchain_array(&'h self) -> &'h [T; N] {
 		self.inner
 	}
 
-	pub fn as_array_chainer_ref(&'h self) -> ArrayRefChain<'h, T, N> {
+	pub fn nonchain_array_mut(&'h mut self) -> &'h mut [T; N] {
+		self.inner
+	}
+
+	pub fn nonchain_array_chainer_ref(&'h self) -> ArrayRefChain<'h, T, N> {
 		(&*self.inner).into()
 	}
 
-	pub fn as_slice(&'h self) -> &'h [T] {
+	pub fn nonchain_slice(&'h self) -> &'h [T] {
 		self.inner
 	}
 
-	pub fn as_slice_mut(&'h mut self) -> &'h mut [T] {
+	pub fn nonchain_slice_mut(&'h mut self) -> &'h mut [T] {
 		self.inner
 	}
 
-	pub fn as_slice_chainer_ref(&'h self) -> SliceRefChain<'h, T> {
+	pub fn nonchain_slice_chainer_ref(&'h self) -> SliceRefChain<'h, T> {
 		(self.inner as &[T]).into()
 	}
 
-	pub fn as_slice_chainer_mut(&'h mut self) -> SliceMutChain<'h, T> {
+	pub fn nonchain_slice_chainer_mut(&'h mut self) -> SliceMutChain<'h, T> {
 		(self.inner as &mut [T]).into()
-	}
-
-	pub fn into_inner(self) -> &'h mut [T; N] {
-		self.inner
 	}
 }
 

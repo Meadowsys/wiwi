@@ -60,22 +60,6 @@ impl StringChain {
 }
 
 impl StringChain {
-	pub fn as_bytes(&self) -> &[u8] {
-		self.inner.as_bytes()
-	}
-
-	pub fn as_str(&self) -> &str {
-		&self.inner
-	}
-
-	pub fn as_str_mut(&mut self) -> &mut str {
-		&mut self.inner
-	}
-
-	pub unsafe fn as_vec_mut(&mut self) -> &mut Vec<u8> {
-		self.inner.as_mut_vec()
-	}
-
 	pub fn into_bytes(self) -> Vec<u8> {
 		self.inner.into_bytes()
 	}
@@ -91,6 +75,22 @@ impl StringChain {
 			.into_chainer()
 			.into_raw_parts()
 	}
+
+	pub fn nonchain_bytes(&self) -> &[u8] {
+		self.inner.as_bytes()
+	}
+
+	pub fn nonchain_str(&self) -> &str {
+		&self.inner
+	}
+
+	pub fn nonchain_str_mut(&mut self) -> &mut str {
+		&mut self.inner
+	}
+
+	pub unsafe fn nonchain_vec_mut(&mut self) -> &mut Vec<u8> {
+		self.inner.as_mut_vec()
+	}
 }
 
 impl StringChain {
@@ -101,6 +101,11 @@ impl StringChain {
 
 	pub fn capacity_uninit(self, out: &mut MaybeUninit<usize>) -> Self {
 		out.write(self.inner.capacity());
+		self
+	}
+
+	pub fn clear(mut self) -> Self {
+		self.inner.clear();
 		self
 	}
 
@@ -123,7 +128,7 @@ impl StringChain {
 		assert!(self.inner.is_char_boundary(start));
 		assert!(self.inner.is_char_boundary(end));
 
-		unsafe { self.as_vec_mut().extend_from_within(Range { start, end }) }
+		unsafe { self.nonchain_vec_mut().extend_from_within(Range { start, end }) }
 		self
 	}
 
@@ -217,22 +222,58 @@ impl StringChain {
 		self
 	}
 
-	// TODO: split_off
-	// hmmmmmm
-	// split_off returns (StringChain, StringChain), doesn't chain?
-	// split_off_l keeps left side chaining and writes right side out?
-	// and split_off_r chains right?
-	// need to document this lol
-
-	pub fn split_off(mut self, at: usize) -> (Self, Self) {
+	pub fn split(mut self, at: usize) -> (Self, Self) {
 		let r = self.inner.split_off(at);
 		(self, r.into())
 	}
 
-	// pub fn split_off_left(mut self, at: usize, out: &mut StringChain) -> Self
+	/// Splits the left side off and writes it to another location, keeping the
+	/// right side in `self`.
+	pub fn split_left_off(self, at: usize, out: &mut Self) -> Self {
+		self.split_left_off_uninit(at, unsafe { out.to_maybeuninit_drop() })
+	}
+
+	/// Splits the left side off and writes it to another location, keeping the
+	/// right side in `self`.
+	pub fn split_left_off_uninit(self, at: usize, out: &mut MaybeUninit<Self>) -> Self {
+		let (left, right) = self.split(at);
+		out.write(left);
+		right
+	}
+
+	/// Splits the right side off and writes it to another location, keeping the
+	/// left side in `self`.
+	pub fn split_right_off(self, at: usize, out: &mut Self) -> Self {
+		self.split_right_off_uninit(at, unsafe { out.to_maybeuninit_drop() })
+	}
+
+	/// Splits the right side off and writes it to another location, keeping the
+	/// left side in `self`.
+	pub fn split_right_off_uninit(self, at: usize, out: &mut MaybeUninit<Self>) -> Self {
+		let (left, right) = self.split(at);
+		out.write(right);
+		left
+	}
 
 	pub fn truncate(mut self, new_len: usize) -> Self {
 		self.inner.truncate(new_len);
+		self
+	}
+
+	/// Unsafetly truncates the string, with no checks at all...
+	///
+	/// Unlike the [`truncate`](Self::truncate) method or it's [`String`]
+	/// equivalent, passing a new len that's past the end of a string
+	/// (`index == self.len()` is valid) is not allowed and will cause
+	/// undefined behaviour.
+	///
+	/// # Safety
+	///
+	/// - `new_len` must be within the range `0..=len`
+	/// - `new_len` must lie on a character boundary
+	pub unsafe fn truncate_unchecked(mut self, new_len: usize) -> Self {
+		debug_assert!(self.nonchain_str().is_char_boundary(new_len));
+		self.nonchain_vec_mut().set_len(new_len);
 		self
 	}
 
