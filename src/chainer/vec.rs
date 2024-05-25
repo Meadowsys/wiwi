@@ -14,7 +14,7 @@ use super::{ SliceBoxChain, SliceRefChain, SliceMutChain };
 // /// to accomodate the chaining API.
 // TODO: allocator param
 #[repr(transparent)]
-#[derive(Clone)]
+#[derive(Clone, Debug, Default)]
 pub struct VecChain<T> {
 	inner: Vec<T>
 }
@@ -124,12 +124,12 @@ impl<T> VecChain<T> {
 }
 
 impl<T> VecChain<T> {
-	pub fn into_boxed_slice(self) -> Box<[T]> {
+	pub fn nonchain_boxed_slice(self) -> Box<[T]> {
 		self.inner.into_boxed_slice()
 	}
 
-	pub fn into_boxed_slice_chainer(self) -> SliceBoxChain<T> {
-		self.into_boxed_slice().into()
+	pub fn nonchain_boxed_slice_chainer(self) -> SliceBoxChain<T> {
+		self.nonchain_boxed_slice().into()
 	}
 
 	/// Unwraps and retrieves the underlying [`Vec`] out.
@@ -139,13 +139,13 @@ impl<T> VecChain<T> {
 	/// ```
 	/// # use wiwi::chainer::VecChain;
 	/// # let vec_chain = VecChain::<String>::new();
-	/// let regular_vec = vec_chain.into_inner();
+	/// let regular_vec = vec_chain.nonchain_inner();
 	/// ```
-	pub fn into_inner(self) -> Vec<T> {
+	pub fn nonchain_inner(self) -> Vec<T> {
 		self.inner
 	}
 
-	pub fn into_raw_parts(self) -> (*mut T, usize, usize) {
+	pub fn nonchain_raw_parts(self) -> (*mut T, usize, usize) {
 		// TODO: use vec impl when stabilised
 		let mut me = ManuallyDrop::new(self.inner);
 		(me.as_mut_ptr(), me.len(), me.capacity())
@@ -398,6 +398,14 @@ impl<T> VecChain<T> {
 		self
 	}
 
+	pub fn clone_from_slice(mut self, src: &[T]) -> Self
+	where
+		T: Clone
+	{
+		self.inner.clone_from_slice(src);
+		self
+	}
+
 	pub fn contains(self, x: &T, out: &mut bool) -> Self
 	where
 		T: PartialEq
@@ -410,6 +418,23 @@ impl<T> VecChain<T> {
 		T: PartialEq
 	{
 		out.write(self.inner.contains(x));
+		self
+	}
+
+	pub fn copy_from_slice(mut self, src: &[T]) -> Self
+	where
+		T: Copy
+	{
+		self.inner.copy_from_slice(src);
+		self
+	}
+
+	pub fn copy_within<R>(mut self, src: R, dest: usize) -> Self
+	where
+		R: RangeBounds<usize>,
+		T: Copy
+	{
+		self.inner.copy_within(src, dest);
 		self
 	}
 
@@ -502,6 +527,22 @@ impl<T> VecChain<T> {
 	// pub fn extract_if(mut self) {
 	// 	self.inner.extract_if(filter)
 	// }
+
+	pub fn fill(mut self, value: T) -> Self
+	where
+		T: Clone
+	{
+		self.inner.fill(value);
+		self
+	}
+
+	pub fn fill_with<F>(mut self, f: F) -> Self
+	where
+		F: FnMut() -> T
+	{
+		self.inner.fill_with(f);
+		self
+	}
 
 	pub fn first<CB>(self, cb: CB) -> Self
 	where
@@ -684,15 +725,15 @@ impl<T> VecChain<T> {
 	///    .extend_from_slice(&[1, 2, 3])
 	///    .leak::<'static>();
 	///
-	/// static_ref.as_slice_mut()[1] = 20;
-	/// assert_eq!(static_ref.as_slice(), [1, 20, 3]);
+	/// static_ref.nonchain_slice_mut()[1] = 20;
+	/// assert_eq!(static_ref.nonchain_slice(), [1, 20, 3]);
 	/// ```
 	///
 	/// [`shrink_to_fit`]: Self::shrink_to_fit
 	/// [`with_capacity`]: Self::with_capacity
 	/// [`reserve`]: Self::reserve
 	pub fn leak<'h>(self) -> SliceMutChain<'h, T> {
-		self.shrink_to_fit().into_inner().leak().into()
+		self.shrink_to_fit().nonchain_inner().leak().into()
 	}
 
 	/// Writes the number of elements (also known as the length) in the vector
@@ -1079,6 +1120,14 @@ impl<T> VecChain<T> {
 		self
 	}
 
+	pub fn windows<CB>(self, size: usize, cb: CB) -> Self
+	where
+		CB: FnOnce(slice::Windows<T>)
+	{
+		cb(self.inner.windows(size));
+		self
+	}
+
 	// TODO: utf8_chunks
 	// TODO: eq_ignore_ascii_case
 	// TODO: escape_ascii
@@ -1087,12 +1136,12 @@ impl<T> VecChain<T> {
 
 	// doc link: https://doc.rust-lang.org/std/vec/struct.Vec.html#method.first_chunk
 	// TODO: iter/mut
-	// TODO: windows
+
 	// TODO: chunks/mut
 	// TODO: chunks_exact/mut
 	// TODO: array_chunks
 	// TODO: array_chunks_mut
-	// TODO: array_windows
+	// TODO: nightly array_windows
 	// TODO: rchunks/mut
 	// TODO: rchunks_exact/mut
 	// TODO: chunk_by/mut
@@ -1111,12 +1160,6 @@ impl<T> VecChain<T> {
 	// TODO: select_nth_unstable/by/key
 	// TODO: partition_dedup/by/key
 	// TODO: rotate_left/right
-	// TODO: fill/fill_with
-	// TODO: clone_from_slice
-	// TODO: copy_from_slice
-	// TODO: copy_within
-	// TODO: why std doesn't have clone_within?
-	// TODO: swap_with_slice
 	// TODO: align_to/mut
 	// TODO: as_simd/mut
 	// TODO: is_sorted/by/key
@@ -1155,11 +1198,6 @@ impl<T> VecChain<T> {
 	// TODO: select_nth_unstable/by/key
 	// TODO: partition_dedup/by/key
 	// TODO: rotate_left/right
-	// TODO: fill
-	// TODO: fill_with
-	// TODO: clone_from_slice
-	// TODO: copy_from_slice
-	// TODO: copy_within
 	// TODO: clone_within (not in std)?
 	// TODO: align_to/mut
 	// TODO: nightly as_simd/mut
@@ -1246,7 +1284,10 @@ impl<T, const N: usize> VecChain<[T; N]> {
 impl<T> VecChain<T> {
 	/// Sorts, then dedups, the vector chain.
 	///
-	/// Suggested by my good friend [Silk Rose] c:
+	/// Nonstandard API, suggested by my good friend
+	/// [Silk Rose] c:
+	///
+	/// This works exactly the same as `chain.sort().dedup()`.
 	///
 	/// # Examples
 	///
@@ -1332,8 +1373,8 @@ mod tests {
 		let mut chain = VecChain::new()
 			.extend_from_slice(slice);
 
-		assert_eq!(slice, chain.as_slice());
-		assert_eq!(slice, chain.as_slice_mut());
+		assert_eq!(slice, chain.nonchain_slice());
+		assert_eq!(slice, chain.nonchain_slice_mut());
 	}
 
 	#[test]
@@ -1379,8 +1420,8 @@ mod tests {
 			.extend_from_slice(&[1usize, 2, 3, 4, 5, 6, 7, 8])
 			.reserve(8)
 			.split_at_spare_mut(|mut slice, mut uninit| {
-				let slice = slice.as_slice_mut();
-				let uninit = uninit.as_slice_mut();
+				let slice = slice.nonchain_slice_mut();
+				let uninit = uninit.nonchain_slice_mut();
 				uninit_len = uninit.len();
 
 				assert_eq!(slice, &[1, 2, 3, 4, 5, 6, 7, 8]);
@@ -1400,8 +1441,8 @@ mod tests {
 				.len(&mut len)
 				.set_len(len + 4)
 				.split_at_spare_mut(|mut slice, mut uninit| {
-					let slice = slice.as_slice_mut();
-					let uninit = uninit.as_slice_mut();
+					let slice = slice.nonchain_slice_mut();
+					let uninit = uninit.nonchain_slice_mut();
 
 					assert_eq!(slice, &[1, 2, 3, 4, 5, 6, 7, 8, 0, 1, 2, 3]);
 					assert_eq!(uninit_len - 4, uninit.len());
@@ -1419,7 +1460,7 @@ mod tests {
 				.swap_unchecked(1, 6)
 				.swap_unchecked(6, 7)
 				.swap_unchecked(2, 6);
-			assert_eq!(chain.as_slice(), &[4, 5, 8, 1, 7, 6, 3, 2]);
+			assert_eq!(chain.nonchain_slice(), &[4, 5, 8, 1, 7, 6, 3, 2]);
 		}
 	}
 
@@ -1428,7 +1469,7 @@ mod tests {
 		let chain = VecChain::new()
 			.extend_from_slice(&[1, 2, 3, 4, 5, 6, 7, 8])
 			.reverse();
-		assert_eq!(chain.as_slice(), &[8, 7, 6, 5, 4, 3, 2, 1]);
+		assert_eq!(chain.nonchain_slice(), &[8, 7, 6, 5, 4, 3, 2, 1]);
 	}
 
 	#[test]

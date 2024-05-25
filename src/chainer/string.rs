@@ -73,7 +73,7 @@ impl StringChain {
 		self.inner
 			.into_bytes()
 			.into_chainer()
-			.into_raw_parts()
+			.nonchain_raw_parts()
 	}
 
 	pub fn nonchain_bytes(&self) -> &[u8] {

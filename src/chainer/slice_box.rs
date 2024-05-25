@@ -11,7 +11,7 @@ impl<T> SliceBoxChain<T> {
 		unsafe {
 			VecChain::with_capacity(len)
 				.set_len(len)
-				.into_boxed_slice()
+				.nonchain_boxed_slice()
 				.into()
 		}
 	}

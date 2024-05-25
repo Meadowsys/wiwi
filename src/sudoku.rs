@@ -22,7 +22,7 @@ impl Board {
 		debug_assert_eq!({
 			SliceRefChain::<_>::from(&game as &[_])
 				.flatten()
-				.as_slice()
+				.nonchain_slice()
 				.len()
 		}, 81);
 
