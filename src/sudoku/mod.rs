@@ -96,7 +96,7 @@ impl CellValue {
 	/// `self` must be a given value
 	unsafe fn value_of_given(&self) -> u8 {
 		debug_assert!(
-			self.bitfield.count_ones() == 2,
+			self.is_given() && self.bitfield.count_ones() == 2,
 			"a given value should only have G bit and one value bit set"
 		);
 
