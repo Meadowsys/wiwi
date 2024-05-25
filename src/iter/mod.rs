@@ -7,6 +7,9 @@ pub use adapter::{
 	IterAdapter
 };
 
+mod double_ended;
+pub use double_ended::DoubleEndedIter;
+
 mod empty;
 pub use empty::{ empty, Empty };
 
@@ -24,6 +27,9 @@ pub use peek::{ Peekable, Peek };
 
 mod repeat_per_item;
 pub use repeat_per_item::RepeatPerItem;
+
+mod rev;
+pub use rev::Rev;
 
 mod size_hint;
 pub use size_hint::{ SizeHint, SizeHintBound };
