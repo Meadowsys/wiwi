@@ -2,7 +2,7 @@
 
 A lil lib containing misc utilities, and Stuff™. Contains some useful things, contains some silly things.
 
-All exposed features are gated behind features, none of which are enabled by default.
+All exposed features are gated behind feature flags, none of which are enabled by default.
 
 ## Features
 
