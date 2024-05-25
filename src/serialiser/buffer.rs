@@ -67,13 +67,10 @@ impl BufferWrite for Vec<u8> {
 		debug_assert!(self.capacity() >= self.len() + bytes.len());
 
 		self.with_ptr(|ptr| {
-			ptr::copy_nonoverlapping(
-				bytes as *const [u8] as *const u8,
-				ptr,
-				bytes.len()
-			);
-
-			bytes.len()
+			let len = bytes.len();
+			let bytes_ptr = bytes as *const [u8] as *const u8;
+			ptr::copy_nonoverlapping(bytes_ptr, ptr, len);
+			len
 		});
 	}
 
@@ -82,18 +79,20 @@ impl BufferWrite for Vec<u8> {
 	where
 		F: FnOnce(*mut u8) -> usize
 	{
-		let ptr = self.as_mut_ptr().add(self.len());
+		let len = self.len();
+		let ptr = self.as_mut_ptr().add(len);
 		let count = f(ptr);
-		self.set_len(self.len() + count);
+		self.set_len(len + count);
 	}
 }
 
 impl<'h> BufferRead<'h> for &'h [u8] {
 	#[inline]
 	unsafe fn read_bytes_ptr(&mut self, count: usize) -> Result<*const u8> {
-		(self.len() >= count).then(|| {
+		let len = self.len();
+		(len >= count).then(|| {
 			let ptr = *self as *const [u8] as *const u8;
-			*self = slice::from_raw_parts(ptr.add(count), self.len() - count);
+			*self = slice::from_raw_parts(ptr.add(count), len - count);
 			ptr
 		}).err_eof()
 	}

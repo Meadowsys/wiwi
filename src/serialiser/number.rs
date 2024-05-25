@@ -1,5 +1,5 @@
-use super::{ *, buffer::*, serialise::*, deserialise::* };
-use std::slice;
+use super::{ *, buffer::*, error::*, serialise::*, deserialise::* };
+use std::{ ptr, slice };
 
 exported_match_macro!(smallint_positive_range: 0x00..=0x7f);
 exported_match_macro!(smallint_negative_range: -64..=-1);
@@ -130,3 +130,43 @@ fn get_byte_count_signed_le<const BYTES: usize>(bytes: [u8; BYTES]) -> u8 {
 const unsafe fn get_marker_for(byte_size: u8, signed: bool) -> u8 {
 	((byte_size - 1) << 1) | 0x80 | signed as u8
 }
+
+#[inline]
+const fn is_int_marker(marker: u8) -> bool {
+	marker >> 5 == 0b100
+}
+
+struct MarkerDetails {
+	byte_size: u8,
+	signed: bool
+}
+
+impl MarkerDetails {
+	#[inline]
+	const fn try_new(marker: u8) -> Self {
+		let marker = marker & 0b11111;
+		let byte_size = (marker >> 1) + 1;
+		let signed = marker & 1 != 0;
+
+		Self { byte_size, signed }
+	}
+}
+
+
+// TODO: need to be able to handle floats too (deserialise proper if the float has no fractional part)
+
+// impl<'h> Deserialise<'h> for u8 {
+// 	fn deserialise<B: BufferRead<'h>>(input: &mut B) -> Result<Self> {
+// 		match MarkerDetails::try_new::<1>(input.read_byte()?) {
+// 			Some(MarkerDetails { byte_size, signed: false }) => {
+// 				let mut bytes = [0u8; 1];
+// 				// ptr::copy_nonoverlapping(
+// 				// 	// input.read_bytes_ptr(byte_size as _)
+// 				// )
+// 			}
+// 			_ => { return err_str("expected u8-compatible number") }
+// 		}
+//
+// 		todo!()
+// 	}
+// }
