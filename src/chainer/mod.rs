@@ -7,7 +7,18 @@
 // TODO: move these comments to own module and add basic description for each one
 mod into_chainer;
 pub use into_chainer::IntoChainer;
+pub mod traits;
 mod with_vars;
+
+mod vec;
+/// status: significant functionality implemented, fully usable for most tasks
+pub use vec::VecChain;
+mod vec_ref;
+/// status: not started
+pub use vec_ref::VecRefChain;
+mod vec_mut;
+/// status: not started
+pub use vec_mut::VecMutChain;
 
 mod slice_box;
 /// status: not started
@@ -28,16 +39,6 @@ pub use array_ref::ArrayRefChain;
 mod array_mut;
 /// status: not started
 pub use array_mut::ArrayMutChain;
-
-mod vec;
-/// status: significant functionality implemented, fully usable for most tasks
-pub use vec::VecChain;
-mod vec_ref;
-/// status: not started
-pub use vec_ref::VecRefChain;
-mod vec_mut;
-/// status: not started
-pub use vec_mut::VecMutChain;
 
 mod string;
 /// status: a bit of basic functionality
