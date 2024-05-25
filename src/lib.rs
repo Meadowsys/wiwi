@@ -90,16 +90,6 @@
 mod _internal;
 pub mod prelude;
 
-// TODO: expose this?
-#[cfg(any(
-	// feature = "base16",
-	// feature = "base32",
-	// feature = "base64",
-	feature = "hex",
-	feature = "z85"
-))]
-mod encoding_utils;
-
 #[cfg(feature = "auth-unstable")]
 #[cfg_attr(docsrs, doc(cfg(feature = "auth-unstable")))]
 pub mod auth;

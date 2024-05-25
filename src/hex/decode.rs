@@ -1,4 +1,4 @@
-use crate::encoding_utils::UnsafeBufWriteGuard;
+use crate::_internal::encoding_utils::UnsafeBufWriteGuard;
 use super::DecodeError;
 
 // table is 256 long

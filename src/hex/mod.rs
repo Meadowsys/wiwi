@@ -1,5 +1,5 @@
 //! Fast and efficient implementation of hex encoding.
-use crate::encoding_utils::UnsafeBufWriteGuard;
+use crate::_internal::encoding_utils::UnsafeBufWriteGuard;
 
 /// Length of encoding table. Not actually used in encoding/decoding data.
 pub const TABLE_ENCODER_LEN: usize = 16;

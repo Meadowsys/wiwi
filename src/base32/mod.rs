@@ -1,4 +1,4 @@
-use crate::encoding_utils::{ ChunkedSlice, UnsafeBufWriteGuard };
+use crate::_internal::encoding_utils::{ ChunkedSlice, UnsafeBufWriteGuard };
 use std::{ hint, ptr };
 
 // // table unused, for ref only, cause it can be calculated

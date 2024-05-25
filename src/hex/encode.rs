@@ -1,4 +1,4 @@
-use crate::encoding_utils::UnsafeBufWriteGuard;
+use crate::_internal::encoding_utils::UnsafeBufWriteGuard;
 
 pub(super) unsafe fn generic<const UPPER: bool>(
 	mut bytes_ptr: *const u8,

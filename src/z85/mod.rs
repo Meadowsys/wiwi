@@ -18,7 +18,7 @@
 //!
 //! Original Z85 spec: <https://rfc.zeromq.org/spec/32>
 
-use crate::encoding_utils::{ ChunkedSlice, UnsafeBufWriteGuard};
+use crate::_internal::encoding_utils::{ ChunkedSlice, UnsafeBufWriteGuard};
 use std::slice;
 
 /// Length of the encoding table (ie. number of different characters)
