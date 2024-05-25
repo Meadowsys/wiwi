@@ -36,20 +36,20 @@
 }
 
 <span class="kw">impl</span>&lt;<span class="lifetime">'h</span>, T, <span class="kw">const </span>N: usize&gt; ArrayRefChain&lt;<span class="lifetime">'h</span>, T, N&gt; {
-	<span class="kw">pub fn </span>as_array(<span class="kw-2">&amp;</span><span class="lifetime">'h </span><span class="self">self</span>) -&gt; <span class="kw-2">&amp;</span><span class="lifetime">'h </span>[T; N] {
-		<span class="self">self</span>.inner
-	}
-
-	<span class="kw">pub fn </span>as_slice(<span class="kw-2">&amp;</span><span class="lifetime">'h </span><span class="self">self</span>) -&gt; <span class="kw-2">&amp;</span><span class="lifetime">'h </span>[T] {
-		<span class="self">self</span>.inner
-	}
-
-	<span class="kw">pub fn </span>as_slice_chainer_ref(<span class="kw-2">&amp;</span><span class="lifetime">'h </span><span class="self">self</span>) -&gt; SliceRefChain&lt;<span class="lifetime">'h</span>, T&gt; {
-		(<span class="self">self</span>.inner <span class="kw">as </span><span class="kw-2">&amp;</span>[T]).into()
-	}
-
 	<span class="kw">pub fn </span>into_inner(<span class="self">self</span>) -&gt; <span class="kw-2">&amp;</span><span class="lifetime">'h </span>[T; N] {
 		<span class="self">self</span>.inner
+	}
+
+	<span class="kw">pub fn </span>nonchain_array(<span class="kw-2">&amp;</span><span class="lifetime">'h </span><span class="self">self</span>) -&gt; <span class="kw-2">&amp;</span><span class="lifetime">'h </span>[T; N] {
+		<span class="self">self</span>.inner
+	}
+
+	<span class="kw">pub fn </span>nonchain_slice(<span class="kw-2">&amp;</span><span class="lifetime">'h </span><span class="self">self</span>) -&gt; <span class="kw-2">&amp;</span><span class="lifetime">'h </span>[T] {
+		<span class="self">self</span>.inner
+	}
+
+	<span class="kw">pub fn </span>nonchain_slice_chainer_ref(<span class="kw-2">&amp;</span><span class="lifetime">'h </span><span class="self">self</span>) -&gt; SliceRefChain&lt;<span class="lifetime">'h</span>, T&gt; {
+		(<span class="self">self</span>.inner <span class="kw">as </span><span class="kw-2">&amp;</span>[T]).into()
 	}
 }
 

@@ -244,6 +244,47 @@
 <a href="#244" id="244">244</a>
 <a href="#245" id="245">245</a>
 <a href="#246" id="246">246</a>
+<a href="#247" id="247">247</a>
+<a href="#248" id="248">248</a>
+<a href="#249" id="249">249</a>
+<a href="#250" id="250">250</a>
+<a href="#251" id="251">251</a>
+<a href="#252" id="252">252</a>
+<a href="#253" id="253">253</a>
+<a href="#254" id="254">254</a>
+<a href="#255" id="255">255</a>
+<a href="#256" id="256">256</a>
+<a href="#257" id="257">257</a>
+<a href="#258" id="258">258</a>
+<a href="#259" id="259">259</a>
+<a href="#260" id="260">260</a>
+<a href="#261" id="261">261</a>
+<a href="#262" id="262">262</a>
+<a href="#263" id="263">263</a>
+<a href="#264" id="264">264</a>
+<a href="#265" id="265">265</a>
+<a href="#266" id="266">266</a>
+<a href="#267" id="267">267</a>
+<a href="#268" id="268">268</a>
+<a href="#269" id="269">269</a>
+<a href="#270" id="270">270</a>
+<a href="#271" id="271">271</a>
+<a href="#272" id="272">272</a>
+<a href="#273" id="273">273</a>
+<a href="#274" id="274">274</a>
+<a href="#275" id="275">275</a>
+<a href="#276" id="276">276</a>
+<a href="#277" id="277">277</a>
+<a href="#278" id="278">278</a>
+<a href="#279" id="279">279</a>
+<a href="#280" id="280">280</a>
+<a href="#281" id="281">281</a>
+<a href="#282" id="282">282</a>
+<a href="#283" id="283">283</a>
+<a href="#284" id="284">284</a>
+<a href="#285" id="285">285</a>
+<a href="#286" id="286">286</a>
+<a href="#287" id="287">287</a>
 </pre></div><pre class="rust"><code><span class="kw">use </span><span class="kw">crate</span>::to_maybeuninit::ToMaybeUninit <span class="kw">as _</span>;
 <span class="kw">use </span>std::mem::MaybeUninit;
 <span class="kw">use </span>std::ops::{ Bound, Range, RangeBounds };
@@ -306,22 +347,6 @@
 </span>}
 
 <span class="kw">impl </span>StringChain {
-	<span class="kw">pub fn </span>as_bytes(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; <span class="kw-2">&amp;</span>[u8] {
-		<span class="self">self</span>.inner.as_bytes()
-	}
-
-	<span class="kw">pub fn </span>as_str(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; <span class="kw-2">&amp;</span>str {
-		<span class="kw-2">&amp;</span><span class="self">self</span>.inner
-	}
-
-	<span class="kw">pub fn </span>as_str_mut(<span class="kw-2">&amp;mut </span><span class="self">self</span>) -&gt; <span class="kw-2">&amp;mut </span>str {
-		<span class="kw-2">&amp;mut </span><span class="self">self</span>.inner
-	}
-
-	<span class="kw">pub unsafe fn </span>as_vec_mut(<span class="kw-2">&amp;mut </span><span class="self">self</span>) -&gt; <span class="kw-2">&amp;mut </span>Vec&lt;u8&gt; {
-		<span class="self">self</span>.inner.as_mut_vec()
-	}
-
 	<span class="kw">pub fn </span>into_bytes(<span class="self">self</span>) -&gt; Vec&lt;u8&gt; {
 		<span class="self">self</span>.inner.into_bytes()
 	}
@@ -335,7 +360,23 @@
 		</span><span class="self">self</span>.inner
 			.into_bytes()
 			.into_chainer()
-			.into_raw_parts()
+			.nonchain_raw_parts()
+	}
+
+	<span class="kw">pub fn </span>nonchain_bytes(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; <span class="kw-2">&amp;</span>[u8] {
+		<span class="self">self</span>.inner.as_bytes()
+	}
+
+	<span class="kw">pub fn </span>nonchain_str(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; <span class="kw-2">&amp;</span>str {
+		<span class="kw-2">&amp;</span><span class="self">self</span>.inner
+	}
+
+	<span class="kw">pub fn </span>nonchain_str_mut(<span class="kw-2">&amp;mut </span><span class="self">self</span>) -&gt; <span class="kw-2">&amp;mut </span>str {
+		<span class="kw-2">&amp;mut </span><span class="self">self</span>.inner
+	}
+
+	<span class="kw">pub unsafe fn </span>nonchain_vec_mut(<span class="kw-2">&amp;mut </span><span class="self">self</span>) -&gt; <span class="kw-2">&amp;mut </span>Vec&lt;u8&gt; {
+		<span class="self">self</span>.inner.as_mut_vec()
 	}
 }
 
@@ -347,6 +388,11 @@
 
 	<span class="kw">pub fn </span>capacity_uninit(<span class="self">self</span>, out: <span class="kw-2">&amp;mut </span>MaybeUninit&lt;usize&gt;) -&gt; <span class="self">Self </span>{
 		out.write(<span class="self">self</span>.inner.capacity());
+		<span class="self">self
+	</span>}
+
+	<span class="kw">pub fn </span>clear(<span class="kw-2">mut </span><span class="self">self</span>) -&gt; <span class="self">Self </span>{
+		<span class="self">self</span>.inner.clear();
 		<span class="self">self
 	</span>}
 
@@ -369,7 +415,7 @@
 		<span class="macro">assert!</span>(<span class="self">self</span>.inner.is_char_boundary(start));
 		<span class="macro">assert!</span>(<span class="self">self</span>.inner.is_char_boundary(end));
 
-		<span class="kw">unsafe </span>{ <span class="self">self</span>.as_vec_mut().extend_from_within(Range { start, end }) }
+		<span class="kw">unsafe </span>{ <span class="self">self</span>.nonchain_vec_mut().extend_from_within(Range { start, end }) }
 		<span class="self">self
 	</span>}
 
@@ -463,22 +509,58 @@
 		<span class="self">self
 	</span>}
 
-	<span class="comment">// TODO: split_off
-	// hmmmmmm
-	// split_off returns (StringChain, StringChain), doesn't chain?
-	// split_off_l keeps left side chaining and writes right side out?
-	// and split_off_r chains right?
-	// need to document this lol
-
-	</span><span class="kw">pub fn </span>split_off(<span class="kw-2">mut </span><span class="self">self</span>, at: usize) -&gt; (<span class="self">Self</span>, <span class="self">Self</span>) {
+	<span class="kw">pub fn </span>split(<span class="kw-2">mut </span><span class="self">self</span>, at: usize) -&gt; (<span class="self">Self</span>, <span class="self">Self</span>) {
 		<span class="kw">let </span>r = <span class="self">self</span>.inner.split_off(at);
 		(<span class="self">self</span>, r.into())
 	}
 
-	<span class="comment">// pub fn split_off_left(mut self, at: usize, out: &amp;mut StringChain) -&gt; Self
+	<span class="doccomment">/// Splits the left side off and writes it to another location, keeping the
+	/// right side in `self`.
+	</span><span class="kw">pub fn </span>split_left_off(<span class="self">self</span>, at: usize, out: <span class="kw-2">&amp;mut </span><span class="self">Self</span>) -&gt; <span class="self">Self </span>{
+		<span class="self">self</span>.split_left_off_uninit(at, <span class="kw">unsafe </span>{ out.to_maybeuninit_drop() })
+	}
 
-	</span><span class="kw">pub fn </span>truncate(<span class="kw-2">mut </span><span class="self">self</span>, new_len: usize) -&gt; <span class="self">Self </span>{
+	<span class="doccomment">/// Splits the left side off and writes it to another location, keeping the
+	/// right side in `self`.
+	</span><span class="kw">pub fn </span>split_left_off_uninit(<span class="self">self</span>, at: usize, out: <span class="kw-2">&amp;mut </span>MaybeUninit&lt;<span class="self">Self</span>&gt;) -&gt; <span class="self">Self </span>{
+		<span class="kw">let </span>(left, right) = <span class="self">self</span>.split(at);
+		out.write(left);
+		right
+	}
+
+	<span class="doccomment">/// Splits the right side off and writes it to another location, keeping the
+	/// left side in `self`.
+	</span><span class="kw">pub fn </span>split_right_off(<span class="self">self</span>, at: usize, out: <span class="kw-2">&amp;mut </span><span class="self">Self</span>) -&gt; <span class="self">Self </span>{
+		<span class="self">self</span>.split_right_off_uninit(at, <span class="kw">unsafe </span>{ out.to_maybeuninit_drop() })
+	}
+
+	<span class="doccomment">/// Splits the right side off and writes it to another location, keeping the
+	/// left side in `self`.
+	</span><span class="kw">pub fn </span>split_right_off_uninit(<span class="self">self</span>, at: usize, out: <span class="kw-2">&amp;mut </span>MaybeUninit&lt;<span class="self">Self</span>&gt;) -&gt; <span class="self">Self </span>{
+		<span class="kw">let </span>(left, right) = <span class="self">self</span>.split(at);
+		out.write(right);
+		left
+	}
+
+	<span class="kw">pub fn </span>truncate(<span class="kw-2">mut </span><span class="self">self</span>, new_len: usize) -&gt; <span class="self">Self </span>{
 		<span class="self">self</span>.inner.truncate(new_len);
+		<span class="self">self
+	</span>}
+
+	<span class="doccomment">/// Unsafetly truncates the string, with no checks at all...
+	///
+	/// Unlike the [`truncate`](Self::truncate) method or it's [`String`]
+	/// equivalent, passing a new len that's past the end of a string
+	/// (`index == self.len()` is valid) is not allowed and will cause
+	/// undefined behaviour.
+	///
+	/// # Safety
+	///
+	/// - `new_len` must be within the range `0..=len`
+	/// - `new_len` must lie on a character boundary
+	</span><span class="kw">pub unsafe fn </span>truncate_unchecked(<span class="kw-2">mut </span><span class="self">self</span>, new_len: usize) -&gt; <span class="self">Self </span>{
+		<span class="macro">debug_assert!</span>(<span class="self">self</span>.nonchain_str().is_char_boundary(new_len));
+		<span class="self">self</span>.nonchain_vec_mut().set_len(new_len);
 		<span class="self">self
 	</span>}
 

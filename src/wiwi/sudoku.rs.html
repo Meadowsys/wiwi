@@ -280,7 +280,7 @@
 		<span class="macro">debug_assert_eq!</span>({
 			SliceRefChain::&lt;<span class="kw">_</span>&gt;::from(<span class="kw-2">&amp;</span>game <span class="kw">as </span><span class="kw-2">&amp;</span>[<span class="kw">_</span>])
 				.flatten()
-				.as_slice()
+				.nonchain_slice()
 				.len()
 		}, <span class="number">81</span>);
 

@@ -28,13 +28,31 @@
 <a href="#28" id="28">28</a>
 <a href="#29" id="29">29</a>
 <a href="#30" id="30">30</a>
+<a href="#31" id="31">31</a>
+<a href="#32" id="32">32</a>
+<a href="#33" id="33">33</a>
+<a href="#34" id="34">34</a>
+<a href="#35" id="35">35</a>
+<a href="#36" id="36">36</a>
+<a href="#37" id="37">37</a>
+<a href="#38" id="38">38</a>
+<a href="#39" id="39">39</a>
 </pre></div><pre class="rust"><code><span class="kw">use </span>std::mem::MaybeUninit;
 
 <span class="kw">pub trait </span>ToMaybeUninit: Sized {
 	<span class="kw">unsafe fn </span>to_maybeuninit(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; <span class="kw-2">&amp;</span>MaybeUninit&lt;<span class="self">Self</span>&gt;;
 	<span class="kw">unsafe fn </span>to_maybeuninit_mut(<span class="kw-2">&amp;mut </span><span class="self">self</span>) -&gt; <span class="kw-2">&amp;mut </span>MaybeUninit&lt;<span class="self">Self</span>&gt;;
 
-	<span class="kw">unsafe fn </span>to_maybeuninit_drop(<span class="kw-2">&amp;mut </span><span class="self">self</span>) -&gt; <span class="kw-2">&amp;mut </span>MaybeUninit&lt;<span class="self">Self</span>&gt;;
+	<span class="doccomment">/// # Safety
+	///
+	/// We can safely assume we have exclusive access to the value at this
+	/// location, since we have a mutable (exclusive) reference to it. HOWEVER,
+	/// that reference is to a location of an actual value which likely has
+	/// initialisation variations, that will be dropped in this function.
+	/// The value behind this reference is effectively uninitialised, and you
+	/// _MUST_ write to the reference returned, otherwise you will cause a
+	/// use-after-free / double drop.
+	</span><span class="kw">unsafe fn </span>to_maybeuninit_drop(<span class="kw-2">&amp;mut </span><span class="self">self</span>) -&gt; <span class="kw-2">&amp;mut </span>MaybeUninit&lt;<span class="self">Self</span>&gt;;
 }
 
 <span class="kw">impl</span>&lt;T&gt; ToMaybeUninit <span class="kw">for </span>T {

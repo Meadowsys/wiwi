@@ -166,8 +166,6 @@
 <a href="#166" id="166">166</a>
 <a href="#167" id="167">167</a>
 <a href="#168" id="168">168</a>
-<a href="#169" id="169">169</a>
-<a href="#170" id="170">170</a>
 </pre></div><pre class="rust"><code><span class="kw">use </span><span class="kw">crate</span>::to_maybeuninit::ToMaybeUninit <span class="kw">as _</span>;
 <span class="kw">use </span>std::mem::{ <span class="self">self</span>, MaybeUninit };
 <span class="kw">use </span>std::slice;
@@ -176,12 +174,6 @@
 <span class="attr">#[repr(transparent)]
 </span><span class="kw">pub struct </span>SliceRefChain&lt;<span class="lifetime">'h</span>, T&gt; {
 	inner: <span class="kw-2">&amp;</span><span class="lifetime">'h </span>[T]
-}
-
-<span class="kw">impl</span>&lt;<span class="lifetime">'h</span>, T&gt; SliceRefChain&lt;<span class="lifetime">'h</span>, T&gt; {
-	<span class="kw">pub fn </span>as_slice(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; <span class="kw-2">&amp;</span>[T] {
-		<span class="self">self</span>.inner
-	}
 }
 
 <span class="kw">impl</span>&lt;<span class="lifetime">'h</span>, T&gt; SliceRefChain&lt;<span class="lifetime">'h</span>, T&gt; {
@@ -194,6 +186,10 @@
 		</span>T: Clone
 	{
 		<span class="self">self</span>.inner.to_vec().into()
+	}
+
+	<span class="kw">pub fn </span>nonchain_slice(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; <span class="kw-2">&amp;</span>[T] {
+		<span class="self">self</span>.inner
 	}
 }
 

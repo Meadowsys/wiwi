@@ -80,38 +80,38 @@
 }
 
 <span class="kw">impl</span>&lt;T&gt; VecDequeChain&lt;T&gt; {
-	<span class="kw">pub fn </span>as_contiguous_mut(<span class="kw-2">&amp;mut </span><span class="self">self</span>) -&gt; <span class="kw-2">&amp;mut </span>[T] {
+	<span class="kw">pub fn </span>into_inner(<span class="self">self</span>) -&gt; VecDeque&lt;T&gt; {
+		<span class="self">self</span>.inner
+	}
+
+	<span class="kw">pub fn </span>nonchain_contiguous_mut(<span class="kw-2">&amp;mut </span><span class="self">self</span>) -&gt; <span class="kw-2">&amp;mut </span>[T] {
 		<span class="self">self</span>.inner.make_contiguous()
 	}
 
-	<span class="kw">pub fn </span>as_vec_deque(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; <span class="kw-2">&amp;</span>VecDeque&lt;T&gt; {
+	<span class="kw">pub fn </span>nonchain_vec_deque(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; <span class="kw-2">&amp;</span>VecDeque&lt;T&gt; {
 		<span class="kw-2">&amp;</span><span class="self">self</span>.inner
 	}
 
-	<span class="kw">pub fn </span>as_vec_deque_mut(<span class="kw-2">&amp;mut </span><span class="self">self</span>) -&gt; <span class="kw-2">&amp;mut </span>VecDeque&lt;T&gt; {
+	<span class="kw">pub fn </span>nonchain_vec_deque_mut(<span class="kw-2">&amp;mut </span><span class="self">self</span>) -&gt; <span class="kw-2">&amp;mut </span>VecDeque&lt;T&gt; {
 		<span class="kw-2">&amp;mut </span><span class="self">self</span>.inner
 	}
 
-	<span class="kw">pub fn </span>as_slices(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; (<span class="kw-2">&amp;</span>[T], <span class="kw-2">&amp;</span>[T]) {
+	<span class="kw">pub fn </span>nonchain_slices(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; (<span class="kw-2">&amp;</span>[T], <span class="kw-2">&amp;</span>[T]) {
 		<span class="self">self</span>.inner.as_slices()
 	}
 
-	<span class="kw">pub fn </span>as_slices_mut(<span class="kw-2">&amp;mut </span><span class="self">self</span>) -&gt; (<span class="kw-2">&amp;mut </span>[T], <span class="kw-2">&amp;mut </span>[T]) {
+	<span class="kw">pub fn </span>nonchain_slices_mut(<span class="kw-2">&amp;mut </span><span class="self">self</span>) -&gt; (<span class="kw-2">&amp;mut </span>[T], <span class="kw-2">&amp;mut </span>[T]) {
 		<span class="self">self</span>.inner.as_mut_slices()
 	}
 
-	<span class="kw">pub fn </span>as_slice_chainers_ref(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; (SliceRefChain&lt;T&gt;, SliceRefChain&lt;T&gt;) {
-		<span class="kw">let </span>(s1, s2) = <span class="self">self</span>.as_slices();
+	<span class="kw">pub fn </span>nonchain_slice_chainers_ref(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; (SliceRefChain&lt;T&gt;, SliceRefChain&lt;T&gt;) {
+		<span class="kw">let </span>(s1, s2) = <span class="self">self</span>.nonchain_slices();
 		(s1.into(), s2.into())
 	}
 
-	<span class="kw">pub fn </span>as_slice_chainers_mut(<span class="kw-2">&amp;mut </span><span class="self">self</span>) -&gt; (SliceMutChain&lt;T&gt;, SliceMutChain&lt;T&gt;) {
-		<span class="kw">let </span>(s1, s2) = <span class="self">self</span>.as_slices_mut();
+	<span class="kw">pub fn </span>nonchain_slice_chainers_mut(<span class="kw-2">&amp;mut </span><span class="self">self</span>) -&gt; (SliceMutChain&lt;T&gt;, SliceMutChain&lt;T&gt;) {
+		<span class="kw">let </span>(s1, s2) = <span class="self">self</span>.nonchain_slices_mut();
 		(s1.into(), s2.into())
-	}
-
-	<span class="kw">pub fn </span>into_inner(<span class="self">self</span>) -&gt; VecDeque&lt;T&gt; {
-		<span class="self">self</span>.inner
 	}
 }
 
