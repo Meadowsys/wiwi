@@ -46,7 +46,7 @@ impl Encoder {
 	///
 	/// [`write_bits_u128_unchecked`]: Self::write_bits_u128_unchecked
 	pub unsafe fn write_bits_u8_unchecked(&mut self, num_bits: usize, bits: u8) {
-		if num_bits > 8 { unreachable_unchecked() }
+		if num_bits > u8::BITS as usize { unreachable_unchecked() }
 		self.write_bits_u128_unchecked(num_bits, bits as _);
 	}
 
@@ -66,7 +66,7 @@ impl Encoder {
 	///
 	/// [`write_bits_u128_unchecked`]: Self::write_bits_u128_unchecked
 	pub unsafe fn write_bits_u16_unchecked(&mut self, num_bits: usize, bits: u16) {
-		if num_bits > 16 { unreachable_unchecked() }
+		if num_bits > u16::BITS as usize { unreachable_unchecked() }
 		self.write_bits_u128_unchecked(num_bits, bits as _);
 	}
 
@@ -86,7 +86,7 @@ impl Encoder {
 	///
 	/// [`write_bits_u128_unchecked`]: Self::write_bits_u128_unchecked
 	pub unsafe fn write_bits_u32_unchecked(&mut self, num_bits: usize, bits: u32) {
-		if num_bits > 32 { unreachable_unchecked() }
+		if num_bits > u32::BITS as usize { unreachable_unchecked() }
 		self.write_bits_u128_unchecked(num_bits, bits as _);
 	}
 
@@ -106,7 +106,7 @@ impl Encoder {
 	///
 	/// [`write_bits_u128_unchecked`]: Self::write_bits_u128_unchecked
 	pub unsafe fn write_bits_u64_unchecked(&mut self, num_bits: usize, bits: u64) {
-		if num_bits > 64 { unreachable_unchecked() }
+		if num_bits > u64::BITS as usize { unreachable_unchecked() }
 		self.write_bits_u128_unchecked(num_bits, bits as _);
 	}
 
@@ -126,7 +126,7 @@ impl Encoder {
 	///
 	/// TODO
 	pub unsafe fn write_bits_u128_unchecked(&mut self, mut num_bits: usize, mut bits: u128) {
-		if num_bits > 128 { unreachable_unchecked() }
+		if num_bits > u128::BITS as usize { unreachable_unchecked() }
 		if self.num_partial_bits >= 8 { unreachable_unchecked() }
 
 		// fill existing partial byte, if there's already stuff there
@@ -202,7 +202,31 @@ impl Encoder {
 		}
 	}
 
-	// pub unsafe fn write_bits_usize_unchecked(&mut self, num_bits: usize, bits: usize) {} // TODO
+	/// Writes the specified amount of bits from the provided usize.
+	///
+	/// The specified amount of bits will be read from the lower bits of the
+	/// provided integer, and all other bits are silently ignored. For example,
+	/// when writing 3 bits, only when the integer value of `bits` is less than
+	/// or equal to 7 will no information be lost.
+	///
+	/// # Safety
+	///
+	/// This function will not check that `num_bits` is less than or equal to
+	#[cfg_attr(target_pointer_width = "16", doc = "16.")]
+	#[cfg_attr(target_pointer_width = "32", doc = "32.")]
+	#[cfg_attr(target_pointer_width = "64", doc = "64.")]
+	/// It is undefined behaviour if the provided amount is greater than
+	#[cfg_attr(target_pointer_width = "16", doc = "16.")]
+	#[cfg_attr(target_pointer_width = "32", doc = "32.")]
+	#[cfg_attr(target_pointer_width = "64", doc = "64.")]
+	///
+	/// # Examples
+	///
+	/// TODO
+	pub unsafe fn write_bits_usize_unchecked(&mut self, num_bits: usize, bits: usize) {
+		if num_bits > usize::BITS as usize { unreachable_unchecked() }
+		self.write_bits_u128_unchecked(num_bits, bits as _);
+	}
 }
 
 // whoop
