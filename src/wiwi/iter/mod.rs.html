@@ -273,6 +273,12 @@
 <a href="#273" id="273">273</a>
 <a href="#274" id="274">274</a>
 <a href="#275" id="275">275</a>
+<a href="#276" id="276">276</a>
+<a href="#277" id="277">277</a>
+<a href="#278" id="278">278</a>
+<a href="#279" id="279">279</a>
+<a href="#280" id="280">280</a>
+<a href="#281" id="281">281</a>
 </pre></div><pre class="rust"><code><span class="kw">mod </span>adapter;
 <span class="kw">pub use </span>adapter::{
 	AsStdIterator,
@@ -281,6 +287,9 @@
 	IntoWiwiIter,
 	IterAdapter
 };
+
+<span class="kw">mod </span>double_ended;
+<span class="kw">pub use </span>double_ended::DoubleEndedIter;
 
 <span class="kw">mod </span>empty;
 <span class="kw">pub use </span>empty::{ empty, Empty };
@@ -299,6 +308,9 @@
 
 <span class="kw">mod </span>repeat_per_item;
 <span class="kw">pub use </span>repeat_per_item::RepeatPerItem;
+
+<span class="kw">mod </span>rev;
+<span class="kw">pub use </span>rev::Rev;
 
 <span class="kw">mod </span>size_hint;
 <span class="kw">pub use </span>size_hint::{ SizeHint, SizeHintBound };

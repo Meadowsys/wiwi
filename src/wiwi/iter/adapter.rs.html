@@ -133,10 +133,22 @@
 <a href="#133" id="133">133</a>
 <a href="#134" id="134">134</a>
 <a href="#135" id="135">135</a>
+<a href="#136" id="136">136</a>
+<a href="#137" id="137">137</a>
+<a href="#138" id="138">138</a>
+<a href="#139" id="139">139</a>
+<a href="#140" id="140">140</a>
+<a href="#141" id="141">141</a>
+<a href="#142" id="142">142</a>
+<a href="#143" id="143">143</a>
+<a href="#144" id="144">144</a>
+<a href="#145" id="145">145</a>
+<a href="#146" id="146">146</a>
+<a href="#147" id="147">147</a>
 </pre></div><pre class="rust"><code><span class="doccomment">//! Adapter traits and [`IterAdapter`], to aid in converting between and using std
 //! [`Iterator`]s as wiwi [`Iter`]s, and vice versa
 
-</span><span class="kw">use super</span>::{ IntoIter, Iter, SizeHint };
+</span><span class="kw">use super</span>::{ DoubleEndedIter, IntoIter, Iter, SizeHint };
 
 <span class="doccomment">/// An adapter that wraps either a std [`Iterator`] or a wiwi [`Iter`], and then
 /// acts as the other. Basically, with every layer you layer it, it flip flops
@@ -182,6 +194,18 @@
 		} <span class="kw">else </span>{
 			bound.with_upper_unknown()
 		}
+	}
+}
+
+<span class="kw">impl</span>&lt;I: DoubleEndedIter&gt; DoubleEndedIterator <span class="kw">for </span>IterAdapter&lt;I&gt; {
+	<span class="kw">fn </span>next_back(<span class="kw-2">&amp;mut </span><span class="self">self</span>) -&gt; <span class="prelude-ty">Option</span>&lt;<span class="self">Self</span>::Item&gt; {
+		<span class="self">self</span>.inner.next_back()
+	}
+}
+
+<span class="kw">impl</span>&lt;I: DoubleEndedIterator&gt; DoubleEndedIter <span class="kw">for </span>IterAdapter&lt;I&gt; {
+	<span class="kw">fn </span>next_back(<span class="kw-2">&amp;mut </span><span class="self">self</span>) -&gt; <span class="prelude-ty">Option</span>&lt;<span class="self">Self</span>::Item&gt; {
+		<span class="self">self</span>.inner.next_back()
 	}
 }
 

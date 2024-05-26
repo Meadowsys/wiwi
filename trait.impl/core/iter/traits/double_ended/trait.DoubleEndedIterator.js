@@ -1,0 +1,3 @@
+(function() {var implementors = {
+"wiwi":[["impl&lt;I: <a class=\"trait\" href=\"wiwi/iter/trait.DoubleEndedIter.html\" title=\"trait wiwi::iter::DoubleEndedIter\">DoubleEndedIter</a>&gt; <a class=\"trait\" href=\"https://doc.rust-lang.org/nightly/core/iter/traits/double_ended/trait.DoubleEndedIterator.html\" title=\"trait core::iter::traits::double_ended::DoubleEndedIterator\">DoubleEndedIterator</a> for <a class=\"struct\" href=\"wiwi/iter/struct.IterAdapter.html\" title=\"struct wiwi::iter::IterAdapter\">IterAdapter</a>&lt;I&gt;"]]
+};if (window.register_implementors) {window.register_implementors(implementors);} else {window.pending_implementors = implementors;}})()
