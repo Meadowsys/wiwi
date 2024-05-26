@@ -8,72 +8,72 @@ exported_match_macro!(smallint_unsigned_range: 0x00..=0x7f);
 exported_match_macro!(smallint_signed_range: -64..=0x7f);
 exported_match_macro!(int_range: 0x80..=0x9f);
 
-macro_rules! impl_num_serialise {
-	($($num:ty: $signed:tt)*) => {
-		$(impl_num_serialise! { @internal $num: $signed })*
-	};
+// macro_rules! impl_num_serialise {
+// 	($($num:ty: $signed:tt)*) => {
+// 		$(impl_num_serialise! { @internal $num: $signed })*
+// 	};
 
-	// unsigned
-	(@internal $num:ty: false) => {
-		impl Serialise for $num {
-			fn serialise<B: BufferWrite>(&self, output: &mut B, options: &SerialiseOptions) {
-				match *self {
-					num @ smallint_positive_range!() => { output.write_byte(num as _) }
-					num => {
-						let bytes = num.to_le_bytes();
+// 	// unsigned
+// 	(@internal $num:ty: false) => {
+// 		impl Serialise for $num {
+// 			fn serialise<B: BufferWrite>(&self, output: &mut B, options: &SerialiseOptions) {
+// 				match *self {
+// 					num @ smallint_positive_range!() => { output.write_byte(num as _) }
+// 					num => {
+// 						let bytes = num.to_le_bytes();
 
-						let byte_size = get_byte_count_unsigned_le(bytes);
-						let marker = unsafe { get_marker_for(byte_size, false) };
+// 						let byte_size = get_byte_count_unsigned_le(bytes);
+// 						let marker = unsafe { get_marker_for(byte_size, false) };
 
-						output.write_byte(marker);
-						output.write_bytes(unsafe { slice::from_raw_parts(
-							&bytes as *const u8,
-							byte_size as _
-						) });
-					}
-				}
-			}
-		}
-	};
+// 						output.write_byte(marker);
+// 						output.write_bytes(unsafe { slice::from_raw_parts(
+// 							&bytes as *const u8,
+// 							byte_size as _
+// 						) });
+// 					}
+// 				}
+// 			}
+// 		}
+// 	};
 
-	// signed
-	(@internal $num:ty: true) => {
-		impl Serialise for $num {
-			fn serialise<B: BufferWrite>(&self, output: &mut B, options: &SerialiseOptions) {
-				match *self {
-					num @ smallint_positive_range!() => { output.write_byte(num as _) }
-					num @ smallint_negative_range!() => { output.write_byte(num as _) }
-					num => {
-						let bytes = num.to_le_bytes();
+// 	// signed
+// 	(@internal $num:ty: true) => {
+// 		impl Serialise for $num {
+// 			fn serialise<B: BufferWrite>(&self, output: &mut B, options: &SerialiseOptions) {
+// 				match *self {
+// 					num @ smallint_positive_range!() => { output.write_byte(num as _) }
+// 					num @ smallint_negative_range!() => { output.write_byte(num as _) }
+// 					num => {
+// 						let bytes = num.to_le_bytes();
 
-						let byte_size = get_byte_count_signed_le(bytes);
-						let marker = unsafe { get_marker_for(byte_size, true) };
+// 						let byte_size = get_byte_count_signed_le(bytes);
+// 						let marker = unsafe { get_marker_for(byte_size, true) };
 
-						output.write_byte(marker);
-						output.write_bytes(unsafe { slice::from_raw_parts(
-							&bytes as *const u8,
-							byte_size as _
-						) });
-					}
-				}
-			}
-		}
-	};
-}
+// 						output.write_byte(marker);
+// 						output.write_bytes(unsafe { slice::from_raw_parts(
+// 							&bytes as *const u8,
+// 							byte_size as _
+// 						) });
+// 					}
+// 				}
+// 			}
+// 		}
+// 	};
+// }
 
-impl_num_serialise! {
-	u8: false
-	u16: false
-	u32: false
-	u64: false
-	u128: false
+// impl_num_serialise! {
+// 	u8: false
+// 	u16: false
+// 	u32: false
+// 	u64: false
+// 	u128: false
 
-	i8: true
-	i16: true
-	i32: true
-	i64: true
-	i128: true
-}
+// 	i8: true
+// 	i16: true
+// 	i32: true
+// 	i64: true
+// 	i128: true
+// }
 
 fn get_byte_count_unsigned_le<const BYTES: usize>(bytes: [u8; BYTES]) -> u8 {
 	unsafe {
@@ -115,8 +115,8 @@ fn get_byte_count_signed_le<const BYTES: usize>(bytes: [u8; BYTES]) -> u8 {
 			} else {
 				// sign bit is different, return this byte and one more after it.
 				// if the next byte would have the wrong sign, it would have returned
-				// already in the previous iteration. This won't ever overflow
-				// because the first byte will not have a different sign (as... itself),
+				// already in the previous branch. This won't ever overflow because
+				// the first byte will not have a different sign (as... itself),
 				// so will never reach here.
 				return (i + 2) as _
 			}
@@ -126,9 +126,17 @@ fn get_byte_count_signed_le<const BYTES: usize>(bytes: [u8; BYTES]) -> u8 {
 	}
 }
 
+/// # Safety
+///
+/// Function is written only expecting certain values for `byte_count` (`1..=16`),
+/// and we have not thought about what happens if values are entered outside that
+/// range. Also in how this function's output is going to be used, it can cause
+/// memory issues if used in wrong way. So this fn is conservatively marked
+/// `unsafe`, and in doing so, promise this function will behave as expected.
+/// It's internal function anyways it doesn't matter that much :p
 #[inline]
-const unsafe fn get_marker_for(byte_size: u8, signed: bool) -> u8 {
-	((byte_size - 1) << 1) | 0x80 | signed as u8
+const unsafe fn get_marker_for(byte_count: u8, signed: bool) -> u8 {
+	((byte_count - 1) << 1) | 0x80 | signed as u8
 }
 
 #[inline]
@@ -143,30 +151,31 @@ struct MarkerDetails {
 
 impl MarkerDetails {
 	#[inline]
-	const fn try_new(marker: u8) -> Self {
-		let marker = marker & 0b11111;
-		let byte_size = (marker >> 1) + 1;
-		let signed = marker & 1 != 0;
+	pub fn try_new(marker: u8) -> Option<Self> {
+		is_int_marker(marker).then(|| {
+			let marker = marker & 0b11111;
+			let byte_size = (marker >> 1) + 1;
+			let signed = marker & 1 != 0;
 
-		Self { byte_size, signed }
+			Self { byte_size, signed }
+		})
 	}
 }
 
+// // TODO: need to be able to handle floats too (deserialise proper if the float has no fractional part)
 
-// TODO: need to be able to handle floats too (deserialise proper if the float has no fractional part)
-
-// impl<'h> Deserialise<'h> for u8 {
-// 	fn deserialise<B: BufferRead<'h>>(input: &mut B) -> Result<Self> {
-// 		match MarkerDetails::try_new::<1>(input.read_byte()?) {
-// 			Some(MarkerDetails { byte_size, signed: false }) => {
-// 				let mut bytes = [0u8; 1];
-// 				// ptr::copy_nonoverlapping(
-// 				// 	// input.read_bytes_ptr(byte_size as _)
-// 				// )
-// 			}
-// 			_ => { return err_str("expected u8-compatible number") }
-// 		}
-//
-// 		todo!()
-// 	}
-// }
+// // impl<'h> Deserialise<'h> for u8 {
+// // 	fn deserialise<B: BufferRead<'h>>(input: &mut B) -> Result<Self> {
+// // 		match MarkerDetails::try_new::<1>(input.read_byte()?) {
+// // 			Some(MarkerDetails { byte_size, signed: false }) => {
+// // 				let mut bytes = [0u8; 1];
+// // 				// ptr::copy_nonoverlapping(
+// // 				// 	// input.read_bytes_ptr(byte_size as _)
+// // 				// )
+// // 			}
+// // 			_ => { return err_str("expected u8-compatible number") }
+// // 		}
+// //
+// // 		todo!()
+// // 	}
+// // }

@@ -25,6 +25,7 @@ enum MarkerInner {
 
 impl Marker {
 	pub fn read_from<'h, B: BufferRead<'h>>(input: &mut B) -> Result<Self> {
+		#[deny(overlapping_range_endpoints)]
 		let inner = match input.read_byte()? {
 			marker @ 0x00..=0x7f => { MarkerInner::SmallIntPositive { marker } }
 			marker @ 0xc0..=0xff => { MarkerInner::SmallIntNegative { marker } }
