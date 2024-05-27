@@ -139,7 +139,7 @@ impl GeneratedID {
 }
 
 impl GeneratedID {
-	const ALPHANUMERIC_ALPHABET: &'static [u8; 62] = b"0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ";
+	const ALPHANUMERIC_ALPHABET: &'static [u8; 62] = b"0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz";
 
 	pub fn to_alphanumeric_string(&self) -> String {
 		// (2 ^ 64) / (62 ^ 11) roughly equals 0.35, which,
@@ -156,6 +156,36 @@ impl GeneratedID {
 
 		debug_assert!(string.len() <= 11);
 		string
+	}
+
+	pub fn from_alphanumeric_string(s: &str) -> Option<Self> {
+		// stringified cannot be more than 11 chars
+		// (see `to_alphanumeric_string`)
+		if s.len() > 11 { return None }
+
+		let mut result = 0u128;
+
+		// if s were to contain chars with 2 or more bytes
+		// its invalid anyways
+		for c in s.bytes().rev() {
+			let byte = match c {
+				// 0-9
+				b'0'..=b'9' => { c - b'0' }
+				// 10-35
+				b'A'..=b'Z' => { (c - b'A') + 10 }
+				// 36-61
+				b'a'..=b'z' => { (c - b'a') + 36 }
+				_ => { return None }
+			};
+
+			result *= 62;
+			result += byte as u128;
+		}
+
+		if result > u64::MAX as u128 { return None }
+		let result = NonZeroU64::new(result as u64)?;
+
+		Some(Self { unsigned: result })
 	}
 }
 
@@ -188,16 +218,34 @@ mod tests {
 
 	#[test]
 	fn signed_conversion() {
-		let mut idgen = IDGenerator::new();
+		let mut gen = IDGenerator::new();
 
 		for i in 0..1000 {
-			let id = idgen.next().unwrap();
+			let id = gen.next().unwrap();
 
 			let unsigned_converted = unsafe { GeneratedID::from_unsigned_unchecked(id.as_unsigned()) };
 			assert_eq!(id.unsigned, unsigned_converted.unsigned);
 
 			let signed_converted = unsafe { GeneratedID::from_signed_unchecked(id.as_signed()) };
 			assert_eq!(id.unsigned, signed_converted.unsigned);
+
+			if i % 50 == 0 {
+				std::thread::sleep(std::time::Duration::from_millis(1));
+			}
+		}
+	}
+
+	#[test]
+	fn roundtrip_alphanumeric_string_conversion() {
+		let mut gen = IDGenerator::new();
+
+		for i in 0..1000 {
+			let id = gen.next().unwrap();
+
+			let string = id.to_alphanumeric_string();
+			let decoded = GeneratedID::from_alphanumeric_string(&string).unwrap();
+
+			assert_eq!(id.unsigned, decoded.unsigned);
 
 			if i % 50 == 0 {
 				std::thread::sleep(std::time::Duration::from_millis(1));
