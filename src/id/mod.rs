@@ -138,6 +138,27 @@ impl GeneratedID {
 	}
 }
 
+impl GeneratedID {
+	const ALPHANUMERIC_ALPHABET: &'static [u8; 62] = b"0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ";
+
+	pub fn to_alphanumeric_string(&self) -> String {
+		// (2 ^ 64) / (62 ^ 11) roughly equals 0.35, which,
+		// output here will always be 11 or less chars
+		let mut string = String::with_capacity(11);
+		let mut string_vec = unsafe { string.as_mut_vec() };
+		let mut val = self.unsigned.get();
+
+		while val > 0 {
+			// SAFETY: table only contains ASCII characters
+			string_vec.push(Self::ALPHANUMERIC_ALPHABET[(val % 62) as usize]);
+			val /= 62;
+		}
+
+		debug_assert!(string.len() <= 11);
+		string
+	}
+}
+
 #[inline]
 const fn unsigned_to_signed(unsigned: u64) -> i64 {
 	(unsigned ^ TOP_BIT) as i64
