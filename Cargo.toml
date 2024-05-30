@@ -117,6 +117,7 @@ all-unstable = [
 	"iter-unstable",
 	"lsl-unstable",
 	"memory-usage-unstable",
+	"minesweeper-unstable",
 	"path-unstable",
 	"serialiser-unstable",
 	"string-pool-unstable",
@@ -179,6 +180,9 @@ lsl-unstable = [
 ]
 memory-usage-unstable = [
 	"wiwiwiwiwi/memory-usage-unstable"
+]
+minesweeper-unstable = [
+	"chainer-unstable"
 ]
 path-unstable = []
 serialiser-unstable = [

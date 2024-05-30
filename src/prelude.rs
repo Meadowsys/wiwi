@@ -13,6 +13,7 @@
 	not(feature = "lazy-wrap"),
 	not(feature = "lsl-unstable"),
 	not(feature = "memory-usage-unstable"),
+	not(feature = "minesweeper-unstable"),
 	not(feature = "path-unstable"),
 	not(feature = "serialiser-unstable"),
 	not(feature = "string-pool-unstable"),

@@ -30,6 +30,7 @@
 #![cfg_attr(all(feature = "lazy-wrap"),             doc = "- `lazy-wrap`"              )]
 #![cfg_attr(all(feature = "lsl-unstable"),          doc = "- `lsl` (unstable)"         )]
 #![cfg_attr(all(feature = "memory-usage-unstable"), doc = "- `memory-usage` (unstable)")]
+#![cfg_attr(all(feature = "minesweeper-unstable"),  doc = "- `minesweeper` (unstable)" )]
 #![cfg_attr(all(feature = "path-unstable"),         doc = "- `path` (unstable)"        )]
 #![cfg_attr(all(feature = "serialiser-unstable"),   doc = "- `serialiser` (unstable)"  )]
 #![cfg_attr(all(feature = "string-pool-unstable"),  doc = "- `string-pool` (unstable)" )]
@@ -64,6 +65,7 @@
 	not(feature = "lazy-wrap"),
 	not(feature = "lsl-unstable"),
 	not(feature = "memory-usage-unstable"),
+	not(feature = "minesweeper-unstable"),
 	not(feature = "path-unstable"),
 	not(feature = "serialiser-unstable"),
 	not(feature = "string-pool-unstable"),
@@ -155,6 +157,10 @@ pub mod lsl;
 #[cfg(feature = "memory-usage-unstable")]
 #[cfg_attr(docsrs, doc(cfg(feature = "memory-usage-unstable")))]
 pub mod memory_usage;
+
+#[cfg(feature = "minesweeper-unstable")]
+#[cfg_attr(docsrs, doc(cfg(feature = "minesweeper-unstable")))]
+pub mod minesweeper;
 
 #[cfg(feature = "path-unstable")]
 #[cfg_attr(docsrs, doc(cfg(feature = "path-unstable")))]
