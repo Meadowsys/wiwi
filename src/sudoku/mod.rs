@@ -415,31 +415,11 @@ pub mod solution_encoding {
 	}
 
 	pub unsafe fn get_next_valid(board: &mut [u8; 81]) -> Option<Encoded> {
-		let mut counter = 0usize;
 		loop {
-			counter += 1;
-			if counter % 1_000_000_000 == 0 {
-				println!("{counter}");
-			}
-
 			let valid = is_valid_sudoku_board(board);
 
 			// "increment" board
-			let mut incremented = false;
-			for cell in board.iter_mut().rev() {
-				match *cell + 1 {
-					new @ 2..=9 => {
-						incremented = true;
-						*cell = new;
-						break
-					}
-					10 => {
-						// let it "wrap" around (let it loop again)
-						*cell = 1;
-					}
-					cell => { unreachable!("invalid cell: {cell}") }
-				}
-			}
+			let incremented = increment_board(board);
 
 			// return if this one was success
 			// else we'll let it loop around again
@@ -451,6 +431,22 @@ pub mod solution_encoding {
 			// gonna loop again; it is up to the caller to stop now
 			if !incremented { return None }
 		}
+	}
+
+	fn increment_board(board: &mut [u8; 81]) -> bool {
+		for cell in board.iter_mut().rev() {
+			match *cell + 1 {
+				new @ 2..=9 => {
+					*cell = new;
+					return true
+				}
+				// let it "wrap" around (let it loop again)
+				10 => { *cell = 1 }
+				cell => { unreachable!("invalid cell: {cell}") }
+			}
+		}
+
+		false
 	}
 
 	#[cfg(test)]
