@@ -182,6 +182,7 @@ memory-usage-unstable = [
 	"wiwiwiwiwi/memory-usage-unstable"
 ]
 minesweeper-unstable = [
+	"dep:rand",
 	"chainer-unstable"
 ]
 path-unstable = []
