@@ -101,6 +101,81 @@ impl Board {
 		}
 	}
 
+	// TODO: should figure out how to better report changes?
+	// for now just return if it was a mine and otherwise force
+	// manual checking for changes (not ideal)
+
+	pub unsafe fn reveal_unchecked(&mut self, r: usize, c: usize) -> bool {
+		let cell = self.get_coords_unchecked_mut(r, c);
+
+		// we've revealed already (necessary to halt recursion)
+		// TODO: ^ that could be improved (somehow get child calls to not call again?)
+		if cell.is_revealed() { return cell.is_mine() }
+
+		// it's a mine
+		if cell.reveal() { return true }
+		// it's not a mine and has surrounding mines; stop
+		if cell.surrounding_count() > 0 { return false }
+
+		// it's not a mine and has no surrounding mines,
+		// so reveal all surrounding cells
+
+		// TODO: this is the same boilerplate as `force_update_counts`; should abstract out
+		let go_up = r > 0;
+		let go_down = r < self.h.get() - 1;
+		let go_left = c > 0;
+		let go_right = c < self.w.get() - 1;
+
+		if go_up {
+			let r = r - 1;
+			let res = self.reveal_unchecked(r, c);
+			debug_assert!(!res, "invalid state");
+
+			if go_left {
+				let c = c - 1;
+				let res = self.reveal_unchecked(r, c);
+				debug_assert!(!res, "invalid state");
+			}
+
+			if go_right {
+				let c = c + 1;
+				let res = self.reveal_unchecked(r, c);
+				debug_assert!(!res, "invalid state");
+			}
+		}
+
+		if go_down {
+			let r = r + 1;
+			let res = self.reveal_unchecked(r, c);
+			debug_assert!(!res, "invalid state");
+
+			if go_left {
+				let c = c - 1;
+				let res = self.reveal_unchecked(r, c);
+				debug_assert!(!res, "invalid state");
+			}
+			if go_right {
+				let c = c + 1;
+				let res = self.reveal_unchecked(r, c);
+				debug_assert!(!res, "invalid state");
+			}
+		}
+
+		if go_left {
+			let c = c - 1;
+			let res = self.reveal_unchecked(r, c);
+			debug_assert!(!res, "invalid state");
+		}
+
+		if go_right {
+			let c = c + 1;
+			let res = self.reveal_unchecked(r, c);
+			debug_assert!(!res, "invalid state");
+		}
+
+		false
+	}
+
 	/// Clears the board in place.
 	///
 	/// This removes all mines from every cell, unreveals all cells, and updates
@@ -215,10 +290,11 @@ impl Cell {
 
 impl fmt::Debug for Cell {
 	fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
-		if self.is_mine() {
-			write!(f, "X")
-		} else {
-			write!(f, "{}", self.surrounding_count())
+		match (self.is_revealed(), self.is_mine()) {
+			(false, false) => { write!(f, " {} ", self.surrounding_count()) }
+			(false, true) => { write!(f, " X ") }
+			(true, false) => { write!(f, "[{}]", self.surrounding_count()) }
+			(true, true) => { write!(f, "[X]") }
 		}
 	}
 }
