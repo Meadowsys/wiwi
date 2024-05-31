@@ -290,10 +290,15 @@ impl Cell {
 
 impl fmt::Debug for Cell {
 	fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
+		// internally its just a bitshift
+		// so if it were a mine, this would be meaningless
+		// but its not gonna UB or anything like that
+		let count = self.surrounding_count();
+
 		match (self.is_revealed(), self.is_mine()) {
-			(false, false) => { write!(f, " {} ", self.surrounding_count()) }
+			(false, false) => { write!(f, " {} ", if count != 0 { count.to_string() } else { "•".into() }) }
 			(false, true) => { write!(f, " X ") }
-			(true, false) => { write!(f, "[{}]", self.surrounding_count()) }
+			(true, false) => { write!(f, "[{}]", if count != 0 { count.to_string() } else { "•".into() }) }
 			(true, true) => { write!(f, "[X]") }
 		}
 	}
