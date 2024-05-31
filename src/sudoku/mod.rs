@@ -1,4 +1,4 @@
-use crate::chainer::SliceRefChain;
+use crate::chainer::{ ArrayChain, IntoChainer, SliceRefChain };
 use crate::iter::*;
 use std::mem::MaybeUninit;
 
@@ -73,6 +73,10 @@ impl CellValue {
 		Self { bitfield: 0b111111111 }
 	}
 
+	fn new_empty_nongiven() -> Self {
+		Self { bitfield: 0 }
+	}
+
 	unsafe fn is_given(&self) -> bool {
 		self.bitfield >> 15 == 1
 	}
@@ -110,6 +114,10 @@ impl CellValue {
 			acc >>= 1;
 			value += 1;
 		}
+	}
+
+	unsafe fn contains_value(&self, val: u8) -> bool {
+		(self.bitfield >> (val - 1)) & 1 != 0
 	}
 
 	unsafe fn ungiven_possible_values_iter(&self) -> CellUngivenValuesIter {
@@ -152,6 +160,8 @@ const OFFSET_TABLE: [[u8; 3]; 81] = generate_offsets();
 const ROW_OFFSETS: [[u8; 9]; 9] = generate_rows_table();
 const COL_OFFSETS: [[u8; 9]; 9] = generate_cols_table();
 const GROUP_OFFSETS: [[u8; 9]; 9] = generate_groups_table();
+
+const ALL_GROUP_OFFSETS: [[u8; 9]; 27] = get_all_offsets();
 
 const fn generate_offsets() -> [[u8; 3]; 81] {
 	let mut table = [[0u8; 3]; 81];
@@ -256,3 +266,220 @@ const fn generate_groups_table() -> [[u8; 9]; 9] {
 
 	table
 }
+
+const fn get_all_offsets() -> [[u8; 9]; 27] {
+	let mut all = [[0u8; 9]; 27];
+	let mut all_i = 0;
+
+	let mut i = 0;
+	while i < 9 {
+		all[all_i] = ROW_OFFSETS[i];
+
+		i += 1;
+		all_i += 1;
+	}
+
+	let mut i = 0;
+	while i < 9 {
+		all[all_i] = COL_OFFSETS[i];
+
+		i += 1;
+		all_i += 1;
+	}
+
+	let mut i = 0;
+	while i < 9 {
+		all[all_i] = GROUP_OFFSETS[i];
+
+		i += 1;
+		all_i += 1;
+	}
+
+	all
+}
+
+/// Encoding/decoding a sudoku board, without specifying if a cell is a given
+/// value or not (ie. only stores solution, but not puzzle). This method for
+/// storing can do so in 33 bytes per board (16 `u16`s follwed by 1 `u8`).
+pub mod solution_encoding {
+	use super::*;
+
+	// TODO: there can be better impl when implementing it by hand
+	#[derive(Debug)]
+	pub struct Encoded {
+		inner: [u8; 33]
+	}
+
+	impl Encoded {
+		#[inline]
+		pub const unsafe fn new_unchecked(array: [u8; 33]) -> Self {
+			Self { inner: array }
+		}
+
+		pub fn as_bytes(&self) -> &[u8] {
+			&self.inner
+		}
+	}
+
+	/// # Safety
+	///
+	/// All cells in `bytes` must have a value within `1..=9`.
+	pub unsafe fn encode_byte_array_unchecked(bytes: &[u8; 81]) -> Encoded {
+		let mut out = ArrayChain::new_uninit().into_inner();
+
+		let mut out_ptr = out.as_mut_ptr() as *mut u8;
+		let mut bytes_ptr = bytes.as_ptr();
+
+		for _ in 0usize..16 {
+			let mut current = 0u16;
+
+			for _ in 0..5usize {
+				// TODO: unchecked math?
+				current *= 9;
+				current += (*bytes_ptr - 1) as u16;
+
+				bytes_ptr = bytes_ptr.add(1);
+			}
+
+			let current = current.to_le_bytes();
+			out_ptr.copy_from_nonoverlapping(current.as_ptr(), 2);
+
+			// wrote that much bytes out
+			out_ptr = out_ptr.add(2);
+			// // just consumed that much of the board
+			// bytes_ptr = bytes_ptr.add(5);
+		}
+
+		out_ptr.write(*bytes_ptr);
+
+		Encoded { inner: out.into_chainer().assume_init().into_inner() }
+	}
+
+	pub unsafe fn decode_board_unchecked(board: &Encoded) -> [u8; 81] {
+		let mut out = ArrayChain::new_uninit().into_inner();
+
+		let mut out_ptr = out.as_mut_ptr() as *mut u8;
+		let mut board_ptr = board.inner.as_ptr();
+
+		for _ in 0usize..16 {
+			let mut current = ArrayChain::new_uninit().into_inner();
+			board_ptr.copy_to_nonoverlapping(current.as_mut_ptr() as *mut _, 2);
+			let mut current = u16::from_le_bytes(current.into_chainer().assume_init().into_inner());
+			board_ptr = board_ptr.add(2);
+
+			out_ptr = out_ptr.add(5);
+			for _ in 0..5usize {
+				out_ptr = out_ptr.sub(1);
+				out_ptr.write(((current % 9) + 1) as _);
+
+				current /= 9;
+			}
+			out_ptr = out_ptr.add(5);
+		}
+
+		out_ptr.write(*board_ptr);
+
+		out.into_chainer().assume_init().into_inner()
+	}
+
+	pub const fn encoded_all_ones() -> Encoded {
+		let mut inner = [0u8; 33];
+		inner[32] = 1;
+		Encoded { inner }
+	}
+
+	pub fn encode_byte_array_checked(board: &[u8; 81]) -> Option<Encoded> {
+		for cell in *board {
+			// shut
+			#[allow(clippy::manual_range_contains)]
+			if cell < 1 || cell > 9 { return None }
+		}
+
+		Some(unsafe { encode_byte_array_unchecked(board) })
+	}
+
+	pub unsafe fn is_valid_sudoku_board(board: &[u8; 81]) -> bool {
+		let board_ptr = board.as_ptr();
+
+		for group in ALL_GROUP_OFFSETS {
+			let mut accumulator = CellValue::new_empty_nongiven();
+
+			for offset in group {
+				let val = unsafe { *board_ptr.add(offset as usize) };
+				if accumulator.contains_value(val) { return false }
+				accumulator.mark_possible_unchecked(val);
+			}
+		}
+
+		true
+	}
+
+	pub unsafe fn get_next_valid(board: &mut [u8; 81]) -> Option<Encoded> {
+		let mut counter = 0usize;
+		loop {
+			counter += 1;
+			if counter % 1_000_000_000 == 0 {
+				println!("{counter}");
+			}
+
+			let valid = is_valid_sudoku_board(board);
+
+			// "increment" board
+			let mut incremented = false;
+			for cell in board.iter_mut().rev() {
+				match *cell + 1 {
+					new @ 2..=9 => {
+						incremented = true;
+						*cell = new;
+						break
+					}
+					10 => {
+						// let it "wrap" around (let it loop again)
+						*cell = 1;
+					}
+					cell => { unreachable!("invalid cell: {cell}") }
+				}
+			}
+
+			// return if this one was success
+			// else we'll let it loop around again
+			if valid { return Some(encode_byte_array_unchecked(board)) }
+
+			// if it didn't increment a cell without overflowing, we reached "highest"
+			// board combo, return None
+			// if caller calls this again with the same (mutating) board, it's just
+			// gonna loop again; it is up to the caller to stop now
+			if !incremented { return None }
+		}
+	}
+
+	#[cfg(test)]
+	mod tests {
+		use super::*;
+		use rand::{ Rng, thread_rng };
+		use rand::distributions::{ Distribution, Uniform };
+
+		#[test]
+		fn roundtrip_board() {
+			let mut rng = thread_rng();
+			let dist = Uniform::from(1..=9);
+
+			for _ in 0..1000 {
+				let mut board = [0u8; 81];
+				for cell in &mut board {
+					*cell = dist.sample(&mut rng);
+				}
+
+				unsafe {
+					assert_eq!(decode_board_unchecked(&encode_byte_array_unchecked(&board)), board);
+					// assert_eq!((&encode_byte_array_unchecked(&board).inner as &[u8]), &board as &[u8]);
+				}
+			}
+		}
+	}
+}
+
+/// Encoding/decoding a sudoku board, as well as if a cell is a given value or
+/// not (ie. if it is part of the blank puzzle). This method for storing can do so
+/// in 44 bytes per board (5 `u64`'s followed by 1 `u32`).
+pub mod puzzle_encoding {}
