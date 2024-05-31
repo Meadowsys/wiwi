@@ -101,6 +101,16 @@ impl Board {
 		}
 	}
 
+	/// Clears the board in place.
+	///
+	/// This removes all mines from every cell, unreveals all cells, and updates
+	/// surrounding cell mine counts accordingly. It doesn't touch the board's
+	/// size (if you want a different-sized board, you should create a new
+	/// instance with the new dimensions).
+	pub fn clear(&mut self) {
+		unsafe { self.board_ptr_mut().write_bytes(0, self.board.len()) }
+	}
+
 	pub unsafe fn offset_of_unchecked(&self, r: usize, c: usize) -> usize {
 		self.debug_assert_in_bounds(r, c);
 		self.__offset(r, c)
@@ -122,12 +132,12 @@ impl Board {
 	}
 
 	#[inline]
-	pub unsafe fn board_ptr(&self) -> *const Cell {
+	unsafe fn board_ptr(&self) -> *const Cell {
 		self.board.as_ptr()
 	}
 
 	#[inline]
-	pub unsafe fn board_ptr_mut(&mut self) -> *mut Cell {
+	unsafe fn board_ptr_mut(&mut self) -> *mut Cell {
 		self.board.as_mut_ptr()
 	}
 
