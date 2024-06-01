@@ -1,1 +1,1 @@
-window.SIDEBAR_ITEMS = {"struct":["Board"]};
+window.SIDEBAR_ITEMS = {"mod":["puzzle_encoding","solution_encoding"],"struct":["Board"]};

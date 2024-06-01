@@ -196,6 +196,12 @@
 <a href="#196" id="196">196</a>
 <a href="#197" id="197">197</a>
 <a href="#198" id="198">198</a>
+<a href="#199" id="199">199</a>
+<a href="#200" id="200">200</a>
+<a href="#201" id="201">201</a>
+<a href="#202" id="202">202</a>
+<a href="#203" id="203">203</a>
+<a href="#204" id="204">204</a>
 </pre></div><pre class="rust"><code><span class="attr">#![cfg_attr(docsrs, feature(doc_cfg))]
 
 #![doc = <span class="macro">include_str!</span>(<span class="string">"../README.md"</span>)]
@@ -228,6 +234,7 @@
 #![cfg_attr(all(feature = <span class="string">"lazy-wrap"</span>),             doc = <span class="string">"- `lazy-wrap`"              </span>)]
 #![cfg_attr(all(feature = <span class="string">"lsl-unstable"</span>),          doc = <span class="string">"- `lsl` (unstable)"         </span>)]
 #![cfg_attr(all(feature = <span class="string">"memory-usage-unstable"</span>), doc = <span class="string">"- `memory-usage` (unstable)"</span>)]
+#![cfg_attr(all(feature = <span class="string">"minesweeper-unstable"</span>),  doc = <span class="string">"- `minesweeper` (unstable)" </span>)]
 #![cfg_attr(all(feature = <span class="string">"path-unstable"</span>),         doc = <span class="string">"- `path` (unstable)"        </span>)]
 #![cfg_attr(all(feature = <span class="string">"serialiser-unstable"</span>),   doc = <span class="string">"- `serialiser` (unstable)"  </span>)]
 #![cfg_attr(all(feature = <span class="string">"string-pool-unstable"</span>),  doc = <span class="string">"- `string-pool` (unstable)" </span>)]
@@ -262,6 +269,7 @@
 	not(feature = <span class="string">"lazy-wrap"</span>),
 	not(feature = <span class="string">"lsl-unstable"</span>),
 	not(feature = <span class="string">"memory-usage-unstable"</span>),
+	not(feature = <span class="string">"minesweeper-unstable"</span>),
 	not(feature = <span class="string">"path-unstable"</span>),
 	not(feature = <span class="string">"serialiser-unstable"</span>),
 	not(feature = <span class="string">"string-pool-unstable"</span>),
@@ -353,6 +361,10 @@
 <span class="attr">#[cfg(feature = <span class="string">"memory-usage-unstable"</span>)]
 #[cfg_attr(docsrs, doc(cfg(feature = <span class="string">"memory-usage-unstable"</span>)))]
 </span><span class="kw">pub mod </span>memory_usage;
+
+<span class="attr">#[cfg(feature = <span class="string">"minesweeper-unstable"</span>)]
+#[cfg_attr(docsrs, doc(cfg(feature = <span class="string">"minesweeper-unstable"</span>)))]
+</span><span class="kw">pub mod </span>minesweeper;
 
 <span class="attr">#[cfg(feature = <span class="string">"path-unstable"</span>)]
 #[cfg_attr(docsrs, doc(cfg(feature = <span class="string">"path-unstable"</span>)))]
