@@ -97,15 +97,13 @@ z85 = "3.0.5"
 # It would be good to occasionally check the dependencies too, update them,
 # remove ones that aren't part of any feature anymore, etc
 
-# default = ["path-unstable"]
-default = ["minesweeper-unstable"]
-
 all = [
 	"clock-timer",
 	"debounce",
 	"h",
 	"hex",
 	"lazy-wrap",
+	"nominal",
 	"to-maybeuninit",
 	"z85"
 ]
@@ -188,6 +186,7 @@ minesweeper-unstable = [
 	"dep:rand",
 	"chainer-unstable"
 ]
+nominal = []
 path-unstable = []
 serialiser-unstable = [
 	"dep:ordered-float"

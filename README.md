@@ -24,6 +24,7 @@ In addition to the features listed below, there exists a feature `all` that will
 - **`lsl`** (unstable) - experimental lib to help with writing Second Life scripts in Rust... because yes, I got fed up with it very quickly and immediately missed Rust lol >< It is really only built for a dedicated crate just to write the script, rather than as part of another lib/app.
 - **`memory-usage`** (unstable) - Calculate actual memory usage of Rust structs, including derive macro for custom types
 - **`minesweeper`** (unstable) - core logic components for minesweeper games of arbitrary size
+- **`nominal`** - zero cost wrapper to put data in a newtype, taking advantage of nominal typing for increased safety
 - **`path`** (unstable) - UTF-8 only path manipulation utilities written from scratch
 - **`serialiser`** (unstable) - self describing, stable (once finished) binary serialiser, aiming for small output size by exploiting common patterns in real world data
 - **`string-pool`** (unstable) - Global immutable string pool and String type

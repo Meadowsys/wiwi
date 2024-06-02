@@ -31,6 +31,7 @@
 #![cfg_attr(all(feature = "lsl-unstable"),          doc = "- `lsl` (unstable)"         )]
 #![cfg_attr(all(feature = "memory-usage-unstable"), doc = "- `memory-usage` (unstable)")]
 #![cfg_attr(all(feature = "minesweeper-unstable"),  doc = "- `minesweeper` (unstable)" )]
+#![cfg_attr(all(feature = "nominal"),               doc = "- `nominal`"                )]
 #![cfg_attr(all(feature = "path-unstable"),         doc = "- `path` (unstable)"        )]
 #![cfg_attr(all(feature = "serialiser-unstable"),   doc = "- `serialiser` (unstable)"  )]
 #![cfg_attr(all(feature = "string-pool-unstable"),  doc = "- `string-pool` (unstable)" )]
@@ -66,6 +67,7 @@
 	not(feature = "lsl-unstable"),
 	not(feature = "memory-usage-unstable"),
 	not(feature = "minesweeper-unstable"),
+	not(feature = "nominal"),
 	not(feature = "path-unstable"),
 	not(feature = "serialiser-unstable"),
 	not(feature = "string-pool-unstable"),
@@ -161,6 +163,10 @@ pub mod memory_usage;
 #[cfg(feature = "minesweeper-unstable")]
 #[cfg_attr(docsrs, doc(cfg(feature = "minesweeper-unstable")))]
 pub mod minesweeper;
+
+#[cfg(feature = "nominal")]
+#[cfg_attr(docsrs, doc(cfg(feature = "nominal")))]
+pub mod nominal;
 
 #[cfg(feature = "path-unstable")]
 #[cfg_attr(docsrs, doc(cfg(feature = "path-unstable")))]
