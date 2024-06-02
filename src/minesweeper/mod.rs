@@ -1,4 +1,5 @@
 use crate::chainer::{ IntoChainer, SliceBoxChain };
+use crate::iter::{ IntoStdIterator, IntoWiwiIter, Iter };
 use rand::{ Rng, seq::SliceRandom, thread_rng };
 use rand::distributions::uniform::SampleRange;
 use std::fmt;
@@ -41,6 +42,40 @@ impl Board {
 		let mut board = Self::new(w, h);
 		board.add_random_mines(mines);
 		board
+	}
+
+	pub unsafe fn new_with_first_placement_unchecked(
+		w: NonZeroUsize,
+		h: NonZeroUsize,
+		r: usize,
+		c: usize,
+		mines: usize
+	) -> Self {
+		let mut board = Self::new(w, h);
+		board.randomise_first_placement_unchecked(r, c, mines);
+		board
+	}
+
+	pub unsafe fn randomise_first_placement_unchecked(&mut self, r: usize, c: usize, mines: usize) {
+		let coords_iter = self.coords_iter();
+		let mut rng = thread_rng();
+
+		(1..self.board.len())
+			.rfold(
+				self.board.iter_mut()
+					.zip(coords_iter.convert_wiwi_into_std_iterator())
+					.map(|(cell, (r, c))| (cell, r, c))
+					.collect::<Vec<_>>()
+					.into_chainer(),
+				|board, i| unsafe { board.swap_unchecked(i, (0..=i).sample_single(&mut rng)) }
+			)
+			.nonchain_inner()
+			.into_iter()
+			// assume fresh board (ie. no exiting mines)
+			.filter(|(_, cr, cc)| !(*cr == r && *cc == c))
+			.take(mines)
+			.for_each(|(cell, _, _)| cell.place_mine());
+		self.force_update_counts();
 	}
 
 	// TODO: ideally this function does not need to exist
@@ -174,6 +209,16 @@ impl Board {
 		}
 
 		false
+	}
+
+	pub fn coords_iter(&self) -> impl Iter<Item = (usize, usize)> {
+		// don't capture self lifetime
+		let w = self.w.get();
+
+		(0..self.h.get())
+			.flat_map(move |r| (0..w).map(move |c| (r, c)))
+			// TODO: use native wiwi iter
+			.convert_std_into_wiwi_iter()
 	}
 
 	/// Clears the board in place.
