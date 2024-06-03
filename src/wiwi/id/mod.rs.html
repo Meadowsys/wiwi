@@ -251,11 +251,9 @@
 <a href="#251" id="251">251</a>
 <a href="#252" id="252">252</a>
 <a href="#253" id="253">253</a>
-<a href="#254" id="254">254</a>
-<a href="#255" id="255">255</a>
-</pre></div><pre class="rust"><code><span class="kw">use </span>::rand::{ Rng, rngs::ThreadRng, thread_rng };
-<span class="kw">use </span>::std::time::{ SystemTime, UNIX_EPOCH };
-<span class="kw">use </span>::std::num::NonZeroU64;
+</pre></div><pre class="rust"><code><span class="kw">use </span>rand::{ Rng, rngs::ThreadRng, thread_rng };
+<span class="kw">use </span>std::time::{ SystemTime, UNIX_EPOCH };
+<span class="kw">use </span>std::num::NonZeroU64;
 
 <span class="doccomment">/// 46 bits gives space for &gt;2000years with millisecond precision.
 /// 18 bits remaining after this
@@ -287,8 +285,7 @@
 	<span class="doccomment">/// unix epoch time
 	</span>last_generated_time: u64,
 	<span class="comment">// 19 bits fits in u32 (duh)
-	</span>count: u32,
-	rng: ThreadRng
+	</span>count: u32
 }
 
 <span class="attr">#[repr(transparent)]
@@ -306,9 +303,8 @@
 		</span><span class="kw">let </span>count = <span class="number">1</span>;
 
 		<span class="kw">let </span>last_generated_time = <span class="number">0</span>;
-		<span class="kw">let </span>rng = thread_rng();
 
-		<span class="self">Self </span>{ last_generated_time, count, rng }
+		<span class="self">Self </span>{ last_generated_time, count }
 	}
 
 	<span class="kw">pub fn </span>next(<span class="kw-2">&amp;mut </span><span class="self">self</span>) -&gt; <span class="prelude-ty">Option</span>&lt;GeneratedID&gt; {
@@ -324,7 +320,7 @@
 
 		(<span class="self">self</span>.count &lt; MAX_COUNT).then(|| {
 			<span class="kw">let </span>now = <span class="self">self</span>.last_generated_time &lt;&lt; TIMESTAMP_SHIFT;
-			<span class="kw">let </span>random = (<span class="self">self</span>.rng.gen::&lt;u8&gt;() &amp; RANDOM_COMPONENT_MASK) <span class="kw">as </span>u64;
+			<span class="kw">let </span>random = (thread_rng().gen::&lt;u8&gt;() &amp; RANDOM_COMPONENT_MASK) <span class="kw">as </span>u64;
 
 			<span class="comment">// guaranteed to fit within 14 bits, as checked by
 			// bool statement before this closure
