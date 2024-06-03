@@ -1,6 +1,6 @@
-use ::rand::{ Rng, rngs::ThreadRng, thread_rng };
-use ::std::time::{ SystemTime, UNIX_EPOCH };
-use ::std::num::NonZeroU64;
+use rand::{ Rng, rngs::ThreadRng, thread_rng };
+use std::time::{ SystemTime, UNIX_EPOCH };
+use std::num::NonZeroU64;
 
 /// 46 bits gives space for >2000years with millisecond precision.
 /// 18 bits remaining after this
@@ -32,8 +32,7 @@ pub struct IDGenerator {
 	/// unix epoch time
 	last_generated_time: u64,
 	// 19 bits fits in u32 (duh)
-	count: u32,
-	rng: ThreadRng
+	count: u32
 }
 
 #[repr(transparent)]
@@ -51,9 +50,8 @@ impl IDGenerator {
 		let count = 1;
 
 		let last_generated_time = 0;
-		let rng = thread_rng();
 
-		Self { last_generated_time, count, rng }
+		Self { last_generated_time, count }
 	}
 
 	pub fn next(&mut self) -> Option<GeneratedID> {
@@ -69,7 +67,7 @@ impl IDGenerator {
 
 		(self.count < MAX_COUNT).then(|| {
 			let now = self.last_generated_time << TIMESTAMP_SHIFT;
-			let random = (self.rng.gen::<u8>() & RANDOM_COMPONENT_MASK) as u64;
+			let random = (thread_rng().gen::<u8>() & RANDOM_COMPONENT_MASK) as u64;
 
 			// guaranteed to fit within 14 bits, as checked by
 			// bool statement before this closure
