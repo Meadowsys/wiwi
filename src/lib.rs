@@ -115,10 +115,6 @@ pub mod bigint;
 #[cfg_attr(docsrs, doc(cfg(feature = "bitstream-unstable")))]
 pub mod bitstream;
 
-// #[cfg(feature = "chainer-unstable")]
-// #[cfg_attr(docsrs, doc(cfg(feature = "chainer-unstable")))]
-// pub mod chainer;
-
 #[cfg(feature = "chainer-unstable")]
 #[cfg_attr(docsrs, doc(cfg(feature = "chainer-unstable")))]
 pub mod chainer;
