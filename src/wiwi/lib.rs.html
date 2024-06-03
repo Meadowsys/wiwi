@@ -204,10 +204,6 @@
 <a href="#204" id="204">204</a>
 <a href="#205" id="205">205</a>
 <a href="#206" id="206">206</a>
-<a href="#207" id="207">207</a>
-<a href="#208" id="208">208</a>
-<a href="#209" id="209">209</a>
-<a href="#210" id="210">210</a>
 </pre></div><pre class="rust"><code><span class="attr">#![cfg_attr(docsrs, feature(doc_cfg))]
 
 #![doc = <span class="macro">include_str!</span>(<span class="string">"../README.md"</span>)]
@@ -325,11 +321,7 @@
 #[cfg_attr(docsrs, doc(cfg(feature = <span class="string">"bitstream-unstable"</span>)))]
 </span><span class="kw">pub mod </span>bitstream;
 
-<span class="comment">// #[cfg(feature = "chainer-unstable")]
-// #[cfg_attr(docsrs, doc(cfg(feature = "chainer-unstable")))]
-// pub mod chainer;
-
-</span><span class="attr">#[cfg(feature = <span class="string">"chainer-unstable"</span>)]
+<span class="attr">#[cfg(feature = <span class="string">"chainer-unstable"</span>)]
 #[cfg_attr(docsrs, doc(cfg(feature = <span class="string">"chainer-unstable"</span>)))]
 </span><span class="kw">pub mod </span>chainer;
 
