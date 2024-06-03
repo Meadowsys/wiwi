@@ -1,5 +1,6 @@
-use crate::chainer::{ IntoChainer, SliceBoxChain };
+use crate::chainer::{ IntoChainer, SliceBoxChain, VecChain };
 use crate::iter::{ IntoStdIterator, IntoWiwiIter, Iter };
+use crate::z85::{ encode_z85, decode_z85 };
 use rand::{ Rng, seq::SliceRandom, thread_rng };
 use rand::distributions::uniform::SampleRange;
 use std::fmt;
@@ -8,6 +9,7 @@ use std::num::NonZeroUsize;
 // TODO: find `pub` in this file and reasses all of it lol
 
 #[derive(Clone)]
+#[cfg_attr(test, derive(PartialEq, Eq))]
 pub struct Board {
 	w: NonZeroUsize,
 	h: NonZeroUsize,
@@ -269,6 +271,119 @@ impl Board {
 		&mut *self.board_ptr_mut().add(self.offset_of_unchecked(r, c))
 	}
 
+	pub fn serialise(&self) -> String {
+		// only going to store is mine / revealed state
+		// so 2 bits per cell, 4 cells per byte (4 cells per 8 bits)
+
+		// currently version 0
+		// eventually when serialiser is ready we want to encode this with
+		// version 1 using it
+
+		let whole = self.board.len() / 4;
+		let remainder = (self.board.len() % 4 != 0) as usize;
+
+		// 17: version byte + 2 usize (h, w)
+		// those 2 usize will encode smaller with serialiser
+		let bytes = VecChain::with_capacity(17 + whole + remainder)
+			// version
+			.push(0)
+			.extend_from_slice(&(self.w.get() as u64).to_le_bytes())
+			.extend_from_slice(&(self.h.get() as u64).to_le_bytes());
+
+		let bytes = self.board.chunks(4)
+			.fold(bytes, |bytes, next| {
+				let byte = match next {
+					[cell1, cell2, cell3, cell4] => {
+						let cell1 = cell1.inner & 0b11;
+						let cell2 = (cell2.inner & 0b11) << 2;
+						let cell3 = (cell3.inner & 0b11) << 4;
+						let cell4 = cell4.inner << 6;
+						cell1 | cell2 | cell3 | cell4
+					}
+					[cell1, cell2, cell3] => {
+						let cell1 = cell1.inner & 0b11;
+						let cell2 = (cell2.inner & 0b11) << 2;
+						let cell3 = (cell3.inner & 0b11) << 4;
+						cell1 | cell2 | cell3
+					}
+					[cell1, cell2] => {
+						let cell1 = cell1.inner & 0b11;
+						let cell2 = (cell2.inner & 0b11) << 2;
+						cell1 | cell2
+					}
+					[cell1] => { cell1.inner & 0b11 }
+					_ => { unreachable!() }
+				};
+				bytes.push(byte)
+			});
+
+		encode_z85(bytes.nonchain_slice())
+	}
+
+	pub fn deserialise(s: &str) -> Option<Self> {
+		let bytes = decode_z85(s.as_bytes()).ok()?;
+		let mut bytes = bytes.iter().copied();
+
+		if bytes.next()? != 0 { return None }
+
+		let w = u64::from_le_bytes([
+			bytes.next()?, bytes.next()?,
+			bytes.next()?, bytes.next()?,
+			bytes.next()?, bytes.next()?,
+			bytes.next()?, bytes.next()?
+		]);
+		let h = u64::from_le_bytes([
+			bytes.next()?, bytes.next()?,
+			bytes.next()?, bytes.next()?,
+			bytes.next()?, bytes.next()?,
+			bytes.next()?, bytes.next()?
+		]);
+
+		let w = usize::try_from(w).ok()?;
+		let h = usize::try_from(h).ok()?;
+
+		let w = NonZeroUsize::new(w)?;
+		let h = NonZeroUsize::new(h)?;
+
+		let mut new = Self::new(w, h);
+		for chunk in new.board.chunks_mut(4) {
+			let byte = bytes.next()?;
+
+			// not most efficient, but is it really noticeable?
+			let cell1 = byte & 0b11;
+			let cell2 = (byte >> 2) & 0b11;
+			let cell3 = (byte >> 4) & 0b11;
+			let cell4 = byte >> 6;
+
+			match chunk {
+				[c1, c2, c3, c4] => {
+					*c1 = Cell { inner: cell1 };
+					*c2 = Cell { inner: cell2 };
+					*c3 = Cell { inner: cell3 };
+					*c4 = Cell { inner: cell4 };
+				}
+				[c1, c2, c3] => {
+					*c1 = Cell { inner: cell1 };
+					*c2 = Cell { inner: cell2 };
+					*c3 = Cell { inner: cell3 };
+				}
+				[c1, c2] => {
+					*c1 = Cell { inner: cell1 };
+					*c2 = Cell { inner: cell2 };
+				}
+				[c1] => {
+					*c1 = Cell { inner: cell1 };
+				}
+				_ => { unreachable!() }
+			}
+		}
+
+		if bytes.next().is_some() { return None }
+
+		new.force_update_counts();
+		Some(new)
+	}
+
 	#[inline(always)]
 	pub fn debug_assert_in_bounds(&self, r: usize, c: usize) {
 		debug_assert!(r < self.h.get());
@@ -349,6 +464,16 @@ impl fmt::Debug for Cell {
 	}
 }
 
+#[cfg(test)]
+impl PartialEq for Cell {
+	fn eq(&self, other: &Cell) -> bool {
+		self.inner & 0b11 == other.inner & 0b11
+	}
+}
+
+#[cfg(test)]
+impl Eq for Cell {}
+
 impl fmt::Debug for Board {
 	fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
 		// TODO: how do I avoid trailing newline in an elegant way?
@@ -362,5 +487,26 @@ impl fmt::Debug for Board {
 		}
 
 		Ok(())
+	}
+}
+
+#[cfg(test)]
+mod tests {
+	use super::*;
+	use rand::{ Rng, thread_rng };
+
+	#[test]
+	fn serialise_roundtrip() {
+		let mut rng = thread_rng();
+
+		for size in [5, 10, 25, 100] {
+			let range = 0..=size * size;
+			let size = size.try_into().unwrap();
+			for _ in 0..10 {
+				let mut board = Board::new(size, size);
+				board.add_random_mines(range.clone().sample_single(&mut rng));
+				assert_eq!(Board::deserialise(&board.serialise()), Some(board));
+			}
+		}
 	}
 }
