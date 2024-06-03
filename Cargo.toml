@@ -184,7 +184,8 @@ memory-usage-unstable = [
 ]
 minesweeper-unstable = [
 	"dep:rand",
-	"chainer-unstable"
+	"chainer-unstable",
+	"z85"
 ]
 nominal = []
 path-unstable = []
