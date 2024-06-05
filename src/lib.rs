@@ -23,6 +23,7 @@
 #![cfg_attr(all(feature = "chainer-unstable"),      doc = "- `chainer` (unstable)"     )]
 #![cfg_attr(all(feature = "clock-timer"),           doc = "- `clock-timer`"            )]
 #![cfg_attr(all(feature = "debounce"),              doc = "- `debounce`"               )]
+#![cfg_attr(all(feature = "defer-unstable"),        doc = "- `defer` (unstable)"       )]
 #![cfg_attr(all(feature = "h"),                     doc = "- `h`"                      )]
 #![cfg_attr(all(feature = "hex"),                   doc = "- `hex`"                    )]
 #![cfg_attr(all(feature = "id-unstable"),           doc = "- `id` (unstable)"          )]
@@ -59,6 +60,7 @@
 	not(feature = "chainer-unstable"),
 	not(feature = "clock-timer"),
 	not(feature = "debounce"),
+	not(feature = "defer-unstable"),
 	not(feature = "h"),
 	not(feature = "hex"),
 	not(feature = "id-unstable"),
@@ -127,6 +129,10 @@ pub mod clock_timer;
 #[cfg_attr(docsrs, doc(cfg(feature = "debounce")))]
 pub mod debounce;
 feature_cfg_compile_check!("debounce-dyn-fn", cfg of "debounce");
+
+#[cfg(feature = "defer-unstable")]
+#[cfg_attr(docsrs, doc(cfg(feature = "defer-unstable")))]
+pub mod defer;
 
 #[cfg(feature = "h")]
 #[cfg_attr(docsrs, doc(cfg(feature = "h")))]

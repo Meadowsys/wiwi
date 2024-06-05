@@ -16,6 +16,7 @@ In addition to the features listed below, there exists a feature `all` that will
 - **`chainer`** (unstable) - zero-cost wrappers that provide chaining APIs
 - **`clock-timer`** - An interval tracking clock, yielding ticks at specified intervals and doing so for a specified duration.
 - **`debounce`** - Delay calling a function until a certain time period has passed since the last time it was called.
+- **`defer`** (unstable) - utilities for deferring running code
 - **`h`** - h
 - **`hex`** - Fast (faster than `hex` crate[^1]) implementation of hex encoding, supporting upper hex and lower hex.
 - **`id`** (unstable) - ID generator, with all IDs generated from one generater guaranteed to be monotonically increasing

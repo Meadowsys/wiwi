@@ -114,6 +114,7 @@ all-unstable = [
 	"bigint-unstable",
 	"bitstream-unstable",
 	"chainer-unstable",
+	"defer-unstable",
 	"id-unstable",
 	"iter-unstable",
 	"lsl-unstable",
@@ -159,6 +160,7 @@ debounce = [
 	"dep:chrono",
 	"dep:tokio"
 ]
+defer-unstable = []
 h = [
 	"dep:thiserror"
 ]
