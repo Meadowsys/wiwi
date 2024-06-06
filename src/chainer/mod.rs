@@ -44,3 +44,15 @@ macro_rules! chainer {
 	}
 }
 use chainer;
+
+macro_rules! chain_fn {
+	($fn_name:ident($self:ident$(, $($args:tt)*)?) => $body:expr) => {
+		pub fn $fn_name(self $(, $($args)*)?) -> Self {
+			#[allow(unused_mut)]
+			let mut $self = self;
+			{ $body }
+			$self
+		}
+	}
+}
+use chain_fn;

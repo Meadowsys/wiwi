@@ -1,4 +1,4 @@
-use super::{ chainer, ChainHalf, NonChainHalf };
+use super::{ chainer, chain_fn, ChainHalf, NonChainHalf };
 
 chainer! {
 	chainer: VecChain[T]
@@ -19,4 +19,6 @@ impl<T> VecChain<T> {
 	pub fn oiwefaowafeiijoaefew(self) -> Vec<T> {
 		self.inner
 	}
+
+	chain_fn!(test(this, count: &mut usize) => *count = this.inner.len());
 }
