@@ -333,11 +333,11 @@
 <span class="attr">#[macro_export]
 </span><span class="macro">macro_rules!</span> defer {
 	{ <span class="kw">move in </span>$(<span class="macro-nonterminal">$defer</span>:tt)* } =&gt; {
-		<span class="kw">let </span>__defer = &lt;() <span class="kw">as </span><span class="macro-nonterminal">$crate::defer::OnDrop</span>&gt;::on_drop((), <span class="kw">move </span>|()| { $(<span class="macro-nonterminal">$defer</span>)* });
+		<span class="kw">let </span>__defer = <span class="macro-nonterminal">$crate::defer::defer_with</span>((), <span class="kw">move </span>|()| { $(<span class="macro-nonterminal">$defer</span>)* });
 	};
 
 	{ $(<span class="macro-nonterminal">$defer</span>:tt)* } =&gt; {
-		<span class="kw">let </span>__defer = &lt;() <span class="kw">as </span><span class="macro-nonterminal">$crate::defer::OnDrop</span>&gt;::on_drop((), |()| { $(<span class="macro-nonterminal">$defer</span>)* });
+		<span class="kw">let </span>__defer = <span class="macro-nonterminal">$crate::defer::defer_with</span>((), |()| { $(<span class="macro-nonterminal">$defer</span>)* });
 	};
 }
 <span class="kw">pub use </span>defer;
@@ -345,11 +345,11 @@
 <span class="attr">#[macro_export]
 </span><span class="macro">macro_rules!</span> defer_success {
 	{ <span class="kw">move in </span>$(<span class="macro-nonterminal">$defer</span>:tt)* } =&gt; {
-		<span class="kw">let </span>__defer = &lt;() <span class="kw">as </span><span class="macro-nonterminal">$crate::defer::OnDrop</span>&gt;::on_success_drop((), <span class="kw">move </span>|()| { $(<span class="macro-nonterminal">$defer</span>)* });
+		<span class="kw">let </span>__defer = <span class="macro-nonterminal">$crate::defer::defer_on_success_with</span>((), <span class="kw">move </span>|()| { $(<span class="macro-nonterminal">$defer</span>)* });
 	};
 
 	{ $(<span class="macro-nonterminal">$defer</span>:tt)* } =&gt; {
-		<span class="kw">let </span>__defer = &lt;() <span class="kw">as </span><span class="macro-nonterminal">$crate::defer::OnDrop</span>&gt;::on_success_drop((), |()| { $(<span class="macro-nonterminal">$defer</span>)* });
+		<span class="kw">let </span>__defer = <span class="macro-nonterminal">$crate::defer::defer_on_success_with</span>((), |()| { $(<span class="macro-nonterminal">$defer</span>)* });
 	};
 }
 <span class="kw">pub use </span>defer_success;
@@ -357,11 +357,11 @@
 <span class="attr">#[macro_export]
 </span><span class="macro">macro_rules!</span> defer_unwind {
 	{ <span class="kw">move in </span>$(<span class="macro-nonterminal">$defer</span>:tt)* } =&gt; {
-		<span class="kw">let </span>__defer = &lt;() <span class="kw">as </span><span class="macro-nonterminal">$crate::defer::OnDrop</span>&gt;::on_unwind_drop((), <span class="kw">move </span>|()| { $(<span class="macro-nonterminal">$defer</span>)* });
+		<span class="kw">let </span>__defer = <span class="macro-nonterminal">$crate::defer::defer_on_unwind_with</span>((), <span class="kw">move </span>|()| { $(<span class="macro-nonterminal">$defer</span>)* });
 	};
 
 	{ $(<span class="macro-nonterminal">$defer</span>:tt)* } =&gt; {
-		<span class="kw">let </span>__defer = &lt;() <span class="kw">as </span><span class="macro-nonterminal">$crate::defer::OnDrop</span>&gt;::on_unwind_drop((), |()| { $(<span class="macro-nonterminal">$defer</span>)* });
+		<span class="kw">let </span>__defer = <span class="macro-nonterminal">$crate::defer::defer_on_unwind_with</span>((), |()| { $(<span class="macro-nonterminal">$defer</span>)* });
 	};
 }
 <span class="kw">pub use </span>defer_unwind;
