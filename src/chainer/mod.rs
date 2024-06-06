@@ -1,10 +1,14 @@
 pub mod old;
+pub use old::*;
 
 mod traits;
-pub use traits::{ ChainHalf, NonChainHalf };
-
 mod vec;
-pub use vec::VecChain;
+
+/// Temporary
+pub mod new {
+	pub use super::traits::{ ChainHalf, NonChainHalf };
+	pub use super::vec::VecChain;
+}
 
 macro_rules! chainer {
 	{
@@ -22,11 +26,11 @@ macro_rules! chainer {
 		impl$(<$($generics),*>)? $crate::chainer::traits::private::Sealed for $chain$(<$($generics),*>)? {}
 		impl$(<$($generics),*>)? $crate::chainer::traits::private::Sealed for $nonchain {}
 
-		impl$(<$($generics),*>)? $crate::chainer::NonChainHalf for $nonchain {
+		impl$(<$($generics),*>)? $crate::chainer::traits::NonChainHalf for $nonchain {
 			type Chain = $chain$(<$($generics),*>)?;
 		}
 
-		impl$(<$($generics),*>)? $crate::chainer::ChainHalf for $chain$(<$($generics),*>)? {
+		impl$(<$($generics),*>)? $crate::chainer::traits::ChainHalf for $chain$(<$($generics),*>)? {
 			type NonChain = $nonchain;
 		}
 
@@ -82,7 +86,7 @@ macro_rules! chain_fn {
 		$(#[$meta])*
 		#[inline]
 		pub unsafe fn $fn_name$(<$($generics)*>)?(mut self $(, $($args)*)?) -> Self $(where $($where_clause)*)? {
-			use $crate::chainer::{ ChainHalf as _, NonChainHalf as _ };
+			use $crate::chainer::traits::{ ChainHalf as _, NonChainHalf as _ };
 
 			let mut $inner = self.into_nonchain();
 			$body.into_chainer()
@@ -107,7 +111,7 @@ macro_rules! chain_fn {
 		$(#[$meta])*
 		#[inline]
 		pub fn $fn_name$(<$($generics)*>)?(mut self $(, $($args)*)?) -> Self $(where $($where_clause)*)? {
-			use $crate::chainer::{ ChainHalf as _, NonChainHalf as _ };
+			use $crate::chainer::traits::{ ChainHalf as _, NonChainHalf as _ };
 
 			let $inner = self.into_nonchain();
 			$body.into_chainer()
@@ -136,7 +140,7 @@ macro_rules! chain_fn {
 		$(#[$meta])*
 		#[inline]
 		pub unsafe fn $fn_name$(<$($generics)*>)?(mut self $(, $($args)*)?) -> Self $(where $($where_clause)*)? {
-			use $crate::chainer::ChainHalf as _;
+			use $crate::chainer::traits::ChainHalf as _;
 
 			let $inner = self.as_nonchain_mut();
 			$body;
@@ -169,7 +173,7 @@ macro_rules! chain_fn {
 		$(#[$meta])*
 		#[inline]
 		pub fn $fn_name$(<$($generics)*>)?(mut self $(, $($args)*)?) -> Self $(where $($where_clause)*)? {
-			use $crate::chainer::ChainHalf as _;
+			use $crate::chainer::traits::ChainHalf as _;
 
 			let $inner = self.as_nonchain_mut();
 			$body;

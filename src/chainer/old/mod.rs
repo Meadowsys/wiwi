@@ -7,7 +7,7 @@
 // TODO: move these comments to own module and add basic description for each one
 mod into_chainer;
 pub use into_chainer::IntoChainer;
-pub mod traits;
+// pub mod traits;
 mod with_vars;
 
 mod vec;
