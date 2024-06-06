@@ -8,11 +8,11 @@ use std::thread::panicking;
 #[macro_export]
 macro_rules! defer {
 	{ move in $($defer:tt)* } => {
-		let __defer = <() as $crate::defer::OnDrop>::on_drop((), move |()| { $($defer)* });
+		let __defer = $crate::defer::defer_with((), move |()| { $($defer)* });
 	};
 
 	{ $($defer:tt)* } => {
-		let __defer = <() as $crate::defer::OnDrop>::on_drop((), |()| { $($defer)* });
+		let __defer = $crate::defer::defer_with((), |()| { $($defer)* });
 	};
 }
 pub use defer;
@@ -20,11 +20,11 @@ pub use defer;
 #[macro_export]
 macro_rules! defer_success {
 	{ move in $($defer:tt)* } => {
-		let __defer = <() as $crate::defer::OnDrop>::on_success_drop((), move |()| { $($defer)* });
+		let __defer = $crate::defer::defer_on_success_with((), move |()| { $($defer)* });
 	};
 
 	{ $($defer:tt)* } => {
-		let __defer = <() as $crate::defer::OnDrop>::on_success_drop((), |()| { $($defer)* });
+		let __defer = $crate::defer::defer_on_success_with((), |()| { $($defer)* });
 	};
 }
 pub use defer_success;
@@ -32,11 +32,11 @@ pub use defer_success;
 #[macro_export]
 macro_rules! defer_unwind {
 	{ move in $($defer:tt)* } => {
-		let __defer = <() as $crate::defer::OnDrop>::on_unwind_drop((), move |()| { $($defer)* });
+		let __defer = $crate::defer::defer_on_unwind_with((), move |()| { $($defer)* });
 	};
 
 	{ $($defer:tt)* } => {
-		let __defer = <() as $crate::defer::OnDrop>::on_unwind_drop((), |()| { $($defer)* });
+		let __defer = $crate::defer::defer_on_unwind_with((), |()| { $($defer)* });
 	};
 }
 pub use defer_unwind;
