@@ -1,1 +1,1 @@
-window.SIDEBAR_ITEMS = {"mod":["traits"],"struct":["ArrayChain","ArrayMutChain","ArrayRefChain","BTreeMapChain","BTreeSetChain","BinaryHeapChain","BitstreamEncoderChain","HashMapChain","HashSetChain","LinkedListChain","SliceBoxChain","SliceMutChain","SliceRefChain","StrBoxChain","StrMutChain","StrRefChain","StringChain","StringMutChain","StringRefChain","VecChain","VecDequeChain","VecMutChain","VecRefChain"],"trait":["IntoChainer"]};
+window.SIDEBAR_ITEMS = {"mod":["new","old"]};
