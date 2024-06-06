@@ -323,6 +323,10 @@
 <a href="#323" id="323">323</a>
 <a href="#324" id="324">324</a>
 <a href="#325" id="325">325</a>
+<a href="#326" id="326">326</a>
+<a href="#327" id="327">327</a>
+<a href="#328" id="328">328</a>
+<a href="#329" id="329">329</a>
 </pre></div><pre class="rust"><code><span class="kw">use </span>std::fmt::{ <span class="self">self</span>, Debug, Display };
 <span class="kw">use </span>std::marker::PhantomData;
 <span class="kw">use </span>std::mem::ManuallyDrop;
@@ -481,7 +485,8 @@
 	</span>W: when::When,
 	F: FnOnce(T)
 {
-	<span class="kw">fn </span>drop(<span class="kw-2">&amp;mut </span><span class="self">self</span>) {
+	<span class="attr">#[inline]
+	</span><span class="kw">fn </span>drop(<span class="kw-2">&amp;mut </span><span class="self">self</span>) {
 		<span class="kw">unsafe </span>{
 			<span class="kw">let </span>value = ptr::read(<span class="kw-2">&amp;*</span><span class="self">self</span>.value);
 			<span class="kw">let </span>f = ptr::read(<span class="kw-2">&amp;*</span><span class="self">self</span>.f);
@@ -500,7 +505,7 @@
 {
 	<span class="kw">fn </span>fmt(<span class="kw-2">&amp;</span><span class="self">self</span>, f: <span class="kw-2">&amp;mut </span>fmt::Formatter&lt;<span class="lifetime">'_</span>&gt;) -&gt; fmt::Result {
 		f.debug_struct(<span class="string">"Defer"</span>)
-			.field(<span class="string">"value"</span>, <span class="kw-2">&amp;</span><span class="self">self</span>.value)
+			.field(<span class="string">"value"</span>, <span class="kw-2">&amp;**</span><span class="self">self</span>)
 			.field(<span class="string">"when"</span>, <span class="kw-2">&amp;</span>W::construct_for_debug())
 			.finish_non_exhaustive()
 	}
@@ -512,8 +517,9 @@
 	W: when::When,
 	F: FnOnce(T)
 {
-	<span class="kw">fn </span>fmt(<span class="kw-2">&amp;</span><span class="self">self</span>, f: <span class="kw-2">&amp;mut </span>fmt::Formatter&lt;<span class="lifetime">'_</span>&gt;) -&gt; fmt::Result {
-		<span class="self">self</span>.value.fmt(f)
+	<span class="attr">#[inline]
+	</span><span class="kw">fn </span>fmt(<span class="kw-2">&amp;</span><span class="self">self</span>, f: <span class="kw-2">&amp;mut </span>fmt::Formatter&lt;<span class="lifetime">'_</span>&gt;) -&gt; fmt::Result {
+		(<span class="kw-2">**</span><span class="self">self</span>).fmt(f)
 	}
 }
 
@@ -523,7 +529,8 @@
 	W: when::When,
 	F: FnOnce(T)
 {
-	<span class="kw">fn </span>as_ref(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; <span class="kw-2">&amp;</span>U {
+	<span class="attr">#[inline]
+	</span><span class="kw">fn </span>as_ref(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; <span class="kw-2">&amp;</span>U {
 		<span class="self">self</span>.value.as_ref()
 	}
 }
@@ -534,7 +541,8 @@
 	W: when::When,
 	F: FnOnce(T)
 {
-	<span class="kw">fn </span>as_mut(<span class="kw-2">&amp;mut </span><span class="self">self</span>) -&gt; <span class="kw-2">&amp;mut </span>U {
+	<span class="attr">#[inline]
+	</span><span class="kw">fn </span>as_mut(<span class="kw-2">&amp;mut </span><span class="self">self</span>) -&gt; <span class="kw-2">&amp;mut </span>U {
 		<span class="self">self</span>.value.as_mut()
 	}
 }
