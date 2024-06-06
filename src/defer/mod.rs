@@ -242,6 +242,30 @@ pub trait OnDrop: Sized {
 	{
 		_new_with(self, f)
 	}
+
+	#[inline]
+	fn defer<F>(self, f: F) -> DeferAlways<Self, F>
+	where
+		F: FnOnce(Self)
+	{
+		_new_with(self, f)
+	}
+
+	#[inline]
+	fn defer_success<F>(self, f: F) -> DeferSuccess<Self, F>
+	where
+		F: FnOnce(Self)
+	{
+		_new_with(self, f)
+	}
+
+	#[inline]
+	fn defer_unwind<F>(self, f: F) -> DeferUnwind<Self, F>
+	where
+		F: FnOnce(Self)
+	{
+		_new_with(self, f)
+	}
 }
 
 impl<T> OnDrop for T {}
