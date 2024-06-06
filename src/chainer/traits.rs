@@ -1,5 +1,27 @@
 use super::*;
 
+// /// Convert any chain type back into its original, non-chaining-API type
+// ///
+// /// This is the reversal operation of [`NonChainHalf`].
+pub trait ChainHalf
+where
+	Self: Sized + private::Sealed + Into<Self::NonChain>,
+	Self::NonChain: Into<Self> + NonChainHalf<Chain = Self>
+{
+	type NonChain;
+
+	// /// Converts `self` into the original, non-chaining-API type
+	#[inline]
+	fn into_nonchain(self) -> Self::NonChain {
+		self.into()
+	}
+
+	#[inline]
+	fn from_nonchain(nonchain: Self::NonChain) -> Self {
+		nonchain.into()
+	}
+}
+
 // /// Convert any supported type into its chainer type
 // ///
 // /// Every type that implements this trait has a "preferred" chain type, declared
@@ -19,10 +41,10 @@ use super::*;
 // /// // ...
 // /// // do funny things with chaining API c:
 // /// ```
-pub trait NonChainHalf: Sized + private::Sealed
+pub trait NonChainHalf
 where
-	Self: Into<Self::Chain>,
-	Self::Chain: Into<Self>
+	Self: Sized + private::Sealed + Into<Self::Chain>,
+	Self::Chain: Into<Self> + ChainHalf<NonChain = Self>
 {
 	// /// The preferred chainer of this type
 	type Chain;
@@ -36,28 +58,6 @@ where
 	#[inline]
 	fn from_chainer(chainer: Self::Chain) -> Self {
 		chainer.into()
-	}
-}
-
-// /// Convert any chain type back into its original, non-chaining-API type
-// ///
-// /// This is the reversal operation of [`NonChainHalf`].
-pub trait ChainHalf: Sized + private::Sealed
-where
-	Self: Into<Self::NonChain>,
-	Self::NonChain: Into<Self>
-{
-	type NonChain;
-
-	// /// Converts `self` into the original, non-chaining-API type
-	#[inline]
-	fn into_nonchain(self) -> Self::NonChain {
-		self.into()
-	}
-
-	#[inline]
-	fn from_nonchain(nonchain: Self::NonChain) -> Self {
-		nonchain.into()
 	}
 }
 
