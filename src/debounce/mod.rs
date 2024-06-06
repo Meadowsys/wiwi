@@ -43,7 +43,7 @@ pub fn debounce(
 	f: impl Fn() + Send + 'static,
 	wait_in_ms: usize
 ) -> impl Fn() + Clone + Send + Sync + 'static {
-	_debounce(dyn_fn(f), wait_in_ms, false, &current_rt())
+	_debounce(Box::new(f), wait_in_ms, false, &current_rt())
 }
 
 /// Returns a new function that debounces calls to the passed function. This
@@ -54,7 +54,7 @@ pub fn debounce_immediate(
 	f: impl Fn() + Send + 'static,
 	wait_in_ms: usize
 ) -> impl Fn() + Clone + Send + Sync + 'static {
-	_debounce(dyn_fn(f), wait_in_ms, true, &current_rt())
+	_debounce(Box::new(f), wait_in_ms, true, &current_rt())
 }
 
 /// Returns a new function that debounces calls to the passed function, using
@@ -66,7 +66,7 @@ pub fn debounce_with_rt(
 	wait_in_ms: usize,
 	handle: &Handle
 ) -> impl Fn() + Clone + Send + Sync + 'static {
-	_debounce(dyn_fn(f), wait_in_ms, false, handle)
+	_debounce(Box::new(f), wait_in_ms, false, handle)
 }
 
 /// Returns a new function that debounces calls to the passed function, using
@@ -79,7 +79,7 @@ pub fn debounce_immediate_with_rt(
 	wait_in_ms: usize,
 	handle: &Handle
 ) -> impl Fn() + Clone + Send + Sync + 'static {
-	_debounce(dyn_fn(f), wait_in_ms, true, handle)
+	_debounce(Box::new(f), wait_in_ms, true, handle)
 }
 
 struct DebounceInternalArgs<F> {
@@ -91,7 +91,7 @@ struct DebounceInternalArgs<F> {
 
 /// setup fn
 fn _debounce(
-	f: impl Fn() + Send + 'static,
+	f: Box<dyn Fn() + Send + 'static>,
 	wait_in_ms: usize,
 	immediate: bool,
 	rt_handle: &Handle
@@ -175,20 +175,4 @@ where
 fn current_rt() -> Handle {
 	Handle::try_current()
 		.expect("debounce functions can only be created within the context of a tokio runtime")
-}
-
-#[cfg(feature = "debounce-dyn-fn")]
-#[inline(always)]
-fn dyn_fn(
-	f: impl Fn() + Send + 'static
-) -> Box<dyn Fn() + Send> {
-	Box::new(f)
-}
-
-#[cfg(not(feature = "debounce-dyn-fn"))]
-#[inline(always)]
-fn dyn_fn(
-	f: impl Fn() + Send + 'static
-) -> impl Fn() + Send + 'static {
-	f
 }

@@ -128,7 +128,6 @@ pub mod clock_timer;
 #[cfg(feature = "debounce")]
 #[cfg_attr(docsrs, doc(cfg(feature = "debounce")))]
 pub mod debounce;
-feature_cfg_compile_check!("debounce-dyn-fn", cfg of "debounce");
 
 #[cfg(feature = "defer-unstable")]
 #[cfg_attr(docsrs, doc(cfg(feature = "defer-unstable")))]
@@ -196,17 +195,3 @@ pub mod to_maybeuninit;
 #[cfg(feature = "z85")]
 #[cfg_attr(docsrs, doc(cfg(feature = "z85")))]
 pub mod z85;
-
-/// has to be run in root module and not in the feature modules themselves
-/// because then, if this *should have* triggered an error, it won't because
-/// the feature is off and module excluded from compilation lol
-macro_rules! feature_cfg_compile_check {
-	($cfgname:literal, cfg of $featname:literal) => {
-		#[cfg(all(
-			feature = $cfgname,
-			not(feature = $featname)
-		))]
-		compile_error!(concat!("`", $cfgname, "` is a configuration feature of `", $featname, "`, and does nothing when enabled on its own"));
-	}
-}
-use feature_cfg_compile_check;

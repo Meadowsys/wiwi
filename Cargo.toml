@@ -217,10 +217,6 @@ hashbrown = ["dep:hashbrown"]
 image = ["dep:image"]
 serde-json = ["dep:serde_json"]
 
-# config options for certain features
-# compiler errors if the feature its for isn't enabled
-debounce-dyn-fn = []
-
 [[bench]]
 name = "hex-and-z85"
 required-features = [

@@ -51,12 +51,6 @@ These features enable things specific to 3rd-party crates and features you have 
 - **`image`**
 - **`serde-json`**
 
-### Feature configuration features
-
-These don't change the exposed API or program behaviour at all, only some internal implementation details that might affect things such as compile times, performance, and binary size.
-
-- **`debounce-dyn-fn`** - Wraps functions into a `Box<dyn Fn>`, rather than monomorphising. This will cause calls to the underlying function (not the returned one) to be a bit slower than static dispatch, but also reduces the binary size depending on how many different concrete types the debounce functions are called with.
-
 ## Platform support
 
 This package will only _officially_ support macOS and Linux. Windows support will only be on best effort basis. Still do submit issues, I just can't guarantee I can fix them etc (but you can PR me, if you'd like!).
