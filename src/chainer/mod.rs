@@ -62,26 +62,76 @@ macro_rules! chainer {
 use chainer;
 
 macro_rules! chain_fn {
-	($fn_name:ident($inner:ident $(, $($args:tt)*)?) => $body:expr) => {
+	// too many duplicate code I don't like this aa
+
+	// unsafe self
+	{
+		$(#[$meta:meta])*
+		unsafe self $fn_name:ident$([$($generics:tt)*])?($self:ident $(, $($args:tt)*)?) $(where { $($where_clause:tt)* })? => $body:expr
+	} => {
+		$(#[$meta])*
 		#[inline]
-		pub fn $fn_name(mut self $(, $($args)*)?) -> Self {
-			use $crate::chainer::{ ChainHalf as _, NonChainHalf as _ };
-
-			let mut $inner = self.as_nonchain_mut();
+		pub unsafe fn $fn_name$(<$($generics)*>)?(mut $self $(, $($args)*)?) -> Self $(where $($where_clause)*)? {
 			{ $body }
-			self
-		}
-	}
-}
 
+			// let it handle things like todo! macro etc
+			#[allow(unreachable_code)]
+			{ $self }
+		}
+	};
+
+	// unsafe
+	{
+		$(#[$meta:meta])*
+		unsafe $fn_name:ident$([$($generics:tt)*])?($inner:ident $(, $($args:tt)*)?) $(where { $($where_clause:tt)* })? => $body:expr
+	} => {
+		$(#[$meta])*
+		#[inline]
+		pub unsafe fn $fn_name$(<$($generics)*>)?(mut self $(, $($args)*)?) -> Self $(where $($where_clause)*)? {
+			use $crate::chainer::ChainHalf as _;
+
+			let $inner = self.as_nonchain_mut();
+			{ $body }
+
+			// let it handle things like todo! macro etc
+			#[allow(unreachable_code)]
+			{ self }
+		}
+	};
+
+	// takes self
+	{
+		$(#[$meta:meta])*
+		self $fn_name:ident$([$($generics:tt)*])?($self:ident $(, $($args:tt)*)?) $(where { $($where_clause:tt)* })? => $body:expr
+	} => {
+		$(#[$meta])*
+		#[inline]
+		pub fn $fn_name$(<$($generics)*>)?(mut $self $(, $($args)*)?) -> Self $(where $($where_clause)*)? {
+			{ $body }
+
+			// let it handle things like todo! macro etc
+			#[allow(unreachable_code)]
+			{ $self }
+		}
+	};
+
+	// regular
+	{
+		$(#[$meta:meta])*
+		$fn_name:ident$([$($generics:tt)*])?($inner:ident $(, $($args:tt)*)?) $(where { $($where_clause:tt)* })? => $body:expr
+	} => {
+		$(#[$meta])*
+		#[inline]
+		pub fn $fn_name$(<$($generics)*>)?(mut self $(, $($args)*)?) -> Self $(where $($where_clause)*)? {
+			use $crate::chainer::ChainHalf as _;
+
+			let $inner = self.as_nonchain_mut();
+			{ $body }
+
+			// let it handle things like todo! macro etc
+			#[allow(unreachable_code)]
+			{ self }
+		}
+	};
+}
 use chain_fn;
-macro_rules! chain_fn_self {
-	($fn_name:ident($self:ident $(, $($args:tt)*)?) => $body:expr) => {
-		#[inline]
-		pub fn $fn_name(mut $self $(, $($args)*)?) -> Self {
-			{ $body }
-			$self
-		}
-	}
-}
-use chain_fn_self;
