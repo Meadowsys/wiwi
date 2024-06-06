@@ -61,23 +61,6 @@ where
 	}
 }
 
-mod private {
+pub(super) mod private {
 	pub trait Sealed {}
-}
-
-macro_rules! chainer {
-	($($chain:ident $nonchain:ident)*) => {
-		$(
-			impl private::Sealed for $chain {}
-			impl private::Sealed for $nonchain {}
-
-			impl NonChainHalf for $nonchain {
-				type Chain = $chain;
-			}
-
-			impl ChainHalf for $chain {
-				type NonChain = $nonchain;
-			}
-		)*
-	}
 }
