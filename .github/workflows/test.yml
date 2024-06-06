@@ -63,3 +63,6 @@ jobs:
       with:
         files: target/coverage/*.lcov
         token: ${{ secrets.CODECOV_TOKEN }}
+
+  feature-check:
+    uses: ./.github/workflows/feature-check.yml

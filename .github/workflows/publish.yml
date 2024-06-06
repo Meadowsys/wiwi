@@ -37,9 +37,14 @@ jobs:
     - name: test in release
       run: cargo test --release --verbose --features ${{ matrix.featureflags }}
 
+  feature-check:
+    uses: ./.github/workflows/feature-check.yml
+
   publish:
     name: publish crate
-    needs: test
+    needs:
+    - test
+    - feature-check
     runs-on: macos-14
 
     steps:
