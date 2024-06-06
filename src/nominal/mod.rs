@@ -281,10 +281,10 @@ impl<T, M> Nominal<T, M> {
 
 	/// Maps the wrapped value and transmutes the wrapper type
 	///
-	/// Effectively the same as calling [`map_nom`] and then [`transmute_nom`].
+	/// Effectively the same as calling [`map_value`] and then [`transmute_wrapper`].
 	///
-	/// [`map_nom`]: Self::map_nom
-	/// [`transmute_nom`]: Self::transmute_nom
+	/// [`map_value`]: Self::map_value
+	/// [`transmute_wrapper`]: Self::transmute_wrapper
 	#[inline]
 	pub fn map_transmute<T2, M2, F>(self, f: F) -> Nominal<T2, M2>
 	where
@@ -306,10 +306,10 @@ impl<T, M> Nominal<T, M> {
 
 	/// Asyncronously maps the wrapped value and transmutes the wrapper type
 	///
-	/// Effectively the same as calling [`async_map_nom`] and then [`transmute_nom`].
+	/// Effectively the same as calling [`async_map_value`] and then [`transmute_wrapper`].
 	///
-	/// [`async_map_nom`]: Self::async_map_nom
-	/// [`transmute_nom`]: Self::transmute_nom
+	/// [`async_map_value`]: Self::async_map_value
+	/// [`transmute_wrapper`]: Self::transmute_wrapper
 	#[inline]
 	pub async fn async_map_transmute<T2, M2, F, Fu>(self, f: F) -> Nominal<T2, M>
 	where
