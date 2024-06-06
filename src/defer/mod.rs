@@ -156,6 +156,7 @@ where
 	W: when::When,
 	F: FnOnce(T)
 {
+	#[inline]
 	fn drop(&mut self) {
 		unsafe {
 			let value = ptr::read(&*self.value);
@@ -175,7 +176,7 @@ where
 {
 	fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
 		f.debug_struct("Defer")
-			.field("value", &self.value)
+			.field("value", &**self)
 			.field("when", &W::construct_for_debug())
 			.finish_non_exhaustive()
 	}
@@ -187,8 +188,9 @@ where
 	W: when::When,
 	F: FnOnce(T)
 {
+	#[inline]
 	fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
-		self.value.fmt(f)
+		(**self).fmt(f)
 	}
 }
 
@@ -198,6 +200,7 @@ where
 	W: when::When,
 	F: FnOnce(T)
 {
+	#[inline]
 	fn as_ref(&self) -> &U {
 		self.value.as_ref()
 	}
@@ -209,6 +212,7 @@ where
 	W: when::When,
 	F: FnOnce(T)
 {
+	#[inline]
 	fn as_mut(&mut self) -> &mut U {
 		self.value.as_mut()
 	}
