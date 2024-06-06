@@ -71,7 +71,7 @@ macro_rules! chain_fn {
 		$(#[$meta])*
 		#[inline]
 		pub unsafe fn $fn_name$(<$($generics)*>)?(mut $self $(, $($args)*)?) -> Self $(where $($where_clause)*)? {
-			{ $body }
+			$body
 		}
 	};
 
@@ -85,7 +85,7 @@ macro_rules! chain_fn {
 			use $crate::chainer::{ ChainHalf as _, NonChainHalf as _ };
 
 			let mut $inner = self.into_nonchain();
-			{ $body }.into_chainer()
+			$body.into_chainer()
 		}
 	};
 
@@ -96,7 +96,7 @@ macro_rules! chain_fn {
 		$(#[$meta])*
 		#[inline]
 		pub fn $fn_name$(<$($generics)*>)?(mut $self $(, $($args)*)?) -> Self $(where $($where_clause)*)? {
-			{ $body }
+			$body
 		}
 	};
 
@@ -110,7 +110,7 @@ macro_rules! chain_fn {
 			use $crate::chainer::{ ChainHalf as _, NonChainHalf as _ };
 
 			let $inner = self.into_nonchain();
-			{ $body }.into_chainer()
+			$body.into_chainer()
 		}
 	};
 
@@ -121,7 +121,7 @@ macro_rules! chain_fn {
 		$(#[$meta])*
 		#[inline]
 		pub unsafe fn $fn_name$(<$($generics)*>)?(mut $self $(, $($args)*)?) -> Self $(where $($where_clause)*)? {
-			{ $body }
+			$body;
 
 			// shush warning for things like todo! macro etc
 			#[allow(unreachable_code)]
@@ -139,7 +139,7 @@ macro_rules! chain_fn {
 			use $crate::chainer::ChainHalf as _;
 
 			let $inner = self.as_nonchain_mut();
-			{ $body }
+			$body;
 
 			// shush warning for things like todo! macro etc
 			#[allow(unreachable_code)]
@@ -154,7 +154,7 @@ macro_rules! chain_fn {
 		$(#[$meta])*
 		#[inline]
 		pub fn $fn_name$(<$($generics)*>)?(mut $self $(, $($args)*)?) -> Self $(where $($where_clause)*)? {
-			{ $body }
+			$body;
 
 			// shush warning for things like todo! macro etc
 			#[allow(unreachable_code)]
@@ -172,7 +172,7 @@ macro_rules! chain_fn {
 			use $crate::chainer::ChainHalf as _;
 
 			let $inner = self.as_nonchain_mut();
-			{ $body }
+			$body;
 
 			// shush warning for things like todo! macro etc
 			#[allow(unreachable_code)]
