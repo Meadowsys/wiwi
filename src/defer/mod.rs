@@ -7,7 +7,7 @@ use std::thread::panicking;
 
 #[macro_export]
 macro_rules! defer {
-	{ move in $($defer:tt)* } => {
+	{ move $($defer:tt)* } => {
 		let __defer = $crate::defer::defer_with((), move |()| { $($defer)* });
 	};
 
@@ -19,7 +19,7 @@ pub use defer;
 
 #[macro_export]
 macro_rules! defer_success {
-	{ move in $($defer:tt)* } => {
+	{ move $($defer:tt)* } => {
 		let __defer = $crate::defer::defer_on_success_with((), move |()| { $($defer)* });
 	};
 
@@ -31,7 +31,7 @@ pub use defer_success;
 
 #[macro_export]
 macro_rules! defer_unwind {
-	{ move in $($defer:tt)* } => {
+	{ move $($defer:tt)* } => {
 		let __defer = $crate::defer::defer_on_unwind_with((), move |()| { $($defer)* });
 	};
 
