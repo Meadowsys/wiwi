@@ -785,10 +785,10 @@
 
 	<span class="doccomment">/// Maps the wrapped value and transmutes the wrapper type
 	///
-	/// Effectively the same as calling [`map_nom`] and then [`transmute_nom`].
+	/// Effectively the same as calling [`map_value`] and then [`transmute_wrapper`].
 	///
-	/// [`map_nom`]: Self::map_nom
-	/// [`transmute_nom`]: Self::transmute_nom
+	/// [`map_value`]: Self::map_value
+	/// [`transmute_wrapper`]: Self::transmute_wrapper
 	</span><span class="attr">#[inline]
 	</span><span class="kw">pub fn </span>map_transmute&lt;T2, M2, F&gt;(<span class="self">self</span>, f: F) -&gt; Nominal&lt;T2, M2&gt;
 	<span class="kw">where
@@ -810,10 +810,10 @@
 
 	<span class="doccomment">/// Asyncronously maps the wrapped value and transmutes the wrapper type
 	///
-	/// Effectively the same as calling [`async_map_nom`] and then [`transmute_nom`].
+	/// Effectively the same as calling [`async_map_value`] and then [`transmute_wrapper`].
 	///
-	/// [`async_map_nom`]: Self::async_map_nom
-	/// [`transmute_nom`]: Self::transmute_nom
+	/// [`async_map_value`]: Self::async_map_value
+	/// [`transmute_wrapper`]: Self::transmute_wrapper
 	</span><span class="attr">#[inline]
 	</span><span class="kw">pub async fn </span>async_map_transmute&lt;T2, M2, F, Fu&gt;(<span class="self">self</span>, f: F) -&gt; Nominal&lt;T2, M&gt;
 	<span class="kw">where
