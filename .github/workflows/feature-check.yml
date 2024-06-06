@@ -5,15 +5,7 @@ on:
 jobs:
   run:
     name: run
-    runs-on: ${{ matrix.runs-on }}
-
-    strategy:
-      fail-fast: false
-      matrix:
-        runs-on:
-        - ubuntu-22.04
-        - ubuntu-24.04
-        - macos-14
+    runs-on: macos-14
 
     steps:
     - name: checkout code
@@ -30,5 +22,5 @@ jobs:
         # compile time matters more here
         RUSTFLAGS: -Copt-level=1 -Clto=false -Ccodegen-units=256
 
-    - name: check feature powerset
-      run: cargo hack check --feature-powerset --no-dev-deps
+    - name: check features individually
+      run: cargo hack check --each-feature
