@@ -1,8 +1,8 @@
 # wiwi
 
-A lil lib containing misc utilities, and Stuff™. Contains some useful things, contains some silly things.
+A lil lib containing misc utilities, and Stuff™. Contains some useful things, contains some silly things. Contains many things!
 
-All exposed features are gated behind feature flags, none of which are enabled by default.
+Everything wiwi can do is gated behind feature flags, none of which are enabled by default.
 
 ## Features
 
@@ -41,13 +41,11 @@ Unstable features have `-unstable` appended to their name. For example, if I hav
 
 Because unstable features may break whenever, if you use them, you may want to pin the version of `wiwi` to an exact version (ie. use the `=` semver operator).
 
-**NOTE:** Just because a feature is _not_ "unstable", doesn't mean it won't break, _ever_. It can break, but of course that will be accompanied by deprecation ahead of time and a major version bump, so no surprises there. Just don't be surprised when bumping a patch version causes an unstable feature to break everything. :p
+**NOTE:** Just because a feature is _not_ "unstable", doesn't mean it won't break, _ever_. It can break, but of course those breakages will adhere to semver rules, as expected. Just don't be surprised when bumping a patch version causes an unstable feature to break everything. :p
 
 ### Addon features
 
-These features enable things specific to 3rd-party crates and features you have enabled. For example, the `hashbrown` feature, when the `serialiser` feature is enabled, will implement `Serialise` and `Deserialise` traits for structs in `hashbrown`.
-
-If you enable one of these, and it doesn't have anything to affect any of the features you have enabled, it'll silently do nothing.
+These features enable things specific to 3rd-party crates and features you have enabled. If you enable one of these, and it is used by none of the features you've enabled, it'll silently do nothing.
 
 - **`hashbrown`**
 - **`image`**
