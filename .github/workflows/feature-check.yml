@@ -17,5 +17,10 @@ jobs:
     - name: install cargo-hack
       run: cargo install cargo-hack --verbose
 
+    # this is so the logs of the first build doesn't get
+    # shoved into the first feature that gets built
+    - name: build
+      run: cargo build --verbose --features all-unstable
+
     - name: check features individually
       run: cargo hack check --verbose --each-feature
