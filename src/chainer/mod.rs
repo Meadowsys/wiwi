@@ -64,12 +64,12 @@ use chainer;
 macro_rules! chain_fn {
 	($fn_name:ident($inner:ident $(, $($args:tt)*)?) => $body:expr) => {
 		#[inline]
-		pub fn $fn_name(self $(, $($args)*)?) -> Self {
+		pub fn $fn_name(mut self $(, $($args)*)?) -> Self {
 			use $crate::chainer::{ ChainHalf as _, NonChainHalf as _ };
 
-			let mut $inner = self.into_nonchain();
+			let mut $inner = self.as_nonchain_mut();
 			{ $body }
-			$inner.into_chainer()
+			self
 		}
 	}
 }
