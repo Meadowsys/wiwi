@@ -64,7 +64,56 @@ use chainer;
 macro_rules! chain_fn {
 	// too many duplicate code I don't like this aa
 
-	// unsafe self
+	{
+		$(#[$meta:meta])*
+		unsafe move self $fn_name:ident$([$($generics:tt)*])?($self:ident $(, $($args:tt)*)?) $(where { $($where_clause:tt)* })? => $body:expr
+	} => {
+		$(#[$meta])*
+		#[inline]
+		pub unsafe fn $fn_name$(<$($generics)*>)?(mut $self $(, $($args)*)?) -> Self $(where $($where_clause)*)? {
+			{ $body }
+		}
+	};
+
+	{
+		$(#[$meta:meta])*
+		unsafe move $fn_name:ident$([$($generics:tt)*])?($inner:ident $(, $($args:tt)*)?) $(where { $($where_clause:tt)* })? => $body:expr
+	} => {
+		$(#[$meta])*
+		#[inline]
+		pub unsafe fn $fn_name$(<$($generics)*>)?(mut self $(, $($args)*)?) -> Self $(where $($where_clause)*)? {
+			use $crate::chainer::{ ChainHalf as _, NonChainHalf as _ };
+
+			let mut $inner = self.into_nonchain();
+			{ $body }.into_chainer()
+		}
+	};
+
+	{
+		$(#[$meta:meta])*
+		move self $fn_name:ident$([$($generics:tt)*])?($self:ident $(, $($args:tt)*)?) $(where { $($where_clause:tt)* })? => $body:expr
+	} => {
+		$(#[$meta])*
+		#[inline]
+		pub fn $fn_name$(<$($generics)*>)?(mut $self $(, $($args)*)?) -> Self $(where $($where_clause)*)? {
+			{ $body }
+		}
+	};
+
+	{
+		$(#[$meta:meta])*
+		move $fn_name:ident$([$($generics:tt)*])?($inner:ident $(, $($args:tt)*)?) $(where { $($where_clause:tt)* })? => $body:expr
+	} => {
+		$(#[$meta])*
+		#[inline]
+		pub fn $fn_name$(<$($generics)*>)?(mut self $(, $($args)*)?) -> Self $(where $($where_clause)*)? {
+			use $crate::chainer::{ ChainHalf as _, NonChainHalf as _ };
+
+			let $inner = self.into_nonchain();
+			{ $body }.into_chainer()
+		}
+	};
+
 	{
 		$(#[$meta:meta])*
 		unsafe self $fn_name:ident$([$($generics:tt)*])?($self:ident $(, $($args:tt)*)?) $(where { $($where_clause:tt)* })? => $body:expr
@@ -74,13 +123,12 @@ macro_rules! chain_fn {
 		pub unsafe fn $fn_name$(<$($generics)*>)?(mut $self $(, $($args)*)?) -> Self $(where $($where_clause)*)? {
 			{ $body }
 
-			// let it handle things like todo! macro etc
+			// shush warning for things like todo! macro etc
 			#[allow(unreachable_code)]
 			{ $self }
 		}
 	};
 
-	// unsafe
 	{
 		$(#[$meta:meta])*
 		unsafe $fn_name:ident$([$($generics:tt)*])?($inner:ident $(, $($args:tt)*)?) $(where { $($where_clause:tt)* })? => $body:expr
@@ -93,13 +141,12 @@ macro_rules! chain_fn {
 			let $inner = self.as_nonchain_mut();
 			{ $body }
 
-			// let it handle things like todo! macro etc
+			// shush warning for things like todo! macro etc
 			#[allow(unreachable_code)]
 			{ self }
 		}
 	};
 
-	// takes self
 	{
 		$(#[$meta:meta])*
 		self $fn_name:ident$([$($generics:tt)*])?($self:ident $(, $($args:tt)*)?) $(where { $($where_clause:tt)* })? => $body:expr
@@ -109,13 +156,12 @@ macro_rules! chain_fn {
 		pub fn $fn_name$(<$($generics)*>)?(mut $self $(, $($args)*)?) -> Self $(where $($where_clause)*)? {
 			{ $body }
 
-			// let it handle things like todo! macro etc
+			// shush warning for things like todo! macro etc
 			#[allow(unreachable_code)]
 			{ $self }
 		}
 	};
 
-	// regular
 	{
 		$(#[$meta:meta])*
 		$fn_name:ident$([$($generics:tt)*])?($inner:ident $(, $($args:tt)*)?) $(where { $($where_clause:tt)* })? => $body:expr
@@ -128,7 +174,7 @@ macro_rules! chain_fn {
 			let $inner = self.as_nonchain_mut();
 			{ $body }
 
-			// let it handle things like todo! macro etc
+			// shush warning for things like todo! macro etc
 			#[allow(unreachable_code)]
 			{ self }
 		}
