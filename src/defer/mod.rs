@@ -7,27 +7,37 @@ use std::thread::panicking;
 
 #[macro_export]
 macro_rules! defer {
-	{ $($defer:tt)* } => {
+	{ move in $($defer:tt)* } => {
 		let __defer = <() as $crate::defer::OnDrop>::on_drop((), move |()| { $($defer)* });
-	}
+	};
+
+	{ $($defer:tt)* } => {
+		let __defer = <() as $crate::defer::OnDrop>::on_drop((), |()| { $($defer)* });
+	};
 }
 pub use defer;
 
 #[macro_export]
 macro_rules! defer_success {
-	{ $($defer:tt)* } => {
-
+	{ move in $($defer:tt)* } => {
 		let __defer = <() as $crate::defer::OnDrop>::on_success_drop((), move |()| { $($defer)* });
-	}
+	};
+
+	{ $($defer:tt)* } => {
+		let __defer = <() as $crate::defer::OnDrop>::on_success_drop((), |()| { $($defer)* });
+	};
 }
 pub use defer_success;
 
 #[macro_export]
 macro_rules! defer_unwind {
-	{ $($defer:tt)* } => {
-
+	{ move in $($defer:tt)* } => {
 		let __defer = <() as $crate::defer::OnDrop>::on_unwind_drop((), move |()| { $($defer)* });
-	}
+	};
+
+	{ $($defer:tt)* } => {
+		let __defer = <() as $crate::defer::OnDrop>::on_unwind_drop((), |()| { $($defer)* });
+	};
 }
 pub use defer_unwind;
 
@@ -204,7 +214,6 @@ where
 	}
 }
 
-
 pub trait OnDrop: Sized {
 	#[inline]
 	fn on_drop<F>(self, f: F) -> DeferAlways<Self, F>
@@ -232,3 +241,85 @@ pub trait OnDrop: Sized {
 }
 
 impl<T> OnDrop for T {}
+
+#[cfg(test)]
+mod tests {
+	use super::*;
+	use std::cell::Cell;
+	use std::panic::{ AssertUnwindSafe, catch_unwind };
+
+	#[test]
+	fn defer_always_success() {
+		let cell = Cell::new("");
+
+		{
+			defer!(cell.set("glory is cute"));
+			assert_eq!(cell.get(), "");
+		}
+
+		assert_eq!(cell.get(), "glory is cute");
+	}
+
+	#[test]
+	fn defer_always_unwind() {
+		let cell = Cell::new("");
+
+		let _ = catch_unwind(AssertUnwindSafe(|| {
+			defer!(cell.set("glory is cute"));
+			assert_eq!(cell.get(), "");
+			panic!("panick a");
+		}));
+
+		assert_eq!(cell.get(), "glory is cute");
+	}
+
+	#[test]
+	fn defer_success_success() {
+		let cell = Cell::new("");
+
+		{
+			defer_success!(cell.set("glory is cute"));
+			assert_eq!(cell.get(), "");
+		}
+
+		assert_eq!(cell.get(), "glory is cute");
+	}
+
+	#[test]
+	fn defer_success_unwind() {
+		let cell = Cell::new("");
+
+		let _ = catch_unwind(AssertUnwindSafe(|| {
+			defer_success!(cell.set("glory is cute"));
+			assert_eq!(cell.get(), "");
+			panic!("panick a");
+		}));
+
+		assert_eq!(cell.get(), "");
+	}
+
+	#[test]
+	fn defer_unwind_success() {
+		let cell = Cell::new("");
+
+		{
+			defer_unwind!(cell.set("glory is cute"));
+			assert_eq!(cell.get(), "");
+		}
+
+		assert_eq!(cell.get(), "");
+	}
+
+	#[test]
+	fn defer_unwind_unwind() {
+		let cell = Cell::new("");
+
+		let _ = catch_unwind(AssertUnwindSafe(|| {
+			defer_unwind!(cell.set("glory is cute"));
+			assert_eq!(cell.get(), "");
+			panic!("panick a");
+		}));
+
+		assert_eq!(cell.get(), "glory is cute");
+	}
+}
