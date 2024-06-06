@@ -33,6 +33,18 @@ In addition to the features listed below, there exists a feature `all` that will
 - **`to-maybeuninit`** - Extension trait allowing converting from references to `MaybeUninit` references
 - **`z85`** - A fast (faster than `z85` crate[^2]) implementation of [ZeroMQ]'s [z85] format, a format to represent binary data as printable ASCII text. Think base64, but more efficient in encoded size. This implementation is not fully to spec, as it handles padding text to the correct length where the spec says the application code must handle it instead.
 
+### Addon features
+
+These features enable integrations between `wiwi` and 3rd-party crates for the features you have enabled, where available. If no integrations are available for the features of wiwi that are enabled, addon features will silently do nothing.
+
+- **`hashbrown`**
+- **`image`**
+- **`serde-json`**
+
+## Platform support
+
+This package will only _officially_ support macOS and Linux. Windows support will only be on best effort basis. Still do submit issues, I just can't guarantee I can fix them etc (but you can PR me, if you'd like!).
+
 ### Unstable features
 
 **Unstable features are NOT covered by semver.** These features may change in breaking ways in non-breaking version bumps, and might even be incomplete. I'm doing this so I don't have to mess with commenting out features and stuff whenever I have something else that I'm publishing but still have unfinished work somewhere else >.>
@@ -42,18 +54,6 @@ Unstable features have `-unstable` appended to their name. For example, if I hav
 Because unstable features may break whenever, if you use them, you may want to pin the version of `wiwi` to an exact version (ie. use the `=` semver operator).
 
 **NOTE:** Just because a feature is _not_ "unstable", doesn't mean it won't break, _ever_. It can break, but of course those breakages will adhere to semver rules, as expected. Just don't be surprised when bumping a patch version causes an unstable feature to break everything. :p
-
-### Addon features
-
-These features enable things specific to 3rd-party crates and features you have enabled. If you enable one of these, and it is used by none of the features you've enabled, it'll silently do nothing.
-
-- **`hashbrown`**
-- **`image`**
-- **`serde-json`**
-
-## Platform support
-
-This package will only _officially_ support macOS and Linux. Windows support will only be on best effort basis. Still do submit issues, I just can't guarantee I can fix them etc (but you can PR me, if you'd like!).
 
 [zeromq]: https://zeromq.org
 [z85]: https://rfc.zeromq.org/spec/32
