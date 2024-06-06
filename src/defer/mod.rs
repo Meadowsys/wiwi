@@ -7,7 +7,7 @@ use std::thread::panicking;
 #[macro_export]
 macro_rules! defer {
 	{ $($defer:tt)* } => {
-		let __defer = $crate::defer::run_on_drop(move || { $($defer)* });
+		let __defer = <() as $crate::defer::OnDrop>::on_drop((), move |()| { $($defer)* });
 	}
 }
 pub use defer;
@@ -15,7 +15,8 @@ pub use defer;
 #[macro_export]
 macro_rules! defer_success {
 	{ $($defer:tt)* } => {
-		let __defer = $crate::defer::run_on_success_drop(move || { $($defer)* });
+
+		let __defer = <() as $crate::defer::OnDrop>::on_success_drop((), move |()| { $($defer)* });
 	}
 }
 pub use defer_success;
@@ -23,12 +24,13 @@ pub use defer_success;
 #[macro_export]
 macro_rules! defer_unwind {
 	{ $($defer:tt)* } => {
-		let __defer = $crate::defer::run_on_unwinding_drop(move || { $($defer)* });
+
+		let __defer = <() as $crate::defer::OnDrop>::on_unwind_drop((), move |()| { $($defer)* });
 	}
 }
 pub use defer_unwind;
 
-#[must_use = "the deferred code would run immediately because rust drops the value immediately (if you only want to defer running some code, consider `defer!`, `defer_success!`, or `defer_unwind!`)"]
+#[must_use = "the code intended to be deferred would run immediately because rust drops the value immediately (if you only want to defer running some code, consider `defer!` or its success/unwind variants)"]
 pub struct Defer<T, W: when::When, F = fn(T)>
 where
 	F: FnOnce(T)
@@ -45,8 +47,11 @@ mod when {
 		fn run() -> bool;
 	}
 
+	#[derive(Debug)]
 	pub struct Always;
+	#[derive(Debug)]
 	pub struct Success;
+	#[derive(Debug)]
 	pub struct Unwind;
 
 	impl When for Always {
@@ -70,15 +75,7 @@ pub type DeferSuccess<T, F> = Defer<T, when::Success, F>;
 pub type DeferUnwind<T, F> = Defer<T, when::Unwind, F>;
 
 #[inline]
-fn _mk_defer<W, F>(f: F) -> Defer<(), W, impl FnOnce(())>
-where
-	W: when::When,
-	F: FnOnce()
-{
-	_mk_defer_with((), move |_| f())
-}
-
-fn _mk_defer_with<T, W, F>(item: T, f: F) -> Defer<T, W, F>
+fn _new_with<T, W, F>(item: T, f: F) -> Defer<T, W, F>
 where
 	W: when::When,
 	F: FnOnce(T)
@@ -89,51 +86,27 @@ where
 }
 
 #[inline]
-pub fn run_on_drop<F>(f: F) -> DeferAlways<(), impl FnOnce(())>
-where
-	F: FnOnce()
-{
-	_mk_defer(f)
-}
-
-#[inline]
-pub fn run_on_drop_with<T, F>(item: T, f: F) -> DeferAlways<T, F>
+pub fn defer_with<T, F>(item: T, f: F) -> DeferAlways<T, F>
 where
 	F: FnOnce(T)
 {
-	_mk_defer_with(item, f)
+	_new_with(item, f)
 }
 
 #[inline]
-pub fn run_on_success_drop<F>(f: F) -> DeferSuccess<(), impl FnOnce(())>
-where
-	F: FnOnce()
-{
-	_mk_defer(f)
-}
-
-#[inline]
-pub fn run_on_success_drop_with<T, F>(item: T, f: F) -> DeferSuccess<T, F>
+pub fn defer_on_success_with<T, F>(item: T, f: F) -> DeferSuccess<T, F>
 where
 	F: FnOnce(T)
 {
-	_mk_defer_with(item, f)
+	_new_with(item, f)
 }
 
 #[inline]
-pub fn run_on_unwinding_drop<F>(f: F) -> DeferUnwind<(), impl FnOnce(())>
-where
-	F: FnOnce()
-{
-	_mk_defer(f)
-}
-
-#[inline]
-pub fn run_on_unwinding_drop_with<T, F>(item: T, f: F) -> DeferUnwind<T, F>
+pub fn defer_on_unwind_with<T, F>(item: T, f: F) -> DeferUnwind<T, F>
 where
 	F: FnOnce(T)
 {
-	_mk_defer_with(item, f)
+	_new_with(item, f)
 }
 
 impl<T, W, F> Deref for Defer<T, W, F>
@@ -142,6 +115,8 @@ where
 	F: FnOnce(T)
 {
 	type Target = T;
+
+	#[inline]
 	fn deref(&self) -> &T {
 		&self.item
 	}
@@ -152,6 +127,7 @@ where
 	W: when::When,
 	F: FnOnce(T)
 {
+	#[inline]
 	fn deref_mut(&mut self) -> &mut T {
 		&mut self.item
 	}
@@ -179,7 +155,7 @@ pub trait OnDrop: Sized {
 	where
 		F: FnOnce(Self)
 	{
-		run_on_drop_with(self, f)
+		_new_with(self, f)
 	}
 
 	#[inline]
@@ -187,39 +163,15 @@ pub trait OnDrop: Sized {
 	where
 		F: FnOnce(Self)
 	{
-		run_on_success_drop_with(self, f)
+		_new_with(self, f)
 	}
 
 	#[inline]
-	fn on_unwinding_drop<F>(self, f: F) -> DeferUnwind<Self, F>
+	fn on_unwind_drop<F>(self, f: F) -> DeferUnwind<Self, F>
 	where
 		F: FnOnce(Self)
 	{
-		run_on_unwinding_drop_with(self, f)
-	}
-
-	#[inline]
-	fn defer<F>(self, f: F) -> DeferAlways<Self, F>
-	where
-		F: FnOnce(Self)
-	{
-		run_on_drop_with(self, f)
-	}
-
-	#[inline]
-	fn defer_success<F>(self, f: F) -> DeferSuccess<Self, F>
-	where
-		F: FnOnce(Self)
-	{
-		run_on_success_drop_with(self, f)
-	}
-
-	#[inline]
-	fn defer_unwind<F>(self, f: F) -> DeferUnwind<Self, F>
-	where
-		F: FnOnce(Self)
-	{
-		run_on_unwinding_drop_with(self, f)
+		_new_with(self, f)
 	}
 }
 
