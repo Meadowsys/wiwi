@@ -16,11 +16,11 @@ jobs:
 
     - name: install cargo-hack
       run: cargo install cargo-hack --verbose
-      env:
-        # try speed it up a little bit
-        # cargo-hack doesn't need to be omega performance,
-        # compile time matters more here
-        RUSTFLAGS: -Copt-level=1 -Clto=false -Ccodegen-units=256
+      # env:
+      #   # try speed it up a little bit
+      #   # cargo-hack doesn't need to be omega performance,
+      #   # compile time matters more here
+      #   RUSTFLAGS: -Copt-level=1 -Clto=false -Ccodegen-units=256
 
     - name: check features individually
       run: cargo hack check --verbose --each-feature
