@@ -31,14 +31,30 @@ macro_rules! chainer {
 		}
 
 		impl$(<$($generics),*>)? ::std::convert::From<$nonchain> for $chain$(<$($generics),*>)? {
+			#[inline]
 			fn from(nonchain: $nonchain) -> Self {
 				Self { inner: nonchain }
 			}
 		}
 
 		impl$(<$($generics),*>)? ::std::convert::From<$chain$(<$($generics),*>)?> for $nonchain {
+			#[inline]
 			fn from(chainer: $chain$(<$($generics),*>)?) -> Self {
 				chainer.inner
+			}
+		}
+
+		impl$(<$($generics),*>)? ::std::convert::AsRef<$nonchain> for $chain$(<$($generics),*>)? {
+			#[inline]
+			fn as_ref(&self) -> &$nonchain {
+				&self.inner
+			}
+		}
+
+		impl$(<$($generics),*>)? ::std::convert::AsMut<$nonchain> for $chain$(<$($generics),*>)? {
+			#[inline]
+			fn as_mut(&mut self) -> &mut $nonchain {
+				&mut self.inner
 			}
 		}
 	}
