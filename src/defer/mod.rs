@@ -1,3 +1,4 @@
+use std::fmt::{ self, Debug, Display };
 use std::marker::PhantomData;
 use std::mem::ManuallyDrop;
 use std::ops::{ Deref, DerefMut };
@@ -35,7 +36,7 @@ pub struct Defer<T, W: when::When, F = fn(T)>
 where
 	F: FnOnce(T)
 {
-	item: ManuallyDrop<T>,
+	value: ManuallyDrop<T>,
 	f: ManuallyDrop<F>,
 	_when: PhantomData<W>
 }
@@ -43,8 +44,9 @@ where
 mod when {
 	use super::*;
 
-	pub trait When {
+	pub trait When: Debug {
 		fn run() -> bool;
+		fn construct_for_debug() -> Self;
 	}
 
 	#[derive(Debug)]
@@ -57,16 +59,22 @@ mod when {
 	impl When for Always {
 		#[inline]
 		fn run() -> bool { true }
+		#[inline]
+		fn construct_for_debug() -> Self { Self }
 	}
 
 	impl When for Success {
 		#[inline]
 		fn run() -> bool { !panicking() }
+		#[inline]
+		fn construct_for_debug() -> Self { Self }
 	}
 
 	impl When for Unwind {
 		#[inline]
 		fn run() -> bool { panicking() }
+		#[inline]
+		fn construct_for_debug() -> Self { Self }
 	}
 }
 
@@ -75,38 +83,38 @@ pub type DeferSuccess<T, F> = Defer<T, when::Success, F>;
 pub type DeferUnwind<T, F> = Defer<T, when::Unwind, F>;
 
 #[inline]
-fn _new_with<T, W, F>(item: T, f: F) -> Defer<T, W, F>
+fn _new_with<T, W, F>(value: T, f: F) -> Defer<T, W, F>
 where
 	W: when::When,
 	F: FnOnce(T)
 {
-	let item = ManuallyDrop::new(item);
+	let value = ManuallyDrop::new(value);
 	let f = ManuallyDrop::new(f);
-	Defer { item, f, _when: PhantomData }
+	Defer { value, f, _when: PhantomData }
 }
 
 #[inline]
-pub fn defer_with<T, F>(item: T, f: F) -> DeferAlways<T, F>
+pub fn defer_with<T, F>(value: T, f: F) -> DeferAlways<T, F>
 where
 	F: FnOnce(T)
 {
-	_new_with(item, f)
+	_new_with(value, f)
 }
 
 #[inline]
-pub fn defer_on_success_with<T, F>(item: T, f: F) -> DeferSuccess<T, F>
+pub fn defer_on_success_with<T, F>(value: T, f: F) -> DeferSuccess<T, F>
 where
 	F: FnOnce(T)
 {
-	_new_with(item, f)
+	_new_with(value, f)
 }
 
 #[inline]
-pub fn defer_on_unwind_with<T, F>(item: T, f: F) -> DeferUnwind<T, F>
+pub fn defer_on_unwind_with<T, F>(value: T, f: F) -> DeferUnwind<T, F>
 where
 	F: FnOnce(T)
 {
-	_new_with(item, f)
+	_new_with(value, f)
 }
 
 impl<T, W, F> Deref for Defer<T, W, F>
@@ -118,7 +126,7 @@ where
 
 	#[inline]
 	fn deref(&self) -> &T {
-		&self.item
+		&self.value
 	}
 }
 
@@ -129,7 +137,7 @@ where
 {
 	#[inline]
 	fn deref_mut(&mut self) -> &mut T {
-		&mut self.item
+		&mut self.value
 	}
 }
 
@@ -140,14 +148,62 @@ where
 {
 	fn drop(&mut self) {
 		unsafe {
-			let item = ptr::read(&*self.item);
+			let value = ptr::read(&*self.value);
 			let f = ptr::read(&*self.f);
 
 			if !W::run() { return }
-			f(item);
+			f(value);
 		}
 	}
 }
+
+impl<T, W, F> Debug for Defer<T, W, F>
+where
+	T: Debug,
+	W: when::When,
+	F: FnOnce(T)
+{
+	fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
+		f.debug_struct("Defer")
+			.field("value", &self.value)
+			.field("when", &W::construct_for_debug())
+			.finish_non_exhaustive()
+	}
+}
+
+impl<T, W, F> Display for Defer<T, W, F>
+where
+	T: Display,
+	W: when::When,
+	F: FnOnce(T)
+{
+	fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
+		self.value.fmt(f)
+	}
+}
+
+impl<T, W, F, U> AsRef<U> for Defer<T, W, F>
+where
+	T: AsRef<U>,
+	W: when::When,
+	F: FnOnce(T)
+{
+	fn as_ref(&self) -> &U {
+		self.value.as_ref()
+	}
+}
+
+impl<T, W, F, U> AsMut<U> for Defer<T, W, F>
+where
+	T: AsMut<U>,
+	W: when::When,
+	F: FnOnce(T)
+{
+	fn as_mut(&mut self) -> &mut U {
+		self.value.as_mut()
+	}
+}
+
 
 pub trait OnDrop: Sized {
 	#[inline]
