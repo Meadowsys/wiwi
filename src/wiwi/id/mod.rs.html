@@ -251,6 +251,8 @@
 <a href="#251" id="251">251</a>
 <a href="#252" id="252">252</a>
 <a href="#253" id="253">253</a>
+<a href="#254" id="254">254</a>
+<a href="#255" id="255">255</a>
 </pre></div><pre class="rust"><code><span class="kw">use </span>rand::{ Rng, rngs::ThreadRng, thread_rng };
 <span class="kw">use </span>std::time::{ SystemTime, UNIX_EPOCH };
 <span class="kw">use </span>std::num::NonZeroU64;
@@ -275,10 +277,12 @@
 </span><span class="kw">const </span>TOP_BIT: u64 = <span class="number">1 </span>&lt;&lt; (u64::BITS - <span class="number">1</span>);
 
 <span class="doccomment">/// counting from the most significant to least significant bit, bits 1 to 64:
+///
 /// - (1-46) 46 bits for timestamp (this is &gt;2000years with millisecond precision,
 ///   up to year 4199)
 /// - (47-60) 14 bits for increment (this is max 16384 IDs/ms, or about 16M IDs/s)
 /// - (61-64) last 4 bits for randomness (so IDs within one ms aren't just increments)
+///
 /// IDs generated from one single factory are guaranteed to be unique and
 /// monotonically increase.
 </span><span class="kw">pub struct </span>IDGenerator {

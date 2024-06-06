@@ -1,0 +1,1 @@
+window.SIDEBAR_ITEMS = {"fn":["defer_on_success_with","defer_on_unwind_with","defer_with"],"macro":["defer","defer_success","defer_unwind"],"struct":["Defer"],"trait":["OnDrop"],"type":["DeferAlways","DeferSuccess","DeferUnwind"]};
