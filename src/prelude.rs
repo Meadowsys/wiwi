@@ -56,7 +56,7 @@ pub use crate::debounce::{
 };
 
 #[cfg(feature = "h")]
-pub use crate::h::h;
+pub use crate::h::{ h, H };
 
 #[cfg(feature = "hex")]
 pub use crate::hex::{
