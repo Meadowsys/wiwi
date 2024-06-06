@@ -57,17 +57,22 @@ impl<T> VecChain<T> {
 	}
 
 	chain_fn! {
-		move self as_chunks[const N: usize, CB](self, cb: CB) where {
+		as_chunks[const N: usize, CB](inner, cb: CB) where {
 			CB: FnOnce(&[[T; N]], &[T])
 		} => unsafe {
-			let len = self.inner.len();
-			let remainder = len % N;
-			let ptr = self.inner.as_ptr().add(len - remainder);
-			let partial_chunk = slice::from_raw_parts(ptr, remainder);
+			let len = inner.len();
+			let ptr = inner.as_ptr();
 
-			// SAFETY: as_chunks_unchecked impl just uses int (round down) division,
-			// so this is safe.
-			self.as_chunks_unchecked(|chunks| cb(chunks, partial_chunk))
+			let full = len / N;
+			let partial = len % N;
+
+			let full_ptr = ptr as *const [T; N];
+			let partial_ptr = ptr.add(len - partial);
+
+			let full_chunk = slice::from_raw_parts(full_ptr, full);
+			let partial_chunk = slice::from_raw_parts(partial_ptr, partial);
+
+			cb(full_chunk, partial_chunk);
 		}
 	}
 
@@ -75,12 +80,6 @@ impl<T> VecChain<T> {
 		unsafe as_chunks_unchecked[const N: usize, CB](inner, cb: CB) where {
 			CB: FnOnce(&[[T; N]])
 		} => {
-			// SAFETY: the non-unsafe version of this function is relying on this
-			// being int (round down) division, rather than exact division (like
-			// std::intrinsics::exact_div). Do not change this without changing
-			// those uses also. We also are not promising this behaviour in the
-			// public API
-
 			let ptr = inner.as_ptr() as *const [T; N];
 			let chunks = inner.len() / N;
 
