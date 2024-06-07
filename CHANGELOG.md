@@ -2,6 +2,13 @@
 
 Hallo!
 
+## unreleased
+
+- feature `int`:
+  - renamed from `bigint` (still unstable)
+- feature `lazy-wrap`:
+  - added some documentation on the trait impl bounds of `Send`, `Sync`, `UnwindSafe`, `RefUnwindSafe`, and `Unpin`
+
 ## v0.7.0
 
 - docs for the latest commits are now being published to [wiwi.kiwin.gay](https://wiwi.kiwin.gay)! (`all-unstable` is enabled for it)
