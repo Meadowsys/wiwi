@@ -79,7 +79,7 @@ Hallo!
   - fixed link in module doc not actually hyperlinking
   - check for decode overflow[^1]
 
-## v0.5.3 (yanked[^1][^2])
+## v0.5.3 (yanked[^2][^1])
 
 <!-- TODO: review the commits / write more detailed potentially -->
 
@@ -89,7 +89,7 @@ Hallo!
 - feature `z85`:
   - tweaked some docs
 
-## v0.5.2 (yanked[^1][^2])
+## v0.5.2 (yanked[^2][^1])
 
 <!-- TODO: review the commits / write more detailed potentially -->
 
@@ -98,14 +98,14 @@ Hallo!
   - added neon implementation for `aarch64` (automatically enabled on `aarch64` targets using runtime feature detection)
   - fixed uppercase hex unintentionally outputting lowercase
 
-## v0.5.1 (yanked[^1][^2])
+## v0.5.1 (yanked[^2][^1])
 
 <!-- TODO: review the commits / write more detailed potentially -->
 
 - feature `hex`:
   - fixed missing `thiserror` dependency
 
-## v0.5.0 (yanked[^1][^2])
+## v0.5.0 (yanked[^2][^1])
 
 <!-- TODO: review the commits / write more detailed potentially -->
 
@@ -115,7 +115,7 @@ Hallo!
 - feature `z85`:
   - added footnote about its performance in readme
 
-## v0.4.1 (yanked[^1][^2])
+## v0.4.1 (yanked[^2][^1])
 
 <!-- TODO: review the commits / write more detailed potentially -->
 
@@ -124,7 +124,7 @@ Hallo!
   - improved performance
   - updated module doc
 
-## v0.4.0 (yanked[^1][^2])
+## v0.4.0 (yanked[^2][^1])
 
 <!-- TODO: review the commits / write more detailed potentially -->
 
