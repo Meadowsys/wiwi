@@ -18,6 +18,7 @@ syn = "2.0.66"
 [features]
 default = ["syn/full"]
 
+int = []
 memory-usage = []
 
 [package.metadata.docs.rs]

@@ -175,7 +175,9 @@ hex = [
 id-unstable = [
 	"dep:rand"
 ]
-int-unstable = []
+int-unstable = [
+	"wiwiwiwiwi/int"
+]
 iter-unstable = []
 lazy-wrap = [
 	"dep:parking_lot"

@@ -178,3 +178,6 @@ ideally:
 - and for the ones that can be evenly put into even amount of larger-than-u8 types (eg. u48, 3xu16), offer structs with its smaller align form (eg. 6xu8)
 - combo types..? like, u7u9 or so, that can pack the two into only two bytes etc
 */
+
+mod ints;
+pub use ints::test;
