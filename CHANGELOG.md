@@ -4,6 +4,77 @@ Hallo!
 
 ## unreleased
 
+- docs for the latest commits are now being published to [wiwi.kiwin.gay](https://wiwi.kiwin.gay)! (`all-unstable` is enabled for it)
+- created a proc macro crate, so we can have proc macros now!
+- update categories and keywords
+  - keywords: changed to `fundamental`, `general`, `general-purpose`, `z85`
+  - categories: `rust-patterns`
+- update the fancy, over the top crate docs
+- removed feature configuration features (`debounce-dyn-fn`)
+- prelude:
+  - added `h::H`
+- feature `bigint`:
+  - created the feature (unstable)
+- feature `bitstream`:
+  - created the feature (unstable)
+- feature `chainer`:
+  - ... fresh start
+    - the old one is still available under `wiwi::chainer`
+    - the new one is temporarily available under `wiwi::chainer::new` and will be exported under `wiwi::chainer` once we feel it's ready to replace the existing one
+      - we have features depending on chainer too, so gotta keep the old one around for now
+    - chain traits `ChainHalf` and `NonChainHalf`
+      - they have many trait bounds and require each other, ensuring a "base level" of ability to convert between chainer/non for all chainers
+      - all the traits and requirements (and even the struct definition itself) is handled in the macro, so very little boilerplate required
+    - chains are now declared via macro, saving considerable boilerplate
+    - chained functions are now declared via macro, also saving lots of boilerplate
+    - maybe about like, 98% of the old `VecChain` has been reimplemented in the new `VecChain`, no other chainers available just yet
+- feature `debounce`:
+  - removed `debounce-dyn-fn`, it will now always store the inner function in a dyn box
+    - reasoning: a debounced function will inherently not run in a hot loop, since its literally a delaying mechanism, so the overhead of dyn box should be unnoticeable. The heap allocation indirection / dyn vtable indirection is only really noticeable when used in hot loops
+- feature `defer`:
+  - created the feature (unstable)
+- feature `h`:
+  - added `H`
+  - h
+- feature `id`:
+  - `GeneratedID::to_alphanumeric_string` and `GeneratedID::from_alphanumeric_string`, encoding to/from a custom string representation that's `0-9A-Za-z` (base 62 I suppose)
+  - make `IDGenerator` threadsafe (by not holding onto an instance of `ThreadRng`)
+- feature `iter`:
+  - updated docs
+  - added many tests
+  - changed `Iter::size_hint`
+    - it now returns a struct containing upper and lower bound, both which may be present or not
+    - bounds can either be estimates or hard bounds
+    - estimates are estimates, same as std's size_hint in terms of trustworthiness
+    - hard bounds are for when you're strictly sure its going to be that way, consumers of the function are allowed to rely on this for safety
+      - because of that, hard bounds can only be constructed through `unsafe` interfaces
+  - assert that `Iter` is object safe
+  - impl `IntoIter` for `Vec` with a custom `Iter` type
+  - renamed a few interfaces
+    - `AsWiwiIter::as_wiwi_iter` -> `AsWiwiIter::borrow_std_as_wiwi_iter`
+    - `AsStdIterator::as_std_iterator` -> `AsStdIterator::borrow_wiwi_as_std_iterator`
+    - `IntoWiwiIter::into_wiwi_iter` -> `IntoWiwiIter::convert_std_into_wiwi_iter`
+    - `IntoStdIterator::into_std_iterator` -> `IntoStdIterator::convert_wiwi_into_std_iterator`
+    - `IntoIter::into_iter` -> `IntoIter::into_wiwi_iter` (unfortunate)
+  - added `Iter::for_each`, `Iter::map`
+  - `RepeatPerItem<I, T>` -> `RepeatPerItem<T, I>`
+  - attempted to add a "peekable here" type of API and trait, but it's not possible without trait specialisation I think
+  - tuple impls (`IntoIter` is implemented for tuples with up to 32 elements, where all its elements also implement `IntoIter`)
+  - `DoubleEndedIter`
+- feature `memory-usage`:
+  - created the feature (unstable)
+- feature `minesweeper`:
+  - created the feature (unstable)
+- feature `nominal`:
+  - copied from [wiwipaccer](https://github.com/meadowsys/wiwipaccer) (but with _many_ modifications, base idea is the same though)
+- feature `serialiser`:
+  - at some point we yeeted everything to start over, not sure when, but it's (mostly) yeeted now
+- feature `sudoku`:
+  - functions to brute force generate valid solutions
+    - not feasible at all lol (maybe in 200 years when we have quantum computers or something)
+- feature `superstring`:
+  - removed the feature
+
 ## v0.6.1
 
 <!-- TODO: review the commits / write more detailed potentially -->
@@ -65,7 +136,7 @@ Hallo!
 - feature `superstring`:
   - created the feature (unstable)
 - feature `to-maybeuninit`:
-  - created the feature (unstable)
+  - created the feature
 - feature `z85`:
   - updated docs
 
@@ -153,6 +224,7 @@ Hallo!
   - added module doc
 - feature `h`:
   - added module doc
+  - h
 - feature `lazy-wrap`:
   - added module doc
 - feature `clock-timer-2`:
