@@ -570,13 +570,47 @@ impl<T> VecChain<T> {
 		pop_uninit(inner, out: &mut MaybeUninit<Option<T>>) => out.write(inner.pop())
 	}
 
-	// TODO: pop_if
+	chain_fn! {
+		pop_if[F](inner, f: F, out: &mut Option<T>) where {
+			F: FnOnce(&T) -> bool
+		} => *out = {
+			match inner.last() {
+				Some(v) if f(v) => { inner.pop() }
+				_ => None
+			}
+		}
+	}
+
+	chain_fn! {
+		pop_if_mut[F](inner, f: F, out: &mut Option<T>) where {
+			F: FnOnce(&mut T) -> bool
+		} => *out = {
+			match inner.last_mut() {
+				Some(v) => if f(v) { inner.pop() } else { None }
+				_ => None
+			}
+		}
+	}
 
 	chain_fn! {
 		push(inner, value: T) => inner.push(value)
 	}
 
-	// TODO: push_within_capacity
+	chain_fn! {
+		// TODO: use std when stabilised
+		push_within_capacity(inner, item: T, out: &mut Result<(), T>) => *out = {
+			if inner.len() == inner.capacity() {
+				unsafe {
+					let len = inner.len();
+					inner.as_mut_ptr().add(len).write(item);
+					inner.set_len(len + 1);
+					Ok(())
+				}
+			} else {
+				Err(item)
+			}
+		}
+	}
 
 	chain_fn! {
 		remove(inner, index: usize, out: &mut T) => *out = inner.remove(index)
