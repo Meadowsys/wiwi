@@ -14,6 +14,20 @@ chainer! {
 }
 
 impl<T> VecChain<T> {
+	/// Creates a new vector chain without allocating any capacity
+	///
+	/// It will not allocate until it needs to, either by pushing an element,
+	/// calling the [`reserve`](Self::reserve) function to explicitly request
+	/// allocation, or something else.
+	///
+	/// # Examples
+	///
+	/// ```
+	/// # use wiwi::chainer::new::VecChain;
+	/// // a chain thingie! yay!...
+	/// let chain = VecChain::new();
+	/// # let chain: VecChain<String> = chain;
+	/// ```
 	#[inline]
 	pub fn new() -> Self {
 		Vec::new().into()
@@ -24,6 +38,69 @@ impl<T> VecChain<T> {
 		Vec::from_raw_parts(ptr, length, capacity).into()
 	}
 
+	/// Creates a new vector, and preallocate some memory
+	///
+	/// The amount of memory allocated will be _at least_ enough to hold `capacity`
+	/// elements without reallocating. No allocation will happen if the provided
+	/// capacity is zero.
+	///
+	/// There is NO GUARANTEE that this function will allocate an exact amount
+	/// of memory. If knowing the actual allocated capacity is important, always
+	/// do so using the [`capacity`](Self::capacity) function.
+	///
+	/// If the element type (ie. `T`) is a ZST, the vector chainer will never
+	/// allocate, and will always have a capacity of `usize::MAX` bytes.
+	///
+	/// # Panics
+	///
+	/// Panics if the new capacity exceeds `isize::MAX` _bytes_ (not elements,
+	/// bytes). This is the same behaviour of [`Vec::with_capacity`].
+	///
+	/// # Examples
+	///
+	/// ```
+	/// # use wiwi::chainer::new::VecChain;
+	/// # let mut len = 0;
+	/// # let mut initial_capacity = 0;
+	/// # let mut capacity = 0;
+	/// let chain = VecChain::with_capacity(10)
+	///    // chaining methods to get the len and capacity of the vec chain
+	///    .len(&mut len)
+	///    .capacity(&mut initial_capacity);
+	///
+	/// // The vector chain contains zero elements, and at least room for 10 more
+	/// assert_eq!(len, 0);
+	/// assert!(initial_capacity >= 10);
+	///
+	/// // These are all done without reallocating
+	/// let chain = (0..10)
+	///    .fold(chain, |chain, i| chain.push(i))
+	///    .len(&mut len)
+	///    .capacity(&mut capacity);
+	///
+	/// assert_eq!(len, 10);
+	/// assert_eq!(capacity, initial_capacity);
+	///
+	/// // Now however, pushing another element can make the vector reallocate
+	/// let chain = chain
+	///    .push(11)
+	///    .len(&mut len)
+	///    .capacity(&mut capacity);
+	///
+	/// assert_eq!(len, 11);
+	/// assert!(capacity >= 11);
+	///
+	/// # let mut capacity1 = 0;
+	/// # let mut capacity2 = 0;
+	/// // ZSTs never allocate and always have a capacity of `usize::MAX`
+	/// let chain1 = VecChain::<()>::new()
+	///    .capacity(&mut capacity1);
+	/// let chain2 = VecChain::<()>::with_capacity(10)
+	///    .capacity(&mut capacity2);
+	///
+	/// assert_eq!(capacity1, usize::MAX);
+	/// assert_eq!(capacity2, usize::MAX);
+	/// ```
 	#[inline]
 	pub fn with_capacity(capacity: usize) -> Self {
 		Vec::with_capacity(capacity).into()
@@ -378,10 +455,50 @@ impl<T> VecChain<T> {
 	}
 
 	chain_fn! {
+		/// Writes `true` into the output if the vector contains no elements, and
+		/// false otherwise
+		///
+		/// # Examples
+		///
+		/// ```
+		/// # use wiwi::chainer::new::VecChain;
+		/// # let mut before = false;
+		/// # let mut after = false;
+		/// let chain = VecChain::new()
+		///    .is_empty(&mut before)
+		///    .push(1)
+		///    .is_empty(&mut after);
+		///
+		/// assert!(before);
+		/// assert!(!after);
+		/// ```
 		is_empty(inner, out: &mut bool) => *out = inner.is_empty()
 	}
 
 	chain_fn! {
+		/// Writes `true` into the output if the vector contains no elements, and
+		/// false otherwise
+		///
+		//  TODO: eventually some kind of "see module documentation for info on uninit apis"
+		///
+		/// # Examples
+		///
+		/// ```
+		/// # use std::mem::MaybeUninit;
+		/// # use wiwi::chainer::VecChain;
+		/// # let mut before = MaybeUninit::uninit();
+		/// # let mut after = MaybeUninit::uninit();
+		/// let chain = VecChain::new()
+		///    .is_empty_uninit(&mut before)
+		///    .push(1)
+		///    .is_empty_uninit(&mut after);
+		///
+		/// let before = unsafe { before.assume_init() };
+		/// let after = unsafe { after.assume_init() };
+		///
+		/// assert!(before);
+		/// assert!(!after);
+		/// ```
 		is_empty_uninit(inner, out: &mut MaybeUninit<bool>) => out.write(inner.is_empty())
 	}
 
@@ -410,10 +527,38 @@ impl<T> VecChain<T> {
 	}
 
 	chain_fn! {
+		/// Writes the number of elements in the vector (the length) into the output
+		///
+		/// # Examples
+		///
+		/// ```
+		/// # use wiwi::chainer::new::VecChain;
+		/// # let mut len = 0;
+		/// let chain = VecChain::new()
+		///    .extend_from_slice(&[1, 2, 3, 4, 5])
+		///    .len(&mut len);
+		///
+		/// assert_eq!(len, 5);
+		/// ```
 		len(inner, out: &mut usize) => *out = inner.len()
 	}
 
 	chain_fn! {
+		/// Writes the number of elements in the vector (the length) into the output
+		///
+		/// # Examples
+		///
+		/// ```
+		/// # use std::mem::MaybeUninit;
+		/// # use wiwi::chainer::new::VecChain;
+		/// # let mut len = MaybeUninit::uninit();
+		/// let chain = VecChain::new()
+		///    .extend_from_slice(&[1, 2, 3, 4, 5])
+		///    .len_uninit(&mut len); // writes to `len`
+		///
+		/// let len = unsafe { len.assume_init() };
+		/// assert_eq!(len, 5);
+		/// ```
 		len_uninit(inner, out: &mut MaybeUninit<usize>) => out.write(inner.len())
 	}
 
@@ -661,6 +806,34 @@ impl<T> VecChain<T> {
 	// TODO: try_reserve/exact
 
 	chain_fn! {
+		/// Calls the provided closure with the spare capacity of the vector as
+		/// a slice of [`MaybeUninit<T>`]
+		///
+		/// # Examples
+		///
+		/// ```
+		/// # use wiwi::chainer::new::VecChain;
+		/// # let mut spare_len = 0;
+		/// # let mut new_spare_len = 0;
+		/// let chain = VecChain::with_capacity(10)
+		///    .extend_from_slice(&[1, 2, 3, 4, 5])
+		///    .spare_capacity_mut(|mut spare| {
+		///       spare_len = spare.len();
+		///
+		///       // VecChain allocated at least 10 elements worth of space
+		///       // since we pushed 5 elements, it should have at least
+		///       // 5 elements of spare capacity left
+		///       assert!(spare_len >= 5);
+		///    })
+		///    .push(6)
+		///    .push(7)
+		///    .spare_capacity_mut(|mut spare| {
+		///       new_spare_len = spare.len();
+		///
+		///       // Just pushed 2 more elements, so there's 2 less spare capacity left
+		///       assert_eq!(spare_len - 2, new_spare_len);
+		///    });
+		/// ```
 		spare_capacity_mut[CB](inner, cb: CB) where {
 			CB: FnOnce(&mut [MaybeUninit<T>])
 		} => cb(inner.spare_capacity_mut())
