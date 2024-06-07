@@ -117,11 +117,11 @@ all-unstable = [
 	"all",
 
 	"auth-unstable",
-	"bigint-unstable",
 	"bitstream-unstable",
 	"chainer-unstable",
 	"defer-unstable",
 	"id-unstable",
+	"int-unstable",
 	"iter-unstable",
 	"lsl-unstable",
 	"memory-usage-unstable",
@@ -142,7 +142,6 @@ auth-unstable = [
 	"dep:zeroize",
 	"z85"
 ]
-bigint-unstable = []
 # base16 = [
 # 	"dep:thiserror",
 # 	"hex"
@@ -176,6 +175,7 @@ hex = [
 id-unstable = [
 	"dep:rand"
 ]
+int-unstable = []
 iter-unstable = []
 lazy-wrap = [
 	"dep:parking_lot"

@@ -18,7 +18,6 @@
 #![cfg_attr(kiwingay, doc = "")]
 
 #![cfg_attr(all(feature = "auth-unstable"),         doc = "- `auth` (unstable)"        )]
-#![cfg_attr(all(feature = "bigint-unstable"),       doc = "- `bigint` (unstable)"      )]
 #![cfg_attr(all(feature = "bitstream-unstable"),    doc = "- `bitstream` (unstable)"   )]
 #![cfg_attr(all(feature = "chainer-unstable"),      doc = "- `chainer` (unstable)"     )]
 #![cfg_attr(all(feature = "clock-timer"),           doc = "- `clock-timer`"            )]
@@ -27,6 +26,7 @@
 #![cfg_attr(all(feature = "h"),                     doc = "- `h`"                      )]
 #![cfg_attr(all(feature = "hex"),                   doc = "- `hex`"                    )]
 #![cfg_attr(all(feature = "id-unstable"),           doc = "- `id` (unstable)"          )]
+#![cfg_attr(all(feature = "int-unstable"),          doc = "- `int` (unstable)"         )]
 #![cfg_attr(all(feature = "iter-unstable"),         doc = "- `iter` (unstable)"        )]
 #![cfg_attr(all(feature = "lazy-wrap"),             doc = "- `lazy-wrap`"              )]
 #![cfg_attr(all(feature = "lsl-unstable"),          doc = "- `lsl` (unstable)"         )]
@@ -67,7 +67,6 @@
 // (there's another one in prelude, copy/paste/modify for it)
 #![cfg_attr(all(
 	not(feature = "auth-unstable"),
-	not(feature = "bigint-unstable"),
 	not(feature = "bitstream-unstable"),
 	not(feature = "chainer-unstable"),
 	not(feature = "clock-timer"),
@@ -76,6 +75,7 @@
 	not(feature = "h"),
 	not(feature = "hex"),
 	not(feature = "id-unstable"),
+	not(feature = "int-unstable"),
 	not(feature = "iter-unstable"),
 	not(feature = "lazy-wrap"),
 	not(feature = "lsl-unstable"),
@@ -111,10 +111,6 @@ pub mod prelude;
 #[cfg(feature = "auth-unstable")]
 #[cfg_attr(docsrs, doc(cfg(feature = "auth-unstable")))]
 pub mod auth;
-
-#[cfg(feature = "bigint-unstable")]
-#[cfg_attr(docsrs, doc(cfg(feature = "bigint-unstable")))]
-pub mod bigint;
 
 // #[cfg(feature = "base16")]
 // pub mod base16;
@@ -156,6 +152,10 @@ pub mod hex;
 #[cfg(feature = "id-unstable")]
 #[cfg_attr(docsrs, doc(cfg(feature = "id-unstable")))]
 pub mod id;
+
+#[cfg(feature = "int-unstable")]
+#[cfg_attr(docsrs, doc(cfg(feature = "int-unstable")))]
+pub mod int;
 
 #[cfg(feature = "iter-unstable")]
 #[cfg_attr(docsrs, doc(cfg(feature = "iter-unstable")))]

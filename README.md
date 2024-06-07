@@ -11,7 +11,6 @@ Everything wiwi can do is gated behind feature flags, none of which are enabled 
 In addition to the features listed below, there exists a feature `all` that will enable all (stable) features. The feature `all-unstable` will enable all stable and unstable features. Addon features are not included in any of these two features (for now, maybe).
 
 - **`auth`** (unstable) - Some lower(ish) level utilities to aid in writing an authentication system, in which the client password is never sent across the wire. Quite heavily inspired by [Tuta's authentication/encryption system](https://tuta.com/nl/encryption).
-- **`bigint`** (unstable) - bigint types
 - **`bitstream`** (unstable) - bit stream encoder/decoder
 - **`chainer`** (unstable) - zero-cost wrappers that provide chaining APIs
 - **`clock-timer`** - An interval tracking clock, yielding ticks at specified intervals and doing so for a specified duration.
@@ -20,6 +19,7 @@ In addition to the features listed below, there exists a feature `all` that will
 - **`h`** - h
 - **`hex`** - Fast (faster than `hex` crate[^1]) implementation of hex encoding, supporting upper hex and lower hex.
 - **`id`** (unstable) - ID generator, with all IDs generated from one generater guaranteed to be monotonically increasing
+- **`int`** (unstable) - bigint / uneven int types
 - **`iter`** (unstable) - iter stuff
 - **`lazy-wrap`** - Wrapper around an initialisation function to lazily initialise a value on first access (can be used in statics)
 - **`lsl`** (unstable) - experimental lib to help with writing Second Life scripts in Rust... because yes, I got fed up with it very quickly and immediately missed Rust lol >< It is really only built for a dedicated crate just to write the script, rather than as part of another lib/app.

@@ -1,7 +1,6 @@
 //! Prelude module, exporting types from enabled features
 #![cfg_attr(all(
 	not(feature = "auth-unstable"),
-	not(feature = "bigint-unstable"),
 	not(feature = "bitstream-unstable"),
 	not(feature = "chainer-unstable"),
 	not(feature = "clock-timer"),
@@ -10,6 +9,7 @@
 	not(feature = "h"),
 	not(feature = "hex"),
 	not(feature = "id-unstable"),
+	not(feature = "int-unstable"),
 	not(feature = "iter-unstable"),
 	not(feature = "lazy-wrap"),
 	not(feature = "lsl-unstable"),
