@@ -7,10 +7,10 @@
 	unused_variables
 )]
 
-#[cfg(feature = "memory-usage-unstable")]
+#[cfg(feature = "memory-usage")]
 mod memory_usage;
 
-#[cfg(feature = "memory-usage-unstable")]
+#[cfg(feature = "memory-usage")]
 #[proc_macro_derive(MemoryUsage, attributes(wiwi))]
 pub fn memory_usage(input: proc_macro::TokenStream) -> proc_macro::TokenStream {
 	memory_usage::macro_impl(input)
