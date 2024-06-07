@@ -18,7 +18,7 @@ syn = "2.0.66"
 [features]
 default = ["syn/full"]
 
-memory-usage-unstable = []
+memory-usage = []
 
 [package.metadata.docs.rs]
 # https://docs.rs/about/metadata
@@ -27,7 +27,7 @@ memory-usage-unstable = []
 rustdoc-args = ["--cfg", "docsrs"]
 
 features = [
-	"memory-usage-unstable"
+	"memory-usage"
 ]
 
 targets = [

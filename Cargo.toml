@@ -182,7 +182,7 @@ lsl-unstable = [
 	"id-unstable"
 ]
 memory-usage-unstable = [
-	"wiwiwiwiwi/memory-usage-unstable"
+	"wiwiwiwiwi/memory-usage"
 ]
 minesweeper-unstable = [
 	"dep:rand",
