@@ -2,7 +2,7 @@
 
 Hallo!
 
-## unreleased
+## v0.7.0
 
 - docs for the latest commits are now being published to [wiwi.kiwin.gay](https://wiwi.kiwin.gay)! (`all-unstable` is enabled for it)
 - created a proc macro crate, so we can have proc macros now!
