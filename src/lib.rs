@@ -55,8 +55,8 @@
 #![cfg_attr(
 	all(docsrs, kiwingay),
 	doc = concat!(
-		"The docs you are viewing currently have been built from commit [",
-		env!("KIWINGAY_DEPLOY_COMMIT"),
+		"These docs have been built from commit [",
+		env!("KIWINGAY_DEPLOY_COMMIT_SHORT"),
 		"](https://github.com/meadowsys/wiwi/commit/",
 		env!("KIWINGAY_DEPLOY_COMMIT"),
 		")."
