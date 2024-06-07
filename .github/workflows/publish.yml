@@ -12,11 +12,6 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        featureflags:
-        # Make sure to check README and Cargo.toml too
-        - all
-        - all,debounce-dyn-fn
-
         runs-on:
         - ubuntu-22.04
         - ubuntu-24.04
@@ -30,12 +25,14 @@ jobs:
       run: rustc --version
 
     - name: build
-      run: cargo build --release --verbose --features ${{ matrix.featureflags }}
+      run: cargo build --verbose --features all
+    - name: build in release
+      run: cargo build --release --verbose --features all
 
     - name: test
-      run: cargo test --verbose --features ${{ matrix.featureflags }}
+      run: cargo test --verbose --features all
     - name: test in release
-      run: cargo test --release --verbose --features ${{ matrix.featureflags }}
+      run: cargo test --release --verbose --features all
 
   feature-check:
     uses: ./.github/workflows/feature-check.yml
