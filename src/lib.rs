@@ -51,6 +51,18 @@
 #![cfg_attr(all(docsrs, not(kiwingay)), doc = "")]
 #![cfg_attr(all(docsrs, not(kiwingay)), doc = "[wiwi.kiwin.gay]: https://wiwi.kiwin.gay")]
 
+#![cfg_attr(all(docsrs, kiwingay), doc = "")]
+#![cfg_attr(
+	all(docsrs, kiwingay),
+	doc = concat!(
+		"The docs you are viewing currently have been built from commit [",
+		env!("KIWINGAY_DEPLOY_COMMIT"),
+		"](https://github.com/meadowsys/wiwi/commit/",
+		env!("KIWINGAY_DEPLOY_COMMIT"),
+		")."
+	)
+)]
+
 // ...yes, I'm doing it
 // (there's another one in prelude, copy/paste/modify for it)
 #![cfg_attr(all(
