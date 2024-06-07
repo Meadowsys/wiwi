@@ -157,3 +157,24 @@ impl UnsignedBigint<u64, 5> for U320 {
 		Self { inner: parts }
 	}
 }
+
+/*
+I think we always would want to use unsigned for container type? so we can manage sign bit ourself? I think?
+
+ideally:
+- ints from 1bit to 128 bit using one of the smallest container type (u8, u16, etc)
+- ints from 1 bit to <arbitrary> using either just u8's or conbination of smallest evenly divisible type or something
+	- I guess "packed representation"?
+	- 1 to 8 use u8
+	- 9 to 16 use u16 (no benefit in 2xu8)
+	- 17 to 24 use 3xu8
+	- 25 to 32 use u32
+	- 33 to 40 use 5xu8
+	- 41 to 48 use 3xu16
+	- 49 to 56 use 7xu8
+	- 57 to 64 use u64
+	- etc
+	- we go above 128-bit too, bigints, but probably have to have it gated behind features
+- and for the ones that can be evenly put into even amount of larger-than-u8 types (eg. u48, 3xu16), offer structs with its smaller align form (eg. 6xu8)
+- combo types..? like, u7u9 or so, that can pack the two into only two bytes etc
+*/
