@@ -24,10 +24,10 @@
 	unused_variables
 )]
 
-#[cfg(feature = <span class="string">"memory-usage-unstable"</span>)]
+#[cfg(feature = <span class="string">"memory-usage"</span>)]
 </span><span class="kw">mod </span>memory_usage;
 
-<span class="attr">#[cfg(feature = <span class="string">"memory-usage-unstable"</span>)]
+<span class="attr">#[cfg(feature = <span class="string">"memory-usage"</span>)]
 #[proc_macro_derive(MemoryUsage, attributes(wiwi))]
 </span><span class="kw">pub fn </span>memory_usage(input: proc_macro::TokenStream) -&gt; proc_macro::TokenStream {
 	memory_usage::macro_impl(input)
