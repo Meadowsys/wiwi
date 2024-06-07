@@ -284,5 +284,5 @@ Hallo!
 - yoink! `wiwi` on crates.io is now mine muahaha
 - initialised the package and stuffs
 
-[^1]: Depending on the compile setting for overflow checks, certain invalid input could cause either a panic or undefine behaviour (affected features: `z85`, affected versions: `>= 0.4.0, <= 0.5.3`)
+[^1]: Depending on the compile setting for overflow checks, certain invalid input could cause either a panic or undefined behaviour (affected features: `z85`, affected versions: `>= 0.4.0, <= 0.5.3`)
 [^2]: `Vec::with_capacity` is allowed to overallocate, and in doing so will cause undefined behaviour (affected features: `hex`, `z85`, affected versions: `>= 0.4.0, <= 0.6.0`)
