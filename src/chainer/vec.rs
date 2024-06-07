@@ -1035,7 +1035,13 @@ impl<T> VecChain<T> {
 		///
 		/// # Examples
 		///
-		/// TODO
+		/// ```
+		/// # use wiwi::chainer::new::{ ChainHalf, VecChain };
+		/// let chain = VecChain::new()
+		///    .extend_from_slice(&[1, 5, 2, 2, 5, 3, 7, 1, 2, 4, 8])
+		///    .sort_and_dedup();
+		/// assert_eq!(chain.as_nonchain(), &[1, 2, 3, 4, 5, 7, 8])
+		/// ```
 		///
 		/// [Silk Rose]: https://github.com/silkrose
 		move self sort_and_dedup(self) where {
