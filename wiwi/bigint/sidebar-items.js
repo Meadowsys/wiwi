@@ -1,1 +1,0 @@
-window.SIDEBAR_ITEMS = {"struct":["U320"],"trait":["Part","UnsignedBigint"]};

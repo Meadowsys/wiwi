@@ -15,6 +15,17 @@
 <a href="#15" id="15">15</a>
 <a href="#16" id="16">16</a>
 <a href="#17" id="17">17</a>
+<a href="#18" id="18">18</a>
+<a href="#19" id="19">19</a>
+<a href="#20" id="20">20</a>
+<a href="#21" id="21">21</a>
+<a href="#22" id="22">22</a>
+<a href="#23" id="23">23</a>
+<a href="#24" id="24">24</a>
+<a href="#25" id="25">25</a>
+<a href="#26" id="26">26</a>
+<a href="#27" id="27">27</a>
+<a href="#28" id="28">28</a>
 </pre></div><pre class="rust"><code><span class="comment">// TODO: remove when more finished
 </span><span class="attr">#![allow(
 	dead_code,
@@ -31,5 +42,16 @@
 #[proc_macro_derive(MemoryUsage, attributes(wiwi))]
 </span><span class="kw">pub fn </span>memory_usage(input: proc_macro::TokenStream) -&gt; proc_macro::TokenStream {
 	memory_usage::macro_impl(input)
+}
+
+<span class="attr">#[cfg(feature = <span class="string">"int"</span>)]
+</span><span class="kw">mod </span>int;
+
+<span class="doccomment">/// Internal macro only, do not use
+</span><span class="attr">#[cfg(feature = <span class="string">"int"</span>)]
+#[doc(hidden)]
+#[proc_macro]
+</span><span class="kw">pub fn </span>define_int(input: proc_macro::TokenStream) -&gt; proc_macro::TokenStream {
+	int::macro_impl(input)
 }
 </code></pre></div></section></main></body></html>

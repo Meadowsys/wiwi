@@ -91,7 +91,6 @@
 </pre></div><pre class="rust"><code><span class="doccomment">//! Prelude module, exporting types from enabled features
 </span><span class="attr">#![cfg_attr(all(
 	not(feature = <span class="string">"auth-unstable"</span>),
-	not(feature = <span class="string">"bigint-unstable"</span>),
 	not(feature = <span class="string">"bitstream-unstable"</span>),
 	not(feature = <span class="string">"chainer-unstable"</span>),
 	not(feature = <span class="string">"clock-timer"</span>),
@@ -100,6 +99,7 @@
 	not(feature = <span class="string">"h"</span>),
 	not(feature = <span class="string">"hex"</span>),
 	not(feature = <span class="string">"id-unstable"</span>),
+	not(feature = <span class="string">"int-unstable"</span>),
 	not(feature = <span class="string">"iter-unstable"</span>),
 	not(feature = <span class="string">"lazy-wrap"</span>),
 	not(feature = <span class="string">"lsl-unstable"</span>),

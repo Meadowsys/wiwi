@@ -227,7 +227,6 @@
 #![cfg_attr(kiwingay, doc = <span class="string">""</span>)]
 
 #![cfg_attr(all(feature = <span class="string">"auth-unstable"</span>),         doc = <span class="string">"- `auth` (unstable)"        </span>)]
-#![cfg_attr(all(feature = <span class="string">"bigint-unstable"</span>),       doc = <span class="string">"- `bigint` (unstable)"      </span>)]
 #![cfg_attr(all(feature = <span class="string">"bitstream-unstable"</span>),    doc = <span class="string">"- `bitstream` (unstable)"   </span>)]
 #![cfg_attr(all(feature = <span class="string">"chainer-unstable"</span>),      doc = <span class="string">"- `chainer` (unstable)"     </span>)]
 #![cfg_attr(all(feature = <span class="string">"clock-timer"</span>),           doc = <span class="string">"- `clock-timer`"            </span>)]
@@ -236,6 +235,7 @@
 #![cfg_attr(all(feature = <span class="string">"h"</span>),                     doc = <span class="string">"- `h`"                      </span>)]
 #![cfg_attr(all(feature = <span class="string">"hex"</span>),                   doc = <span class="string">"- `hex`"                    </span>)]
 #![cfg_attr(all(feature = <span class="string">"id-unstable"</span>),           doc = <span class="string">"- `id` (unstable)"          </span>)]
+#![cfg_attr(all(feature = <span class="string">"int-unstable"</span>),          doc = <span class="string">"- `int` (unstable)"         </span>)]
 #![cfg_attr(all(feature = <span class="string">"iter-unstable"</span>),         doc = <span class="string">"- `iter` (unstable)"        </span>)]
 #![cfg_attr(all(feature = <span class="string">"lazy-wrap"</span>),             doc = <span class="string">"- `lazy-wrap`"              </span>)]
 #![cfg_attr(all(feature = <span class="string">"lsl-unstable"</span>),          doc = <span class="string">"- `lsl` (unstable)"         </span>)]
@@ -264,8 +264,8 @@
 #![cfg_attr(
 	all(docsrs, kiwingay),
 	doc = <span class="macro">concat!</span>(
-		<span class="string">"The docs you are viewing currently have been built from commit ["</span>,
-		<span class="macro">env!</span>(<span class="string">"KIWINGAY_DEPLOY_COMMIT"</span>),
+		<span class="string">"These docs have been built from commit ["</span>,
+		<span class="macro">env!</span>(<span class="string">"KIWINGAY_DEPLOY_COMMIT_SHORT"</span>),
 		<span class="string">"](https://github.com/meadowsys/wiwi/commit/"</span>,
 		<span class="macro">env!</span>(<span class="string">"KIWINGAY_DEPLOY_COMMIT"</span>),
 		<span class="string">")."
@@ -276,7 +276,6 @@
 // (there's another one in prelude, copy/paste/modify for it)
 </span><span class="attr">#![cfg_attr(all(
 	not(feature = <span class="string">"auth-unstable"</span>),
-	not(feature = <span class="string">"bigint-unstable"</span>),
 	not(feature = <span class="string">"bitstream-unstable"</span>),
 	not(feature = <span class="string">"chainer-unstable"</span>),
 	not(feature = <span class="string">"clock-timer"</span>),
@@ -285,6 +284,7 @@
 	not(feature = <span class="string">"h"</span>),
 	not(feature = <span class="string">"hex"</span>),
 	not(feature = <span class="string">"id-unstable"</span>),
+	not(feature = <span class="string">"int-unstable"</span>),
 	not(feature = <span class="string">"iter-unstable"</span>),
 	not(feature = <span class="string">"lazy-wrap"</span>),
 	not(feature = <span class="string">"lsl-unstable"</span>),
@@ -320,10 +320,6 @@
 <span class="attr">#[cfg(feature = <span class="string">"auth-unstable"</span>)]
 #[cfg_attr(docsrs, doc(cfg(feature = <span class="string">"auth-unstable"</span>)))]
 </span><span class="kw">pub mod </span>auth;
-
-<span class="attr">#[cfg(feature = <span class="string">"bigint-unstable"</span>)]
-#[cfg_attr(docsrs, doc(cfg(feature = <span class="string">"bigint-unstable"</span>)))]
-</span><span class="kw">pub mod </span>bigint;
 
 <span class="comment">// #[cfg(feature = "base16")]
 // pub mod base16;
@@ -365,6 +361,10 @@
 <span class="attr">#[cfg(feature = <span class="string">"id-unstable"</span>)]
 #[cfg_attr(docsrs, doc(cfg(feature = <span class="string">"id-unstable"</span>)))]
 </span><span class="kw">pub mod </span>id;
+
+<span class="attr">#[cfg(feature = <span class="string">"int-unstable"</span>)]
+#[cfg_attr(docsrs, doc(cfg(feature = <span class="string">"int-unstable"</span>)))]
+</span><span class="kw">pub mod </span>int;
 
 <span class="attr">#[cfg(feature = <span class="string">"iter-unstable"</span>)]
 #[cfg_attr(docsrs, doc(cfg(feature = <span class="string">"iter-unstable"</span>)))]
