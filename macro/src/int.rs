@@ -79,7 +79,7 @@ pub fn macro_impl(input: proc_macro::TokenStream) -> proc_macro::TokenStream {
 					stringify!(#size_literal),
 					" ",
 					stringify!(#bits_literal),
-					"-bit inner integer",
+					"-bit integer",
 					#s
 				)]
 				#[allow(non_camel_case_types)]
@@ -89,14 +89,28 @@ pub fn macro_impl(input: proc_macro::TokenStream) -> proc_macro::TokenStream {
 			}
 		});
 
+	let default_size_literal = proc_macro2::Literal::u16_unsuffixed(size);
+	let default_bits_literal = proc_macro2::Literal::u16_unsuffixed(bits);
+	let default_s = proc_macro2::Literal::string(if size == 1 { "" } else { "s" });
 	let mut out = quote! {
-		#[doc = concat!(stringify!(#input_bits_literal), "-bit unsigned integer")]
+		#[doc = concat!(
+			stringify!(#input_bits_literal),
+			"-bit unsigned integer"
+		)]
 		#[allow(non_camel_case_types)]
 		pub struct #u_ident {
 			inner: #u_default_inner
 		}
 
-		#[doc = concat!(stringify!(#input_bits_literal), "-bit unsigned integer, packed")]
+		#[doc = concat!(
+			stringify!(#input_bits_literal),
+			"-bit unsigned integer, packed into ",
+			stringify!(#default_size_literal),
+			" ",
+			stringify!(#default_bits_literal),
+			"-bit integer",
+			#default_s
+		)]
 		#[allow(non_camel_case_types)]
 		pub struct #u_ident_packed {
 			inner: #default_packed
