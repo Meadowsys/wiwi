@@ -1,102 +1,117 @@
+use quote::{ format_ident, quote };
+use syn::Ident;
+
 pub fn macro_impl(input: proc_macro::TokenStream) -> proc_macro::TokenStream {
 	let mut iter = input.into_iter();
-	let proc_macro::TokenTree::Literal(size) = iter.next().expect("expected int size") else {
+	let proc_macro::TokenTree::Literal(input_bits) = iter.next().expect("expected int size") else {
 		panic!("expected literal for the int size");
 	};
-	let size = size.to_string().parse().expect("expected number literal for int size");
 	assert!(iter.next().is_none(), "expected input to consist of just the int size");
+	let input_bits = input_bits.to_string().parse().expect("expected number literal for int size");
 
-	let int_info = get_int_info_for(size);
-	// process(size);
-	// process_packed(size);
-	// process_packed_smaller_reprs(size);
+	let amount_of_std = get_amount_of_std_for(input_bits);
 
-	// let temp = "const TEST_".to_string() + &*size.to_string() + "" + (int_info.largest_packed_int.0 as u8).to_string()
-	let temp = format!(
-		r#"const TEST_{size}: &str = "u{size} containing {}xu{}s";"#,
-		int_info.max_packed_int.1,
-		int_info.max_packed_int.0 as u8
-	);
+	// default ident eg. u25
+	let u_ident = format_ident!("u{input_bits}");
 
-	temp.parse().unwrap()
-}
-
-#[repr(u8)]
-#[derive(Clone, Copy)]
-enum InnerIntType {
-	U8 = 8,
-	U16 = 16,
-	U32 = 32,
-	U64 = 64,
-	U128 = 128
-}
-
-struct IntInfo {
-	/// the size of the int (ie. macro input)
-	///
-	/// `u16` allows theoretically generating ints of up to 65535 bits... but why? lol
-	size: u16,
-	/// the minimum sized single integer that can hold it
-	///
-	/// `Option` in case the passed in type is a bigint (ie. more than 128)
-	min_single_int: Option<InnerIntType>,
-	/// the largest int and amount of that int that is able to hold
-	/// this int type while wasting less than 8 bits
-	///
-	/// - 1 to 8 use u8
-	/// - 9 to 16 use u16 (no benefit in 2xu8)
-	/// - 17 to 24 use 3xu8
-	/// - 25 to 32 use u32
-	/// - 33 to 40 use 5xu8
-	/// - 41 to 48 use 3xu16
-	/// - 49 to 56 use 7xu8
-	/// - 57 to 64 use u64
-	/// - etc etc
-	///
-	/// reprs with smaller internal int types can be calculated from this
-	/// (eg. u48 can be represented as 3 `u16`, or 6 `u8`)
-	max_packed_int: (InnerIntType, u16)
-}
-
-fn get_int_info_for(size: u16) -> IntInfo {
-	use InnerIntType::*;
-
-	let min_single_int = match size {
-		..=8 => { Some(U8) }
-		9..=16 => { Some(U16) }
-		17..=32 => { Some(U32) }
-		33..=64 => { Some(U64) }
-		65..=128 => { Some(U128) }
+	// find the std int type where one single one can contain the whole int
+	// used for default ident if it exists
+	let min_single_int = match input_bits {
+		..=8 => { Some(8usize) }
+		9..=16 => { Some(16) }
+		17..=32 => { Some(32) }
+		33..=64 => { Some(64) }
+		65..=128 => { Some(128) }
 		129.. => { None }
 	};
 
-	let max_packed_int = [U128, U64, U32, U16, U8].into_iter()
-		.filter_map(|width| try_get_largest_packed_int(size, width))
-		.next()
-		.expect("invalid state kinda weird");
+	// idents for packed
+	// use the least amount per std int type to contain the whole int
+	// eg. u25packed64, u25packed8
+	let u_ident_packed = format_ident!("u{input_bits}packed");
 
-	IntInfo { size, min_single_int, max_packed_int }
+	let amounts = [
+		(amount_of_std.u128, 128u16),
+		(amount_of_std.u64, 64u16),
+		(amount_of_std.u32, 32u16),
+		(amount_of_std.u16, 16u16),
+		(amount_of_std.u8, 8u16),
+	];
+
+	// find the int type where multiple of them can contain the whole int,
+	// wasting less than 8 bytes (only partial byte)
+	// used for default packed struct, as well as default struct (ex u25) if there doesn't
+	// exist an std type that can wholly contain it
+	// eg. u25packed
+	let (size, bits) = amounts.into_iter()
+		// .find(|(size, bits)| (size * bits) - 7 > input_bits)
+		.find(|(size, bits)| input_bits + 8 > (size * bits))
+		.expect("fatal error, couldn't find ideal default packing strategy");
+
+	let default_packed = {
+		let size = size as usize;
+		let bits = format_ident!("u{bits}");
+		quote! { [::std::primitive::#bits; #size] }
+	};
+
+	let u_default_inner = if let Some(min) = min_single_int {
+		let min = format_ident!("u{min}");
+		quote! { ::std::primitive::#min }
+	} else {
+		default_packed.clone()
+	};
+
+	let amounts_interpolaters = amounts.into_iter()
+		.map(|(size, bits)| {
+			let size = size as usize;
+			let u_ident = format_ident!("u{input_bits}packed{bits}");
+			let bits = format_ident!("u{bits}");
+
+			quote! {
+				#[allow(non_camel_case_types)]
+				pub struct #u_ident {
+					inner: [::std::primitive::#bits; #size]
+				}
+			}
+		});
+
+	let mut out = quote! {
+		#[allow(non_camel_case_types)]
+		pub struct #u_ident {
+			inner: #u_default_inner
+		}
+
+		#[allow(non_camel_case_types)]
+		pub struct #u_ident_packed {
+			inner: #default_packed
+		}
+
+		#(#amounts_interpolaters)*
+	};
+
+	out.into()
 }
 
-/// Tries to see if the given int `size` can be fit in a number of `width` int types
-/// while wasting less than 8 bits.
-///
-/// `size` is macro input, `width` is the width of the std int type
-fn try_get_largest_packed_int(size: u16, width: InnerIntType) -> Option<(InnerIntType, u16)> {
-	let width_int = width as u16;
+struct AmountOfStd {
+	u8: u16,
+	u16: u16,
+	u32: u16,
+	u64: u16,
+	u128: u16
+}
 
-	// width should be less than 8 larger than size
-	if width_int - 7 > size { return None }
-
-	match size % width_int {
-		0 => { Some((width, size / width_int)) }
-		r if width_int - r < 8 => { Some((width, (size / width_int) + 1)) }
-		_ => { None }
+fn get_amount_of_std_for(bits: u16) -> AmountOfStd {
+	AmountOfStd {
+		u8: get_amount_of_bits::<8>(bits),
+		u16: get_amount_of_bits::<16>(bits),
+		u32: get_amount_of_bits::<32>(bits),
+		u64: get_amount_of_bits::<64>(bits),
+		u128: get_amount_of_bits::<128>(bits),
 	}
 }
 
-fn process(size: u16) {}
-
-fn process_packed(size: u16) {}
-
-fn process_packed_smaller_reprs(size: u16) {}
+fn get_amount_of_bits<const INNER_BITS: u16>(bits: u16) -> u16 {
+	let full = bits / INNER_BITS;
+	let remainder = (bits % INNER_BITS) != 0;
+	full + (remainder as u16)
+}

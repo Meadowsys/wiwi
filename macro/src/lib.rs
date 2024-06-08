@@ -19,7 +19,9 @@ pub fn memory_usage(input: proc_macro::TokenStream) -> proc_macro::TokenStream {
 #[cfg(feature = "int")]
 mod int;
 
+/// Internal macro only, do not use
 #[cfg(feature = "int")]
+#[doc(hidden)]
 #[proc_macro]
 pub fn define_int(input: proc_macro::TokenStream) -> proc_macro::TokenStream {
 	int::macro_impl(input)
