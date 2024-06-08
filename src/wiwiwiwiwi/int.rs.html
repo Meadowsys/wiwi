@@ -131,6 +131,20 @@
 <a href="#131" id="131">131</a>
 <a href="#132" id="132">132</a>
 <a href="#133" id="133">133</a>
+<a href="#134" id="134">134</a>
+<a href="#135" id="135">135</a>
+<a href="#136" id="136">136</a>
+<a href="#137" id="137">137</a>
+<a href="#138" id="138">138</a>
+<a href="#139" id="139">139</a>
+<a href="#140" id="140">140</a>
+<a href="#141" id="141">141</a>
+<a href="#142" id="142">142</a>
+<a href="#143" id="143">143</a>
+<a href="#144" id="144">144</a>
+<a href="#145" id="145">145</a>
+<a href="#146" id="146">146</a>
+<a href="#147" id="147">147</a>
 </pre></div><pre class="rust"><code><span class="kw">use </span>quote::{ format_ident, quote };
 <span class="kw">use </span>syn::Ident;
 
@@ -212,7 +226,7 @@
 					<span class="macro">stringify!</span>(#size_literal),
 					<span class="string">" "</span>,
 					<span class="macro">stringify!</span>(#bits_literal),
-					<span class="string">"-bit inner integer"</span>,
+					<span class="string">"-bit integer"</span>,
 					#s
 				)]
 				#[allow(non_camel_case_types)]
@@ -222,14 +236,28 @@
 			}
 		});
 
+	<span class="kw">let </span>default_size_literal = proc_macro2::Literal::u16_unsuffixed(size);
+	<span class="kw">let </span>default_bits_literal = proc_macro2::Literal::u16_unsuffixed(bits);
+	<span class="kw">let </span>default_s = proc_macro2::Literal::string(<span class="kw">if </span>size == <span class="number">1 </span>{ <span class="string">"" </span>} <span class="kw">else </span>{ <span class="string">"s" </span>});
 	<span class="kw">let </span><span class="kw-2">mut </span>out = <span class="macro">quote!</span> {
-		<span class="attr">#[doc = <span class="macro">concat!</span>(<span class="macro">stringify!</span>(#input_bits_literal), <span class="string">"-bit unsigned integer"</span>)]
+		<span class="attr">#[doc = <span class="macro">concat!</span>(
+			<span class="macro">stringify!</span>(#input_bits_literal),
+			<span class="string">"-bit unsigned integer"
+		</span>)]
 		#[allow(non_camel_case_types)]
 		</span><span class="kw">pub struct </span>#u_ident {
 			inner: #u_default_inner
 		}
 
-		<span class="attr">#[doc = <span class="macro">concat!</span>(<span class="macro">stringify!</span>(#input_bits_literal), <span class="string">"-bit unsigned integer, packed"</span>)]
+		<span class="attr">#[doc = <span class="macro">concat!</span>(
+			<span class="macro">stringify!</span>(#input_bits_literal),
+			<span class="string">"-bit unsigned integer, packed into "</span>,
+			<span class="macro">stringify!</span>(#default_size_literal),
+			<span class="string">" "</span>,
+			<span class="macro">stringify!</span>(#default_bits_literal),
+			<span class="string">"-bit integer"</span>,
+			#default_s
+		)]
 		#[allow(non_camel_case_types)]
 		</span><span class="kw">pub struct </span>#u_ident_packed {
 			inner: #default_packed
