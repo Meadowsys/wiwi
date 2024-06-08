@@ -7,7 +7,9 @@ pub fn macro_impl(input: proc_macro::TokenStream) -> proc_macro::TokenStream {
 		panic!("expected literal for the int size");
 	};
 	assert!(iter.next().is_none(), "expected input to consist of just the int size");
+
 	let input_bits = input_bits.to_string().parse().expect("expected number literal for int size");
+	let input_bits_literal = proc_macro2::Literal::u16_unsuffixed(input_bits);
 
 	let amount_of_std = get_amount_of_std_for(input_bits);
 
@@ -63,11 +65,23 @@ pub fn macro_impl(input: proc_macro::TokenStream) -> proc_macro::TokenStream {
 
 	let amounts_interpolaters = amounts.into_iter()
 		.map(|(size, bits)| {
+			let size_literal = proc_macro2::Literal::u16_unsuffixed(size);
 			let size = size as usize;
-			let u_ident = format_ident!("u{input_bits}packed{bits}");
+			let u_ident = format_ident!("u{input_bits}with{bits}");
+			let bits_literal = proc_macro2::Literal::u16_unsuffixed(bits);
 			let bits = format_ident!("u{bits}");
+			let s = proc_macro2::Literal::string(if size == 1 { "" } else { "s" });
 
 			quote! {
+				#[doc = concat!(
+					stringify!(#input_bits_literal),
+					"-bit unsigned integer, using ",
+					stringify!(#size_literal),
+					" ",
+					stringify!(#bits_literal),
+					"-bit inner integer",
+					#s
+				)]
 				#[allow(non_camel_case_types)]
 				pub struct #u_ident {
 					inner: [::std::primitive::#bits; #size]
@@ -76,11 +90,13 @@ pub fn macro_impl(input: proc_macro::TokenStream) -> proc_macro::TokenStream {
 		});
 
 	let mut out = quote! {
+		#[doc = concat!(stringify!(#input_bits_literal), "-bit unsigned integer")]
 		#[allow(non_camel_case_types)]
 		pub struct #u_ident {
 			inner: #u_default_inner
 		}
 
+		#[doc = concat!(stringify!(#input_bits_literal), "-bit unsigned integer, packed")]
 		#[allow(non_camel_case_types)]
 		pub struct #u_ident_packed {
 			inner: #default_packed
