@@ -11,8 +11,6 @@ pub fn macro_impl(input: proc_macro::TokenStream) -> proc_macro::TokenStream {
 	let input_bits = input_bits.to_string().parse().expect("expected number literal for int size");
 	let input_bits_literal = proc_macro2::Literal::u16_unsuffixed(input_bits);
 
-	let amount_of_std = get_amount_of_std_for(input_bits);
-
 	// default ident eg. u25
 	let u_ident = format_ident!("u{input_bits}");
 
@@ -32,12 +30,18 @@ pub fn macro_impl(input: proc_macro::TokenStream) -> proc_macro::TokenStream {
 	// eg. u25packed64, u25packed8
 	let u_ident_packed = format_ident!("u{input_bits}packed");
 
+	let amount_u128 = get_amount_of_bits::<128>(input_bits);
+	let amount_u64 = get_amount_of_bits::<64>(input_bits);
+	let amount_u32 = get_amount_of_bits::<32>(input_bits);
+	let amount_u16 = get_amount_of_bits::<16>(input_bits);
+	let amount_u8 = get_amount_of_bits::<8>(input_bits);
+
 	let amounts = [
-		(amount_of_std.u128, 128u16),
-		(amount_of_std.u64, 64u16),
-		(amount_of_std.u32, 32u16),
-		(amount_of_std.u16, 16u16),
-		(amount_of_std.u8, 8u16),
+		(amount_u128, 128u16),
+		(amount_u64, 64u16),
+		(amount_u32, 32u16),
+		(amount_u16, 16u16),
+		(amount_u8, 8u16),
 	];
 
 	// find the int type where multiple of them can contain the whole int,
@@ -120,24 +124,6 @@ pub fn macro_impl(input: proc_macro::TokenStream) -> proc_macro::TokenStream {
 	};
 
 	out.into()
-}
-
-struct AmountOfStd {
-	u8: u16,
-	u16: u16,
-	u32: u16,
-	u64: u16,
-	u128: u16
-}
-
-fn get_amount_of_std_for(bits: u16) -> AmountOfStd {
-	AmountOfStd {
-		u8: get_amount_of_bits::<8>(bits),
-		u16: get_amount_of_bits::<16>(bits),
-		u32: get_amount_of_bits::<32>(bits),
-		u64: get_amount_of_bits::<64>(bits),
-		u128: get_amount_of_bits::<128>(bits),
-	}
 }
 
 fn get_amount_of_bits<const INNER_BITS: u16>(bits: u16) -> u16 {
