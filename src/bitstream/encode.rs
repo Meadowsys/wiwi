@@ -25,15 +25,101 @@ impl Encoder {
 		Self { output: vec, partial_bits: 0, num_partial_bits: 0 }
 	}
 
+	/// Returns the encoded byte vector
 	pub fn into_bytes(mut self) -> Vec<u8> {
 		if self.num_partial_bits > 0 { self.output.push(self.partial_bits) }
 		self.output
 	}
 
-	/// Writes the specified amount of bits from the provided u8.
+	/// Writes the specified amount of bits from the provided u8
+	///
+	/// # Panics
+	///
+	/// Panics if the amount of bits to write is more than 8
+	pub fn write_bits_u8(&mut self, num_bits: usize, bits: u8) {
+		self.write_bits_u8_checked(num_bits, bits)
+			.expect("amount of bits cannot be more than 8")
+	}
+
+	/// Writes the specified amount of bits from the provided u16
+	///
+	/// # Panics
+	///
+	/// Panics if the amount of bits to write is more than 16
+	pub fn write_bits_u16(&mut self, num_bits: usize, bits: u16) {
+		self.write_bits_u16_checked(num_bits, bits)
+			.expect("amount of bits cannot be more than 16")
+	}
+
+	/// Writes the specified amount of bits from the provided u32
+	///
+	/// # Panics
+	///
+	/// Panics if the amount of bits to write is more than 32
+	pub fn write_bits_u32(&mut self, num_bits: usize, bits: u32) {
+		self.write_bits_u32_checked(num_bits, bits)
+			.expect("amount of bits cannot be more than 32")
+	}
+
+	/// Writes the specified amount of bits from the provided u64
+	///
+	/// # Panics
+	///
+	/// Panics if the amount of bits to write is more than 64
+	pub fn write_bits_u64(&mut self, num_bits: usize, bits: u64) {
+		self.write_bits_u64_checked(num_bits, bits)
+			.expect("amount of bits cannot be more than 64")
+	}
+
+	/// Writes the specified amount of bits from the provided u128
+	///
+	/// # Panics
+	///
+	/// Panics if the amount of bits to write is more than 128
+	pub fn write_bits_u128(&mut self, num_bits: usize, bits: u128) {
+		self.write_bits_u128_checked(num_bits, bits)
+			.expect("amount of bits cannot be more than 128")
+	}
+
+	/// Writes the specified amount of bits from the provided u8, checking that
+	/// the amount of bits to write is 8 or less
+	pub fn write_bits_u8_checked(&mut self, num_bits: usize, bits: u8) -> Option<()> {
+		(num_bits <= u8::BITS as usize)
+			.then(|| unsafe { self.write_bits_u8_unchecked(num_bits, bits) })
+	}
+
+	/// Writes the specified amount of bits from the provided u16, checking that
+	/// the amount of bits to write is 16 or less
+	pub fn write_bits_u16_checked(&mut self, num_bits: usize, bits: u16) -> Option<()> {
+		(num_bits <= u16::BITS as usize)
+			.then(|| unsafe { self.write_bits_u16_unchecked(num_bits, bits) })
+	}
+
+	/// Writes the specified amount of bits from the provided u32, checking that
+	/// the amount of bits to write is 32 or less
+	pub fn write_bits_u32_checked(&mut self, num_bits: usize, bits: u32) -> Option<()> {
+		(num_bits <= u32::BITS as usize)
+			.then(|| unsafe { self.write_bits_u32_unchecked(num_bits, bits) })
+	}
+
+	/// Writes the specified amount of bits from the provided u64, checking that
+	/// the amount of bits to write is 64 or less
+	pub fn write_bits_u64_checked(&mut self, num_bits: usize, bits: u64) -> Option<()> {
+		(num_bits <= u64::BITS as usize)
+			.then(|| unsafe { self.write_bits_u64_unchecked(num_bits, bits) })
+	}
+
+	/// Writes the specified amount of bits from the provided u128, checking that
+	/// the amount of bits to write is 128 or less
+	pub fn write_bits_u128_checked(&mut self, num_bits: usize, bits: u128) -> Option<()> {
+		(num_bits <= u128::BITS as usize)
+			.then(|| unsafe { self.write_bits_u128_unchecked(num_bits, bits) })
+	}
+
+	/// Writes the specified amount of bits from the provided u8
 	///
 	/// Currently, this just casts `bits` to `u128` and delegates the work to
-	/// [`write_bits_u128_unchecked`]. Not the most efficient, but it works.
+	/// [`write_bits_u128_unchecked`]. Not the most efficient, but it works correctly.
 	///
 	/// # Safety
 	///
@@ -50,10 +136,10 @@ impl Encoder {
 		self.write_bits_u128_unchecked(num_bits, bits as _);
 	}
 
-	/// Writes the specified amount of bits from the provided u16.
+	/// Writes the specified amount of bits from the provided u16
 	///
 	/// Currently, this just casts `bits` to `u128` and delegates the work to
-	/// [`write_bits_u128_unchecked`]. Not the most efficient, but it works.
+	/// [`write_bits_u128_unchecked`]. Not the most efficient, but it works correctly.
 	///
 	/// # Safety
 	///
@@ -70,10 +156,10 @@ impl Encoder {
 		self.write_bits_u128_unchecked(num_bits, bits as _);
 	}
 
-	/// Writes the specified amount of bits from the provided u32.
+	/// Writes the specified amount of bits from the provided u32
 	///
 	/// Currently, this just casts `bits` to `u128` and delegates the work to
-	/// [`write_bits_u128_unchecked`]. Not the most efficient, but it works.
+	/// [`write_bits_u128_unchecked`]. Not the most efficient, but it works correctly.
 	///
 	/// # Safety
 	///
@@ -90,10 +176,10 @@ impl Encoder {
 		self.write_bits_u128_unchecked(num_bits, bits as _);
 	}
 
-	/// Writes the specified amount of bits from the provided u64.
+	/// Writes the specified amount of bits from the provided u64
 	///
 	/// Currently, this just casts `bits` to `u128` and delegates the work to
-	/// [`write_bits_u128_unchecked`]. Not the most efficient, but it works.
+	/// [`write_bits_u128_unchecked`]. Not the most efficient, but it works correctly.
 	///
 	/// # Safety
 	///
@@ -110,7 +196,7 @@ impl Encoder {
 		self.write_bits_u128_unchecked(num_bits, bits as _);
 	}
 
-	/// Writes the specified amount of bits from the provided u128.
+	/// Writes the specified amount of bits from the provided u128
 	///
 	/// The specified amount of bits will be read from the lower bits of the
 	/// provided integer, and all other bits are silently ignored. For example,
@@ -329,5 +415,7 @@ mod tests {
 				0b00000000
 			]);
 		}
+
+		fn write_bits_checked_u128() {}
 	}
 }
