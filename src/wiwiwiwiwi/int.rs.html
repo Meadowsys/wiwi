@@ -131,20 +131,6 @@
 <a href="#131" id="131">131</a>
 <a href="#132" id="132">132</a>
 <a href="#133" id="133">133</a>
-<a href="#134" id="134">134</a>
-<a href="#135" id="135">135</a>
-<a href="#136" id="136">136</a>
-<a href="#137" id="137">137</a>
-<a href="#138" id="138">138</a>
-<a href="#139" id="139">139</a>
-<a href="#140" id="140">140</a>
-<a href="#141" id="141">141</a>
-<a href="#142" id="142">142</a>
-<a href="#143" id="143">143</a>
-<a href="#144" id="144">144</a>
-<a href="#145" id="145">145</a>
-<a href="#146" id="146">146</a>
-<a href="#147" id="147">147</a>
 </pre></div><pre class="rust"><code><span class="kw">use </span>quote::{ format_ident, quote };
 <span class="kw">use </span>syn::Ident;
 
@@ -157,8 +143,6 @@
 
 	<span class="kw">let </span>input_bits = input_bits.to_string().parse().expect(<span class="string">"expected number literal for int size"</span>);
 	<span class="kw">let </span>input_bits_literal = proc_macro2::Literal::u16_unsuffixed(input_bits);
-
-	<span class="kw">let </span>amount_of_std = get_amount_of_std_for(input_bits);
 
 	<span class="comment">// default ident eg. u25
 	</span><span class="kw">let </span>u_ident = <span class="macro">format_ident!</span>(<span class="string">"u{input_bits}"</span>);
@@ -179,12 +163,18 @@
 	// eg. u25packed64, u25packed8
 	</span><span class="kw">let </span>u_ident_packed = <span class="macro">format_ident!</span>(<span class="string">"u{input_bits}packed"</span>);
 
+	<span class="kw">let </span>amount_u128 = get_amount_of_bits::&lt;<span class="number">128</span>&gt;(input_bits);
+	<span class="kw">let </span>amount_u64 = get_amount_of_bits::&lt;<span class="number">64</span>&gt;(input_bits);
+	<span class="kw">let </span>amount_u32 = get_amount_of_bits::&lt;<span class="number">32</span>&gt;(input_bits);
+	<span class="kw">let </span>amount_u16 = get_amount_of_bits::&lt;<span class="number">16</span>&gt;(input_bits);
+	<span class="kw">let </span>amount_u8 = get_amount_of_bits::&lt;<span class="number">8</span>&gt;(input_bits);
+
 	<span class="kw">let </span>amounts = [
-		(amount_of_std.u128, <span class="number">128u16</span>),
-		(amount_of_std.u64, <span class="number">64u16</span>),
-		(amount_of_std.u32, <span class="number">32u16</span>),
-		(amount_of_std.u16, <span class="number">16u16</span>),
-		(amount_of_std.u8, <span class="number">8u16</span>),
+		(amount_u128, <span class="number">128u16</span>),
+		(amount_u64, <span class="number">64u16</span>),
+		(amount_u32, <span class="number">32u16</span>),
+		(amount_u16, <span class="number">16u16</span>),
+		(amount_u8, <span class="number">8u16</span>),
 	];
 
 	<span class="comment">// find the int type where multiple of them can contain the whole int,
@@ -249,42 +239,24 @@
 			inner: #u_default_inner
 		}
 
-		<span class="attr">#[doc = <span class="macro">concat!</span>(
-			<span class="macro">stringify!</span>(#input_bits_literal),
-			<span class="string">"-bit unsigned integer, packed into "</span>,
-			<span class="macro">stringify!</span>(#default_size_literal),
-			<span class="string">" "</span>,
-			<span class="macro">stringify!</span>(#default_bits_literal),
-			<span class="string">"-bit integer"</span>,
-			#default_s
-		)]
-		#[allow(non_camel_case_types)]
-		</span><span class="kw">pub struct </span>#u_ident_packed {
-			inner: #default_packed
-		}
+		<span class="comment">// #[doc = concat!(
+		// 	stringify!(#input_bits_literal),
+		// 	"-bit unsigned integer, packed into ",
+		// 	stringify!(#default_size_literal),
+		// 	" ",
+		// 	stringify!(#default_bits_literal),
+		// 	"-bit integer",
+		// 	#default_s
+		// )]
+		// #[allow(non_camel_case_types)]
+		// pub struct #u_ident_packed {
+		// 	inner: #default_packed
+		// }
 
-		#(#amounts_interpolaters)*
-	};
+		// #(#amounts_interpolaters)*
+	</span>};
 
 	out.into()
-}
-
-<span class="kw">struct </span>AmountOfStd {
-	u8: u16,
-	u16: u16,
-	u32: u16,
-	u64: u16,
-	u128: u16
-}
-
-<span class="kw">fn </span>get_amount_of_std_for(bits: u16) -&gt; AmountOfStd {
-	AmountOfStd {
-		u8: get_amount_of_bits::&lt;<span class="number">8</span>&gt;(bits),
-		u16: get_amount_of_bits::&lt;<span class="number">16</span>&gt;(bits),
-		u32: get_amount_of_bits::&lt;<span class="number">32</span>&gt;(bits),
-		u64: get_amount_of_bits::&lt;<span class="number">64</span>&gt;(bits),
-		u128: get_amount_of_bits::&lt;<span class="number">128</span>&gt;(bits),
-	}
 }
 
 <span class="kw">fn </span>get_amount_of_bits&lt;<span class="kw">const </span>INNER_BITS: u16&gt;(bits: u16) -&gt; u16 {
