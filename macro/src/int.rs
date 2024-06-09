@@ -102,21 +102,21 @@ pub fn macro_impl(input: proc_macro::TokenStream) -> proc_macro::TokenStream {
 			inner: #u_default_inner
 		}
 
-		#[doc = concat!(
-			stringify!(#input_bits_literal),
-			"-bit unsigned integer, packed into ",
-			stringify!(#default_size_literal),
-			" ",
-			stringify!(#default_bits_literal),
-			"-bit integer",
-			#default_s
-		)]
-		#[allow(non_camel_case_types)]
-		pub struct #u_ident_packed {
-			inner: #default_packed
-		}
+		// #[doc = concat!(
+		// 	stringify!(#input_bits_literal),
+		// 	"-bit unsigned integer, packed into ",
+		// 	stringify!(#default_size_literal),
+		// 	" ",
+		// 	stringify!(#default_bits_literal),
+		// 	"-bit integer",
+		// 	#default_s
+		// )]
+		// #[allow(non_camel_case_types)]
+		// pub struct #u_ident_packed {
+		// 	inner: #default_packed
+		// }
 
-		#(#amounts_interpolaters)*
+		// #(#amounts_interpolaters)*
 	};
 
 	out.into()
