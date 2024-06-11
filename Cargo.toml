@@ -116,6 +116,7 @@ all = [
 all-unstable = [
 	"all",
 
+	"aoc-unstable",
 	"auth-unstable",
 	"bitstream-unstable",
 	"chainer-unstable",
@@ -132,6 +133,7 @@ all-unstable = [
 	"sudoku-unstable"
 ]
 
+aoc-unstable = []
 auth-unstable = [
 	"dep:argon2",
 	"dep:chacha20poly1305",

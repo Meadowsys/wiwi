@@ -1,5 +1,6 @@
 //! Prelude module, exporting types from enabled features
 #![cfg_attr(all(
+	not(feature = "aoc-unstable"),
 	not(feature = "auth-unstable"),
 	not(feature = "bitstream-unstable"),
 	not(feature = "chainer-unstable"),

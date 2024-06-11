@@ -17,6 +17,7 @@
 #![cfg_attr(kiwingay, doc = "everything, including unstable features! These include:")]
 #![cfg_attr(kiwingay, doc = "")]
 
+#![cfg_attr(all(feature = "aoc-unstable"),          doc = "- `aoc` (unstable)"         )]
 #![cfg_attr(all(feature = "auth-unstable"),         doc = "- `auth` (unstable)"        )]
 #![cfg_attr(all(feature = "bitstream-unstable"),    doc = "- `bitstream` (unstable)"   )]
 #![cfg_attr(all(feature = "chainer-unstable"),      doc = "- `chainer` (unstable)"     )]
@@ -66,6 +67,7 @@
 // ...yes, I'm doing it
 // (there's another one in prelude, copy/paste/modify for it)
 #![cfg_attr(all(
+	not(feature = "aoc-unstable"),
 	not(feature = "auth-unstable"),
 	not(feature = "bitstream-unstable"),
 	not(feature = "chainer-unstable"),
@@ -107,6 +109,10 @@
 
 mod _internal;
 pub mod prelude;
+
+#[cfg(feature = "aoc-unstable")]
+#[cfg_attr(docsrs, doc(cfg(feature = "aoc-unstable")))]
+pub mod aoc;
 
 #[cfg(feature = "auth-unstable")]
 #[cfg_attr(docsrs, doc(cfg(feature = "auth-unstable")))]
