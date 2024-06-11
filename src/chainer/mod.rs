@@ -7,7 +7,7 @@ mod vec;
 /// Temporary
 pub mod new {
 	pub use super::traits::{ ChainHalf, NonChainHalf };
-	pub use super::vec::VecChain;
+	pub use super::vec::{ vec_chain, VecChain };
 }
 
 macro_rules! chainer {

@@ -13,6 +13,23 @@ chainer! {
 	inner: Vec<T>
 }
 
+/// Creates a [`VecChain`] containing the arguments
+///
+/// Usage is same as [`vec!`], except it returns [`VecChain`] instead of [`Vec`].
+///
+/// # Examples
+///
+/// ```
+/// # use wiwi::chainer::new::{ VecChain, NonChainHalf, vec_chain };
+/// let chain = vec![0u8; 32].into_chainer();
+/// let chain = vec_chain![0u8; 32];
+/// ```
+#[macro_export]
+macro_rules! vec_chain {
+	[$($tt:tt)*] => { $crate::chainer::new::VecChain::from(vec![$($tt)*]) }
+}
+pub use vec_chain;
+
 impl<T> VecChain<T> {
 	/// Creates a new vector chain without allocating any capacity
 	///
