@@ -1,7 +1,7 @@
 //! Adapter traits and [`IterAdapter`], to aid in converting between and using std
 //! [`Iterator`]s as wiwi [`Iter`]s, and vice versa
 
-use super::{ DoubleEndedIter, IntoIter, Iter, SizeHint };
+use super::{ DoubleEndedIter, IntoIter, Iter, SizeHintOld };
 
 /// An adapter that wraps either a std [`Iterator`] or a wiwi [`Iter`], and then
 /// acts as the other. Basically, with every layer you layer it, it flip flops
@@ -36,10 +36,10 @@ impl<I: Iterator> Iter for IterAdapter<I> {
 		self.inner.next()
 	}
 
-	fn _size_hint_old(&self) -> SizeHint {
+	fn _size_hint_old(&self) -> SizeHintOld {
 		let (lower, upper) = self.inner.size_hint();
 
-		let bound = SizeHint::new()
+		let bound = SizeHintOld::new()
 			.with_lower_estimate(lower);
 
 		if let Some(upper) = upper {

@@ -1,8 +1,8 @@
 #[derive(Debug)]
 #[cfg_attr(test, derive(Clone, PartialEq, Eq))]
-pub struct SizeHint {
-	lower: SizeHintBound,
-	upper: SizeHintBound
+pub struct SizeHintOld {
+	lower: SizeHintBoundOld,
+	upper: SizeHintBoundOld
 }
 
 /// One side of the bound of size hint.
@@ -13,7 +13,7 @@ pub struct SizeHint {
 /// that take instances of this enum directly.
 #[derive(Debug)]
 #[cfg_attr(test, derive(Clone, PartialEq, Eq))]
-pub enum SizeHintBound {
+pub enum SizeHintBoundOld {
 	/// Hard bound, unsafe, reliable information for use in unsafe operations.
 	///
 	/// When this is returned as the lower bound, the iter promises to _always_ return
@@ -65,13 +65,13 @@ pub enum SizeHintBound {
 	Unknown
 }
 
-impl SizeHint {
+impl SizeHintOld {
 	pub fn new() -> Self {
 		Self::unknown()
 	}
 
 	pub fn into_std_hint(self) -> (usize, Option<usize>) {
-		use SizeHintBound::*;
+		use SizeHintBoundOld::*;
 
 		let lower = match self.lower {
 			HardBound { bound: val } | Estimate { estimate: val } => { val }
@@ -88,35 +88,35 @@ impl SizeHint {
 
 	pub fn unknown() -> Self {
 		Self {
-			lower: SizeHintBound::Unknown,
-			upper: SizeHintBound::Unknown
+			lower: SizeHintBoundOld::Unknown,
+			upper: SizeHintBoundOld::Unknown
 		}
 	}
 
 	pub fn with_lower_unknown(mut self) -> Self {
-		self.lower = SizeHintBound::Unknown;
+		self.lower = SizeHintBoundOld::Unknown;
 		self
 	}
 
 	pub fn with_upper_unknown(mut self) -> Self {
-		self.upper = SizeHintBound::Unknown;
+		self.upper = SizeHintBoundOld::Unknown;
 		self
 	}
 
 	pub fn estimate(estimate: usize) -> Self {
 		Self {
-			lower: SizeHintBound::Estimate { estimate },
-			upper: SizeHintBound::Estimate { estimate }
+			lower: SizeHintBoundOld::Estimate { estimate },
+			upper: SizeHintBoundOld::Estimate { estimate }
 		}
 	}
 
 	pub fn with_lower_estimate(mut self, estimate: usize) -> Self {
-		self.lower = SizeHintBound::Estimate { estimate };
+		self.lower = SizeHintBoundOld::Estimate { estimate };
 		self
 	}
 
 	pub fn with_upper_estimate(mut self, estimate: usize) -> Self {
-		self.upper = SizeHintBound::Estimate { estimate };
+		self.upper = SizeHintBoundOld::Estimate { estimate };
 		self
 	}
 
@@ -126,8 +126,8 @@ impl SizeHint {
 	/// The iter _must_ produce _exactly_ `bound` items.
 	pub unsafe fn hard_bound(bound: usize) -> Self {
 		Self {
-			lower: SizeHintBound::HardBound { bound },
-			upper: SizeHintBound::HardBound { bound }
+			lower: SizeHintBoundOld::HardBound { bound },
+			upper: SizeHintBoundOld::HardBound { bound }
 		}
 	}
 
@@ -136,7 +136,7 @@ impl SizeHint {
 	/// Consuming code is allowed to rely on this value for safety/correctness.
 	/// The iter _must_ produce at least `bound` items.
 	pub unsafe fn with_lower_hard_bound(mut self, bound: usize) -> Self {
-		self.lower = SizeHintBound::HardBound { bound };
+		self.lower = SizeHintBoundOld::HardBound { bound };
 		self
 	}
 
@@ -145,17 +145,17 @@ impl SizeHint {
 	/// Consuming code is allowed to rely on this value for safety/correctness.
 	/// The iter _must_ produce at most `bound` items.
 	pub unsafe fn with_upper_hard_bound(mut self, bound: usize) -> Self {
-		self.upper = SizeHintBound::HardBound { bound };
+		self.upper = SizeHintBoundOld::HardBound { bound };
 		self
 	}
 
 	/// Returns (lower, upper) bounds. Use this to `match` on a size hint to check it.
-	pub fn split(self) -> (SizeHintBound, SizeHintBound) {
+	pub fn split(self) -> (SizeHintBoundOld, SizeHintBoundOld) {
 		(self.lower, self.upper)
 	}
 }
 
-impl Default for SizeHint {
+impl Default for SizeHintOld {
 	/// Returns default size hint, or `(Unknown, Unknown)`.
 	fn default() -> Self {
 		Self::unknown()

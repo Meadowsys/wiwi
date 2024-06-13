@@ -1,4 +1,4 @@
-use super::{ Iter, SizeHint, SizeHintBound };
+use super::{ Iter, SizeHintOld, SizeHintBoundOld };
 
 pub trait Peekable: Iter {
 	type PeekItem;
@@ -34,12 +34,12 @@ where
 		self.peeked.take().unwrap_or_else(|| self.iter.next())
 	}
 
-	fn _size_hint_old(&self) -> SizeHint {
-		use SizeHintBound::*;
+	fn _size_hint_old(&self) -> SizeHintOld {
+		use SizeHintBoundOld::*;
 
 		let peeked = self.peeked.is_some() as usize;
 		let (lower, upper) = self.iter._size_hint_old().split();
-		let hint = SizeHint::new();
+		let hint = SizeHintOld::new();
 
 		let hint = match lower {
 			HardBound { bound } => unsafe { hint.with_lower_hard_bound(bound + peeked) }

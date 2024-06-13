@@ -1,4 +1,4 @@
-use super::{ IntoIter, Iter, SizeHint, SizeHintBound };
+use super::{ IntoIter, Iter, SizeHintOld, SizeHintBoundOld };
 
 macro_rules! iter_tuple_impl {
 	// input case
@@ -79,7 +79,7 @@ macro_rules! iter_tuple_impl {
 
 			// let mut hint to accomodate all tuples, but size 1 won't use it
 			#[allow(unused_mut)]
-			fn _size_hint_old(&self) -> SizeHint {
+			fn _size_hint_old(&self) -> SizeHintOld {
 				let Self($($rem_t,)* $curr_t,) = self;
 				// using curr_t since I need some seed value for the var
 				// and curr_t is very conveniently seperated and always present
@@ -102,11 +102,11 @@ iter_tuple_impl! {
 	(Tuple29 I29 29) (Tuple30 I30 30) (Tuple31 I31 31) (Tuple32 I32 32)
 }
 
-unsafe fn min_size_hint(h1: SizeHint, h2: SizeHint) -> SizeHint {
+unsafe fn min_size_hint(h1: SizeHintOld, h2: SizeHintOld) -> SizeHintOld {
 	let (lower1, upper1) = h1.split();
 	let (lower2, upper2) = h2.split();
 
-	let mut hint = SizeHint::new();
+	let mut hint = SizeHintOld::new();
 
 	hint = min_size_hint_bound::<true>(lower1, lower2, hint);
 	hint = min_size_hint_bound::<false>(upper1, upper2, hint);
@@ -115,8 +115,8 @@ unsafe fn min_size_hint(h1: SizeHint, h2: SizeHint) -> SizeHint {
 }
 
 #[inline]
-unsafe fn min_size_hint_bound<const LOWER: bool>(b1: SizeHintBound, b2: SizeHintBound, hint: SizeHint) -> SizeHint {
-	use SizeHintBound::*;
+unsafe fn min_size_hint_bound<const LOWER: bool>(b1: SizeHintBoundOld, b2: SizeHintBoundOld, hint: SizeHintOld) -> SizeHintOld {
+	use SizeHintBoundOld::*;
 
 	match (b1, b2) {
 		// if *BOTH* are hard bounds, we can return the minimum, since we will

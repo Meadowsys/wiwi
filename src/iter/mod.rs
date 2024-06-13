@@ -37,8 +37,8 @@ pub use repeat_per_item::RepeatPerItem;
 mod rev;
 pub use rev::Rev;
 
-mod size_hint;
-pub use size_hint::{ SizeHint, SizeHintBound };
+mod size_hint_old;
+pub use size_hint_old::{ SizeHintOld, SizeHintBoundOld };
 
 mod std_impl;
 
@@ -53,8 +53,8 @@ pub trait Iter {
 
 	fn next(&mut self) -> Option<Self::Item>;
 
-	fn _size_hint_old(&self) -> SizeHint {
-		SizeHint::default()
+	fn _size_hint_old(&self) -> SizeHintOld {
+		SizeHintOld::default()
 	}
 
 	fn for_each<F>(mut self, mut f: F)
@@ -100,7 +100,7 @@ pub trait Iter {
 	where
 		Self: Sized
 	{
-		use SizeHintBound::*;
+		use SizeHintBoundOld::*;
 		match self._size_hint_old().split() {
 			(HardBound { bound: u }, HardBound { bound: l }) if u == l && u != usize::MAX => { u }
 			_ => {

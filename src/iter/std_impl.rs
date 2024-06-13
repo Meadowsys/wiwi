@@ -2,7 +2,7 @@ use std::{ slice, vec };
 use std::marker::PhantomData;
 use std::mem::{ ManuallyDrop, size_of };
 use std::ptr::{ self, NonNull };
-use super::{ IntoIter, Iter, SizeHint };
+use super::{ IntoIter, Iter, SizeHintOld };
 
 pub struct VecIntoIter<T> {
 	/// - if ZST: this is a pointer to the start (vec.as_ptr()) and never changed
@@ -35,8 +35,8 @@ impl<T> Iter for VecIntoIter<T> {
 		Some(unsafe { ptr.read() })
 	}
 
-	fn _size_hint_old(&self) -> SizeHint {
-		unsafe { SizeHint::hard_bound(self.remaining) }
+	fn _size_hint_old(&self) -> SizeHintOld {
+		unsafe { SizeHintOld::hard_bound(self.remaining) }
 	}
 }
 

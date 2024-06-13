@@ -1,4 +1,4 @@
-use super::{ IntoIter, Iter, SizeHint, SizeHintBound };
+use super::{ IntoIter, Iter, SizeHintOld, SizeHintBoundOld };
 
 pub struct RepeatPerItem<I: Iter> {
 	iter: I,
@@ -92,11 +92,11 @@ where
 		}
 	}
 
-	fn _size_hint_old(&self) -> SizeHint {
-		use SizeHintBound::*;
+	fn _size_hint_old(&self) -> SizeHintOld {
+		use SizeHintBoundOld::*;
 
 		let (lower, upper) = self.iter._size_hint_old().split();
-		let hint = SizeHint::new();
+		let hint = SizeHintOld::new();
 
 		let hint = match lower {
 			HardBound { bound } => unsafe {

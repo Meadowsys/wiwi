@@ -1,4 +1,4 @@
-use super::{ Iter, SizeHint };
+use super::{ Iter, SizeHintOld };
 
 pub struct Map<I, F> {
 	iter: I,
@@ -31,7 +31,7 @@ where
 		self.iter.next().map(&mut self.f)
 	}
 
-	fn _size_hint_old(&self) -> SizeHint {
+	fn _size_hint_old(&self) -> SizeHintOld {
 		self.iter._size_hint_old()
 	}
 }
