@@ -53,7 +53,7 @@ pub trait Iter {
 
 	fn next(&mut self) -> Option<Self::Item>;
 
-	fn size_hint(&self) -> SizeHint {
+	fn _size_hint_old(&self) -> SizeHint {
 		SizeHint::default()
 	}
 
@@ -101,7 +101,7 @@ pub trait Iter {
 		Self: Sized
 	{
 		use SizeHintBound::*;
-		match self.size_hint().split() {
+		match self._size_hint_old().split() {
 			(HardBound { bound: u }, HardBound { bound: l }) if u == l && u != usize::MAX => { u }
 			_ => {
 				// TODO: impl based on fold?

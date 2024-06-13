@@ -31,8 +31,8 @@ where
 		self.iter.next().map(&mut self.f)
 	}
 
-	fn size_hint(&self) -> SizeHint {
-		self.iter.size_hint()
+	fn _size_hint_old(&self) -> SizeHint {
+		self.iter._size_hint_old()
 	}
 }
 

@@ -79,12 +79,12 @@ macro_rules! iter_tuple_impl {
 
 			// let mut hint to accomodate all tuples, but size 1 won't use it
 			#[allow(unused_mut)]
-			fn size_hint(&self) -> SizeHint {
+			fn _size_hint_old(&self) -> SizeHint {
 				let Self($($rem_t,)* $curr_t,) = self;
 				// using curr_t since I need some seed value for the var
 				// and curr_t is very conveniently seperated and always present
-				let mut hint = $curr_t.size_hint();
-				$(hint = unsafe { min_size_hint(hint, $rem_t.size_hint()) };)*
+				let mut hint = $curr_t._size_hint_old();
+				$(hint = unsafe { min_size_hint(hint, $rem_t._size_hint_old()) };)*
 				hint
 			}
 		}

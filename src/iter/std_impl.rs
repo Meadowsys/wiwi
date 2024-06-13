@@ -35,7 +35,7 @@ impl<T> Iter for VecIntoIter<T> {
 		Some(unsafe { ptr.read() })
 	}
 
-	fn size_hint(&self) -> SizeHint {
+	fn _size_hint_old(&self) -> SizeHint {
 		unsafe { SizeHint::hard_bound(self.remaining) }
 	}
 }

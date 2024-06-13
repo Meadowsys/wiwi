@@ -26,7 +26,7 @@ where
 		self.inner.next()
 	}
 
-	fn size_hint(&self) -> SizeHint {
-		self.inner.size_hint()
+	fn _size_hint_old(&self) -> SizeHint {
+		self.inner._size_hint_old()
 	}
 }

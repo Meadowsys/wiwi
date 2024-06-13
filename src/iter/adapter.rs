@@ -26,7 +26,7 @@ impl<I: Iter> Iterator for IterAdapter<I> {
 	}
 
 	fn size_hint(&self) -> (usize, Option<usize>) {
-		self.inner.size_hint().into_std_hint()
+		self.inner._size_hint_old().into_std_hint()
 	}
 }
 
@@ -36,7 +36,7 @@ impl<I: Iterator> Iter for IterAdapter<I> {
 		self.inner.next()
 	}
 
-	fn size_hint(&self) -> SizeHint {
+	fn _size_hint_old(&self) -> SizeHint {
 		let (lower, upper) = self.inner.size_hint();
 
 		let bound = SizeHint::new()

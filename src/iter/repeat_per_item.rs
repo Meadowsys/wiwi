@@ -92,10 +92,10 @@ where
 		}
 	}
 
-	fn size_hint(&self) -> SizeHint {
+	fn _size_hint_old(&self) -> SizeHint {
 		use SizeHintBound::*;
 
-		let (lower, upper) = self.iter.size_hint().split();
+		let (lower, upper) = self.iter._size_hint_old().split();
 		let hint = SizeHint::new();
 
 		let hint = match lower {

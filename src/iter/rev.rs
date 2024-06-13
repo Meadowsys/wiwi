@@ -21,8 +21,8 @@ impl<I: DoubleEndedIter> Iter for Rev<I> {
 		self.iter.next_back()
 	}
 
-	fn size_hint(&self) -> SizeHint {
-		self.iter.size_hint()
+	fn _size_hint_old(&self) -> SizeHint {
+		self.iter._size_hint_old()
 	}
 }
 

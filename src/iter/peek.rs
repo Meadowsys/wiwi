@@ -34,11 +34,11 @@ where
 		self.peeked.take().unwrap_or_else(|| self.iter.next())
 	}
 
-	fn size_hint(&self) -> SizeHint {
+	fn _size_hint_old(&self) -> SizeHint {
 		use SizeHintBound::*;
 
 		let peeked = self.peeked.is_some() as usize;
-		let (lower, upper) = self.iter.size_hint().split();
+		let (lower, upper) = self.iter._size_hint_old().split();
 		let hint = SizeHint::new();
 
 		let hint = match lower {
