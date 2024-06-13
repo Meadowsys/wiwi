@@ -13,6 +13,12 @@ pub use double_ended::DoubleEndedIter;
 mod empty;
 pub use empty::{ empty, Empty };
 
+mod enumerate;
+pub use enumerate::Enumerate;
+
+mod enumerate1;
+pub use enumerate1::Enumerate1;
+
 mod from_fn;
 pub use from_fn::{ from_fn, FromFn };
 
@@ -177,6 +183,20 @@ pub trait Iter {
 		RepeatPerItem::new(self, count)
 	}
 
+	fn enumerate(self) -> Enumerate<Self>
+	where
+		Self: Sized
+	{
+		Enumerate::new(self)
+	}
+
+	fn enumerate1(self) -> Enumerate1<Self>
+	where
+		Self: Sized
+	{
+		Enumerate1::new(self)
+	}
+
 	/*
 	next_chunk
 	last
@@ -190,7 +210,6 @@ pub trait Iter {
 	map
 	filter
 	filter_map
-	enumerate
 	peekable
 	skip_while
 	take_while
