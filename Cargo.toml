@@ -133,7 +133,9 @@ all-unstable = [
 	"sudoku-unstable"
 ]
 
-aoc-unstable = []
+aoc-unstable = [
+	"iter-unstable"
+]
 auth-unstable = [
 	"dep:argon2",
 	"dep:chacha20poly1305",
