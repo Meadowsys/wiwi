@@ -37,6 +37,9 @@ pub use repeat_per_item::RepeatPerItem;
 mod rev;
 pub use rev::Rev;
 
+mod size_hint;
+pub use size_hint::{ SizeHint, SizeHintImpl };
+
 mod size_hint_old;
 pub use size_hint_old::{ SizeHintOld, SizeHintBoundOld };
 
@@ -52,6 +55,14 @@ pub trait Iter {
 	type Item;
 
 	fn next(&mut self) -> Option<Self::Item>;
+
+	fn size_hint(&self) -> SizeHint {
+		unsafe { self.size_hint_impl().wrap() }
+	}
+
+	unsafe fn size_hint_impl(&self) -> SizeHintImpl {
+		SizeHint::unknown()
+	}
 
 	fn _size_hint_old(&self) -> SizeHintOld {
 		SizeHintOld::default()
