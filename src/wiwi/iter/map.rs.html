@@ -63,7 +63,7 @@
 <a href="#63" id="63">63</a>
 <a href="#64" id="64">64</a>
 <a href="#65" id="65">65</a>
-</pre></div><pre class="rust"><code><span class="kw">use super</span>::{ Iter, SizeHint };
+</pre></div><pre class="rust"><code><span class="kw">use super</span>::{ Iter, SizeHintImpl, SizeHintMarker };
 
 <span class="kw">pub struct </span>Map&lt;I, F&gt; {
 	iter: I,
@@ -96,8 +96,8 @@
 		<span class="self">self</span>.iter.next().map(<span class="kw-2">&amp;mut </span><span class="self">self</span>.f)
 	}
 
-	<span class="kw">fn </span>size_hint(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; SizeHint {
-		<span class="self">self</span>.iter.size_hint()
+	<span class="kw">unsafe fn </span>size_hint_impl(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="kw">_</span>: SizeHintMarker) -&gt; SizeHintImpl {
+		<span class="self">self</span>.iter.size_hint().into()
 	}
 }
 
@@ -125,7 +125,7 @@
 		<span class="kw">let </span>iter = iter.map(|i| i + <span class="number">8</span>);
 		<span class="kw">let </span>map_hint = iter.size_hint();
 		<span class="macro">assert_eq!</span>(hint, map_hint);
-		<span class="macro">assert_eq!</span>(hint, <span class="kw">unsafe </span>{ SizeHint::hard_bound(<span class="number">5</span>) });
+		<span class="macro">assert_eq!</span>(hint, <span class="kw">unsafe </span>{ SizeHintImpl::hard(<span class="number">5</span>) });
 	}
 }
 </code></pre></div></section></main></body></html>

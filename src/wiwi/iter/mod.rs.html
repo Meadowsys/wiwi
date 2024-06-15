@@ -279,6 +279,77 @@
 <a href="#279" id="279">279</a>
 <a href="#280" id="280">280</a>
 <a href="#281" id="281">281</a>
+<a href="#282" id="282">282</a>
+<a href="#283" id="283">283</a>
+<a href="#284" id="284">284</a>
+<a href="#285" id="285">285</a>
+<a href="#286" id="286">286</a>
+<a href="#287" id="287">287</a>
+<a href="#288" id="288">288</a>
+<a href="#289" id="289">289</a>
+<a href="#290" id="290">290</a>
+<a href="#291" id="291">291</a>
+<a href="#292" id="292">292</a>
+<a href="#293" id="293">293</a>
+<a href="#294" id="294">294</a>
+<a href="#295" id="295">295</a>
+<a href="#296" id="296">296</a>
+<a href="#297" id="297">297</a>
+<a href="#298" id="298">298</a>
+<a href="#299" id="299">299</a>
+<a href="#300" id="300">300</a>
+<a href="#301" id="301">301</a>
+<a href="#302" id="302">302</a>
+<a href="#303" id="303">303</a>
+<a href="#304" id="304">304</a>
+<a href="#305" id="305">305</a>
+<a href="#306" id="306">306</a>
+<a href="#307" id="307">307</a>
+<a href="#308" id="308">308</a>
+<a href="#309" id="309">309</a>
+<a href="#310" id="310">310</a>
+<a href="#311" id="311">311</a>
+<a href="#312" id="312">312</a>
+<a href="#313" id="313">313</a>
+<a href="#314" id="314">314</a>
+<a href="#315" id="315">315</a>
+<a href="#316" id="316">316</a>
+<a href="#317" id="317">317</a>
+<a href="#318" id="318">318</a>
+<a href="#319" id="319">319</a>
+<a href="#320" id="320">320</a>
+<a href="#321" id="321">321</a>
+<a href="#322" id="322">322</a>
+<a href="#323" id="323">323</a>
+<a href="#324" id="324">324</a>
+<a href="#325" id="325">325</a>
+<a href="#326" id="326">326</a>
+<a href="#327" id="327">327</a>
+<a href="#328" id="328">328</a>
+<a href="#329" id="329">329</a>
+<a href="#330" id="330">330</a>
+<a href="#331" id="331">331</a>
+<a href="#332" id="332">332</a>
+<a href="#333" id="333">333</a>
+<a href="#334" id="334">334</a>
+<a href="#335" id="335">335</a>
+<a href="#336" id="336">336</a>
+<a href="#337" id="337">337</a>
+<a href="#338" id="338">338</a>
+<a href="#339" id="339">339</a>
+<a href="#340" id="340">340</a>
+<a href="#341" id="341">341</a>
+<a href="#342" id="342">342</a>
+<a href="#343" id="343">343</a>
+<a href="#344" id="344">344</a>
+<a href="#345" id="345">345</a>
+<a href="#346" id="346">346</a>
+<a href="#347" id="347">347</a>
+<a href="#348" id="348">348</a>
+<a href="#349" id="349">349</a>
+<a href="#350" id="350">350</a>
+<a href="#351" id="351">351</a>
+<a href="#352" id="352">352</a>
 </pre></div><pre class="rust"><code><span class="kw">mod </span>adapter;
 <span class="kw">pub use </span>adapter::{
 	AsStdIterator,
@@ -293,6 +364,12 @@
 
 <span class="kw">mod </span>empty;
 <span class="kw">pub use </span>empty::{ empty, Empty };
+
+<span class="kw">mod </span>enumerate;
+<span class="kw">pub use </span>enumerate::Enumerate;
+
+<span class="kw">mod </span>enumerate1;
+<span class="kw">pub use </span>enumerate1::Enumerate1;
 
 <span class="kw">mod </span>from_fn;
 <span class="kw">pub use </span>from_fn::{ from_fn, FromFn };
@@ -313,7 +390,7 @@
 <span class="kw">pub use </span>rev::Rev;
 
 <span class="kw">mod </span>size_hint;
-<span class="kw">pub use </span>size_hint::{ SizeHint, SizeHintBound };
+<span class="kw">pub use </span>size_hint::{ SizeHint, SizeHintBound, SizeHintImpl, SizeHintInner, SizeHintMarker };
 
 <span class="kw">mod </span>std_impl;
 
@@ -329,7 +406,20 @@
 	<span class="kw">fn </span>next(<span class="kw-2">&amp;mut </span><span class="self">self</span>) -&gt; <span class="prelude-ty">Option</span>&lt;<span class="self">Self</span>::Item&gt;;
 
 	<span class="kw">fn </span>size_hint(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; SizeHint {
-		SizeHint::default()
+		<span class="comment">// SAFETY: `unsafe` on the impl method is to make implementors assert
+		// (for hard bounds) that it is implemented correctly. We have no invariants
+		// to uphold
+		</span><span class="kw">let </span>imp = <span class="kw">unsafe </span>{ <span class="self">self</span>.size_hint_impl(SizeHintMarker { _private: () }) };
+		SizeHint { inner: imp.inner }
+	}
+
+	<span class="doccomment">/// # Safety
+	///
+	/// Implementors must guarantee that the iter will adhere strictly to its
+	/// returned size hint. This is important for hard bounds, where the user of
+	/// the iter is allowed to rely on it for soundness reasons.
+	</span><span class="kw">unsafe fn </span>size_hint_impl(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="kw">_</span>: SizeHintMarker) -&gt; SizeHintImpl {
+		SizeHintImpl::unknown()
 	}
 
 	<span class="kw">fn </span>for_each&lt;F&gt;(<span class="kw-2">mut </span><span class="self">self</span>, <span class="kw-2">mut </span>f: F)
@@ -357,30 +447,69 @@
 		Map::new(<span class="self">self</span>, f)
 	}
 
-	<span class="doccomment">/// Consumes the iter and returns the number of items that were emitted.
+	<span class="doccomment">/// Consumes the iter and returns the number of items that were emitted
 	///
-	/// This method won't advance the iter if it doesn't have to. If the iter's
-	/// [`size_hint`] returns [`HardBound`] for both lower and upper bound, and
-	/// the bounds are equal, this method can safetly return that length. Otherwise,
-	/// it will iterate through the entire iter, counting the number of iterations,
-	/// which it then returns.
+	/// This method will try to do as little work as possible, and won't advance
+	/// the iter if it doesn't have to. If the iter's [`size_hint`](Iter::size_hint)
+	/// returns a [`Single`](SizeHintInner::Single) [`Hard`](SizeHintBound::Hard)
+	/// bound, this method can safetly return that length, since it is in the
+	/// contract of `size_hint` and hard bounds that the iter must return that
+	/// many items. Otherwise, it will iterate through the entire iter, counting
+	/// the number of iterations.
 	///
 	/// # Examples
 	///
 	/// TODO
-	///
-	/// [`size_hint`]: Iter::size_hint
-	/// [`HardBound`]: SizeHintBound::HardBound
 	</span><span class="kw">fn </span>count(<span class="kw-2">mut </span><span class="self">self</span>) -&gt; usize
 	<span class="kw">where
 		</span><span class="self">Self</span>: Sized
 	{
 		<span class="kw">use </span>SizeHintBound::<span class="kw-2">*</span>;
-		<span class="kw">match </span><span class="self">self</span>.size_hint().split() {
-			(HardBound { bound: u }, HardBound { bound: l }) <span class="kw">if </span>u == l &amp;&amp; u != usize::MAX =&gt; { u }
-			<span class="kw">_ </span>=&gt; {
-				<span class="comment">// TODO: impl based on fold?
-				</span><span class="kw">let </span><span class="kw-2">mut </span>count = <span class="number">0</span>;
+		<span class="kw">use </span>SizeHintInner::<span class="kw-2">*</span>;
+
+		<span class="comment">// get "starting" count, early exiting if definitive count can be obtained
+		</span><span class="kw">match </span><span class="self">self</span>.size_hint().into_inner() {
+			<span class="comment">// iter asserts it would iterate exactly this many times
+			</span>Single { bound: Hard { count } } =&gt; { count }
+
+			Range { lower: Hard { count: lower }, upper: Hard { count: upper } } =&gt; {
+				<span class="kw">for </span>i <span class="kw">in </span><span class="number">0</span>..lower {
+					<span class="kw">let </span>item = <span class="self">self</span>.next();
+					<span class="macro">debug_assert!</span>(item.is_some(), <span class="string">"iter unsafely asserts to have at least {lower} items, but actually had {i} items"</span>);
+				}
+
+				<span class="kw">let </span><span class="kw-2">mut </span>count = lower;
+				<span class="kw">while </span><span class="self">self</span>.next().is_some() { count += <span class="number">1 </span>}
+				<span class="macro">debug_assert!</span>(count &lt;= upper, <span class="string">"iter unsafely asserts to have at most {upper} items, but actually had {count} items"</span>);
+
+				count
+			}
+
+			Lower { bound: Hard { <span class="kw-2">mut </span>count } } | Range { lower: Hard { <span class="kw-2">mut </span>count }, .. }=&gt; {
+				<span class="kw">for </span>i <span class="kw">in </span><span class="number">0</span>..count {
+					<span class="kw">let </span>item = <span class="self">self</span>.next();
+					<span class="macro">debug_assert!</span>(item.is_some(), <span class="string">"iter unsafely asserts to have at least {count} items, but actually had {i} items"</span>);
+				}
+
+				<span class="kw">while </span><span class="self">self</span>.next().is_some() { count += <span class="number">1 </span>}
+				count
+			}
+
+			Upper { bound: Hard { count: orig_count } } | Range { upper: Hard { count: orig_count }, .. } =&gt; {
+				<span class="kw">let </span><span class="kw-2">mut </span>count = <span class="number">0</span>;
+				<span class="kw">while </span><span class="self">self</span>.next().is_some() { count += <span class="number">1 </span>}
+				<span class="macro">debug_assert!</span>(count &lt;= orig_count, <span class="string">"iter unsafely asserts to have at most {orig_count} items, but actually had {count} items"</span>);
+				count
+			}
+
+			<span class="comment">// generic impl
+			</span>Single { bound: Estimate { .. } }
+				| Lower { bound: Estimate { .. } }
+				| Upper { bound: Estimate { .. } }
+				| Range { lower: Estimate { .. }, upper: Estimate { .. } }
+				| Unknown
+			=&gt; {
+				<span class="kw">let </span><span class="kw-2">mut </span>count = <span class="number">0</span>;
 				<span class="kw">while </span><span class="self">self</span>.next().is_some() { count += <span class="number">1 </span>}
 				count
 			}
@@ -458,6 +587,20 @@
 		RepeatPerItem::new(<span class="self">self</span>, count)
 	}
 
+	<span class="kw">fn </span>enumerate(<span class="self">self</span>) -&gt; Enumerate&lt;<span class="self">Self</span>&gt;
+	<span class="kw">where
+		</span><span class="self">Self</span>: Sized
+	{
+		Enumerate::new(<span class="self">self</span>)
+	}
+
+	<span class="kw">fn </span>enumerate1(<span class="self">self</span>) -&gt; Enumerate1&lt;<span class="self">Self</span>&gt;
+	<span class="kw">where
+		</span><span class="self">Self</span>: Sized
+	{
+		Enumerate1::new(<span class="self">self</span>)
+	}
+
 	<span class="comment">/*
 	next_chunk
 	last
@@ -471,7 +614,6 @@
 	map
 	filter
 	filter_map
-	enumerate
 	peekable
 	skip_while
 	take_while

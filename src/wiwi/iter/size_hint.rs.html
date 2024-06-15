@@ -217,281 +217,223 @@
 <a href="#217" id="217">217</a>
 <a href="#218" id="218">218</a>
 <a href="#219" id="219">219</a>
-<a href="#220" id="220">220</a>
-<a href="#221" id="221">221</a>
-<a href="#222" id="222">222</a>
-<a href="#223" id="223">223</a>
-<a href="#224" id="224">224</a>
-<a href="#225" id="225">225</a>
-<a href="#226" id="226">226</a>
-<a href="#227" id="227">227</a>
-<a href="#228" id="228">228</a>
-<a href="#229" id="229">229</a>
-<a href="#230" id="230">230</a>
-<a href="#231" id="231">231</a>
-<a href="#232" id="232">232</a>
-<a href="#233" id="233">233</a>
-<a href="#234" id="234">234</a>
-<a href="#235" id="235">235</a>
-<a href="#236" id="236">236</a>
-<a href="#237" id="237">237</a>
-<a href="#238" id="238">238</a>
-<a href="#239" id="239">239</a>
-<a href="#240" id="240">240</a>
-<a href="#241" id="241">241</a>
-<a href="#242" id="242">242</a>
-<a href="#243" id="243">243</a>
-<a href="#244" id="244">244</a>
-<a href="#245" id="245">245</a>
-<a href="#246" id="246">246</a>
-<a href="#247" id="247">247</a>
-<a href="#248" id="248">248</a>
-</pre></div><pre class="rust"><code><span class="attr">#[derive(Debug)]
-#[cfg_attr(test, derive(Clone, PartialEq, Eq))]
+</pre></div><pre class="rust"><code><span class="kw">use </span><span class="kw">super</span>::Iter;
+
+<span class="attr">#[derive(Debug)]
+#[cfg_attr(test, derive(PartialEq, Eq))]
+#[repr(transparent)]
 </span><span class="kw">pub struct </span>SizeHint {
-	lower: SizeHintBound,
-	upper: SizeHintBound
+	<span class="kw">pub</span>(<span class="kw">super</span>) inner: SizeHintInner
 }
 
-<span class="doccomment">/// One side of the bound of size hint.
-///
-/// This struct is only useful either when used internally by [`SizeHint`] or
-/// returned by [`SizeHint`] for consumers of an iter. You can construct instances
-/// of this, but they're kinda useless on their own. [`SizeHint`] has no methods
-/// that take instances of this enum directly.
-</span><span class="attr">#[derive(Debug)]
-#[cfg_attr(test, derive(Clone, PartialEq, Eq))]
+<span class="attr">#[derive(Debug)]
+#[cfg_attr(test, derive(PartialEq, Eq))]
+#[repr(transparent)]
+</span><span class="kw">pub struct </span>SizeHintImpl {
+	<span class="kw">pub</span>(<span class="kw">super</span>) inner: SizeHintInner
+}
+
+<span class="attr">#[derive(Debug)]
+#[cfg_attr(test, derive(PartialEq, Eq))]
+</span><span class="kw">pub enum </span>SizeHintInner {
+	Unknown,
+	Lower { bound: SizeHintBound },
+	Upper { bound: SizeHintBound },
+	Single { bound: SizeHintBound },
+	Range { lower: SizeHintBound, upper: SizeHintBound }
+}
+
+<span class="attr">#[derive(Debug)]
+#[cfg_attr(test, derive(PartialEq, Eq))]
 </span><span class="kw">pub enum </span>SizeHintBound {
-	<span class="doccomment">/// Hard bound, unsafe, reliable information for use in unsafe operations.
-	///
-	/// When this is returned as the lower bound, the iter promises to _always_ return
-	/// _at least_ this many items.
-	///
-	/// When this is returned as the upper bound, the iter promises to _always_ return
-	/// _at most_ this many items.
-	///
-	/// Since it is allowed for unsafe code to rely on this value, if the iter
-	/// does not uphold its promise, it is undefined behaviour.
-	///
-	/// If the returned value is `usize::MAX`, the iter thinks it will return at
-	/// least / at most `usize::MAX` elements. The exact number has overflown and
-	/// that information has been lost. With this value, the bound is
-	/// automatically relaxed to an estimate, meaning unsafe code now _cannot_
-	/// rely on this value for safety/correctness.
-	///
-	/// # Rust std iterators
-	///
-	/// It is _never_ correct to return this for iters adapted from std's
-	/// iterator type, as std's `size_hint` does not provide such hard guarantees.
-	</span>HardBound { bound: usize },
+	Hard { count: usize },
+	Estimate { count: usize }
+}
 
-	<span class="doccomment">/// Only an estimation (unreliable for unsafe operations).
-	///
-	/// The most that this can be relied on is for optimisations. For example, a
-	/// vector may use this to preallocate values. The iter is allowed to not
-	/// follow the value it returns.
-	///
-	/// When this is returned as the lower bound, the iter says it will likely
-	/// return at least this many items.
-	///
-	/// When this is returned as the upper bound, the iter says it will likely
-	/// return at most this many items.
-	///
-	/// Unsafe code _must not_ rely on this value for safety/correctness.
-	///
-	/// If the returned value is `usize::MAX`, the iter thinks it will return at
-	/// least / at most `usize::MAX` elements. The exact number has overflown and
-	/// that information has been lost.
-	///
-	/// # Rust std iterators
-	///
-	/// You likely want this or [`Unknown`](SizeHintBound::Unknown) when adapting
-	/// an std iterator's size hint.
-	</span>Estimate { estimate: usize },
-
-	<span class="doccomment">/// Unknown bound. Anything goes :p
-	</span>Unknown
+<span class="doccomment">/// Iter consumers call [`size_hint`](Iter::size_hint), not [`size_hint_impl`](Iter::size_hint_impl)!
+///
+/// Really only just for consistency sake.
+</span><span class="kw">pub struct </span>SizeHintMarker {
+	<span class="kw">pub</span>(<span class="kw">super</span>) _private: ()
 }
 
 <span class="kw">impl </span>SizeHint {
-	<span class="kw">pub fn </span>new() -&gt; <span class="self">Self </span>{
-		<span class="self">Self</span>::unknown()
-	}
-
-	<span class="kw">pub fn </span>into_std_hint(<span class="self">self</span>) -&gt; (usize, <span class="prelude-ty">Option</span>&lt;usize&gt;) {
-		<span class="kw">use </span>SizeHintBound::<span class="kw-2">*</span>;
-
-		<span class="kw">let </span>lower = <span class="kw">match </span><span class="self">self</span>.lower {
-			HardBound { bound: val } | Estimate { estimate: val } =&gt; { val }
-			Unknown =&gt; { <span class="number">0 </span>}
-		};
-
-		<span class="kw">let </span>upper = <span class="kw">match </span><span class="self">self</span>.upper {
-			HardBound { bound: val } | Estimate { estimate: val } =&gt; { <span class="prelude-val">Some</span>(val) }
-			Unknown =&gt; { <span class="prelude-val">None </span>}
-		};
-
-		(lower, upper)
-	}
-
-	<span class="kw">pub fn </span>unknown() -&gt; <span class="self">Self </span>{
-		<span class="self">Self </span>{
-			lower: SizeHintBound::Unknown,
-			upper: SizeHintBound::Unknown
-		}
-	}
-
-	<span class="kw">pub fn </span>with_lower_unknown(<span class="kw-2">mut </span><span class="self">self</span>) -&gt; <span class="self">Self </span>{
-		<span class="self">self</span>.lower = SizeHintBound::Unknown;
-		<span class="self">self
-	</span>}
-
-	<span class="kw">pub fn </span>with_upper_unknown(<span class="kw-2">mut </span><span class="self">self</span>) -&gt; <span class="self">Self </span>{
-		<span class="self">self</span>.upper = SizeHintBound::Unknown;
-		<span class="self">self
-	</span>}
-
-	<span class="kw">pub fn </span>estimate(estimate: usize) -&gt; <span class="self">Self </span>{
-		<span class="self">Self </span>{
-			lower: SizeHintBound::Estimate { estimate },
-			upper: SizeHintBound::Estimate { estimate }
-		}
-	}
-
-	<span class="kw">pub fn </span>with_lower_estimate(<span class="kw-2">mut </span><span class="self">self</span>, estimate: usize) -&gt; <span class="self">Self </span>{
-		<span class="self">self</span>.lower = SizeHintBound::Estimate { estimate };
-		<span class="self">self
-	</span>}
-
-	<span class="kw">pub fn </span>with_upper_estimate(<span class="kw-2">mut </span><span class="self">self</span>, estimate: usize) -&gt; <span class="self">Self </span>{
-		<span class="self">self</span>.upper = SizeHintBound::Estimate { estimate };
-		<span class="self">self
-	</span>}
-
-	<span class="doccomment">/// # Safety
-	///
-	/// Consuming code is allow to rely on these bounds for safety/correctness.
-	/// The iter _must_ produce _exactly_ `bound` items.
-	</span><span class="kw">pub unsafe fn </span>hard_bound(bound: usize) -&gt; <span class="self">Self </span>{
-		<span class="self">Self </span>{
-			lower: SizeHintBound::HardBound { bound },
-			upper: SizeHintBound::HardBound { bound }
-		}
-	}
-
-	<span class="doccomment">/// # Safety
-	///
-	/// Consuming code is allowed to rely on this value for safety/correctness.
-	/// The iter _must_ produce at least `bound` items.
-	</span><span class="kw">pub unsafe fn </span>with_lower_hard_bound(<span class="kw-2">mut </span><span class="self">self</span>, bound: usize) -&gt; <span class="self">Self </span>{
-		<span class="self">self</span>.lower = SizeHintBound::HardBound { bound };
-		<span class="self">self
-	</span>}
-
-	<span class="doccomment">/// # Safety
-	///
-	/// Consuming code is allowed to rely on this value for safety/correctness.
-	/// The iter _must_ produce at most `bound` items.
-	</span><span class="kw">pub unsafe fn </span>with_upper_hard_bound(<span class="kw-2">mut </span><span class="self">self</span>, bound: usize) -&gt; <span class="self">Self </span>{
-		<span class="self">self</span>.upper = SizeHintBound::HardBound { bound };
-		<span class="self">self
-	</span>}
-
-	<span class="doccomment">/// Returns (lower, upper) bounds. Use this to `match` on a size hint to check it.
-	</span><span class="kw">pub fn </span>split(<span class="self">self</span>) -&gt; (SizeHintBound, SizeHintBound) {
-		(<span class="self">self</span>.lower, <span class="self">self</span>.upper)
+	<span class="attr">#[inline]
+	</span><span class="kw">pub fn </span>into_inner(<span class="self">self</span>) -&gt; SizeHintInner {
+		<span class="self">self</span>.inner
 	}
 }
 
-<span class="kw">impl </span>Default <span class="kw">for </span>SizeHint {
-	<span class="doccomment">/// Returns default size hint, or `(Unknown, Unknown)`.
-	</span><span class="kw">fn </span>default() -&gt; <span class="self">Self </span>{
-		<span class="self">Self</span>::unknown()
+<span class="kw">impl </span>SizeHintImpl {
+	<span class="attr">#[inline]
+	</span><span class="kw">unsafe fn </span>with_inner(inner: SizeHintInner) -&gt; <span class="self">Self </span>{
+		SizeHintImpl { inner }
+	}
+
+	<span class="attr">#[inline]
+	</span><span class="kw">unsafe fn </span>single(bound: SizeHintBound) -&gt; <span class="self">Self </span>{
+		<span class="self">Self</span>::with_inner(SizeHintInner::Lower { bound })
+	}
+
+	<span class="attr">#[inline]
+	</span><span class="kw">unsafe fn </span>lower(bound: SizeHintBound) -&gt; <span class="self">Self </span>{
+		<span class="self">Self</span>::with_inner(SizeHintInner::Lower { bound })
+	}
+
+	<span class="attr">#[inline]
+	</span><span class="kw">unsafe fn </span>upper(bound: SizeHintBound) -&gt; <span class="self">Self </span>{
+		<span class="self">Self</span>::with_inner(SizeHintInner::Upper { bound })
+	}
+
+	<span class="attr">#[inline]
+	</span><span class="kw">unsafe fn </span>range(lower: SizeHintBound, upper: SizeHintBound) -&gt; <span class="self">Self </span>{
+		<span class="self">Self</span>::with_inner(SizeHintInner::Range { lower, upper })
+	}
+
+	<span class="attr">#[inline]
+	</span><span class="kw">pub unsafe fn </span>unknown() -&gt; <span class="self">Self </span>{
+		<span class="self">Self</span>::with_inner(SizeHintInner::Unknown)
+	}
+
+	<span class="attr">#[inline]
+	</span><span class="kw">pub unsafe fn </span>hard(count: usize) -&gt; <span class="self">Self </span>{
+		<span class="self">Self</span>::single(SizeHintBound::Hard { count })
+	}
+
+	<span class="attr">#[inline]
+	</span><span class="kw">pub unsafe fn </span>estimate(count: usize) -&gt; <span class="self">Self </span>{
+		<span class="self">Self</span>::single(SizeHintBound::Estimate { count })
+	}
+
+	<span class="attr">#[inline]
+	</span><span class="kw">pub unsafe fn </span>lower_hard(count: usize) -&gt; <span class="self">Self </span>{
+		<span class="self">Self</span>::lower(SizeHintBound::Hard { count })
+	}
+
+	<span class="attr">#[inline]
+	</span><span class="kw">pub unsafe fn </span>lower_estimate(count: usize) -&gt; <span class="self">Self </span>{
+		<span class="self">Self</span>::lower(SizeHintBound::Estimate { count })
+	}
+
+	<span class="attr">#[inline]
+	</span><span class="kw">pub unsafe fn </span>upper_hard(count: usize) -&gt; <span class="self">Self </span>{
+		<span class="self">Self</span>::upper(SizeHintBound::Hard { count })
+	}
+
+	<span class="attr">#[inline]
+	</span><span class="kw">pub unsafe fn </span>upper_estimate(count: usize) -&gt; <span class="self">Self </span>{
+		<span class="self">Self</span>::upper(SizeHintBound::Estimate { count })
+	}
+
+	<span class="attr">#[inline]
+	</span><span class="kw">pub unsafe fn </span>range_hard(lower: usize, upper: usize) -&gt; <span class="self">Self </span>{
+		<span class="self">Self</span>::range(SizeHintBound::Hard { count: lower }, SizeHintBound::Hard { count: upper })
+	}
+
+	<span class="attr">#[inline]
+	</span><span class="kw">pub unsafe fn </span>range_estimate(lower: usize, upper: usize) -&gt; <span class="self">Self </span>{
+		<span class="self">Self</span>::range(SizeHintBound::Estimate { count: lower }, SizeHintBound::Estimate { count: upper })
+	}
+
+	<span class="attr">#[inline]
+	</span><span class="kw">pub unsafe fn </span>range_lhard_uestimate(lower: usize, upper: usize) -&gt; <span class="self">Self </span>{
+		<span class="self">Self</span>::range(SizeHintBound::Hard { count: lower }, SizeHintBound::Estimate { count: upper })
+	}
+
+	<span class="attr">#[inline]
+	</span><span class="kw">pub unsafe fn </span>range_lestimate_uhard(lower: usize, upper: usize) -&gt; <span class="self">Self </span>{
+		<span class="self">Self</span>::range(SizeHintBound::Estimate { count: lower }, SizeHintBound::Hard { count: upper })
+	}
+
+	<span class="attr">#[inline]
+	</span><span class="kw">pub fn </span>into_inner(<span class="self">self</span>) -&gt; SizeHintInner {
+		<span class="self">self</span>.inner
+	}
+}
+
+<span class="kw">impl </span>SizeHintInner {
+	<span class="kw">fn </span>into_std(<span class="self">self</span>) -&gt; (usize, <span class="prelude-ty">Option</span>&lt;usize&gt;) {
+		<span class="kw">use </span>SizeHintInner::<span class="kw-2">*</span>;
+		<span class="kw">use </span>SizeHintBound::<span class="kw-2">*</span>;
+
+		<span class="kw">match </span><span class="self">self </span>{
+			Unknown =&gt; { (<span class="number">0</span>, <span class="prelude-val">None</span>) }
+			Upper { bound: Hard { count } | Estimate { count } } =&gt; { (<span class="number">0</span>, <span class="prelude-val">Some</span>(count)) }
+			Lower { bound: Hard { count } | Estimate { count } } =&gt; { (count, <span class="prelude-val">None</span>) }
+			Single { bound: Hard { count } | Estimate { count } } =&gt; { (count, <span class="prelude-val">Some</span>(count)) }
+			Range {
+				lower: Estimate { count: cl } | Hard { count: cl },
+				upper: Estimate { count: cu } | Hard { count: cu }
+			} =&gt; { (cl, <span class="prelude-val">Some</span>(cu)) }
+		}
 	}
 }
 
 <span class="attr">#[cfg(test)]
-</span><span class="kw">mod </span>tests {
-	<span class="kw">use super</span>::<span class="kw-2">*</span>;
-
-	<span class="attr">#[test]
-	</span><span class="kw">fn </span>default() {
-		<span class="macro">assert_eq!</span>(SizeHint::default(), SizeHint::unknown());
+</span><span class="kw">impl </span>PartialEq&lt;SizeHintInner&gt; <span class="kw">for </span>SizeHint {
+	<span class="kw">fn </span>eq(<span class="kw-2">&amp;</span><span class="self">self</span>, other: <span class="kw-2">&amp;</span>SizeHintInner) -&gt; bool {
+		<span class="self">self</span>.inner.eq(other)
 	}
+}
 
-	<span class="attr">#[test]
-	</span><span class="kw">fn </span>construction() {
-		<span class="attr">#![deny(unused_unsafe)]
-
-		</span><span class="macro">assert_eq!</span>(SizeHint::new(), SizeHint::unknown());
-
-		<span class="macro">assert_eq!</span>(SizeHint::unknown(), SizeHint {
-			lower: SizeHintBound::Unknown,
-			upper: SizeHintBound::Unknown
-		});
-		<span class="macro">assert_eq!</span>(SizeHint::estimate(<span class="number">10</span>), SizeHint {
-			lower: SizeHintBound::Estimate { estimate: <span class="number">10 </span>},
-			upper: SizeHintBound::Estimate { estimate: <span class="number">10 </span>}
-		});
-		<span class="macro">assert_eq!</span>(<span class="kw">unsafe </span>{ SizeHint::hard_bound(<span class="number">10</span>) }, SizeHint {
-			lower: SizeHintBound::HardBound { bound: <span class="number">10 </span>},
-			upper: SizeHintBound::HardBound { bound: <span class="number">10 </span>}
-		});
-
-		<span class="macro">assert_eq!</span>(SizeHint::estimate(<span class="number">10</span>).with_lower_unknown(), SizeHint {
-			lower: SizeHintBound::Unknown,
-			upper: SizeHintBound::Estimate { estimate: <span class="number">10 </span>}
-		});
-		<span class="macro">assert_eq!</span>(SizeHint::estimate(<span class="number">10</span>).with_upper_unknown(), SizeHint {
-			lower: SizeHintBound::Estimate { estimate: <span class="number">10 </span>},
-			upper: SizeHintBound::Unknown
-		});
-
-		<span class="macro">assert_eq!</span>(SizeHint::unknown().with_lower_estimate(<span class="number">10</span>), SizeHint {
-			lower: SizeHintBound::Estimate { estimate: <span class="number">10 </span>},
-			upper: SizeHintBound::Unknown
-		});
-		<span class="macro">assert_eq!</span>(SizeHint::unknown().with_upper_estimate(<span class="number">10</span>), SizeHint {
-			lower: SizeHintBound::Unknown,
-			upper: SizeHintBound::Estimate { estimate: <span class="number">10 </span>}
-		});
-
-		<span class="macro">assert_eq!</span>(<span class="kw">unsafe </span>{ SizeHint::estimate(<span class="number">10</span>).with_upper_hard_bound(<span class="number">25</span>) }, SizeHint {
-			lower: SizeHintBound::Estimate { estimate: <span class="number">10 </span>},
-			upper: SizeHintBound::HardBound { bound: <span class="number">25 </span>}
-		});
-		<span class="macro">assert_eq!</span>(<span class="kw">unsafe </span>{ SizeHint::estimate(<span class="number">10</span>).with_lower_hard_bound(<span class="number">25</span>) }, SizeHint {
-			lower: SizeHintBound::HardBound { bound: <span class="number">25 </span>},
-			upper: SizeHintBound::Estimate { estimate: <span class="number">10 </span>}
-		});
-
-		<span class="kw">let </span>hint = <span class="kw">unsafe </span>{
-			SizeHint::new()
-				.with_upper_unknown()
-				.with_upper_estimate(<span class="number">475783</span>)
-				.with_lower_unknown()
-				.with_upper_hard_bound(<span class="number">3382</span>)
-				.with_lower_estimate(<span class="number">334</span>)
-				.with_upper_estimate(<span class="number">22222222</span>)
-				.with_lower_unknown()
-		};
-		<span class="macro">assert_eq!</span>(hint, SizeHint {
-			lower: SizeHintBound::Unknown,
-			upper: SizeHintBound::Estimate { estimate: <span class="number">22222222 </span>}
-		});
+<span class="attr">#[cfg(test)]
+</span><span class="kw">impl </span>PartialEq&lt;SizeHintInner&gt; <span class="kw">for </span>SizeHintImpl {
+	<span class="kw">fn </span>eq(<span class="kw-2">&amp;</span><span class="self">self</span>, other: <span class="kw-2">&amp;</span>SizeHintInner) -&gt; bool {
+		<span class="self">self</span>.inner.eq(other)
 	}
+}
 
-	<span class="attr">#[test]
-	</span><span class="kw">fn </span>split() {
-		<span class="kw">let </span>hint = <span class="kw">unsafe </span>{
-			SizeHint::new()
-				.with_lower_estimate(<span class="number">10</span>)
-				.with_upper_hard_bound(<span class="number">25</span>)
-		};
+<span class="attr">#[cfg(test)]
+</span><span class="kw">impl </span>PartialEq&lt;SizeHint&gt; <span class="kw">for </span>SizeHintInner {
+	<span class="kw">fn </span>eq(<span class="kw-2">&amp;</span><span class="self">self</span>, other: <span class="kw-2">&amp;</span>SizeHint) -&gt; bool {
+		<span class="self">self</span>.eq(<span class="kw-2">&amp;</span>other.inner)
+	}
+}
 
-		<span class="kw">let </span>(lower, higher) = hint.split();
-		<span class="macro">assert_eq!</span>(lower, SizeHintBound::Estimate { estimate: <span class="number">10 </span>});
-		<span class="macro">assert_eq!</span>(higher, SizeHintBound::HardBound { bound: <span class="number">25 </span>});
+<span class="attr">#[cfg(test)]
+</span><span class="kw">impl </span>PartialEq&lt;SizeHintImpl&gt; <span class="kw">for </span>SizeHintInner {
+	<span class="kw">fn </span>eq(<span class="kw-2">&amp;</span><span class="self">self</span>, other: <span class="kw-2">&amp;</span>SizeHintImpl) -&gt; bool {
+		<span class="self">self</span>.eq(<span class="kw-2">&amp;</span>other.inner)
+	}
+}
+
+<span class="attr">#[cfg(test)]
+</span><span class="kw">impl </span>PartialEq&lt;SizeHint&gt; <span class="kw">for </span>SizeHintImpl {
+	<span class="kw">fn </span>eq(<span class="kw-2">&amp;</span><span class="self">self</span>, other: <span class="kw-2">&amp;</span>SizeHint) -&gt; bool {
+		<span class="self">self</span>.inner.eq(<span class="kw-2">&amp;</span>other.inner)
+	}
+}
+
+<span class="attr">#[cfg(test)]
+</span><span class="kw">impl </span>PartialEq&lt;SizeHintImpl&gt; <span class="kw">for </span>SizeHint {
+	<span class="kw">fn </span>eq(<span class="kw-2">&amp;</span><span class="self">self</span>, other: <span class="kw-2">&amp;</span>SizeHintImpl) -&gt; bool {
+		<span class="self">self</span>.inner.eq(<span class="kw-2">&amp;</span>other.inner)
+	}
+}
+
+<span class="kw">impl </span>From&lt;(usize, <span class="prelude-ty">Option</span>&lt;usize&gt;)&gt; <span class="kw">for </span>SizeHintImpl {
+	<span class="kw">fn </span>from(value: (usize, <span class="prelude-ty">Option</span>&lt;usize&gt;)) -&gt; <span class="self">Self </span>{
+		<span class="kw">let </span>(lower, upper) = value;
+
+		<span class="kw">match </span>upper {
+			<span class="prelude-val">Some</span>(upper) <span class="kw">if </span>lower == upper =&gt; <span class="kw">unsafe </span>{ <span class="self">Self</span>::estimate(lower) }
+			<span class="prelude-val">Some</span>(upper) =&gt; <span class="kw">unsafe </span>{ <span class="self">Self</span>::range_estimate(lower, upper) }
+			<span class="prelude-val">None </span>=&gt; <span class="kw">unsafe </span>{ <span class="self">Self</span>::lower_estimate(lower) }
+		}
+	}
+}
+
+<span class="kw">impl </span>From&lt;SizeHint&gt; <span class="kw">for </span>(usize, <span class="prelude-ty">Option</span>&lt;usize&gt;) {
+	<span class="attr">#[inline]
+	</span><span class="kw">fn </span>from(value: SizeHint) -&gt; <span class="self">Self </span>{
+		value.inner.into_std()
+	}
+}
+
+<span class="kw">impl </span>From&lt;SizeHint&gt; <span class="kw">for </span>SizeHintImpl {
+	<span class="attr">#[inline]
+	</span><span class="kw">fn </span>from(value: SizeHint) -&gt; <span class="self">Self </span>{
+		<span class="self">Self </span>{ inner: value.inner }
 	}
 }
 </code></pre></div></section></main></body></html>

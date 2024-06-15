@@ -136,19 +136,10 @@
 <a href="#136" id="136">136</a>
 <a href="#137" id="137">137</a>
 <a href="#138" id="138">138</a>
-<a href="#139" id="139">139</a>
-<a href="#140" id="140">140</a>
-<a href="#141" id="141">141</a>
-<a href="#142" id="142">142</a>
-<a href="#143" id="143">143</a>
-<a href="#144" id="144">144</a>
-<a href="#145" id="145">145</a>
-<a href="#146" id="146">146</a>
-<a href="#147" id="147">147</a>
 </pre></div><pre class="rust"><code><span class="doccomment">//! Adapter traits and [`IterAdapter`], to aid in converting between and using std
 //! [`Iterator`]s as wiwi [`Iter`]s, and vice versa
 
-</span><span class="kw">use super</span>::{ DoubleEndedIter, IntoIter, Iter, SizeHint };
+</span><span class="kw">use super</span>::{ DoubleEndedIter, IntoIter, Iter, SizeHintImpl, SizeHintMarker };
 
 <span class="doccomment">/// An adapter that wraps either a std [`Iterator`] or a wiwi [`Iter`], and then
 /// acts as the other. Basically, with every layer you layer it, it flip flops
@@ -173,7 +164,7 @@
 	}
 
 	<span class="kw">fn </span>size_hint(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; (usize, <span class="prelude-ty">Option</span>&lt;usize&gt;) {
-		<span class="self">self</span>.inner.size_hint().into_std_hint()
+		<span class="self">self</span>.inner.size_hint().into()
 	}
 }
 
@@ -183,17 +174,8 @@
 		<span class="self">self</span>.inner.next()
 	}
 
-	<span class="kw">fn </span>size_hint(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; SizeHint {
-		<span class="kw">let </span>(lower, upper) = <span class="self">self</span>.inner.size_hint();
-
-		<span class="kw">let </span>bound = SizeHint::new()
-			.with_lower_estimate(lower);
-
-		<span class="kw">if let </span><span class="prelude-val">Some</span>(upper) = upper {
-			bound.with_upper_estimate(upper)
-		} <span class="kw">else </span>{
-			bound.with_upper_unknown()
-		}
+	<span class="kw">unsafe fn </span>size_hint_impl(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="kw">_</span>: SizeHintMarker) -&gt; SizeHintImpl {
+		<span class="self">self</span>.inner.size_hint().into()
 	}
 }
 

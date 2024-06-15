@@ -123,11 +123,15 @@
 <a href="#123" id="123">123</a>
 <a href="#124" id="124">124</a>
 <a href="#125" id="125">125</a>
+<a href="#126" id="126">126</a>
+<a href="#127" id="127">127</a>
+<a href="#128" id="128">128</a>
+<a href="#129" id="129">129</a>
 </pre></div><pre class="rust"><code><span class="kw">use </span>std::{ slice, vec };
 <span class="kw">use </span>std::marker::PhantomData;
 <span class="kw">use </span>std::mem::{ ManuallyDrop, size_of };
 <span class="kw">use </span>std::ptr::{ <span class="self">self</span>, NonNull };
-<span class="kw">use super</span>::{ IntoIter, Iter, SizeHint };
+<span class="kw">use super</span>::{ IntoIter, Iter, SizeHintImpl, SizeHintMarker };
 
 <span class="kw">pub struct </span>VecIntoIter&lt;T&gt; {
 	<span class="doccomment">/// - if ZST: this is a pointer to the start (vec.as_ptr()) and never changed
@@ -138,9 +142,11 @@
 	</span>ptr: <span class="kw-2">*const </span>T,
 	<span class="doccomment">/// Vec capacity
 	</span>capacity: usize,
-	<span class="doccomment">/// Vec len at the time of `into_iter` call
+	<span class="doccomment">/// Vec len at the time of `into_iter` call.
+	///
+	/// Used in drop to unshift `ptr` for non-ZSTs
 	</span>len: usize,
-	<span class="doccomment">/// Remaining elements to emit. Used in drop to unshift `ptr` for non-ZSTs
+	<span class="doccomment">/// Remaining elements to emit
 	</span>remaining: usize,
 	_marker: PhantomData&lt;T&gt;
 }
@@ -160,8 +166,8 @@
 		<span class="prelude-val">Some</span>(<span class="kw">unsafe </span>{ ptr.read() })
 	}
 
-	<span class="kw">fn </span>size_hint(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; SizeHint {
-		<span class="kw">unsafe </span>{ SizeHint::hard_bound(<span class="self">self</span>.remaining) }
+	<span class="kw">unsafe fn </span>size_hint_impl(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="kw">_</span>: SizeHintMarker) -&gt; SizeHintImpl {
+		SizeHintImpl::hard(<span class="self">self</span>.remaining)
 	}
 }
 
@@ -172,9 +178,11 @@
 		} <span class="kw">else </span>{
 			<span class="kw">unsafe </span>{
 				<span class="kw">let </span>consumed = <span class="self">self</span>.len - <span class="self">self</span>.remaining;
-				<span class="kw">let </span>original_ptr = (<span class="self">self</span>.ptr <span class="kw">as </span><span class="kw-2">*mut </span>T).sub(consumed);
+				<span class="kw">let </span>original_ptr = <span class="self">self</span>.ptr.sub(consumed) <span class="kw">as </span><span class="kw-2">*mut </span>T;
 
 				<span class="comment">// copy remaining elements to the front of ptr
+				// will overlap depeding on total items / amount returned by the iter
+				// (eg. 5 items, 4 remaining, so copying from indices 1..5 to 0..4)
 				</span>ptr::copy(<span class="self">self</span>.ptr, original_ptr, <span class="self">self</span>.remaining);
 
 				original_ptr

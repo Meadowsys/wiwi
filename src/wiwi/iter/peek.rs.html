@@ -119,7 +119,12 @@
 <a href="#119" id="119">119</a>
 <a href="#120" id="120">120</a>
 <a href="#121" id="121">121</a>
-</pre></div><pre class="rust"><code><span class="kw">use super</span>::{ Iter, SizeHint, SizeHintBound };
+<a href="#122" id="122">122</a>
+<a href="#123" id="123">123</a>
+<a href="#124" id="124">124</a>
+<a href="#125" id="125">125</a>
+<a href="#126" id="126">126</a>
+</pre></div><pre class="rust"><code><span class="kw">use super</span>::{ Iter, SizeHintBound, SizeHintImpl, SizeHintInner, SizeHintMarker };
 
 <span class="kw">pub trait </span>Peekable: Iter {
 	<span class="kw">type </span>PeekItem;
@@ -155,23 +160,28 @@
 		<span class="self">self</span>.peeked.take().unwrap_or_else(|| <span class="self">self</span>.iter.next())
 	}
 
-	<span class="kw">fn </span>size_hint(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; SizeHint {
+	<span class="kw">unsafe fn </span>size_hint_impl(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="kw">_</span>: SizeHintMarker) -&gt; SizeHintImpl {
 		<span class="kw">use </span>SizeHintBound::<span class="kw-2">*</span>;
+		<span class="kw">use </span>SizeHintInner::<span class="kw-2">*</span>;
 
 		<span class="kw">let </span>peeked = <span class="self">self</span>.peeked.is_some() <span class="kw">as </span>usize;
-		<span class="kw">let </span>(lower, upper) = <span class="self">self</span>.iter.size_hint().split();
-		<span class="kw">let </span>hint = SizeHint::new();
 
-		<span class="kw">let </span>hint = <span class="kw">match </span>lower {
-			HardBound { bound } =&gt; <span class="kw">unsafe </span>{ hint.with_lower_hard_bound(bound + peeked) }
-			Estimate { estimate } =&gt; { hint.with_lower_estimate(estimate + peeked) }
-			Unknown =&gt; { hint.with_lower_unknown() }
-		};
+		<span class="kw">match </span><span class="self">self</span>.iter.size_hint().into_inner() {
+			Unknown =&gt; { SizeHintImpl::unknown() }
 
-		<span class="kw">match </span>upper {
-			HardBound { bound } =&gt; <span class="kw">unsafe </span>{ hint.with_upper_hard_bound(bound + peeked) }
-			Estimate { estimate } =&gt; { hint.with_upper_estimate(estimate + peeked) }
-			Unknown =&gt; { hint.with_upper_unknown() }
+			Upper { bound: Hard { count } } =&gt; { SizeHintImpl::upper_hard(count + peeked) }
+			Upper { bound: Estimate { count } } =&gt; { SizeHintImpl::upper_estimate(count + peeked) }
+
+			Lower { bound: Hard { count } } =&gt; { SizeHintImpl::lower_hard(count + peeked) }
+			Lower { bound: Estimate { count } } =&gt; { SizeHintImpl::lower_estimate(count + peeked) }
+
+			Single { bound: Hard { count } } =&gt; { SizeHintImpl::hard(count + peeked) }
+			Single { bound: Estimate { count } } =&gt; { SizeHintImpl::estimate(count + peeked) }
+
+			Range { lower: Estimate { count: cl }, upper: Estimate { count: cu } } =&gt; { SizeHintImpl::range_estimate(cl + peeked, cu + peeked) }
+			Range { lower: Estimate { count: cl }, upper: Hard { count: cu } } =&gt; { SizeHintImpl::range_lestimate_uhard(cl + peeked, cu + peeked) }
+			Range { lower: Hard { count: cl }, upper: Estimate { count: cu } } =&gt; { SizeHintImpl::range_lhard_uestimate(cl + peeked, cu + peeked) }
+			Range { lower: Hard { count: cl }, upper: Hard { count: cu } } =&gt; { SizeHintImpl::range_hard(cl + peeked, cu + peeked) }
 		}
 	}
 }
@@ -198,22 +208,22 @@
 			.into_wiwi_iter()
 			.peekable();
 
-		<span class="macro">assert_eq!</span>(iter.size_hint(), <span class="kw">unsafe </span>{ SizeHint::hard_bound(<span class="number">3</span>) });
+		<span class="macro">assert_eq!</span>(iter.size_hint(), <span class="kw">unsafe </span>{ SizeHintImpl::hard(<span class="number">3</span>) });
 		<span class="macro">assert_eq!</span>(iter.peek(), <span class="prelude-val">Some</span>(<span class="kw-2">&amp;</span><span class="number">1</span>));
 		<span class="macro">assert_eq!</span>(iter.peek(), <span class="prelude-val">Some</span>(<span class="kw-2">&amp;</span><span class="number">1</span>));
-		<span class="macro">assert_eq!</span>(iter.size_hint(), <span class="kw">unsafe </span>{ SizeHint::hard_bound(<span class="number">3</span>) });
+		<span class="macro">assert_eq!</span>(iter.size_hint(), <span class="kw">unsafe </span>{ SizeHintImpl::hard(<span class="number">3</span>) });
 		<span class="macro">assert_eq!</span>(iter.next(), <span class="prelude-val">Some</span>(<span class="number">1</span>));
 
-		<span class="macro">assert_eq!</span>(iter.size_hint(), <span class="kw">unsafe </span>{ SizeHint::hard_bound(<span class="number">2</span>) });
+		<span class="macro">assert_eq!</span>(iter.size_hint(), <span class="kw">unsafe </span>{ SizeHintImpl::hard(<span class="number">2</span>) });
 		<span class="macro">assert_eq!</span>(iter.peek(), <span class="prelude-val">Some</span>(<span class="kw-2">&amp;</span><span class="number">2</span>));
 		<span class="macro">assert_eq!</span>(iter.peek(), <span class="prelude-val">Some</span>(<span class="kw-2">&amp;</span><span class="number">2</span>));
 		<span class="macro">assert_eq!</span>(iter.peek(), <span class="prelude-val">Some</span>(<span class="kw-2">&amp;</span><span class="number">2</span>));
 		<span class="macro">assert_eq!</span>(iter.peek(), <span class="prelude-val">Some</span>(<span class="kw-2">&amp;</span><span class="number">2</span>));
 		<span class="macro">assert_eq!</span>(iter.peek(), <span class="prelude-val">Some</span>(<span class="kw-2">&amp;</span><span class="number">2</span>));
-		<span class="macro">assert_eq!</span>(iter.size_hint(), <span class="kw">unsafe </span>{ SizeHint::hard_bound(<span class="number">2</span>) });
+		<span class="macro">assert_eq!</span>(iter.size_hint(), <span class="kw">unsafe </span>{ SizeHintImpl::hard(<span class="number">2</span>) });
 		<span class="macro">assert_eq!</span>(iter.next(), <span class="prelude-val">Some</span>(<span class="number">2</span>));
 
-		<span class="macro">assert_eq!</span>(iter.size_hint(), <span class="kw">unsafe </span>{ SizeHint::hard_bound(<span class="number">1</span>) });
+		<span class="macro">assert_eq!</span>(iter.size_hint(), <span class="kw">unsafe </span>{ SizeHintImpl::hard(<span class="number">1</span>) });
 		<span class="macro">assert_eq!</span>(iter.peek(), <span class="prelude-val">Some</span>(<span class="kw-2">&amp;</span><span class="number">3</span>));
 		<span class="macro">assert_eq!</span>(iter.peek(), <span class="prelude-val">Some</span>(<span class="kw-2">&amp;</span><span class="number">3</span>));
 		<span class="macro">assert_eq!</span>(iter.peek(), <span class="prelude-val">Some</span>(<span class="kw-2">&amp;</span><span class="number">3</span>));
@@ -229,10 +239,10 @@
 		</span><span class="macro">assert_eq!</span>(iter.peek(), <span class="prelude-val">Some</span>(<span class="kw-2">&amp;</span><span class="number">3</span>));
 		<span class="macro">assert_eq!</span>(iter.peek(), <span class="prelude-val">Some</span>(<span class="kw-2">&amp;</span><span class="number">3</span>));
 		<span class="macro">assert_eq!</span>(iter.peek(), <span class="prelude-val">Some</span>(<span class="kw-2">&amp;</span><span class="number">3</span>));
-		<span class="macro">assert_eq!</span>(iter.size_hint(), <span class="kw">unsafe </span>{ SizeHint::hard_bound(<span class="number">1</span>) });
+		<span class="macro">assert_eq!</span>(iter.size_hint(), <span class="kw">unsafe </span>{ SizeHintImpl::hard(<span class="number">1</span>) });
 		<span class="macro">assert_eq!</span>(iter.next(), <span class="prelude-val">Some</span>(<span class="number">3</span>));
 
-		<span class="macro">assert_eq!</span>(iter.size_hint(), <span class="kw">unsafe </span>{ SizeHint::hard_bound(<span class="number">0</span>) });
+		<span class="macro">assert_eq!</span>(iter.size_hint(), <span class="kw">unsafe </span>{ SizeHintImpl::hard(<span class="number">0</span>) });
 		<span class="macro">assert_eq!</span>(iter.peek(), <span class="prelude-val">None</span>);
 		<span class="macro">assert_eq!</span>(iter.peek(), <span class="prelude-val">None</span>);
 		<span class="macro">assert_eq!</span>(iter.peek(), <span class="prelude-val">None</span>);
