@@ -132,6 +132,11 @@ all-unstable = [
 	"string-pool-unstable",
 	"sudoku-unstable"
 ]
+all-addons = [
+	"hashbrown",
+	"image",
+	"serde-json"
+]
 
 aoc-unstable = [
 	"iter-unstable"

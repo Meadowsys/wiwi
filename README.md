@@ -38,6 +38,8 @@ In addition to the features listed below, there exists a feature `all` that will
 
 These features enable integrations between `wiwi` and 3rd-party crates for the features you have enabled, where available. If no integrations are available for the features of wiwi that are enabled, addon features will silently do nothing.
 
+There is a feature `all-addons` that will enable every single addon feature. This can really bloat your dependency tree, make sure you know what you want to do!
+
 - **`hashbrown`**
 - **`image`**
 - **`serde-json`**
