@@ -95,20 +95,19 @@ pub trait Iter {
 		Map::new(self, f)
 	}
 
-	/// Consumes the iter and returns the number of items that were emitted.
+	/// Consumes the iter and returns the number of items that were emitted
 	///
-	/// This method won't advance the iter if it doesn't have to. If the iter's
-	/// [`size_hint`] returns [`HardBound`] for both lower and upper bound, and
-	/// the bounds are equal, this method can safetly return that length. Otherwise,
-	/// it will iterate through the entire iter, counting the number of iterations,
-	/// which it then returns.
+	/// This method will try to do as little work as possible, and won't advance
+	/// the iter if it doesn't have to. If the iter's [`size_hint`](Iter::size_hint)
+	/// returns a [`Single`](SizeHintInner::Single) [`Hard`](SizeHintBound::Hard)
+	/// bound, this method can safetly return that length, since it is in the
+	/// contract of `size_hint` and hard bounds that the iter must return that
+	/// many items. Otherwise, it will iterate through the entire iter, counting
+	/// the number of iterations.
 	///
 	/// # Examples
 	///
 	/// TODO
-	///
-	/// [`size_hint`]: Iter::size_hint
-	/// [`HardBound`]: SizeHintBound::HardBound
 	fn count(mut self) -> usize
 	where
 		Self: Sized
@@ -118,6 +117,7 @@ pub trait Iter {
 
 		// get "starting" count, early exiting if definitive count can be obtained
 		match self.size_hint().into_inner() {
+			// iter asserts it would iterate exactly this many times
 			Single { bound: Hard { count } } => { count }
 
 			Range { lower: Hard { count: lower }, upper: Hard { count: upper } } => {
@@ -150,6 +150,7 @@ pub trait Iter {
 				count
 			}
 
+			// generic impl
 			Single { bound: Estimate { .. } }
 				| Lower { bound: Estimate { .. } }
 				| Upper { bound: Estimate { .. } }
