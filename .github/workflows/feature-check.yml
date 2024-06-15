@@ -19,3 +19,6 @@ jobs:
 
     - name: check features individually
       run: cargo hack check --verbose --each-feature
+
+    - name: test features individually
+      run: cargo hack test --verbose --each-feature
