@@ -38,10 +38,7 @@ mod rev;
 pub use rev::Rev;
 
 mod size_hint;
-pub use size_hint::{ SizeHint, SizeHintImpl };
-
-mod size_hint_old;
-pub use size_hint_old::{ SizeHintOld, SizeHintBoundOld };
+pub use size_hint::{ SizeHint, SizeHintBound, SizeHintImpl, SizeHintInner, SizeHintMarker };
 
 mod std_impl;
 
@@ -57,15 +54,20 @@ pub trait Iter {
 	fn next(&mut self) -> Option<Self::Item>;
 
 	fn size_hint(&self) -> SizeHint {
-		unsafe { self.size_hint_impl().wrap() }
+		// SAFETY: `unsafe` on the impl method is to make implementors assert
+		// (for hard bounds) that it is implemented correctly. We have no invariants
+		// to uphold
+		let imp = unsafe { self.size_hint_impl(SizeHintMarker { _private: () }) };
+		SizeHint { inner: imp.inner }
 	}
 
-	unsafe fn size_hint_impl(&self) -> SizeHintImpl {
-		SizeHint::unknown()
-	}
-
-	fn _size_hint_old(&self) -> SizeHintOld {
-		SizeHintOld::default()
+	/// # Safety
+	///
+	/// Implementors must guarantee that the iter will adhere strictly to its
+	/// returned size hint. This is important for hard bounds, where the user of
+	/// the iter is allowed to rely on it for soundness reasons.
+	unsafe fn size_hint_impl(&self, _: SizeHintMarker) -> SizeHintImpl {
+		SizeHintImpl::unknown()
 	}
 
 	fn for_each<F>(mut self, mut f: F)
@@ -111,11 +113,49 @@ pub trait Iter {
 	where
 		Self: Sized
 	{
-		use SizeHintBoundOld::*;
-		match self._size_hint_old().split() {
-			(HardBound { bound: u }, HardBound { bound: l }) if u == l && u != usize::MAX => { u }
-			_ => {
-				// TODO: impl based on fold?
+		use SizeHintBound::*;
+		use SizeHintInner::*;
+
+		// get "starting" count, early exiting if definitive count can be obtained
+		match self.size_hint().into_inner() {
+			Single { bound: Hard { count } } => { count }
+
+			Range { lower: Hard { count: lower }, upper: Hard { count: upper } } => {
+				for i in 0..lower {
+					let item = self.next();
+					debug_assert!(item.is_some(), "iter unsafely asserts to have at least {lower} items, but actually had {i} items");
+				}
+
+				let mut count = lower;
+				while self.next().is_some() { count += 1 }
+				debug_assert!(count <= upper, "iter unsafely asserts to have at most {upper} items, but actually had {count} items");
+
+				count
+			}
+
+			Lower { bound: Hard { mut count } } | Range { lower: Hard { mut count }, .. }=> {
+				for i in 0..count {
+					let item = self.next();
+					debug_assert!(item.is_some(), "iter unsafely asserts to have at least {count} items, but actually had {i} items");
+				}
+
+				while self.next().is_some() { count += 1 }
+				count
+			}
+
+			Upper { bound: Hard { count: orig_count } } | Range { upper: Hard { count: orig_count }, .. } => {
+				let mut count = 0;
+				while self.next().is_some() { count += 1 }
+				debug_assert!(count <= orig_count, "iter unsafely asserts to have at most {orig_count} items, but actually had {count} items");
+				count
+			}
+
+			Single { bound: Estimate { .. } }
+				| Lower { bound: Estimate { .. } }
+				| Upper { bound: Estimate { .. } }
+				| Range { lower: Estimate { .. }, upper: Estimate { .. } }
+				| Unknown
+			=> {
 				let mut count = 0;
 				while self.next().is_some() { count += 1 }
 				count

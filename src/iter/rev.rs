@@ -1,4 +1,4 @@
-use super::{ DoubleEndedIter, Iter, SizeHintOld };
+use super::{ DoubleEndedIter, Iter, SizeHintImpl, SizeHintMarker };
 
 pub struct Rev<I> {
 	iter: I
@@ -21,8 +21,8 @@ impl<I: DoubleEndedIter> Iter for Rev<I> {
 		self.iter.next_back()
 	}
 
-	fn _size_hint_old(&self) -> SizeHintOld {
-		self.iter._size_hint_old()
+	unsafe fn size_hint_impl(&self, _: SizeHintMarker) -> SizeHintImpl {
+		self.iter.size_hint().into()
 	}
 }
 

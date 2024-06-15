@@ -1,4 +1,4 @@
-use super::{ IntoIter, Iter, SizeHintOld, SizeHintBoundOld };
+use super::{ IntoIter, Iter, SizeHintBound, SizeHintImpl, SizeHintInner, SizeHintMarker };
 
 pub struct RepeatPerItem<I: Iter> {
 	iter: I,
@@ -92,30 +92,30 @@ where
 		}
 	}
 
-	fn _size_hint_old(&self) -> SizeHintOld {
-		use SizeHintBoundOld::*;
+	unsafe fn size_hint_impl(&self, _: SizeHintMarker) -> SizeHintImpl {
+		use SizeHintBound::*;
+		use SizeHintInner::*;
 
-		let (lower, upper) = self.iter._size_hint_old().split();
-		let hint = SizeHintOld::new();
+		macro_rules! count {
+			($count:ident) => { ($count * self.count) + self.remaining_count }
+		}
 
-		let hint = match lower {
-			HardBound { bound } => unsafe {
-				hint.with_lower_hard_bound((bound * self.count) + self.remaining_count)
-			}
-			Estimate { estimate } => {
-				hint.with_lower_estimate((estimate * self.count) + self.remaining_count)
-			}
-			Unknown => { hint.with_lower_unknown() }
-		};
+		match self.iter.size_hint().into_inner() {
+			Unknown => { SizeHintImpl::unknown() }
 
-		match upper {
-			HardBound { bound } => unsafe {
-				hint.with_upper_hard_bound((bound * self.count) + self.remaining_count)
-			}
-			Estimate { estimate } => {
-				hint.with_upper_estimate((estimate * self.count) + self.remaining_count)
-			}
-			Unknown => { hint.with_upper_unknown() }
+			Upper { bound: Hard { count } } => { SizeHintImpl::upper_hard(count!(count)) }
+			Upper { bound: Estimate { count } } => { SizeHintImpl::upper_estimate(count!(count)) }
+
+			Lower { bound: Hard { count } } => { SizeHintImpl::lower_hard(count!(count)) }
+			Lower { bound: Estimate { count } } => { SizeHintImpl::lower_estimate(count!(count)) }
+
+			Single { bound: Hard { count } } => { SizeHintImpl::hard(count!(count)) }
+			Single { bound: Estimate { count } } => { SizeHintImpl::estimate(count!(count)) }
+
+			Range { lower: Estimate { count: cl }, upper: Estimate { count: cu } } => { SizeHintImpl::range_estimate(count!(cl), count!(cu)) }
+			Range { lower: Estimate { count: cl }, upper: Hard { count: cu } } => { SizeHintImpl::range_lestimate_uhard(count!(cl), count!(cu)) }
+			Range { lower: Hard { count: cl }, upper: Estimate { count: cu } } => { SizeHintImpl::range_lhard_uestimate(count!(cl), count!(cu)) }
+			Range { lower: Hard { count: cl }, upper: Hard { count: cu } } => { SizeHintImpl::range_hard(count!(cl), count!(cu)) }
 		}
 	}
 }
@@ -165,19 +165,19 @@ mod tests {
 			.into_wiwi_iter()
 			.repeat_per_item(2);
 
-		assert_eq!(iter.size_hint(), unsafe { SizeHint::hard_bound(6) });
+		assert_eq!(iter.size_hint(), unsafe { SizeHintImpl::hard(6) });
 		assert_eq!(iter.next(), Some(1));
-		assert_eq!(iter.size_hint(), unsafe { SizeHint::hard_bound(5) });
+		assert_eq!(iter.size_hint(), unsafe { SizeHintImpl::hard(5) });
 		assert_eq!(iter.next(), Some(1));
-		assert_eq!(iter.size_hint(), unsafe { SizeHint::hard_bound(4) });
+		assert_eq!(iter.size_hint(), unsafe { SizeHintImpl::hard(4) });
 		assert_eq!(iter.next(), Some(2));
-		assert_eq!(iter.size_hint(), unsafe { SizeHint::hard_bound(3) });
+		assert_eq!(iter.size_hint(), unsafe { SizeHintImpl::hard(3) });
 		assert_eq!(iter.next(), Some(2));
-		assert_eq!(iter.size_hint(), unsafe { SizeHint::hard_bound(2) });
+		assert_eq!(iter.size_hint(), unsafe { SizeHintImpl::hard(2) });
 		assert_eq!(iter.next(), Some(3));
-		assert_eq!(iter.size_hint(), unsafe { SizeHint::hard_bound(1) });
+		assert_eq!(iter.size_hint(), unsafe { SizeHintImpl::hard(1) });
 		assert_eq!(iter.next(), Some(3));
-		assert_eq!(iter.size_hint(), unsafe { SizeHint::hard_bound(0) });
+		assert_eq!(iter.size_hint(), unsafe { SizeHintImpl::hard(0) });
 		assert_eq!(iter.next(), None);
 
 		let mut iter = vec![1, 2, 3]
@@ -187,19 +187,19 @@ mod tests {
 
 		// same as above, but estimate only
 		// (since there's an std iterator adapter in there)
-		assert_eq!(iter.size_hint(), SizeHint::estimate(6));
+		assert_eq!(iter.size_hint(), unsafe { SizeHintImpl::estimate(6) });
 		assert_eq!(iter.next(), Some(1));
-		assert_eq!(iter.size_hint(), SizeHint::estimate(5));
+		assert_eq!(iter.size_hint(), unsafe { SizeHintImpl::estimate(5) });
 		assert_eq!(iter.next(), Some(1));
-		assert_eq!(iter.size_hint(), SizeHint::estimate(4));
+		assert_eq!(iter.size_hint(), unsafe { SizeHintImpl::estimate(4) });
 		assert_eq!(iter.next(), Some(2));
-		assert_eq!(iter.size_hint(), SizeHint::estimate(3));
+		assert_eq!(iter.size_hint(), unsafe { SizeHintImpl::estimate(3) });
 		assert_eq!(iter.next(), Some(2));
-		assert_eq!(iter.size_hint(), SizeHint::estimate(2));
+		assert_eq!(iter.size_hint(), unsafe { SizeHintImpl::estimate(2) });
 		assert_eq!(iter.next(), Some(3));
-		assert_eq!(iter.size_hint(), SizeHint::estimate(1));
+		assert_eq!(iter.size_hint(), unsafe { SizeHintImpl::estimate(1) });
 		assert_eq!(iter.next(), Some(3));
-		assert_eq!(iter.size_hint(), SizeHint::estimate(0));
+		assert_eq!(iter.size_hint(), unsafe { SizeHintImpl::estimate(0) });
 		assert_eq!(iter.next(), None);
 	}
 }

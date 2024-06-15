@@ -2,7 +2,7 @@ use std::{ slice, vec };
 use std::marker::PhantomData;
 use std::mem::{ ManuallyDrop, size_of };
 use std::ptr::{ self, NonNull };
-use super::{ IntoIter, Iter, SizeHintOld };
+use super::{ IntoIter, Iter, SizeHintImpl, SizeHintMarker };
 
 pub struct VecIntoIter<T> {
 	/// - if ZST: this is a pointer to the start (vec.as_ptr()) and never changed
@@ -13,9 +13,11 @@ pub struct VecIntoIter<T> {
 	ptr: *const T,
 	/// Vec capacity
 	capacity: usize,
-	/// Vec len at the time of `into_iter` call
+	/// Vec len at the time of `into_iter` call.
+	///
+	/// Used in drop to unshift `ptr` for non-ZSTs
 	len: usize,
-	/// Remaining elements to emit. Used in drop to unshift `ptr` for non-ZSTs
+	/// Remaining elements to emit
 	remaining: usize,
 	_marker: PhantomData<T>
 }
@@ -35,8 +37,8 @@ impl<T> Iter for VecIntoIter<T> {
 		Some(unsafe { ptr.read() })
 	}
 
-	fn _size_hint_old(&self) -> SizeHintOld {
-		unsafe { SizeHintOld::hard_bound(self.remaining) }
+	unsafe fn size_hint_impl(&self, _: SizeHintMarker) -> SizeHintImpl {
+		SizeHintImpl::hard(self.remaining)
 	}
 }
 
@@ -47,9 +49,11 @@ impl<T> Drop for VecIntoIter<T> {
 		} else {
 			unsafe {
 				let consumed = self.len - self.remaining;
-				let original_ptr = (self.ptr as *mut T).sub(consumed);
+				let original_ptr = self.ptr.sub(consumed) as *mut T;
 
 				// copy remaining elements to the front of ptr
+				// will overlap depeding on total items / amount returned by the iter
+				// (eg. 5 items, 4 remaining, so copying from indices 1..5 to 0..4)
 				ptr::copy(self.ptr, original_ptr, self.remaining);
 
 				original_ptr

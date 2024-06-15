@@ -1,4 +1,4 @@
-use super::{ Iter, SizeHintOld, SizeHintBoundOld };
+use super::{ Iter, SizeHintBound, SizeHintImpl, SizeHintInner, SizeHintMarker };
 
 pub trait Peekable: Iter {
 	type PeekItem;
@@ -34,23 +34,28 @@ where
 		self.peeked.take().unwrap_or_else(|| self.iter.next())
 	}
 
-	fn _size_hint_old(&self) -> SizeHintOld {
-		use SizeHintBoundOld::*;
+	unsafe fn size_hint_impl(&self, _: SizeHintMarker) -> SizeHintImpl {
+		use SizeHintBound::*;
+		use SizeHintInner::*;
 
 		let peeked = self.peeked.is_some() as usize;
-		let (lower, upper) = self.iter._size_hint_old().split();
-		let hint = SizeHintOld::new();
 
-		let hint = match lower {
-			HardBound { bound } => unsafe { hint.with_lower_hard_bound(bound + peeked) }
-			Estimate { estimate } => { hint.with_lower_estimate(estimate + peeked) }
-			Unknown => { hint.with_lower_unknown() }
-		};
+		match self.iter.size_hint().into_inner() {
+			Unknown => { SizeHintImpl::unknown() }
 
-		match upper {
-			HardBound { bound } => unsafe { hint.with_upper_hard_bound(bound + peeked) }
-			Estimate { estimate } => { hint.with_upper_estimate(estimate + peeked) }
-			Unknown => { hint.with_upper_unknown() }
+			Upper { bound: Hard { count } } => { SizeHintImpl::upper_hard(count + peeked) }
+			Upper { bound: Estimate { count } } => { SizeHintImpl::upper_estimate(count + peeked) }
+
+			Lower { bound: Hard { count } } => { SizeHintImpl::lower_hard(count + peeked) }
+			Lower { bound: Estimate { count } } => { SizeHintImpl::lower_estimate(count + peeked) }
+
+			Single { bound: Hard { count } } => { SizeHintImpl::hard(count + peeked) }
+			Single { bound: Estimate { count } } => { SizeHintImpl::estimate(count + peeked) }
+
+			Range { lower: Estimate { count: cl }, upper: Estimate { count: cu } } => { SizeHintImpl::range_estimate(cl + peeked, cu + peeked) }
+			Range { lower: Estimate { count: cl }, upper: Hard { count: cu } } => { SizeHintImpl::range_lestimate_uhard(cl + peeked, cu + peeked) }
+			Range { lower: Hard { count: cl }, upper: Estimate { count: cu } } => { SizeHintImpl::range_lhard_uestimate(cl + peeked, cu + peeked) }
+			Range { lower: Hard { count: cl }, upper: Hard { count: cu } } => { SizeHintImpl::range_hard(cl + peeked, cu + peeked) }
 		}
 	}
 }
@@ -77,22 +82,22 @@ mod tests {
 			.into_wiwi_iter()
 			.peekable();
 
-		assert_eq!(iter.size_hint(), unsafe { SizeHint::hard_bound(3) });
+		assert_eq!(iter.size_hint(), unsafe { SizeHintImpl::hard(3) });
 		assert_eq!(iter.peek(), Some(&1));
 		assert_eq!(iter.peek(), Some(&1));
-		assert_eq!(iter.size_hint(), unsafe { SizeHint::hard_bound(3) });
+		assert_eq!(iter.size_hint(), unsafe { SizeHintImpl::hard(3) });
 		assert_eq!(iter.next(), Some(1));
 
-		assert_eq!(iter.size_hint(), unsafe { SizeHint::hard_bound(2) });
+		assert_eq!(iter.size_hint(), unsafe { SizeHintImpl::hard(2) });
 		assert_eq!(iter.peek(), Some(&2));
 		assert_eq!(iter.peek(), Some(&2));
 		assert_eq!(iter.peek(), Some(&2));
 		assert_eq!(iter.peek(), Some(&2));
 		assert_eq!(iter.peek(), Some(&2));
-		assert_eq!(iter.size_hint(), unsafe { SizeHint::hard_bound(2) });
+		assert_eq!(iter.size_hint(), unsafe { SizeHintImpl::hard(2) });
 		assert_eq!(iter.next(), Some(2));
 
-		assert_eq!(iter.size_hint(), unsafe { SizeHint::hard_bound(1) });
+		assert_eq!(iter.size_hint(), unsafe { SizeHintImpl::hard(1) });
 		assert_eq!(iter.peek(), Some(&3));
 		assert_eq!(iter.peek(), Some(&3));
 		assert_eq!(iter.peek(), Some(&3));
@@ -108,10 +113,10 @@ mod tests {
 		assert_eq!(iter.peek(), Some(&3));
 		assert_eq!(iter.peek(), Some(&3));
 		assert_eq!(iter.peek(), Some(&3));
-		assert_eq!(iter.size_hint(), unsafe { SizeHint::hard_bound(1) });
+		assert_eq!(iter.size_hint(), unsafe { SizeHintImpl::hard(1) });
 		assert_eq!(iter.next(), Some(3));
 
-		assert_eq!(iter.size_hint(), unsafe { SizeHint::hard_bound(0) });
+		assert_eq!(iter.size_hint(), unsafe { SizeHintImpl::hard(0) });
 		assert_eq!(iter.peek(), None);
 		assert_eq!(iter.peek(), None);
 		assert_eq!(iter.peek(), None);

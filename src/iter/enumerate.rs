@@ -1,4 +1,4 @@
-use super::{ Iter, SizeHintOld };
+use super::{ Iter, SizeHintImpl, SizeHintMarker };
 
 pub struct Enumerate<I> {
 	iter: I,
@@ -30,7 +30,7 @@ where
 		Some((next, next_i))
 	}
 
-	fn _size_hint_old(&self) -> SizeHintOld {
-		self.iter._size_hint_old()
+	unsafe fn size_hint_impl(&self, _: SizeHintMarker) -> SizeHintImpl {
+		self.iter.size_hint().into()
 	}
 }

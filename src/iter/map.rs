@@ -1,4 +1,4 @@
-use super::{ Iter, SizeHintOld };
+use super::{ Iter, SizeHintImpl, SizeHintMarker };
 
 pub struct Map<I, F> {
 	iter: I,
@@ -31,8 +31,8 @@ where
 		self.iter.next().map(&mut self.f)
 	}
 
-	fn _size_hint_old(&self) -> SizeHintOld {
-		self.iter._size_hint_old()
+	unsafe fn size_hint_impl(&self, _: SizeHintMarker) -> SizeHintImpl {
+		self.iter.size_hint().into()
 	}
 }
 
@@ -60,6 +60,6 @@ mod tests {
 		let iter = iter.map(|i| i + 8);
 		let map_hint = iter.size_hint();
 		assert_eq!(hint, map_hint);
-		assert_eq!(hint, unsafe { SizeHint::hard_bound(5) });
+		assert_eq!(hint, unsafe { SizeHintImpl::hard(5) });
 	}
 }

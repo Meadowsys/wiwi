@@ -1,4 +1,4 @@
-use super::{ Enumerate, Iter, SizeHintOld };
+use super::{ Enumerate, Iter, SizeHintImpl, SizeHintMarker };
 
 pub struct Enumerate1<I> {
 	// just sets `inner.count` to 1 and then piggy backs off of it
@@ -26,7 +26,7 @@ where
 		self.inner.next()
 	}
 
-	fn _size_hint_old(&self) -> SizeHintOld {
-		self.inner._size_hint_old()
+	unsafe fn size_hint_impl(&self, _: SizeHintMarker) -> SizeHintImpl {
+		self.inner.size_hint().into()
 	}
 }

@@ -1,5 +1,5 @@
 use std::marker::PhantomData;
-use super::{ Iter, SizeHintOld };
+use super::{ Iter, SizeHintImpl, SizeHintMarker };
 
 pub struct Empty<T> {
 	nothinglol: PhantomData<T>
@@ -17,8 +17,8 @@ impl<T> Iter for Empty<T> {
 		None
 	}
 
-	fn _size_hint_old(&self) -> SizeHintOld {
-		unsafe { SizeHintOld::hard_bound(0) }
+	unsafe fn size_hint_impl(&self, _: SizeHintMarker) -> SizeHintImpl {
+		SizeHintImpl::hard(0)
 	}
 }
 
@@ -42,7 +42,7 @@ mod tests {
 	#[test]
 	fn size_hint() {
 		let empty = super::empty::<String>();
-		assert_eq!(empty.size_hint(), unsafe { SizeHint::hard_bound(0) });
+		assert_eq!(empty.size_hint(), unsafe { SizeHintImpl::hard(0) });
 		// ... yeah, it's empty
 	}
 }
