@@ -30,7 +30,12 @@ macro_rules! iter_tuple_impl {
 	};
 
 	// impl case
-	{ @impl $curr_s:ident $curr_t:ident $curr_l:literal $(($rem_s:ident $rem_t:ident $rem_l:literal))* } => {
+	{ @impl $curr_s:ident $curr_t:ident $curr_f:ident $curr_l:literal $(($rem_s:ident $rem_t:ident $rem_f:ident $rem_l:literal))* } => {
+		// s = struct name
+		// t = T types
+		// f = field name
+		// l = literal, number of elements in tuple
+
 		/// Iter for tuples of size
 		#[doc = concat!(stringify!($curr_l), ".")]
 		///
@@ -46,9 +51,12 @@ macro_rules! iter_tuple_impl {
 		///
 		/// [`IntoWiwiIter`]: super::IntoWiwiIter
 		/// [`AsWiwiIter`]: super::AsWiwiIter
-		pub struct $curr_s<$($rem_t,)* $curr_t>($($rem_t,)* $curr_t);
+		pub struct $curr_s<$($rem_t,)* $curr_t> {
+			$($rem_f: $rem_t,)*
+			$curr_f: $curr_t,
+			exhausted: bool
+		}
 
-		#[allow(non_snake_case)]
 		impl<$($rem_t,)* $curr_t> IntoIter for ($($rem_t,)* $curr_t,)
 		where
 			$($rem_t: IntoIter,)*
@@ -58,12 +66,15 @@ macro_rules! iter_tuple_impl {
 			type Iter = $curr_s<$($rem_t::Iter,)* $curr_t::Iter>;
 
 			fn into_wiwi_iter(self) -> Self::Iter {
-				let ($($rem_t,)* $curr_t,) = self;
-				$curr_s($($rem_t.into_wiwi_iter(),)* $curr_t.into_wiwi_iter())
+				let ($($rem_f,)* $curr_f,) = self;
+				$curr_s {
+					$($rem_f: $rem_f.into_wiwi_iter(),)*
+					$curr_f: $curr_f.into_wiwi_iter(),
+					exhausted: false
+				}
 			}
 		}
 
-		#[allow(non_snake_case)]
 		impl<$($rem_t,)* $curr_t> Iter for $curr_s<$($rem_t,)* $curr_t>
 		where
 			$($rem_t: Iter,)*
@@ -72,47 +83,42 @@ macro_rules! iter_tuple_impl {
 			type Item = ($($rem_t::Item,)* $curr_t::Item,);
 
 			fn next(&mut self) -> Option<Self::Item> {
-				let Self($($rem_t,)* $curr_t,) = self;
-				let item = ($($rem_t.next(),)* $curr_t.next(),);
+				let Self { $($rem_f,)* $curr_f, exhausted } = self;
+				if *exhausted { return None }
+
+				let item = ($($rem_f.next(),)* $curr_f.next(),);
 				match item {
-					($(Some($rem_t),)* Some($curr_t),) => { Some(($($rem_t,)* $curr_t,)) }
-					_ => { None }
+					($(Some($rem_f),)* Some($curr_f),) => { Some(($($rem_f,)* $curr_f,)) }
+					_ => {
+						*exhausted = true;
+						None
+					}
 				}
 			}
 
 			unsafe fn size_hint_impl(&self, _: SizeHintMarker) -> SizeHintImpl {
-				let Self($($rem_t,)* $curr_t,) = self;
+				let Self { $($rem_f,)* $curr_f, exhausted } = self;
+				if *exhausted { return unsafe { SizeHintImpl::hard(0) } }
 
 				// using curr_t since I need some "seed value" for the var
 				// and curr_t is very conveniently seperated and always present
-				let hint = $curr_t.size_hint().into();
-				$(let hint = unsafe { min_size_hint(hint, $rem_t.size_hint().into()) };)*
+				let hint = $curr_f.size_hint().into();
+				$(let hint = unsafe { min_size_hint(hint, $rem_f.size_hint().into()) };)*
 				hint
 			}
-
-			// // let mut hint to accomodate all tuples, but size 1 won't use it
-			// #[allow(unused_mut)]
-			// fn _size_hint_old(&self) -> SizeHintOld {
-			// 	let Self($($rem_t,)* $curr_t,) = self;
-			// 	// using curr_t since I need some "seed value" for the var
-			// 	// and curr_t is very conveniently seperated and always present
-			// 	let mut hint = $curr_t._size_hint_old();
-			// 	$(hint = unsafe { min_size_hint(hint, $rem_t._size_hint_old()) };)*
-			// 	hint
-			// }
 		}
 	};
 }
 
 iter_tuple_impl! {
-	(Tuple1 I1 1)    (Tuple2 I2 2)    (Tuple3 I3 3)    (Tuple4 I4 4)
-	(Tuple5 I5 5)    (Tuple6 I6 6)    (Tuple7 I7 7)    (Tuple8 I8 8)
-	(Tuple9 I9 9)    (Tuple10 I10 10) (Tuple11 I11 11) (Tuple12 I12 12)
-	(Tuple13 I13 13) (Tuple14 I14 14) (Tuple15 I15 15) (Tuple16 I16 16)
-	(Tuple17 I17 17) (Tuple18 I18 18) (Tuple19 I19 19) (Tuple20 I20 20)
-	(Tuple21 I21 21) (Tuple22 I22 22) (Tuple23 I23 23) (Tuple24 I24 24)
-	(Tuple25 I25 25) (Tuple26 I26 26) (Tuple27 I27 27) (Tuple28 I28 28)
-	(Tuple29 I29 29) (Tuple30 I30 30) (Tuple31 I31 31) (Tuple32 I32 32)
+	(Tuple1 I1 iter1 1)    (Tuple2 I2 iter2 2)    (Tuple3 I3 iter3 3)    (Tuple4 I4 iter4 4)
+	(Tuple5 I5 iter5 5)    (Tuple6 I6 iter6 6)    (Tuple7 I7 iter7 7)    (Tuple8 I8 iter8 8)
+	(Tuple9 I9 iter9 9)    (Tuple10 I10 iter10 10) (Tuple11 I11 iter11 11) (Tuple12 I12 iter12 12)
+	(Tuple13 I13 iter13 13) (Tuple14 I14 iter14 14) (Tuple15 I15 iter15 15) (Tuple16 I16 iter16 16)
+	(Tuple17 I17 iter17 17) (Tuple18 I18 iter18 18) (Tuple19 I19 iter19 19) (Tuple20 I20 iter20 20)
+	(Tuple21 I21 iter21 21) (Tuple22 I22 iter22 22) (Tuple23 I23 iter23 23) (Tuple24 I24 iter24 24)
+	(Tuple25 I25 iter25 25) (Tuple26 I26 iter26 26) (Tuple27 I27 iter27 27) (Tuple28 I28 iter28 28)
+	(Tuple29 I29 iter29 29) (Tuple30 I30 iter30 30) (Tuple31 I31 iter31 31) (Tuple32 I32 iter32 32)
 }
 
 unsafe fn min_size_hint(h1: SizeHintImpl, h2: SizeHintImpl) -> SizeHintImpl {
