@@ -18,7 +18,7 @@ Hallo!
   - added `Iter::enumerate`
   - added `Iter::enumerate1`, identical to `Iter::enumerate` but it starts at 1, not 0
   - completely redid size hint struct
-  - tuple iterators will now fuse and never call any inner iterators again after one returns `None`
+  - tuple iters will now fuse and never advance any inner iters again after one returns `None`
 - feature `lazy-wrap`:
   - added some documentation on the trait impl bounds of `Send`, `Sync`, `UnwindSafe`, `RefUnwindSafe`, and `Unpin`
 - feature `with-cloned`:
