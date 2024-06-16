@@ -158,14 +158,29 @@
 /// ```
 #[macro_export]
 macro_rules! with_cloned {
-	{ mut $($thing:ident),+ in $($stuff:tt)* } => {{
-		$(#[allow(unused_mut)] let mut $thing = ::std::clone::Clone::clone(&$thing);)+
-		$($stuff)+
-	}};
-
-	{ $($thing:ident),+ in $($stuff:tt)* } => {{
-		$(#[allow(unused_mut)] let $thing = ::std::clone::Clone::clone(&$thing);)+
-		$($stuff)+
-	}};
+	($($stuff:tt)*) => {
+		// hide potential distracting implementation detail in docs
+		$crate::with_cloned::_with_cloned_impl! { $($stuff)* }
+	}
 }
 pub use with_cloned;
+
+#[doc(hidden)]
+#[macro_export]
+macro_rules! _with_cloned_impl {
+	{ mut $($thing:ident),+ in $($stuff:tt)* } => {
+		{
+			$(#[allow(unused_mut)] let mut $thing = ::std::clone::Clone::clone(&$thing);)+
+			$($stuff)+
+		}
+	};
+
+	{ $($thing:ident),+ in $($stuff:tt)* } => {
+		{
+			$(let $thing = ::std::clone::Clone::clone(&$thing);)+
+			$($stuff)+
+		}
+	};
+}
+#[doc(hidden)]
+pub use _with_cloned_impl;
