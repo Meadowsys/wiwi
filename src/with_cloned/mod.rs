@@ -175,14 +175,14 @@ macro_rules! _with_cloned_impl {
 	{ mut $($thing:ident),+ in $($stuff:tt)* } => {
 		{
 			$(#[allow(unused_mut)] let mut $thing = ::std::clone::Clone::clone(&$thing);)+
-			$($stuff)+
+			$($stuff)*
 		}
 	};
 
 	{ $($thing:ident),+ in $($stuff:tt)* } => {
 		{
 			$(let $thing = ::std::clone::Clone::clone(&$thing);)+
-			$($stuff)+
+			$($stuff)*
 		}
 	};
 }
