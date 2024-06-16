@@ -169,6 +169,21 @@
 <a href="#169" id="169">169</a>
 <a href="#170" id="170">170</a>
 <a href="#171" id="171">171</a>
+<a href="#172" id="172">172</a>
+<a href="#173" id="173">173</a>
+<a href="#174" id="174">174</a>
+<a href="#175" id="175">175</a>
+<a href="#176" id="176">176</a>
+<a href="#177" id="177">177</a>
+<a href="#178" id="178">178</a>
+<a href="#179" id="179">179</a>
+<a href="#180" id="180">180</a>
+<a href="#181" id="181">181</a>
+<a href="#182" id="182">182</a>
+<a href="#183" id="183">183</a>
+<a href="#184" id="184">184</a>
+<a href="#185" id="185">185</a>
+<a href="#186" id="186">186</a>
 </pre></div><pre class="rust"><code><span class="doccomment">/// Executes code with cloned values, so the executed code
 /// can take ownership of the value without moving the original
 ///
@@ -329,15 +344,30 @@
 /// ```
 </span><span class="attr">#[macro_export]
 </span><span class="macro">macro_rules!</span> with_cloned {
-	{ <span class="kw-2">mut </span>$(<span class="macro-nonterminal">$thing</span>:ident),+ <span class="kw">in </span>$(<span class="macro-nonterminal">$stuff</span>:tt)* } =&gt; {{
-		$(<span class="attr">#[allow(unused_mut)] </span><span class="kw">let </span><span class="kw-2">mut </span><span class="macro-nonterminal">$thing </span>= ::std::clone::Clone::clone(<span class="kw-2">&amp;</span><span class="macro-nonterminal">$thing</span>);)+
-		$(<span class="macro-nonterminal">$stuff</span>)+
-	}};
-
-	{ $(<span class="macro-nonterminal">$thing</span>:ident),+ <span class="kw">in </span>$(<span class="macro-nonterminal">$stuff</span>:tt)* } =&gt; {{
-		$(<span class="attr">#[allow(unused_mut)] </span><span class="kw">let </span><span class="macro-nonterminal">$thing </span>= ::std::clone::Clone::clone(<span class="kw-2">&amp;</span><span class="macro-nonterminal">$thing</span>);)+
-		$(<span class="macro-nonterminal">$stuff</span>)+
-	}};
+	($(<span class="macro-nonterminal">$stuff</span>:tt)<span class="kw-2">*</span>) =&gt; {
+		<span class="comment">// hide potential distracting implementation detail in docs
+		</span><span class="macro-nonterminal">$</span><span class="macro">crate::with_cloned::_with_cloned_impl!</span> { $(<span class="macro-nonterminal">$stuff</span>)* }
+	}
 }
 <span class="kw">pub use </span>with_cloned;
+
+<span class="attr">#[doc(hidden)]
+#[macro_export]
+</span><span class="macro">macro_rules!</span> _with_cloned_impl {
+	{ <span class="kw-2">mut </span>$(<span class="macro-nonterminal">$thing</span>:ident),+ <span class="kw">in </span>$(<span class="macro-nonterminal">$stuff</span>:tt)* } =&gt; {
+		{
+			$(<span class="attr">#[allow(unused_mut)] </span><span class="kw">let </span><span class="kw-2">mut </span><span class="macro-nonterminal">$thing </span>= ::std::clone::Clone::clone(<span class="kw-2">&amp;</span><span class="macro-nonterminal">$thing</span>);)+
+			$(<span class="macro-nonterminal">$stuff</span>)+
+		}
+	};
+
+	{ $(<span class="macro-nonterminal">$thing</span>:ident),+ <span class="kw">in </span>$(<span class="macro-nonterminal">$stuff</span>:tt)* } =&gt; {
+		{
+			$(<span class="kw">let </span><span class="macro-nonterminal">$thing </span>= ::std::clone::Clone::clone(<span class="kw-2">&amp;</span><span class="macro-nonterminal">$thing</span>);)+
+			$(<span class="macro-nonterminal">$stuff</span>)+
+		}
+	};
+}
+<span class="attr">#[doc(hidden)]
+</span><span class="kw">pub use </span>_with_cloned_impl;
 </code></pre></div></section></main></body></html>
