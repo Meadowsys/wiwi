@@ -32,6 +32,7 @@ In addition to the features listed below, there exists a feature `all` that will
 - **`string-pool`** (unstable) - Global immutable string pool and String type
 - **`sudoku`** (unstable) - Sudoku related... stuff
 - **`to-maybeuninit`** - Extension trait allowing converting from references to `MaybeUninit` references
+- **`with-cloned`** (unstable) - execute code using clones of variables in a temporary scope (see the module documentation, I'm not sure how to best describe it here ><)
 - **`z85`** - A fast (faster than `z85` crate[^2]) implementation of [ZeroMQ]'s [z85] format, a format to represent binary data as printable ASCII text. Think base64, but more efficient in encoded size. This implementation is not fully to spec, as it handles padding text to the correct length where the spec says the application code must handle it instead.
 
 ### Addon features

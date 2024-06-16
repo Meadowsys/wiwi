@@ -130,7 +130,8 @@ all-unstable = [
 	"path-unstable",
 	"serialiser-unstable",
 	"string-pool-unstable",
-	"sudoku-unstable"
+	"sudoku-unstable",
+	"with-cloned-unstable"
 ]
 all-addons = [
 	"hashbrown",
@@ -220,6 +221,7 @@ sudoku-unstable = [
 	"iter-unstable"
 ]
 to-maybeuninit = []
+with-cloned-unstable = []
 # ws = [
 # 	"dep:httparse",
 # 	"dep:thiserror",
