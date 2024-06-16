@@ -144,6 +144,7 @@
 /// nothing for now.
 ///
 /// Random, but the below code snippets are equivalent:
+///
 /// ```
 /// # use wiwi::with_cloned::with_cloned;
 /// # let value = String::new();

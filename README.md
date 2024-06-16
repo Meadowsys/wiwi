@@ -1,63 +1,62 @@
 # wiwi
 
-A lil lib containing misc utilities, and Stuff™. Contains some useful things, contains some silly things. Contains many things!
+A (not so) lil lib containing misc utilities, and Stuff™. Contains some useful things, contains some silly things. Contains many things!
 
 Everything wiwi can do is gated behind feature flags, none of which are enabled by default.
 
 ## Features
 
-<!-- make sure to check Cargo.toml and workflow files too -->
+Stable features are what you might expect, they are considered done and follow semver. Of course this does not mean there can't be functionality added, or that it can't break (if it does, there will be breaking semver bump, adhering to semver).
 
-In addition to the features listed below, there exists a feature `all` that will enable all (stable) features. The feature `all-unstable` will enable all stable and unstable features. Addon features are not included in any of these two features (for now, maybe).
+Unstable features are features that can be any degree of finished, can break whenever, or disappear whenever. They **_do not_** adhere to semver. Before becoming stable, unstable features have `-unstable` appended to their name, which will be removed when the feature stabilises. If you are using unstable features, you may find it wise to pin the version to an exact version (ie. semver `=` operator, ex. `wiwi = "=1.0.0"` in `Cargo.toml`).
 
-- **`aoc`** (unstable) - Utilities specific for writing solutions for [Advent of Code](https://adventofcode.com)
-- **`auth`** (unstable) - Some lower(ish) level utilities to aid in writing an authentication system, in which the client password is never sent across the wire. Quite heavily inspired by [Tuta's authentication/encryption system](https://tuta.com/nl/encryption).
-- **`bitstream`** (unstable) - bit stream encoder/decoder
-- **`chainer`** (unstable) - zero-cost wrappers that provide chaining APIs
+Addon features enable integrations between `wiwi` and 3rd-party crates. They are named after the crates that they enable integration for. They will enable things in features where applicable, and will silently do nothing if there's nothing to enable.
+
+There exist features `all` to enable all stable features, `all-unstable` to enable all unstable (in addition to stable) features, and `all-addons` to enable all addon features (but you very likely do not want this! Unless you're truly using all the integrations, this can and will bloat your dependency tree).
+
+Below you will find a list of features, with a short description of each, grouped by type.
+
+### Stable features
+
 - **`clock-timer`** - An interval tracking clock, yielding ticks at specified intervals and doing so for a specified duration.
 - **`debounce`** - Delay calling a function until a certain time period has passed since the last time it was called.
-- **`defer`** (unstable) - utilities for deferring running code
 - **`h`** - h
 - **`hex`** - Fast (faster than `hex` crate[^1]) implementation of hex encoding, supporting upper hex and lower hex.
-- **`id`** (unstable) - ID generator, with all IDs generated from one generater guaranteed to be monotonically increasing
-- **`int`** (unstable) - bigint / uneven int types
-- **`iter`** (unstable) - iter stuff
 - **`lazy-wrap`** - Wrapper around an initialisation function to lazily initialise a value on first access (can be used in statics)
-- **`lsl`** (unstable) - experimental lib to help with writing Second Life scripts in Rust... because yes, I got fed up with it very quickly and immediately missed Rust lol >< It is really only built for a dedicated crate just to write the script, rather than as part of another lib/app.
-- **`memory-usage`** (unstable) - Calculate actual memory usage of Rust structs, including derive macro for custom types
-- **`minesweeper`** (unstable) - core logic components for minesweeper games of arbitrary size
 - **`nominal`** - zero cost wrapper to put data in a newtype, taking advantage of nominal typing for increased safety
-- **`path`** (unstable) - UTF-8 only path manipulation utilities written from scratch
-- **`serialiser`** (unstable) - self describing, stable (once finished) binary serialiser, aiming for small output size by exploiting common patterns in real world data
-- **`string-pool`** (unstable) - Global immutable string pool and String type
-- **`sudoku`** (unstable) - Sudoku related... stuff
 - **`to-maybeuninit`** - Extension trait allowing converting from references to `MaybeUninit` references
-- **`with-cloned`** (unstable) - execute code using clones of variables in a temporary scope (see the module documentation, I'm not sure how to best describe it here ><)
 - **`z85`** - A fast (faster than `z85` crate[^2]) implementation of [ZeroMQ]'s [z85] format, a format to represent binary data as printable ASCII text. Think base64, but more efficient in encoded size. This implementation is not fully to spec, as it handles padding text to the correct length where the spec says the application code must handle it instead.
 
 ### Addon features
-
-These features enable integrations between `wiwi` and 3rd-party crates for the features you have enabled, where available. If no integrations are available for the features of wiwi that are enabled, addon features will silently do nothing.
-
-There is a feature `all-addons` that will enable every single addon feature. This can really bloat your dependency tree, make sure you know what you want to do!
 
 - **`hashbrown`**
 - **`image`**
 - **`serde-json`**
 
-## Platform support
-
-This package will only _officially_ support macOS and Linux. Windows support will only be on best effort basis. Still do submit issues, I just can't guarantee I can fix them etc (but you can PR me, if you'd like!).
-
 ### Unstable features
 
-**Unstable features are NOT covered by semver.** These features may change in breaking ways in non-breaking version bumps, and might even be incomplete. I'm doing this so I don't have to mess with commenting out features and stuff whenever I have something else that I'm publishing but still have unfinished work somewhere else >.>
+reminder: **Unstable features are NOT covered by semver!**
 
-Unstable features have `-unstable` appended to their name. For example, if I have feature `thingie`, while it is unstable the feature is named `thingie-unstable`. The `-unstable` suffix will be removed once the feature is stabilised.
+- **`aoc`** - Utilities specific for writing solutions for [Advent of Code](https://adventofcode.com)
+- **`auth`** - Some lower(ish) level utilities to aid in writing an authentication system, in which the client password is never sent across the wire. Quite heavily inspired by [Tuta's authentication/encryption system](https://tuta.com/nl/encryption).
+- **`bitstream`** - bit stream encoder/decoder
+- **`chainer`** - zero-cost wrappers that provide chaining APIs
+- **`defer`** - utilities for deferring running code
+- **`id`** - ID generator, with all IDs generated from one generater guaranteed to be monotonically increasing
+- **`int`** - bigint / uneven int types
+- **`iter`** - iter stuff
+- **`lsl`** - experimental lib to help with writing Second Life scripts in Rust... because yes, I got fed up with it very quickly and immediately missed Rust lol >< It is really only built for a dedicated crate just to write the script, rather than as part of another lib/app.
+- **`memory-usage`** - Calculate actual memory usage of Rust structs, including derive macro for custom types
+- **`minesweeper`** - core logic components for minesweeper games of arbitrary size
+- **`path`** - UTF-8 only path manipulation utilities written from scratch
+- **`serialiser`** - self describing, stable (once finished) binary serialiser, aiming for small output size by exploiting common patterns in real world data
+- **`string-pool`** - Global immutable string pool and String type
+- **`sudoku`** - Sudoku related... stuff
+- **`with-cloned`** - execute code using clones of variables in a temporary scope (see the documentation on `with_cloned!`, I'm not sure how to best summarise ><)
 
-Because unstable features may break whenever, if you use them, you may want to pin the version of `wiwi` to an exact version (ie. use the `=` semver operator).
+## Platform support
 
-**NOTE:** Just because a feature is _not_ "unstable", doesn't mean it won't break, _ever_. It can break, but of course those breakages will adhere to semver rules, as expected. Just don't be surprised when bumping a patch version causes an unstable feature to break everything. :p
+This package will only _officially_ support macOS and Linux. Windows support will only be on best effort basis. This does not mean I don't want to support Windows though! Just that my ability to do so is going to be lesser than unix platforms. Still do submit issues though, and you can PR me if you'd like!
 
 [zeromq]: https://zeromq.org
 [z85]: https://rfc.zeromq.org/spec/32
