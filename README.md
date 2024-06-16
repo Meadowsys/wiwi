@@ -32,7 +32,7 @@ There exist features `all` to enable all stable features, `all-unstable` to enab
 - **`hashbrown`**
 - **`image`**
 - **`large-tuples`** - by default, tuple implementations (where applicable of course) are available for tuples with up to 8 elements, which should be enough for most uses. Enabling this feature will enable implementations for tuples with up to 32 elements.
-- **`omega-tuples-of-doom`** - _Surely_, no one uses tuples with more than 32 elements in them... but we don't know everyone's use case, so this feature will enable implementations for tuples with up to 256 elements. _Hopefully_, that is enough for everything. :p
+- **`omega-tuples-of-doom`** - _Surely_, no one uses tuples with more than 32 elements in them... but we don't know everyone's use case, so this feature will enable implementations for tuples with up to 128 elements. _Hopefully_, that is enough for everything. :p
 - **`serde-json`**
 
 ### Unstable features
