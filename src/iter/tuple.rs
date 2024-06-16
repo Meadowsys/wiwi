@@ -631,17 +631,30 @@ mod tests {
 	fn size_hint() {
 		let mut iter = (vec![1u8, 2, 3, 4, 5], vec![7usize, 6, 5, 4, 3, 2, 1]).into_wiwi_iter();
 
+		assert!(!iter.exhausted);
 		assert_eq!(iter.size_hint(), unsafe { SizeHintImpl::hard(5) });
 		assert_eq!(iter.next(), Some((1, 7)));
+
+		assert!(!iter.exhausted);
 		assert_eq!(iter.size_hint(), unsafe { SizeHintImpl::hard(4) });
 		assert_eq!(iter.next(), Some((2, 6)));
+
+		assert!(!iter.exhausted);
 		assert_eq!(iter.size_hint(), unsafe { SizeHintImpl::hard(3) });
 		assert_eq!(iter.next(), Some((3, 5)));
+
+		assert!(!iter.exhausted);
 		assert_eq!(iter.size_hint(), unsafe { SizeHintImpl::hard(2) });
 		assert_eq!(iter.next(), Some((4, 4)));
+
+		assert!(!iter.exhausted);
 		assert_eq!(iter.size_hint(), unsafe { SizeHintImpl::hard(1) });
 		assert_eq!(iter.next(), Some((5, 3)));
+
+		assert!(!iter.exhausted);
 		assert_eq!(iter.size_hint(), unsafe { SizeHintImpl::hard(0) });
 		assert_eq!(iter.next(), None);
+
+		assert!(iter.exhausted);
 	}
 }
