@@ -53,7 +53,7 @@ impl SizeHintImpl {
 
 	#[inline]
 	unsafe fn single(bound: SizeHintBound) -> Self {
-		Self::with_inner(SizeHintInner::Lower { bound })
+		Self::with_inner(SizeHintInner::Single { bound })
 	}
 
 	#[inline]
@@ -108,12 +108,20 @@ impl SizeHintImpl {
 
 	#[inline]
 	pub unsafe fn range_hard(lower: usize, upper: usize) -> Self {
-		Self::range(SizeHintBound::Hard { count: lower }, SizeHintBound::Hard { count: upper })
+		if lower == upper {
+			Self::single(SizeHintBound::Hard { count: lower })
+		} else {
+			Self::range(SizeHintBound::Hard { count: lower }, SizeHintBound::Hard { count: upper })
+		}
 	}
 
 	#[inline]
 	pub unsafe fn range_estimate(lower: usize, upper: usize) -> Self {
-		Self::range(SizeHintBound::Estimate { count: lower }, SizeHintBound::Estimate { count: upper })
+		if lower == upper {
+			Self::single(SizeHintBound::Estimate { count: lower })
+		} else {
+			Self::range(SizeHintBound::Estimate { count: lower }, SizeHintBound::Estimate { count: upper })
+		}
 	}
 
 	#[inline]

@@ -521,114 +521,111 @@ unsafe fn min_size_hint(h1: SizeHintImpl, h2: SizeHintImpl) -> SizeHintImpl {
 mod tests {
 	use super::*;
 
-	// #[test]
-	// fn min_size_hint() {
-	// 	struct Checker {
-	// 		h1: SizeHint,
-	// 		h2: SizeHint,
-	// 		expected: SizeHint,
-	// 	}
+	#[test]
+	fn min_size_hint() {
+		macro_rules! check {
+			{
+				h1: $h1:expr,
+				h2: $h2:expr,
+				expected: $expected:expr
+			} => {
+				unsafe {
+					assert_eq!(super::min_size_hint($h1, $h2), $expected);
+					assert_eq!(super::min_size_hint($h2, $h1), $expected);
+				}
+			}
+		}
 
-	// 	impl Checker {
-	// 		fn check(self) {
-	// 			let Self { h1, h2, expected } = self;
 
-	// 			// check both ways
-	// 			assert_eq!(unsafe { super::min_size_hint(h1.clone(), h2.clone()) }, expected);
-	// 			assert_eq!(unsafe { super::min_size_hint(h2, h1) }, expected);
-	// 		}
-	// 	}
+			// all unknown
+			check! {
+				h1: SizeHintImpl::unknown(),
+				h2: SizeHintImpl::unknown(),
+				expected: SizeHintImpl::unknown()
+			}
 
-	// 	unsafe {
-	// 		// all unknown
-	// 		Checker {
-	// 			h1: SizeHint::unknown(),
-	// 			h2: SizeHint::unknown(),
-	// 			expected: SizeHint::unknown()
-	// 		}.check();
+			// one lower or upper estimate
+			check! {
+				h1: SizeHintImpl::lower_estimate(10),
+				h2: SizeHintImpl::unknown(),
+				expected: SizeHintImpl::lower_estimate(10)
+			}
+			check! {
+				h1: SizeHintImpl::upper_estimate(10),
+				h2: SizeHintImpl::unknown(),
+				expected: SizeHintImpl::upper_estimate(10)
+			}
 
-	// 		// one lower or upper estimate
-	// 		Checker {
-	// 			h1: SizeHint::new().with_lower_estimate(10),
-	// 			h2: SizeHint::unknown(),
-	// 			expected: SizeHint::new().with_lower_estimate(10)
-	// 		}.check();
-	// 		Checker {
-	// 			h1: SizeHint::new().with_upper_estimate(10),
-	// 			h2: SizeHint::unknown(),
-	// 			expected: SizeHint::new().with_upper_estimate(10)
-	// 		}.check();
+			// one both estimate
+			check! {
+				h1: SizeHintImpl::estimate(10),
+				h2: SizeHintImpl::unknown(),
+				expected: SizeHintImpl::estimate(10)
+			}
 
-	// 		// one both estimate
-	// 		Checker {
-	// 			h1: SizeHint::estimate(10),
-	// 			h2: SizeHint::unknown(),
-	// 			expected: SizeHint::estimate(10)
-	// 		}.check();
+			// one lower, other upper estimate
+			check! {
+				h1: SizeHintImpl::lower_estimate(10),
+				h2: SizeHintImpl::upper_estimate(10),
+				expected: SizeHintImpl::estimate(10)
+			}
 
-	// 		// one lower, other upper estimate
-	// 		Checker {
-	// 			h1: SizeHint::new().with_lower_estimate(10),
-	// 			h2: SizeHint::new().with_upper_estimate(10),
-	// 			expected: SizeHint::estimate(10)
-	// 		}.check();
+			// // hard bound + unknown
+			check! {
+				h1: SizeHintImpl::lower_hard(10),
+				h2: SizeHintImpl::unknown(),
+				expected: SizeHintImpl::lower_estimate(10)
+			}
+			check! {
+				h1: SizeHintImpl::upper_hard(10),
+				h2: SizeHintImpl::unknown(),
+				expected: SizeHintImpl::upper_estimate(10)
+			}
+			check! {
+				h1: SizeHintImpl::hard(10),
+				h2: SizeHintImpl::unknown(),
+				expected: SizeHintImpl::estimate(10)
+			}
 
-	// 		// hard bound + unknown
-	// 		Checker {
-	// 			h1: SizeHint::new().with_lower_hard_bound(10),
-	// 			h2: SizeHint::unknown(),
-	// 			expected: SizeHint::new().with_lower_estimate(10)
-	// 		}.check();
-	// 		Checker {
-	// 			h1: SizeHint::new().with_upper_hard_bound(10),
-	// 			h2: SizeHint::unknown(),
-	// 			expected: SizeHint::new().with_upper_estimate(10)
-	// 		}.check();
-	// 		Checker {
-	// 			h1: SizeHint::hard_bound(10),
-	// 			h2: SizeHint::unknown(),
-	// 			expected: SizeHint::estimate(10)
-	// 		}.check();
+			// hard bound + estimate
+			check! {
+				h1: SizeHintImpl::lower_hard(10),
+				h2: SizeHintImpl::upper_estimate(10),
+				expected: SizeHintImpl::estimate(10)
+			}
+			check! {
+				h1: SizeHintImpl::upper_hard(10),
+				h2: SizeHintImpl::lower_estimate(10),
+				expected: SizeHintImpl::estimate(10)
+			}
 
-	// 		// hard bound + estimate
-	// 		Checker {
-	// 			h1: SizeHint::new().with_lower_hard_bound(10),
-	// 			h2: SizeHint::new().with_upper_estimate(10),
-	// 			expected: SizeHint::estimate(10)
-	// 		}.check();
-	// 		Checker {
-	// 			h1: SizeHint::new().with_upper_hard_bound(10),
-	// 			h2: SizeHint::new().with_lower_estimate(10),
-	// 			expected: SizeHint::estimate(10)
-	// 		}.check();
+			// differing estimates
+			check! {
+				// actual range values makes no sense, but whatever lol
+				h1: SizeHintImpl::range_estimate(10, 5),
+				h2: SizeHintImpl::range_estimate(5, 10),
+				expected: SizeHintImpl::estimate(5)
+			}
 
-	// 		// differing estimates
-	// 		Checker {
-	// 			h1: SizeHint::new().with_lower_estimate(10).with_upper_estimate(5),
-	// 			h2: SizeHint::new().with_upper_estimate(10).with_lower_estimate(5),
-	// 			expected: SizeHint::estimate(5)
-	// 		}.check();
+			// differing hard
+			check! {
+				h1: SizeHintImpl::range_hard(10, 5),
+				h2: SizeHintImpl::range_hard(5, 10),
+				expected: SizeHintImpl::hard(5)
+			}
 
-	// 		// differing hard
-	// 		Checker {
-	// 			h1: SizeHint::new().with_lower_hard_bound(10).with_upper_hard_bound(5),
-	// 			h2: SizeHint::new().with_upper_hard_bound(10).with_lower_hard_bound(5),
-	// 			expected: SizeHint::hard_bound(5)
-	// 		}.check();
-
-	// 		// differing hard + estimate
-	// 		Checker {
-	// 			h1: SizeHint::new().with_lower_hard_bound(10).with_upper_hard_bound(7),
-	// 			h2: SizeHint::new().with_upper_estimate(12).with_lower_estimate(9),
-	// 			expected: SizeHint::new().with_lower_estimate(9).with_upper_estimate(7)
-	// 		}.check();
-	// 		Checker {
-	// 			h1: SizeHint::new().with_upper_hard_bound(10).with_lower_estimate(7),
-	// 			h2: SizeHint::new().with_upper_estimate(12).with_lower_hard_bound(9),
-	// 			expected: SizeHint::new().with_upper_estimate(10).with_lower_estimate(7)
-	// 		}.check();
-	// 	}
-	// }
+			// differing hard + estimate
+			check! {
+				h1: SizeHintImpl::range_hard(10, 7),
+				h2: SizeHintImpl::range_estimate(9, 12),
+				expected: SizeHintImpl::range_estimate(9, 7)
+			}
+			check! {
+				h1: SizeHintImpl::range_lestimate_uhard(7, 10),
+				h2: SizeHintImpl::range_lhard_uestimate(9, 12),
+				expected: SizeHintImpl::range_estimate(7, 10)
+			}
+	}
 
 	#[test]
 	fn size_hint() {
