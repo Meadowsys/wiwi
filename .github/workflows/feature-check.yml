@@ -18,7 +18,7 @@ jobs:
       run: cargo install cargo-hack --verbose
 
     - name: check features individually
-      run: cargo hack check --verbose --each-feature
+      run: cargo hack check --verbose --each-feature --skip omega-tuples-of-doom
 
     - name: test features individually
-      run: cargo hack test --verbose --each-feature
+      run: cargo hack test --verbose --each-feature --skip omega-tuples-of-doom

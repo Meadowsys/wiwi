@@ -135,6 +135,7 @@ all-unstable = [
 ]
 all-addons = [
 	"hashbrown",
+	"omega-tuples-of-doom",
 	"image",
 	"serde-json"
 ]
