@@ -96,6 +96,8 @@
 	)
 )]
 
+#![cfg_attr(feature = "omega-tuples-of-doom", recursion_limit = "512")]
+
 #![allow(clippy::missing_safety_doc)]
 #![allow(clippy::new_without_default)]
 #![allow(clippy::should_implement_trait)]

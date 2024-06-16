@@ -6,15 +6,15 @@ Everything wiwi can do is gated behind feature flags, none of which are enabled 
 
 ## Features
 
+After these descriptions of the different types of features, there will be a subsection dedicated to listing each feature.
+
 Stable features are what you might expect, they are considered done and follow semver. Of course this does not mean there can't be functionality added, or that it can't break (if it does, there will be breaking semver bump, adhering to semver).
 
 Unstable features are features that can be any degree of finished, can break whenever, or disappear whenever. They **_do not_** adhere to semver. Before becoming stable, unstable features have `-unstable` appended to their name, which will be removed when the feature stabilises. If you are using unstable features, you may find it wise to pin the version to an exact version (ie. semver `=` operator, ex. `wiwi = "=1.0.0"` in `Cargo.toml`).
 
-Addon features enable integrations between `wiwi` and 3rd-party crates. They are named after the crates that they enable integration for. They will enable things in features where applicable, and will silently do nothing if there's nothing to enable.
+Addon features enable additional things in some features, including integrations between `wiwi` and 3rd-party crates. They will enable things in features where applicable, and will silently do nothing if there's nothing to affect.
 
 There exist features `all` to enable all stable features, `all-unstable` to enable all unstable (in addition to stable) features, and `all-addons` to enable all addon features (but you very likely do not want this! Unless you're truly using all the integrations, this can and will bloat your dependency tree).
-
-Below you will find a list of features, with a short description of each, grouped by type.
 
 ### Stable features
 
@@ -31,6 +31,8 @@ Below you will find a list of features, with a short description of each, groupe
 
 - **`hashbrown`**
 - **`image`**
+- **`large-tuples`** - by default, tuple implementations (where applicable of course) are available for tuples with up to 8 elements, which should be enough for most uses. Enabling this feature will enable implementations for tuples with up to 32 elements.
+- **`omega-tuples-of-doom`** - _Surely_, no one uses tuples with more than 32 elements in them... but we don't know everyone's use case, so this feature will enable implementations for tuples with up to 256 elements. _Hopefully_, that is enough for everything. :p
 - **`serde-json`**
 
 ### Unstable features

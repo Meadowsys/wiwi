@@ -234,6 +234,8 @@ z85 = [
 # addon features
 hashbrown = ["dep:hashbrown"]
 image = ["dep:image"]
+large-tuples = []
+omega-tuples-of-doom = ["large-tuples"]
 serde-json = ["dep:serde_json"]
 
 [[bench]]
