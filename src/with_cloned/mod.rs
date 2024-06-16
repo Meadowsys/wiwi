@@ -169,6 +169,7 @@ macro_rules! with_cloned {
 }
 pub use with_cloned;
 
+/// implementation detail only, do not use
 #[doc(hidden)]
 #[macro_export]
 macro_rules! _with_cloned_impl {
