@@ -4,10 +4,27 @@ Hallo!
 
 ## unreleased
 
+- created `all-addons` feature, that enables all addon features (3rd-party crate integration)
+- feature `aoc`:
+  - created the feature (unstable)
+- feature `bitstream`:
+  - added regular (panicking) and checked versions of the write methods
+- feature `chainer`:
+  - added `vec_chain!` macro, same to `vec!` except it returns a `VecChain`
 - feature `int`:
   - renamed from `bigint` (still unstable)
+  - it's... effectively useless right now
+- feature `iter`:
+  - added `Iter::enumerate`
+  - added `Iter::enumerate1`, identical to `Iter::enumerate` but it starts at 1, not 0
+  - completely redid size hint struct
+  - tuple iterators will now fuse and never call any inner iterators again after one returns `None`
 - feature `lazy-wrap`:
   - added some documentation on the trait impl bounds of `Send`, `Sync`, `UnwindSafe`, `RefUnwindSafe`, and `Unpin`
+- feature `with-cloned`:
+  - created the feature (unstable)
+  - macro that helps with the clone-and-move pattern (hey..! is that a good description/name for it?)
+  - ...with this addition, we definitely fit under `rust-patterns` category now
 
 ## v0.7.0
 
