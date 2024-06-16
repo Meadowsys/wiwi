@@ -645,9 +645,6 @@
 <a href="#645" id="645">645</a>
 <a href="#646" id="646">646</a>
 <a href="#647" id="647">647</a>
-<a href="#648" id="648">648</a>
-<a href="#649" id="649">649</a>
-<a href="#650" id="650">650</a>
 </pre></div><pre class="rust"><code><span class="kw">use super</span>::{ IntoIter, Iter, SizeHintBound, SizeHintImpl, SizeHintInner, SizeHintMarker };
 <span class="kw">use </span>std::ptr;
 
@@ -1171,116 +1168,113 @@
 </span><span class="kw">mod </span>tests {
 	<span class="kw">use super</span>::<span class="kw-2">*</span>;
 
-	<span class="comment">// #[test]
-	// fn min_size_hint() {
-	// 	struct Checker {
-	// 		h1: SizeHint,
-	// 		h2: SizeHint,
-	// 		expected: SizeHint,
-	// 	}
+	<span class="attr">#[test]
+	</span><span class="kw">fn </span>min_size_hint() {
+		<span class="macro">macro_rules!</span> check {
+			{
+				h1: <span class="macro-nonterminal">$h1</span>:expr,
+				h2: <span class="macro-nonterminal">$h2</span>:expr,
+				expected: <span class="macro-nonterminal">$expected</span>:expr
+			} =&gt; {
+				<span class="kw">unsafe </span>{
+					<span class="macro">assert_eq!</span>(<span class="kw">super</span>::min_size_hint(<span class="macro-nonterminal">$h1</span>, <span class="macro-nonterminal">$h2</span>), <span class="macro-nonterminal">$expected</span>);
+					<span class="macro">assert_eq!</span>(<span class="kw">super</span>::min_size_hint(<span class="macro-nonterminal">$h2</span>, <span class="macro-nonterminal">$h1</span>), <span class="macro-nonterminal">$expected</span>);
+				}
+			}
+		}
 
-	// 	impl Checker {
-	// 		fn check(self) {
-	// 			let Self { h1, h2, expected } = self;
 
-	// 			// check both ways
-	// 			assert_eq!(unsafe { super::min_size_hint(h1.clone(), h2.clone()) }, expected);
-	// 			assert_eq!(unsafe { super::min_size_hint(h2, h1) }, expected);
-	// 		}
-	// 	}
+			<span class="comment">// all unknown
+			</span><span class="macro">check!</span> {
+				h1: SizeHintImpl::unknown(),
+				h2: SizeHintImpl::unknown(),
+				expected: SizeHintImpl::unknown()
+			}
 
-	// 	unsafe {
-	// 		// all unknown
-	// 		Checker {
-	// 			h1: SizeHint::unknown(),
-	// 			h2: SizeHint::unknown(),
-	// 			expected: SizeHint::unknown()
-	// 		}.check();
+			<span class="comment">// one lower or upper estimate
+			</span><span class="macro">check!</span> {
+				h1: SizeHintImpl::lower_estimate(<span class="number">10</span>),
+				h2: SizeHintImpl::unknown(),
+				expected: SizeHintImpl::lower_estimate(<span class="number">10</span>)
+			}
+			<span class="macro">check!</span> {
+				h1: SizeHintImpl::upper_estimate(<span class="number">10</span>),
+				h2: SizeHintImpl::unknown(),
+				expected: SizeHintImpl::upper_estimate(<span class="number">10</span>)
+			}
 
-	// 		// one lower or upper estimate
-	// 		Checker {
-	// 			h1: SizeHint::new().with_lower_estimate(10),
-	// 			h2: SizeHint::unknown(),
-	// 			expected: SizeHint::new().with_lower_estimate(10)
-	// 		}.check();
-	// 		Checker {
-	// 			h1: SizeHint::new().with_upper_estimate(10),
-	// 			h2: SizeHint::unknown(),
-	// 			expected: SizeHint::new().with_upper_estimate(10)
-	// 		}.check();
+			<span class="comment">// one both estimate
+			</span><span class="macro">check!</span> {
+				h1: SizeHintImpl::estimate(<span class="number">10</span>),
+				h2: SizeHintImpl::unknown(),
+				expected: SizeHintImpl::estimate(<span class="number">10</span>)
+			}
 
-	// 		// one both estimate
-	// 		Checker {
-	// 			h1: SizeHint::estimate(10),
-	// 			h2: SizeHint::unknown(),
-	// 			expected: SizeHint::estimate(10)
-	// 		}.check();
+			<span class="comment">// one lower, other upper estimate
+			</span><span class="macro">check!</span> {
+				h1: SizeHintImpl::lower_estimate(<span class="number">10</span>),
+				h2: SizeHintImpl::upper_estimate(<span class="number">10</span>),
+				expected: SizeHintImpl::estimate(<span class="number">10</span>)
+			}
 
-	// 		// one lower, other upper estimate
-	// 		Checker {
-	// 			h1: SizeHint::new().with_lower_estimate(10),
-	// 			h2: SizeHint::new().with_upper_estimate(10),
-	// 			expected: SizeHint::estimate(10)
-	// 		}.check();
+			<span class="comment">// // hard bound + unknown
+			</span><span class="macro">check!</span> {
+				h1: SizeHintImpl::lower_hard(<span class="number">10</span>),
+				h2: SizeHintImpl::unknown(),
+				expected: SizeHintImpl::lower_estimate(<span class="number">10</span>)
+			}
+			<span class="macro">check!</span> {
+				h1: SizeHintImpl::upper_hard(<span class="number">10</span>),
+				h2: SizeHintImpl::unknown(),
+				expected: SizeHintImpl::upper_estimate(<span class="number">10</span>)
+			}
+			<span class="macro">check!</span> {
+				h1: SizeHintImpl::hard(<span class="number">10</span>),
+				h2: SizeHintImpl::unknown(),
+				expected: SizeHintImpl::estimate(<span class="number">10</span>)
+			}
 
-	// 		// hard bound + unknown
-	// 		Checker {
-	// 			h1: SizeHint::new().with_lower_hard_bound(10),
-	// 			h2: SizeHint::unknown(),
-	// 			expected: SizeHint::new().with_lower_estimate(10)
-	// 		}.check();
-	// 		Checker {
-	// 			h1: SizeHint::new().with_upper_hard_bound(10),
-	// 			h2: SizeHint::unknown(),
-	// 			expected: SizeHint::new().with_upper_estimate(10)
-	// 		}.check();
-	// 		Checker {
-	// 			h1: SizeHint::hard_bound(10),
-	// 			h2: SizeHint::unknown(),
-	// 			expected: SizeHint::estimate(10)
-	// 		}.check();
+			<span class="comment">// hard bound + estimate
+			</span><span class="macro">check!</span> {
+				h1: SizeHintImpl::lower_hard(<span class="number">10</span>),
+				h2: SizeHintImpl::upper_estimate(<span class="number">10</span>),
+				expected: SizeHintImpl::estimate(<span class="number">10</span>)
+			}
+			<span class="macro">check!</span> {
+				h1: SizeHintImpl::upper_hard(<span class="number">10</span>),
+				h2: SizeHintImpl::lower_estimate(<span class="number">10</span>),
+				expected: SizeHintImpl::estimate(<span class="number">10</span>)
+			}
 
-	// 		// hard bound + estimate
-	// 		Checker {
-	// 			h1: SizeHint::new().with_lower_hard_bound(10),
-	// 			h2: SizeHint::new().with_upper_estimate(10),
-	// 			expected: SizeHint::estimate(10)
-	// 		}.check();
-	// 		Checker {
-	// 			h1: SizeHint::new().with_upper_hard_bound(10),
-	// 			h2: SizeHint::new().with_lower_estimate(10),
-	// 			expected: SizeHint::estimate(10)
-	// 		}.check();
+			<span class="comment">// differing estimates
+			</span><span class="macro">check!</span> {
+				<span class="comment">// actual range values makes no sense, but whatever lol
+				</span>h1: SizeHintImpl::range_estimate(<span class="number">10</span>, <span class="number">5</span>),
+				h2: SizeHintImpl::range_estimate(<span class="number">5</span>, <span class="number">10</span>),
+				expected: SizeHintImpl::estimate(<span class="number">5</span>)
+			}
 
-	// 		// differing estimates
-	// 		Checker {
-	// 			h1: SizeHint::new().with_lower_estimate(10).with_upper_estimate(5),
-	// 			h2: SizeHint::new().with_upper_estimate(10).with_lower_estimate(5),
-	// 			expected: SizeHint::estimate(5)
-	// 		}.check();
+			<span class="comment">// differing hard
+			</span><span class="macro">check!</span> {
+				h1: SizeHintImpl::range_hard(<span class="number">10</span>, <span class="number">5</span>),
+				h2: SizeHintImpl::range_hard(<span class="number">5</span>, <span class="number">10</span>),
+				expected: SizeHintImpl::hard(<span class="number">5</span>)
+			}
 
-	// 		// differing hard
-	// 		Checker {
-	// 			h1: SizeHint::new().with_lower_hard_bound(10).with_upper_hard_bound(5),
-	// 			h2: SizeHint::new().with_upper_hard_bound(10).with_lower_hard_bound(5),
-	// 			expected: SizeHint::hard_bound(5)
-	// 		}.check();
+			<span class="comment">// differing hard + estimate
+			</span><span class="macro">check!</span> {
+				h1: SizeHintImpl::range_hard(<span class="number">10</span>, <span class="number">7</span>),
+				h2: SizeHintImpl::range_estimate(<span class="number">9</span>, <span class="number">12</span>),
+				expected: SizeHintImpl::range_estimate(<span class="number">9</span>, <span class="number">7</span>)
+			}
+			<span class="macro">check!</span> {
+				h1: SizeHintImpl::range_lestimate_uhard(<span class="number">7</span>, <span class="number">10</span>),
+				h2: SizeHintImpl::range_lhard_uestimate(<span class="number">9</span>, <span class="number">12</span>),
+				expected: SizeHintImpl::range_estimate(<span class="number">7</span>, <span class="number">10</span>)
+			}
+	}
 
-	// 		// differing hard + estimate
-	// 		Checker {
-	// 			h1: SizeHint::new().with_lower_hard_bound(10).with_upper_hard_bound(7),
-	// 			h2: SizeHint::new().with_upper_estimate(12).with_lower_estimate(9),
-	// 			expected: SizeHint::new().with_lower_estimate(9).with_upper_estimate(7)
-	// 		}.check();
-	// 		Checker {
-	// 			h1: SizeHint::new().with_upper_hard_bound(10).with_lower_estimate(7),
-	// 			h2: SizeHint::new().with_upper_estimate(12).with_lower_hard_bound(9),
-	// 			expected: SizeHint::new().with_upper_estimate(10).with_lower_estimate(7)
-	// 		}.check();
-	// 	}
-	// }
-
-	</span><span class="attr">#[test]
+	<span class="attr">#[test]
 	</span><span class="kw">fn </span>size_hint() {
 		<span class="kw">let </span><span class="kw-2">mut </span>iter = (<span class="macro">vec!</span>[<span class="number">1u8</span>, <span class="number">2</span>, <span class="number">3</span>, <span class="number">4</span>, <span class="number">5</span>], <span class="macro">vec!</span>[<span class="number">7usize</span>, <span class="number">6</span>, <span class="number">5</span>, <span class="number">4</span>, <span class="number">3</span>, <span class="number">2</span>, <span class="number">1</span>]).into_wiwi_iter();
 

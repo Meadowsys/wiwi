@@ -217,6 +217,14 @@
 <a href="#217" id="217">217</a>
 <a href="#218" id="218">218</a>
 <a href="#219" id="219">219</a>
+<a href="#220" id="220">220</a>
+<a href="#221" id="221">221</a>
+<a href="#222" id="222">222</a>
+<a href="#223" id="223">223</a>
+<a href="#224" id="224">224</a>
+<a href="#225" id="225">225</a>
+<a href="#226" id="226">226</a>
+<a href="#227" id="227">227</a>
 </pre></div><pre class="rust"><code><span class="kw">use </span><span class="kw">super</span>::Iter;
 
 <span class="attr">#[derive(Debug)]
@@ -272,7 +280,7 @@
 
 	<span class="attr">#[inline]
 	</span><span class="kw">unsafe fn </span>single(bound: SizeHintBound) -&gt; <span class="self">Self </span>{
-		<span class="self">Self</span>::with_inner(SizeHintInner::Lower { bound })
+		<span class="self">Self</span>::with_inner(SizeHintInner::Single { bound })
 	}
 
 	<span class="attr">#[inline]
@@ -327,12 +335,20 @@
 
 	<span class="attr">#[inline]
 	</span><span class="kw">pub unsafe fn </span>range_hard(lower: usize, upper: usize) -&gt; <span class="self">Self </span>{
-		<span class="self">Self</span>::range(SizeHintBound::Hard { count: lower }, SizeHintBound::Hard { count: upper })
+		<span class="kw">if </span>lower == upper {
+			<span class="self">Self</span>::single(SizeHintBound::Hard { count: lower })
+		} <span class="kw">else </span>{
+			<span class="self">Self</span>::range(SizeHintBound::Hard { count: lower }, SizeHintBound::Hard { count: upper })
+		}
 	}
 
 	<span class="attr">#[inline]
 	</span><span class="kw">pub unsafe fn </span>range_estimate(lower: usize, upper: usize) -&gt; <span class="self">Self </span>{
-		<span class="self">Self</span>::range(SizeHintBound::Estimate { count: lower }, SizeHintBound::Estimate { count: upper })
+		<span class="kw">if </span>lower == upper {
+			<span class="self">Self</span>::single(SizeHintBound::Estimate { count: lower })
+		} <span class="kw">else </span>{
+			<span class="self">Self</span>::range(SizeHintBound::Estimate { count: lower }, SizeHintBound::Estimate { count: upper })
+		}
 	}
 
 	<span class="attr">#[inline]
