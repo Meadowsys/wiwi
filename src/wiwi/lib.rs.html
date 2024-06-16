@@ -220,6 +220,8 @@
 <a href="#220" id="220">220</a>
 <a href="#221" id="221">221</a>
 <a href="#222" id="222">222</a>
+<a href="#223" id="223">223</a>
+<a href="#224" id="224">224</a>
 </pre></div><pre class="rust"><code><span class="attr">#![cfg_attr(docsrs, feature(doc_cfg))]
 
 #![doc = <span class="macro">include_str!</span>(<span class="string">"../README.md"</span>)]
@@ -317,6 +319,8 @@
 		<span class="string">")."
 	</span>)
 )]
+
+#![cfg_attr(feature = <span class="string">"omega-tuples-of-doom"</span>, recursion_limit = <span class="string">"256"</span>)]
 
 #![allow(clippy::missing_safety_doc)]
 #![allow(clippy::new_without_default)]

@@ -188,6 +188,7 @@
 <a href="#188" id="188">188</a>
 <a href="#189" id="189">189</a>
 <a href="#190" id="190">190</a>
+<a href="#191" id="191">191</a>
 </pre></div><pre class="rust"><code><span class="doccomment">/// Executes code with cloned values, so the executed code
 /// can take ownership of the value without moving the original
 ///
@@ -359,20 +360,21 @@
 }
 <span class="kw">pub use </span>with_cloned;
 
-<span class="attr">#[doc(hidden)]
+<span class="doccomment">/// implementation detail only, do not use
+</span><span class="attr">#[doc(hidden)]
 #[macro_export]
 </span><span class="macro">macro_rules!</span> _with_cloned_impl {
 	{ <span class="kw-2">mut </span>$(<span class="macro-nonterminal">$thing</span>:ident),+ <span class="kw">in </span>$(<span class="macro-nonterminal">$stuff</span>:tt)* } =&gt; {
 		{
 			$(<span class="attr">#[allow(unused_mut)] </span><span class="kw">let </span><span class="kw-2">mut </span><span class="macro-nonterminal">$thing </span>= ::std::clone::Clone::clone(<span class="kw-2">&amp;</span><span class="macro-nonterminal">$thing</span>);)+
-			$(<span class="macro-nonterminal">$stuff</span>)+
+			$(<span class="macro-nonterminal">$stuff</span>)*
 		}
 	};
 
 	{ $(<span class="macro-nonterminal">$thing</span>:ident),+ <span class="kw">in </span>$(<span class="macro-nonterminal">$stuff</span>:tt)* } =&gt; {
 		{
 			$(<span class="kw">let </span><span class="macro-nonterminal">$thing </span>= ::std::clone::Clone::clone(<span class="kw-2">&amp;</span><span class="macro-nonterminal">$thing</span>);)+
-			$(<span class="macro-nonterminal">$stuff</span>)+
+			$(<span class="macro-nonterminal">$stuff</span>)*
 		}
 	};
 }

@@ -271,6 +271,65 @@
 <a href="#271" id="271">271</a>
 <a href="#272" id="272">272</a>
 <a href="#273" id="273">273</a>
+<a href="#274" id="274">274</a>
+<a href="#275" id="275">275</a>
+<a href="#276" id="276">276</a>
+<a href="#277" id="277">277</a>
+<a href="#278" id="278">278</a>
+<a href="#279" id="279">279</a>
+<a href="#280" id="280">280</a>
+<a href="#281" id="281">281</a>
+<a href="#282" id="282">282</a>
+<a href="#283" id="283">283</a>
+<a href="#284" id="284">284</a>
+<a href="#285" id="285">285</a>
+<a href="#286" id="286">286</a>
+<a href="#287" id="287">287</a>
+<a href="#288" id="288">288</a>
+<a href="#289" id="289">289</a>
+<a href="#290" id="290">290</a>
+<a href="#291" id="291">291</a>
+<a href="#292" id="292">292</a>
+<a href="#293" id="293">293</a>
+<a href="#294" id="294">294</a>
+<a href="#295" id="295">295</a>
+<a href="#296" id="296">296</a>
+<a href="#297" id="297">297</a>
+<a href="#298" id="298">298</a>
+<a href="#299" id="299">299</a>
+<a href="#300" id="300">300</a>
+<a href="#301" id="301">301</a>
+<a href="#302" id="302">302</a>
+<a href="#303" id="303">303</a>
+<a href="#304" id="304">304</a>
+<a href="#305" id="305">305</a>
+<a href="#306" id="306">306</a>
+<a href="#307" id="307">307</a>
+<a href="#308" id="308">308</a>
+<a href="#309" id="309">309</a>
+<a href="#310" id="310">310</a>
+<a href="#311" id="311">311</a>
+<a href="#312" id="312">312</a>
+<a href="#313" id="313">313</a>
+<a href="#314" id="314">314</a>
+<a href="#315" id="315">315</a>
+<a href="#316" id="316">316</a>
+<a href="#317" id="317">317</a>
+<a href="#318" id="318">318</a>
+<a href="#319" id="319">319</a>
+<a href="#320" id="320">320</a>
+<a href="#321" id="321">321</a>
+<a href="#322" id="322">322</a>
+<a href="#323" id="323">323</a>
+<a href="#324" id="324">324</a>
+<a href="#325" id="325">325</a>
+<a href="#326" id="326">326</a>
+<a href="#327" id="327">327</a>
+<a href="#328" id="328">328</a>
+<a href="#329" id="329">329</a>
+<a href="#330" id="330">330</a>
+<a href="#331" id="331">331</a>
+<a href="#332" id="332">332</a>
 </pre></div><pre class="rust"><code><span class="kw">use </span>std::mem::size_of;
 <span class="kw">pub use </span>wiwiwiwiwi::MemoryUsage;
 
@@ -368,7 +427,7 @@
 }
 
 <span class="macro">macro_rules!</span> impl_static_via_size_of {
-	($(<span class="macro-nonterminal">$</span><span class="kw">type</span>:<span class="macro-nonterminal">ty</span>)<span class="kw-2">*</span>) =&gt; {
+	{ $(<span class="macro-nonterminal">$</span><span class="kw">type</span>:<span class="macro-nonterminal">ty</span>)* } =&gt; {
 		$(
 			<span class="kw">impl </span>Static <span class="kw">for </span><span class="macro-nonterminal">$</span><span class="kw">type </span>{
 				<span class="kw">const </span><span class="macro-nonterminal">MEMORY_USAGE</span>: usize = size_of::&lt;<span class="macro-nonterminal">$</span><span class="kw">type</span>&gt;();
@@ -386,29 +445,36 @@
 
 <span class="macro">macro_rules!</span> impl_dyn_mem_usage_tuple {
 	<span class="comment">// entry point
-	</span>($(<span class="macro-nonterminal">$t</span>:ident)<span class="kw-2">*</span>) =&gt; {
-		<span class="macro">impl_dyn_mem_usage_tuple!</span>(@init $(<span class="macro-nonterminal">$t</span>)<span class="kw-2">*</span>);
+	</span>{ <span class="macro-nonterminal">$next</span>:ident $(<span class="macro-nonterminal">$rest</span>:ident)* } =&gt; {
+		<span class="macro">impl_dyn_mem_usage_tuple!</span> { [$(<span class="macro-nonterminal">$rest</span>)<span class="kw-2">*</span>] <span class="macro-nonterminal">$next </span>}
 	};
 
-	<span class="comment">// base case (ary 1)
-	</span>(@init <span class="macro-nonterminal">$t</span>:ident) =&gt; {
-		<span class="macro">impl_dyn_mem_usage_tuple!</span>(@flip [<span class="macro-nonterminal">$t</span>]);
+	{ [] <span class="macro-nonterminal">$curr</span>:ident $(<span class="macro-nonterminal">$acc</span>:ident)* } =&gt; {
+		<span class="macro">impl_dyn_mem_usage_tuple!</span> { @<span class="kw">impl </span>$(<span class="macro-nonterminal">$acc</span>)* <span class="macro-nonterminal">$curr </span>}
 	};
 
-	<span class="comment">// running/entry case (ary 2+)
-	</span>(@init <span class="macro-nonterminal">$t</span>:ident $(<span class="macro-nonterminal">$rest</span>:ident)+) =&gt; {
-		<span class="macro">impl_dyn_mem_usage_tuple!</span>(@flip [<span class="macro-nonterminal">$t </span>$(<span class="macro-nonterminal">$rest</span>)<span class="kw-2">*</span>]);
-		<span class="macro">impl_dyn_mem_usage_tuple!</span>($(<span class="macro-nonterminal">$rest</span>)<span class="kw-2">*</span>);
+	{ [<span class="macro-nonterminal">$next</span>:ident $(<span class="macro-nonterminal">$rest</span>:ident)<span class="kw-2">*</span>] <span class="macro-nonterminal">$curr</span>:ident $(<span class="macro-nonterminal">$acc</span>:ident)* } =&gt; {
+		<span class="macro">impl_dyn_mem_usage_tuple!</span> { @<span class="kw">impl </span>$(<span class="macro-nonterminal">$acc</span>)* <span class="macro-nonterminal">$curr </span>}
+		<span class="macro">impl_dyn_mem_usage_tuple!</span> { [$(<span class="macro-nonterminal">$rest</span>)<span class="kw-2">*</span>] <span class="macro-nonterminal">$next </span>$(<span class="macro-nonterminal">$acc</span>)* <span class="macro-nonterminal">$curr </span>}
 	};
 
-	<span class="comment">// type param order flipping base case
-	</span>(@flip [] $(<span class="macro-nonterminal">$reversed</span>:ident)<span class="kw-2">*</span>) =&gt; {
-		<span class="macro">impl_dyn_mem_usage_tuple!</span>(@<span class="kw">impl </span>$(<span class="macro-nonterminal">$reversed</span>)<span class="kw-2">*</span>);
-	};
+	{ @<span class="kw">impl </span>$(<span class="macro-nonterminal">$stuff</span>:ident)+ } =&gt; {
+		<span class="attr">#[allow(non_snake_case)]
+		</span><span class="kw">impl</span>&lt;$(<span class="macro-nonterminal">$stuff</span>: Dynamic,)+&gt; Dynamic <span class="kw">for </span>($(<span class="macro-nonterminal">$stuff</span>,)+) {
+			<span class="kw">fn </span>calculate_memory_usage(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; usize {
+				<span class="kw">let </span>($(<span class="macro-nonterminal">$stuff</span>,)<span class="kw-2">*</span>) = <span class="self">self</span>;
+				<span class="kw">let </span><span class="kw-2">mut </span>usage = <span class="number">0</span>;
+				$(usage += &lt;<span class="macro-nonterminal">$stuff</span>&gt;::calculate_memory_usage(<span class="macro-nonterminal">$stuff</span>);)*
+				usage
+			}
 
-	<span class="comment">// type param order flipping running case
-	</span>(@flip [<span class="macro-nonterminal">$t</span>:ident $(<span class="macro-nonterminal">$rest</span>:ident)<span class="kw-2">*</span>] $(<span class="macro-nonterminal">$reversed</span>:ident)<span class="kw-2">*</span>) =&gt; {
-		<span class="macro">impl_dyn_mem_usage_tuple!</span>(@flip [$(<span class="macro-nonterminal">$rest</span>)<span class="kw-2">*</span>] <span class="macro-nonterminal">$t </span>$(<span class="macro-nonterminal">$reversed</span>)<span class="kw-2">*</span>);
+			<span class="kw">fn </span>calculate_values_usage(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; usize {
+				<span class="kw">let </span>($(<span class="macro-nonterminal">$stuff</span>,)<span class="kw-2">*</span>) = <span class="self">self</span>;
+				<span class="kw">let </span><span class="kw-2">mut </span>usage = <span class="number">0</span>;
+				$(usage += &lt;<span class="macro-nonterminal">$stuff</span>&gt;::calculate_values_usage(<span class="macro-nonterminal">$stuff</span>);)*
+				usage
+			}
+		}
 	};
 
 	<span class="comment">// actual impl
@@ -433,15 +499,67 @@
 	};
 }
 
-<span class="macro">impl_dyn_mem_usage_tuple!</span> {
-	T31 T30 T29 T28
-	T27 T26 T25 T24
-	T23 T22 T21 T20
-	T19 T18 T17 T16
-	T15 T14 T13 T12
-	T11 T10 T9  T8
-	T7  T6  T5  T4
-	T3  T2  T1  T0
+<span class="attr">#[cfg(all(
+	not(feature = <span class="string">"large-tuples"</span>),
+	not(feature = <span class="string">"omega-tuples-of-doom"</span>)
+))]
+</span><span class="macro">impl_dyn_mem_usage_tuple!</span> {
+	T1 T2 T3 T4
+	T5 T6 T7 T8
+}
+
+<span class="attr">#[cfg(all(
+	feature = <span class="string">"large-tuples"</span>,
+	not(feature = <span class="string">"omega-tuples-of-doom"</span>)
+))]
+</span><span class="macro">impl_dyn_mem_usage_tuple!</span> {
+	T1  T2  T3  T4
+	T5  T6  T7  T8
+	T9  T10 T11 T12
+	T13 T14 T15 T16
+	T17 T18 T19 T20
+	T21 T22 T23 T24
+	T25 T26 T27 T28
+	T29 T30 T31 T32
+}
+
+<span class="attr">#[cfg(all(
+	feature = <span class="string">"large-tuples"</span>,
+	feature = <span class="string">"omega-tuples-of-doom"
+</span>))]
+</span><span class="macro">impl_dyn_mem_usage_tuple!</span> {
+	T1   T2   T3   T4
+	T5   T6   T7   T8
+	T9   T10  T11  T12
+	T13  T14  T15  T16
+	T17  T18  T19  T20
+	T21  T22  T23  T24
+	T25  T26  T27  T28
+	T29  T30  T31  T32
+	T33  T34  T35  T36
+	T37  T38  T39  T40
+	T41  T42  T43  T44
+	T45  T46  T47  T48
+	T49  T50  T51  T52
+	T53  T54  T55  T56
+	T57  T58  T59  T60
+	T61  T62  T63  T64
+	T65  T66  T67  T68
+	T69  T70  T71  T72
+	T73  T74  T75  T76
+	T77  T78  T79  T80
+	T81  T82  T83  T84
+	T85  T86  T87  T88
+	T89  T90  T91  T92
+	T93  T94  T95  T96
+	T97  T98  T99  T100
+	T101 T102 T103 T104
+	T105 T106 T107 T108
+	T109 T110 T111 T112
+	T113 T114 T115 T116
+	T117 T118 T119 T120
+	T121 T122 T123 T124
+	T125 T126 T127 T128
 }
 
 <span class="kw">impl</span>&lt;T: Dynamic, <span class="kw">const </span>N: usize&gt; Dynamic <span class="kw">for </span>[T; N] {
