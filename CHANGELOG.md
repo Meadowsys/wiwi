@@ -4,6 +4,8 @@ Hallo!
 
 ## unreleased
 
+## v0.8.0
+
 - created `all-addons` feature, that enables all addon features (3rd-party crate integration)
 - feature `aoc`:
   - created the feature (unstable)
