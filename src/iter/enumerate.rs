@@ -34,3 +34,25 @@ where
 		self.iter.size_hint().into()
 	}
 }
+
+#[cfg(test)]
+mod tests {
+	use crate::iter::IntoIter;
+	use super::*;
+
+	#[test]
+	fn enumerate() {
+		let mut iter = vec![1, 2, 3]
+			.into_wiwi_iter()
+			.enumerate();
+
+		assert_eq!(iter.size_hint(), unsafe { SizeHintImpl::hard(3) });
+		assert_eq!(iter.next(), Some((1, 0)));
+		assert_eq!(iter.size_hint(), unsafe { SizeHintImpl::hard(2) });
+		assert_eq!(iter.next(), Some((2, 1)));
+		assert_eq!(iter.size_hint(), unsafe { SizeHintImpl::hard(1) });
+		assert_eq!(iter.next(), Some((3, 2)));
+		assert_eq!(iter.size_hint(), unsafe { SizeHintImpl::hard(0) });
+		assert_eq!(iter.next(), None);
+	}
+}
