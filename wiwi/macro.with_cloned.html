@@ -1,4 +1,4 @@
-<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><meta name="generator" content="rustdoc"><meta name="description" content="Executes code with cloned values, so the executed code can take ownership of the value without moving the original"><title>with_cloned in wiwi - Rust</title><script>if(window.location.protocol!=="file:")document.head.insertAdjacentHTML("beforeend","SourceSerif4-Regular-46f98efaafac5295.ttf.woff2,FiraSans-Regular-018c141bf0843ffd.woff2,FiraSans-Medium-8f9a781e4970d388.woff2,SourceCodePro-Regular-562dcc5011b6de7d.ttf.woff2,SourceCodePro-Semibold-d899c5a5c4aeb14a.ttf.woff2".split(",").map(f=>`<link rel="preload" as="font" type="font/woff2" crossorigin href="../static.files/${f}">`).join(""))</script><link rel="stylesheet" href="../static.files/normalize-76eba96aa4d2e634.css"><link rel="stylesheet" href="../static.files/rustdoc-dd39b87e5fcfba68.css"><meta name="rustdoc-vars" data-root-path="../" data-static-root-path="../static.files/" data-current-crate="wiwi" data-themes="meadow" data-resource-suffix="" data-rustdoc-version="1.80.0-nightly (ab14f944a 2024-05-13)" data-channel="nightly" data-search-js="search-d52510db62a78183.js" data-settings-js="settings-4313503d2e1961c2.js" ><script src="../static.files/storage-118b08c4c78b968e.js"></script><script defer src="sidebar-items.js"></script><script defer src="../static.files/main-20a3ad099b048cf2.js"></script><noscript><link rel="stylesheet" href="../static.files/noscript-df360f571f6edeae.css"></noscript><link rel="alternate icon" type="image/png" href="../static.files/favicon-32x32-422f7d1d52889060.png"><link rel="icon" type="image/svg+xml" href="../static.files/favicon-2c020d218678b618.svg"></head><body class="rustdoc macro"><!--[if lte IE 11]><div class="warning">This old browser is unsupported and will most likely display funky things.</div><![endif]--><nav class="mobile-topbar"><button class="sidebar-menu-toggle" title="show sidebar"></button></nav><nav class="sidebar"><div class="sidebar-crate"><h2><a href="../wiwi/index.html">wiwi</a><span class="version">0.8.0</span></h2></div><div class="sidebar-elems"></div></nav><div class="sidebar-resizer"></div><main><div class="width-limiter"><rustdoc-search></rustdoc-search><section id="main-content" class="content"><div class="main-heading"><h1>Macro <a href="index.html">wiwi</a>::<wbr><a class="macro" href="#">with_cloned</a><button id="copy-path" title="Copy item path to clipboard">Copy item path</button></h1><span class="out-of-band"><a class="src" href="../src/wiwi/with_cloned/mod.rs.html#160-165">source</a> · <button id="toggle-all-docs" title="collapse all docs">[<span>&#x2212;</span>]</button></span></div><pre class="rust item-decl"><span class="macro">macro_rules!</span> with_cloned {
+<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><meta name="generator" content="rustdoc"><meta name="description" content="Executes code with cloned values, so the executed code can take ownership of the value without moving the original"><title>with_cloned in wiwi - Rust</title><script>if(window.location.protocol!=="file:")document.head.insertAdjacentHTML("beforeend","SourceSerif4-Regular-46f98efaafac5295.ttf.woff2,FiraSans-Regular-018c141bf0843ffd.woff2,FiraSans-Medium-8f9a781e4970d388.woff2,SourceCodePro-Regular-562dcc5011b6de7d.ttf.woff2,SourceCodePro-Semibold-d899c5a5c4aeb14a.ttf.woff2".split(",").map(f=>`<link rel="preload" as="font" type="font/woff2" crossorigin href="../static.files/${f}">`).join(""))</script><link rel="stylesheet" href="../static.files/normalize-76eba96aa4d2e634.css"><link rel="stylesheet" href="../static.files/rustdoc-dd39b87e5fcfba68.css"><meta name="rustdoc-vars" data-root-path="../" data-static-root-path="../static.files/" data-current-crate="wiwi" data-themes="meadow" data-resource-suffix="" data-rustdoc-version="1.80.0-nightly (ab14f944a 2024-05-13)" data-channel="nightly" data-search-js="search-d52510db62a78183.js" data-settings-js="settings-4313503d2e1961c2.js" ><script src="../static.files/storage-118b08c4c78b968e.js"></script><script defer src="sidebar-items.js"></script><script defer src="../static.files/main-20a3ad099b048cf2.js"></script><noscript><link rel="stylesheet" href="../static.files/noscript-df360f571f6edeae.css"></noscript><link rel="alternate icon" type="image/png" href="../static.files/favicon-32x32-422f7d1d52889060.png"><link rel="icon" type="image/svg+xml" href="../static.files/favicon-2c020d218678b618.svg"></head><body class="rustdoc macro"><!--[if lte IE 11]><div class="warning">This old browser is unsupported and will most likely display funky things.</div><![endif]--><nav class="mobile-topbar"><button class="sidebar-menu-toggle" title="show sidebar"></button></nav><nav class="sidebar"><div class="sidebar-crate"><h2><a href="../wiwi/index.html">wiwi</a><span class="version">0.8.0</span></h2></div><div class="sidebar-elems"></div></nav><div class="sidebar-resizer"></div><main><div class="width-limiter"><rustdoc-search></rustdoc-search><section id="main-content" class="content"><div class="main-heading"><h1>Macro <a href="index.html">wiwi</a>::<wbr><a class="macro" href="#">with_cloned</a><button id="copy-path" title="Copy item path to clipboard">Copy item path</button></h1><span class="out-of-band"><a class="src" href="../src/wiwi/with_cloned/mod.rs.html#164-169">source</a> · <button id="toggle-all-docs" title="collapse all docs">[<span>&#x2212;</span>]</button></span></div><pre class="rust item-decl"><span class="macro">macro_rules!</span> with_cloned {
     ($(<span class="macro-nonterminal">$stuff</span>:tt)<span class="kw-2">*</span>) =&gt; { ... };
 }</pre><span class="item-info"><div class="stab portability">Available on <strong>crate feature <code>with-cloned-unstable</code></strong> only.</div></span><details class="toggle top-doc" open><summary class="hideme"><span>Expand description</span></summary><div class="docblock"><p>Executes code with cloned values, so the executed code
 can take ownership of the value without moving the original</p>
@@ -45,9 +45,9 @@ it’s designed to fix, but for those just wanting to use the thing:</p>
 
 join_handle.join().unwrap();
 <span class="macro">assert_eq!</span>(<span class="kw-2">*</span>shared_data.lock().unwrap(), <span class="number">420</span>);</code></pre></div>
-<p>… this is not great, since you’d have to use <code>_shared_data</code> to refer to
-the cloned value.</p>
-<p>But alternatively, it can be done with a temporary scope:</p>
+<p>… this is not great, since you’d have to use <code>_shared_data</code> with an
+underscore to refer to the cloned value.</p>
+<p>It can also be done with a temporary scope:</p>
 
 <div class="example-wrap"><pre class="rust rust-example-rendered"><code><span class="kw">let </span>join_handle = {
    <span class="kw">let </span>shared_data = shared_data.clone();
@@ -60,13 +60,15 @@ the cloned value.</p>
 
 join_handle.join().unwrap();
 <span class="macro">assert_eq!</span>(<span class="kw-2">*</span>shared_data.lock().unwrap(), <span class="number">420</span>);</code></pre></div>
-<p>… not really what we would do, but still not optimal either way.</p>
-<p>In our short(…ish?) time writing rust code, I’ve already noticed I use
-this pattern a lot when dealing with shared state across threads. There are
-likely patterns that we don’t know about (…or do, but haven’t thought about
-at time of writing this documentation :p), and also maybe not always specifically
-<code>Arc&lt;Mutex&lt;Data&gt;&gt;</code>. Needing to write all that boilerplate for a very simple
-and straightforward operation, doesn’t feel very ergonomic or elegant.</p>
+<p>… not really what we would do (really only minor style preferences, nothing
+actually relating to function), but still not optimal either way.</p>
+<p>In our short(…ish?) time writing rust code, I’ve already noticed I use this
+pattern a lot when dealing with shared state across threads. There are likely
+patterns that we don’t know about, that would do something similar here (clone
+a value, then consume the clone, then access original). Or maybe we do know
+about them, but we haven’t thought about it at time of writing this documentation
+:p. Needing to write all that boilerplate code for an otherwise very simple
+operation, doesn’t feel very ergonomic or elegant, and quickly gets boring.</p>
 <p>This macro can help with that:</p>
 
 <div class="example-wrap"><pre class="rust rust-example-rendered"><code><span class="kw">let </span>join_handle = <span class="macro">with_cloned!</span> { shared_data <span class="kw">in
@@ -82,19 +84,21 @@ and straightforward operation, doesn’t feel very ergonomic or elegant.</p>
 
 join_handle.join().unwrap();
 <span class="macro">assert_eq!</span>(<span class="kw-2">*</span>shared_data.lock().unwrap(), <span class="number">420</span>);</code></pre></div>
-<p>In my opinion, a bit less boilerplate, and a bit nicer.</p>
-<p>The syntax of the macro is, first a list of the variables that should have a
-cloned version available, followed by keyword <code>in</code>, then any statements
-you would like to run. Essentially, you can think of the stuff after <code>in</code>
-as just a regular block. Those who know what <a href="https://docs.swift.org/swift-book/documentation/the-swift-programming-language/closures#Closure-Expression-Syntax">swift closures look like</a> may
-recognise this syntax :p</p>
+<p>It cut out most of the boilerplate, and just feels a lot nicer to use.</p>
+<p>The syntax of the macro is, first a (comma seperated) list of the variables
+that should have a cloned version available, followed by keyword <code>in</code>, then
+any statements you would like to run. Essentially, you can think of the stuff
+after <code>in</code> as just a regular block. Those who know what <a href="https://docs.swift.org/swift-book/documentation/the-swift-programming-language/closures#Closure-Expression-Syntax">swift closures</a> look
+like may recognise this syntax hehe</p>
 <p>You can also bind the cloned values mutably, as well as return values out
 of the macro:</p>
 
 <div class="example-wrap"><pre class="rust rust-example-rendered"><code><span class="kw">let </span>string = String::new();
 
 <span class="kw">let </span>modified_string = <span class="macro">with_cloned!</span> { <span class="kw-2">mut </span>string <span class="kw">in
-   </span><span class="comment">// do whatever
+   </span><span class="comment">//                                ^^^
+
+   // do whatever
    </span>string.push_str(<span class="string">"uwu"</span>);
 
    <span class="macro">assert_eq!</span>(string, <span class="string">"uwu"</span>);
@@ -107,13 +111,13 @@ of the macro:</p>
 <span class="comment">// returned the modified version from within the macro
 </span><span class="macro">assert_eq!</span>(modified_string, <span class="string">"uwu"</span>);</code></pre></div>
 <p>Ideally you could bind variables mutably or not on a per variable basis,
-but I can’t seem to find a way to do so, unfortunately &gt;&lt; so it’s all or
-nothing for now.</p>
+but unfortunately, I can’t seem to find a way to do so elegantly &gt;~&lt; so it’s
+all or nothing for now.</p>
 <p>Random, but the below code snippets are equivalent:</p>
 
 <div class="example-wrap"><pre class="rust rust-example-rendered"><code><span class="kw">let </span>cloned1 = value.clone();
-<span class="comment">// clones it for the inner code, but the inner code just returns it
-// ... so it's just a clone
+<span class="comment">// macro clones it for the inner code, but the inner code
+// just returns it... so it is just a clone
 </span><span class="kw">let </span>cloned2 = <span class="macro">with_cloned!</span> { value <span class="kw">in </span>value };
 
 <span class="macro">assert_eq!</span>(value, cloned1);
