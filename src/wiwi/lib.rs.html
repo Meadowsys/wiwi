@@ -219,9 +219,12 @@
 <a href="#219" id="219">219</a>
 <a href="#220" id="220">220</a>
 <a href="#221" id="221">221</a>
+<a href="#222" id="222">222</a>
 </pre></div><pre class="rust"><code><span class="attr">#![cfg_attr(docsrs, feature(doc_cfg))]
 
 #![doc = <span class="macro">include_str!</span>(<span class="string">"../README.md"</span>)]
+#![doc = <span class="string">""</span>]
+#![doc = <span class="string">"[wiwi.kiwin.gay]: https://wiwi.kiwin.gay"</span>]
 #![doc = <span class="string">""</span>]
 #![cfg_attr(all(not(docsrs), feature = <span class="string">"all-unstable"</span>), doc = <span class="string">"## Enabled features (`all-unstable` is enabled)"</span>)]
 #![cfg_attr(all(not(docsrs), feature = <span class="string">"all"</span>, not(feature = <span class="string">"all-unstable"</span>)), doc = <span class="string">"## Enabled features (`all` is enabled)"</span>)]
@@ -234,8 +237,8 @@
 #![cfg_attr(all(docsrs, not(kiwingay)), doc = <span class="string">"and only stable features, will appear in these docs. These include:"</span>)]
 #![cfg_attr(all(docsrs, not(kiwingay)), doc = <span class="string">""</span>)]
 
-#![cfg_attr(kiwingay, doc = <span class="string">"On wiwi.kiwin.gay, as many features as possible are enabled. This means "</span>)]
-#![cfg_attr(kiwingay, doc = <span class="string">"everything, including unstable features! These include:"</span>)]
+#![cfg_attr(kiwingay, doc = <span class="string">"On [wiwi.kiwin.gay], as many features as possible are enabled. This means"</span>)]
+#![cfg_attr(kiwingay, doc = <span class="string">"everything, including unstable features! Features included are:"</span>)]
 #![cfg_attr(kiwingay, doc = <span class="string">""</span>)]
 
 #![cfg_attr(all(feature = <span class="string">"aoc-unstable"</span>),          doc = <span class="string">"- `aoc` (unstable)"         </span>)]
@@ -262,29 +265,6 @@
 #![cfg_attr(all(feature = <span class="string">"to-maybeuninit"</span>),        doc = <span class="string">"- `to-maybeuninit`"         </span>)]
 #![cfg_attr(all(feature = <span class="string">"with-cloned-unstable"</span>),  doc = <span class="string">"- `with-cloned (unstable)`" </span>)]
 #![cfg_attr(all(feature = <span class="string">"z85"</span>),                   doc = <span class="string">"- `z85`"                    </span>)]
-
-#![cfg_attr(all(docsrs, not(kiwingay)), doc = <span class="string">""</span>)]
-#![cfg_attr(all(docsrs, not(kiwingay)), doc = <span class="string">"If you would like to see documentation for unstable features, please use"</span>)]
-#![cfg_attr(all(docsrs, not(kiwingay)), doc = <span class="string">"`cargo doc` to build them locally (or alternatively `cargo doc --open` to"</span>)]
-#![cfg_attr(all(docsrs, not(kiwingay)), doc = <span class="string">"open the locally built docs in your default browser). Running `cargo doc`"</span>)]
-#![cfg_attr(all(docsrs, not(kiwingay)), doc = <span class="string">"will by default also generate documentation for all crates that yours depends"</span>)]
-#![cfg_attr(all(docsrs, not(kiwingay)), doc = <span class="string">"on, so no need to clone the `wiwi` repository just for unstable feature docs."</span>)]
-#![cfg_attr(all(docsrs, not(kiwingay)), doc = <span class="string">""</span>)]
-#![cfg_attr(all(docsrs, not(kiwingay)), doc = <span class="string">"Unstable documentation for the in-development version of wiwi is available at [wiwi.kiwin.gay]."</span>)]
-#![cfg_attr(all(docsrs, not(kiwingay)), doc = <span class="string">""</span>)]
-#![cfg_attr(all(docsrs, not(kiwingay)), doc = <span class="string">"[wiwi.kiwin.gay]: https://wiwi.kiwin.gay"</span>)]
-
-#![cfg_attr(all(docsrs, kiwingay), doc = <span class="string">""</span>)]
-#![cfg_attr(
-	all(docsrs, kiwingay),
-	doc = <span class="macro">concat!</span>(
-		<span class="string">"These docs have been built from commit ["</span>,
-		<span class="macro">env!</span>(<span class="string">"KIWINGAY_DEPLOY_COMMIT_SHORT"</span>),
-		<span class="string">"](https://github.com/meadowsys/wiwi/commit/"</span>,
-		<span class="macro">env!</span>(<span class="string">"KIWINGAY_DEPLOY_COMMIT"</span>),
-		<span class="string">")."
-	</span>)
-)]
 
 </span><span class="comment">// ...yes, I'm doing it
 // (there's another one in prelude, copy/paste/modify for it)
@@ -315,6 +295,28 @@
 	not(feature = <span class="string">"z85"</span>),
 	not(docsrs)
 ), doc = <span class="string">"No features enabled! (you should probably enable something, otherwise this crate does nothing :p)"</span>)]
+
+#![cfg_attr(all(docsrs, not(kiwingay)), doc = <span class="string">""</span>)]
+#![cfg_attr(all(docsrs, not(kiwingay)), doc = <span class="string">"If you would like to see documentation for unstable features, please use"</span>)]
+#![cfg_attr(all(docsrs, not(kiwingay)), doc = <span class="string">"`cargo doc` to build them locally (or alternatively `cargo doc --open` to"</span>)]
+#![cfg_attr(all(docsrs, not(kiwingay)), doc = <span class="string">"open the locally built docs in your default browser). Running `cargo doc`"</span>)]
+#![cfg_attr(all(docsrs, not(kiwingay)), doc = <span class="string">"will by default also generate documentation for all crates in your dependency"</span>)]
+#![cfg_attr(all(docsrs, not(kiwingay)), doc = <span class="string">"tree, including wiwi, so no need to clone the `wiwi` repository just for"</span>)]
+#![cfg_attr(all(docsrs, not(kiwingay)), doc = <span class="string">"unstable feature docs."</span>)]
+#![cfg_attr(all(docsrs, not(kiwingay)), doc = <span class="string">""</span>)]
+#![cfg_attr(all(docsrs, not(kiwingay)), doc = <span class="string">"Unstable documentation for the in-development version of wiwi is available at [wiwi.kiwin.gay]."</span>)]
+
+#![cfg_attr(all(docsrs, kiwingay), doc = <span class="string">""</span>)]
+#![cfg_attr(
+	all(docsrs, kiwingay),
+	doc = <span class="macro">concat!</span>(
+		<span class="string">"These docs have been built from commit ["</span>,
+		<span class="macro">env!</span>(<span class="string">"KIWINGAY_DEPLOY_COMMIT_SHORT"</span>),
+		<span class="string">"](https://github.com/meadowsys/wiwi/commit/"</span>,
+		<span class="macro">env!</span>(<span class="string">"KIWINGAY_DEPLOY_COMMIT"</span>),
+		<span class="string">")."
+	</span>)
+)]
 
 #![allow(clippy::missing_safety_doc)]
 #![allow(clippy::new_without_default)]
