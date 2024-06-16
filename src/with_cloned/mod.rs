@@ -54,10 +54,10 @@
 /// assert_eq!(*shared_data.lock().unwrap(), 420);
 /// ```
 ///
-/// ... this is not great, since you'd have to use `_shared_data` to refer to
-/// the cloned value.
+/// ... this is not great, since you'd have to use `_shared_data` with an
+/// underscore to refer to the cloned value.
 ///
-/// But alternatively, it can be done with a temporary scope:
+/// It can also be done with a temporary scope:
 ///
 /// ```
 /// # use std::sync::{ Arc, Mutex };
@@ -76,14 +76,16 @@
 /// assert_eq!(*shared_data.lock().unwrap(), 420);
 /// ```
 ///
-/// ... not really what we would do, but still not optimal either way.
+/// ... not really what we would do (really only minor style preferences, nothing
+/// actually relating to function), but still not optimal either way.
 ///
-/// In our short(...ish?) time writing rust code, I've already noticed I use
-/// this pattern a lot when dealing with shared state across threads. There are
-/// likely patterns that we don't know about (...or do, but haven't thought about
-/// at time of writing this documentation :p), and also maybe not always specifically
-/// `Arc<Mutex<Data>>`. Needing to write all that boilerplate for a very simple
-/// and straightforward operation, doesn't feel very ergonomic or elegant.
+/// In our short(...ish?) time writing rust code, I've already noticed I use this
+/// pattern a lot when dealing with shared state across threads. There are likely
+/// patterns that we don't know about, that would do something similar here (clone
+/// a value, then consume the clone, then access original). Or maybe we do know
+/// about them, but we haven't thought about it at time of writing this documentation
+/// :p. Needing to write all that boilerplate code for an otherwise very simple
+/// operation, doesn't feel very ergonomic or elegant, and quickly gets boring.
 ///
 /// This macro can help with that:
 ///
@@ -107,15 +109,15 @@
 /// assert_eq!(*shared_data.lock().unwrap(), 420);
 /// ```
 ///
-/// In my opinion, a bit less boilerplate, and a bit nicer.
+/// It cut out most of the boilerplate, and just feels a lot nicer to use.
 ///
-/// The syntax of the macro is, first a list of the variables that should have a
-/// cloned version available, followed by keyword `in`, then any statements
-/// you would like to run. Essentially, you can think of the stuff after `in`
-/// as just a regular block. Those who know what [swift closures look like] may
-/// recognise this syntax :p
+/// The syntax of the macro is, first a (comma seperated) list of the variables
+/// that should have a cloned version available, followed by keyword `in`, then
+/// any statements you would like to run. Essentially, you can think of the stuff
+/// after `in` as just a regular block. Those who know what [swift closures] look
+/// like may recognise this syntax hehe
 ///
-/// [swift closures look like]: https://docs.swift.org/swift-book/documentation/the-swift-programming-language/closures#Closure-Expression-Syntax
+/// [swift closures]: https://docs.swift.org/swift-book/documentation/the-swift-programming-language/closures#Closure-Expression-Syntax
 ///
 /// You can also bind the cloned values mutably, as well as return values out
 /// of the macro:
@@ -125,6 +127,8 @@
 /// let string = String::new();
 ///
 /// let modified_string = with_cloned! { mut string in
+///    //                                ^^^
+///
 ///    // do whatever
 ///    string.push_str("uwu");
 ///
@@ -140,8 +144,8 @@
 /// ```
 ///
 /// Ideally you could bind variables mutably or not on a per variable basis,
-/// but I can't seem to find a way to do so, unfortunately >< so it's all or
-/// nothing for now.
+/// but unfortunately, I can't seem to find a way to do so elegantly >~< so it's
+/// all or nothing for now.
 ///
 /// Random, but the below code snippets are equivalent:
 ///
@@ -149,8 +153,8 @@
 /// # use wiwi::with_cloned::with_cloned;
 /// # let value = String::new();
 /// let cloned1 = value.clone();
-/// // clones it for the inner code, but the inner code just returns it
-/// // ... so it's just a clone
+/// // macro clones it for the inner code, but the inner code
+/// // just returns it... so it is just a clone
 /// let cloned2 = with_cloned! { value in value };
 ///
 /// assert_eq!(value, cloned1);
@@ -159,7 +163,7 @@
 #[macro_export]
 macro_rules! with_cloned {
 	($($stuff:tt)*) => {
-		// hide potential distracting implementation detail in docs
+		// hide potential distracting implementation details in docs
 		$crate::with_cloned::_with_cloned_impl! { $($stuff)* }
 	}
 }
