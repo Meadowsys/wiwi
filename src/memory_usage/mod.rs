@@ -95,7 +95,7 @@ impl<T: Static + ?Sized> Dynamic for T {
 }
 
 macro_rules! impl_static_via_size_of {
-	($($type:ty)*) => {
+	{ $($type:ty)* } => {
 		$(
 			impl Static for $type {
 				const MEMORY_USAGE: usize = size_of::<$type>();
@@ -113,29 +113,36 @@ impl_static_via_size_of! {
 
 macro_rules! impl_dyn_mem_usage_tuple {
 	// entry point
-	($($t:ident)*) => {
-		impl_dyn_mem_usage_tuple!(@init $($t)*);
+	{ $next:ident $($rest:ident)* } => {
+		impl_dyn_mem_usage_tuple! { [$($rest)*] $next }
 	};
 
-	// base case (ary 1)
-	(@init $t:ident) => {
-		impl_dyn_mem_usage_tuple!(@flip [$t]);
+	{ [] $curr:ident $($acc:ident)* } => {
+		impl_dyn_mem_usage_tuple! { @impl $($acc)* $curr }
 	};
 
-	// running/entry case (ary 2+)
-	(@init $t:ident $($rest:ident)+) => {
-		impl_dyn_mem_usage_tuple!(@flip [$t $($rest)*]);
-		impl_dyn_mem_usage_tuple!($($rest)*);
+	{ [$next:ident $($rest:ident)*] $curr:ident $($acc:ident)* } => {
+		impl_dyn_mem_usage_tuple! { @impl $($acc)* $curr }
+		impl_dyn_mem_usage_tuple! { [$($rest)*] $next $($acc)* $curr }
 	};
 
-	// type param order flipping base case
-	(@flip [] $($reversed:ident)*) => {
-		impl_dyn_mem_usage_tuple!(@impl $($reversed)*);
-	};
+	{ @impl $($stuff:ident)+ } => {
+		#[allow(non_snake_case)]
+		impl<$($stuff: Dynamic,)+> Dynamic for ($($stuff,)+) {
+			fn calculate_memory_usage(&self) -> usize {
+				let ($($stuff,)*) = self;
+				let mut usage = 0;
+				$(usage += <$stuff>::calculate_memory_usage($stuff);)*
+				usage
+			}
 
-	// type param order flipping running case
-	(@flip [$t:ident $($rest:ident)*] $($reversed:ident)*) => {
-		impl_dyn_mem_usage_tuple!(@flip [$($rest)*] $t $($reversed)*);
+			fn calculate_values_usage(&self) -> usize {
+				let ($($stuff,)*) = self;
+				let mut usage = 0;
+				$(usage += <$stuff>::calculate_values_usage($stuff);)*
+				usage
+			}
+		}
 	};
 
 	// actual impl
@@ -160,15 +167,67 @@ macro_rules! impl_dyn_mem_usage_tuple {
 	};
 }
 
+#[cfg(all(
+	not(feature = "large-tuples"),
+	not(feature = "omega-tuples-of-doom")
+))]
 impl_dyn_mem_usage_tuple! {
-	T31 T30 T29 T28
-	T27 T26 T25 T24
-	T23 T22 T21 T20
-	T19 T18 T17 T16
-	T15 T14 T13 T12
-	T11 T10 T9  T8
-	T7  T6  T5  T4
-	T3  T2  T1  T0
+	T1 T2 T3 T4
+	T5 T6 T7 T8
+}
+
+#[cfg(all(
+	feature = "large-tuples",
+	not(feature = "omega-tuples-of-doom")
+))]
+impl_dyn_mem_usage_tuple! {
+	T1  T2  T3  T4
+	T5  T6  T7  T8
+	T9  T10 T11 T12
+	T13 T14 T15 T16
+	T17 T18 T19 T20
+	T21 T22 T23 T24
+	T25 T26 T27 T28
+	T29 T30 T31 T32
+}
+
+#[cfg(all(
+	feature = "large-tuples",
+	feature = "omega-tuples-of-doom"
+))]
+impl_dyn_mem_usage_tuple! {
+	T1   T2   T3   T4
+	T5   T6   T7   T8
+	T9   T10  T11  T12
+	T13  T14  T15  T16
+	T17  T18  T19  T20
+	T21  T22  T23  T24
+	T25  T26  T27  T28
+	T29  T30  T31  T32
+	T33  T34  T35  T36
+	T37  T38  T39  T40
+	T41  T42  T43  T44
+	T45  T46  T47  T48
+	T49  T50  T51  T52
+	T53  T54  T55  T56
+	T57  T58  T59  T60
+	T61  T62  T63  T64
+	T65  T66  T67  T68
+	T69  T70  T71  T72
+	T73  T74  T75  T76
+	T77  T78  T79  T80
+	T81  T82  T83  T84
+	T85  T86  T87  T88
+	T89  T90  T91  T92
+	T93  T94  T95  T96
+	T97  T98  T99  T100
+	T101 T102 T103 T104
+	T105 T106 T107 T108
+	T109 T110 T111 T112
+	T113 T114 T115 T116
+	T117 T118 T119 T120
+	T121 T122 T123 T124
+	T125 T126 T127 T128
 }
 
 impl<T: Dynamic, const N: usize> Dynamic for [T; N] {

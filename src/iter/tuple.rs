@@ -25,8 +25,8 @@ macro_rules! iter_tuple_impl {
 		($($curr_stuff:tt)+)
 		$(($($rem_stuff:tt)+))*
 	} => {
-		iter_tuple_impl!([$(($($input_stuff)+))*] ($($next_stuff)+) $(($($rem_stuff)+))* ($($curr_stuff)+));
 		iter_tuple_impl!(@impl $($curr_stuff)+ $(($($rem_stuff)+))*);
+		iter_tuple_impl!([$(($($input_stuff)+))*] ($($next_stuff)+) $(($($rem_stuff)+))* ($($curr_stuff)+));
 	};
 
 	// impl case
