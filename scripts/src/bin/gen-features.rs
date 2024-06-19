@@ -183,10 +183,10 @@ fn main() {
 		f.name
 	));
 
-	let mut generated_dependencies = String::new();
+	let mut generated_manifest = String::new();
 	// two newlines after start marker
-	generated_dependencies += "\n\n";
-	generated_dependencies += concat!(
+	generated_manifest += "\n\n";
+	generated_manifest += concat!(
 		"[dependencies]\nwiwiwiwiwi = { path = \"macro\", version = \"=",
 		std::env!("CARGO_PKG_VERSION"),
 		"\" }\n\n"
@@ -200,35 +200,34 @@ fn main() {
 		has_dependent: _
 	} in &_dependencies {
 		if *uses_underscore {
-			generated_dependencies += &name.replace('-', "_");
+			generated_manifest += &name.replace('-', "_");
 		} else {
-			generated_dependencies += name;
+			generated_manifest += name;
 		}
 
-		generated_dependencies += " = { version = \"";
-		generated_dependencies += version;
-		generated_dependencies += "\", optional = true";
+		generated_manifest += " = { version = \"";
+		generated_manifest += version;
+		generated_manifest += "\", optional = true";
 
 		if let [first, rest @ ..] = features {
-			generated_dependencies += ", features = [\"";
-			generated_dependencies += first;
+			generated_manifest += ", features = [\"";
+			generated_manifest += first;
 
 			for feature in rest {
-				generated_dependencies += "\", \"";
-				generated_dependencies += feature;
+				generated_manifest += "\", \"";
+				generated_manifest += feature;
 			}
 
-			generated_dependencies += "\"]";
+			generated_manifest += "\"]";
 		}
 
-		generated_dependencies += " }\n";
+		generated_manifest += " }\n";
 	}
-	generated_dependencies += "\n";
+	generated_manifest += "\n";
 
-	let mut generated_features = String::new();
 	let mut switched_to_addons = false;
 
-	generated_features += "[features]\n";
+	generated_manifest += "[features]\n";
 
 	let mut all_refs = Vec::new();
 	let mut all_unstable_refs = Vec::new();
@@ -248,41 +247,41 @@ fn main() {
 		}
 	}
 
-	generated_features += "all = [";
+	generated_manifest += "all = [";
 	if let [first, rest @ ..] = &*all_refs {
-		generated_features += "\"";
-		generated_features += first;
+		generated_manifest += "\"";
+		generated_manifest += first;
 
 		for feature in rest {
-			generated_features += "\", \"";
-			generated_features += feature;
+			generated_manifest += "\", \"";
+			generated_manifest += feature;
 		}
 
-		generated_features += "\"";
+		generated_manifest += "\"";
 	}
-	generated_features += "]\n";
+	generated_manifest += "]\n";
 
-	generated_features += "all-unstable = [\"all";
+	generated_manifest += "all-unstable = [\"all";
 	for feature in &*all_unstable_refs {
-		generated_features += "\", \"";
-		generated_features += feature;
-		generated_features += "-unstable";
+		generated_manifest += "\", \"";
+		generated_manifest += feature;
+		generated_manifest += "-unstable";
 	}
-	generated_features += "\"]\n";
+	generated_manifest += "\"]\n";
 
-	generated_features += "all-addons = [";
+	generated_manifest += "all-addons = [";
 	if let [first, rest @ ..] = &*all_addons_refs {
-		generated_features += "\"";
-		generated_features += first;
+		generated_manifest += "\"";
+		generated_manifest += first;
 
 		for feature in rest {
-			generated_features += "\", \"";
-			generated_features += feature;
+			generated_manifest += "\", \"";
+			generated_manifest += feature;
 		}
 
-		generated_features += "\"";
+		generated_manifest += "\"";
 	}
-	generated_features += "]\n\n";
+	generated_manifest += "]\n\n";
 
 	for Feature {
 		name,
@@ -293,22 +292,22 @@ fn main() {
 	} in &_features {
 		match feature_type {
 			FeatureType::Stable => {
-				generated_features += name;
+				generated_manifest += name;
 			}
 			FeatureType::Unstable => {
-				generated_features += name;
-				generated_features += "-unstable";
+				generated_manifest += name;
+				generated_manifest += "-unstable";
 			}
 			FeatureType::Addon => {
 				if !switched_to_addons {
 					switched_to_addons = true;
-					generated_features += "\n# addon features\n";
+					generated_manifest += "\n# addon features\n";
 				}
-				generated_features += name;
+				generated_manifest += name;
 			}
 		}
 
-		generated_features += " = [";
+		generated_manifest += " = [";
 
 		if !dependencies.is_empty() || !features.is_empty() {
 			let mut seen = false;
@@ -316,7 +315,7 @@ fn main() {
 			macro_rules! maybe_put_comma {
 				() => {
 					if seen {
-						generated_features += ",";
+						generated_manifest += ",";
 					} else {
 						seen = true;
 					}
@@ -325,10 +324,10 @@ fn main() {
 
 			if dependencies.contains(&"macro") {
 				maybe_put_comma!();
-				generated_features += "\n\t\"";
-				generated_features += "wiwiwiwiwi/";
-				generated_features += name;
-				generated_features += "\"";
+				generated_manifest += "\n\t\"";
+				generated_manifest += "wiwiwiwiwi/";
+				generated_manifest += name;
+				generated_manifest += "\"";
 			}
 
 			for dependency in *dependencies {
@@ -341,16 +340,16 @@ fn main() {
 
 				maybe_put_comma!();
 
-				generated_features += "\n\t\"";
-				generated_features += "dep:";
+				generated_manifest += "\n\t\"";
+				generated_manifest += "dep:";
 
 				if dependency.uses_underscore {
-					generated_features += &dependency.name.replace('-', "_");
+					generated_manifest += &dependency.name.replace('-', "_");
 				} else {
-					generated_features += dependency.name;
+					generated_manifest += dependency.name;
 				}
 
-				generated_features += "\"";
+				generated_manifest += "\"";
 			}
 
 			for feature in *features {
@@ -360,22 +359,22 @@ fn main() {
 
 				maybe_put_comma!();
 
-				generated_features += "\n\t\"";
-				generated_features += feature.name;
+				generated_manifest += "\n\t\"";
+				generated_manifest += feature.name;
 
 				if matches!(feature.feature_type, FeatureType::Unstable) {
-					generated_features += "-unstable";
+					generated_manifest += "-unstable";
 				}
 
-				generated_features += "\"";
+				generated_manifest += "\"";
 			}
 
-			generated_features += "\n";
+			generated_manifest += "\n";
 		}
 
-		generated_features += "]\n";
+		generated_manifest += "]\n";
 	}
-	generated_features += "\n";
+	generated_manifest += "\n";
 
 	let current_manifest = fs::read_to_string(wiwi_manifest)
 		.expect("could not read Cargo.toml");
@@ -390,14 +389,11 @@ fn main() {
 
 	let mut output = String::new();
 	output += &current_manifest[..start];
-	output += &generated_dependencies;
-	output += &generated_features;
+	output += &generated_manifest;
 	output += &current_manifest[end..];
 
 	fs::write(wiwi_manifest, &*output)
 		.expect("failed to write back to Cargo.toml");
-
-	// generated_dependencies generated_features
 }
 
 #[derive(Debug)]
