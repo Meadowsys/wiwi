@@ -132,7 +132,6 @@ fn main() {
 		"to-maybeuninit"
 		"Extension trait allowing converting from references to `MaybeUninit` references"
 
-		#[unstable]
 		"with-cloned"
 		"execute code using clones of variables in a temporary scope (see the documentation on `with_cloned!`, I'm not sure how to best summarise ><)"
 

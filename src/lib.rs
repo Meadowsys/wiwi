@@ -41,7 +41,7 @@
 #![cfg_attr(all(feature = "string-pool-unstable"), doc = "- `string-pool` (unstable)")]
 #![cfg_attr(all(feature = "sudoku-unstable"), doc = "- `sudoku` (unstable)")]
 #![cfg_attr(all(feature = "to-maybeuninit"), doc = "- `to-maybeuninit`")]
-#![cfg_attr(all(feature = "with-cloned-unstable"), doc = "- `with-cloned` (unstable)")]
+#![cfg_attr(all(feature = "with-cloned"), doc = "- `with-cloned`")]
 #![cfg_attr(all(feature = "z85"), doc = "- `z85`")]
 
 #![cfg_attr(all(
@@ -67,7 +67,7 @@
 	not(feature = "string-pool-unstable"),
 	not(feature = "sudoku-unstable"),
 	not(feature = "to-maybeuninit"),
-	not(feature = "with-cloned-unstable"),
+	not(feature = "with-cloned"),
 	not(feature = "z85"),
 	not(docsrs)
 ), doc = "No features enabled! (you should probably enable something, otherwise this crate does nothing :p)")]
@@ -205,8 +205,8 @@ pub mod sudoku;
 #[cfg_attr(docsrs, doc(cfg(feature = "to-maybeuninit")))]
 pub mod to_maybeuninit;
 
-#[cfg(feature = "with-cloned-unstable")]
-#[cfg_attr(docsrs, doc(cfg(feature = "with-cloned-unstable")))]
+#[cfg(feature = "with-cloned")]
+#[cfg_attr(docsrs, doc(cfg(feature = "with-cloned")))]
 pub mod with_cloned;
 
 #[cfg(feature = "z85")]

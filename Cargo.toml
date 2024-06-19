@@ -66,8 +66,8 @@ uuid = { version = "1.8.0", optional = true }
 zeroize = { version = "1.7.0", optional = true }
 
 [features]
-all = ["clock-timer", "debounce", "h", "hex", "lazy-wrap", "nominal", "to-maybeuninit", "z85"]
-all-unstable = ["all", "aoc-unstable", "auth-unstable", "bitstream-unstable", "chainer-unstable", "defer-unstable", "id-unstable", "int-unstable", "iter-unstable", "lsl-unstable", "memory-usage-unstable", "minesweeper-unstable", "path-unstable", "serialiser-unstable", "string-pool-unstable", "sudoku-unstable", "with-cloned-unstable"]
+all = ["clock-timer", "debounce", "h", "hex", "lazy-wrap", "nominal", "to-maybeuninit", "with-cloned", "z85"]
+all-unstable = ["all", "aoc-unstable", "auth-unstable", "bitstream-unstable", "chainer-unstable", "defer-unstable", "id-unstable", "int-unstable", "iter-unstable", "lsl-unstable", "memory-usage-unstable", "minesweeper-unstable", "path-unstable", "serialiser-unstable", "string-pool-unstable", "sudoku-unstable"]
 all-addons = ["hashbrown", "image", "large-tuples", "omega-tuples-of-doom", "serde-json"]
 
 aoc-unstable = [
@@ -140,7 +140,7 @@ sudoku-unstable = [
 	"iter-unstable"
 ]
 to-maybeuninit = []
-with-cloned-unstable = []
+with-cloned = []
 z85 = [
 	"dep:thiserror"
 ]
