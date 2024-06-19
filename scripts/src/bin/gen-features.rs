@@ -477,8 +477,6 @@ fn main() {
 	fs::write(wiwi_readme, &*output)
 		.expect("failed to write back to README.md");
 
-	println!("{generated_lib}");
-
 	let current_lib = fs::read_to_string(wiwi_lib)
 		.expect("could not read lib.rs");
 	let start = current_lib.find(wiwi_lib_start_marker)
