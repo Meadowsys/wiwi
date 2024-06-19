@@ -189,3 +189,31 @@ macro_rules! _with_cloned_impl {
 }
 #[doc(hidden)]
 pub use _with_cloned_impl;
+
+#[cfg(test)]
+mod tests {
+	use super::*;
+	use rand::{ Rng, thread_rng };
+	use rand::distributions::uniform::SampleRange;
+	use std::sync::{ Arc, Mutex };
+	use std::thread;
+
+	#[test]
+	fn it_works() {
+		let thing = Arc::new(Mutex::new(5));
+
+		let join_handles = (1..=5)
+			// no need to use clone on everything, so the macro does work as expected
+			.map(|i| with_cloned! { thing in thread::spawn(move || {
+				thread::sleep(std::time::Duration::from_millis((0..1000).sample_single(&mut thread_rng())));
+				*thing.lock().unwrap() *= i;
+			}) })
+			.collect::<Vec<_>>();
+		let expected_result = 5 * 2 * 3 * 4 * 5;
+
+		// but we still run it through to make sure we get expected result still,
+		// and nothing else weird went wrong or something
+		join_handles.into_iter().for_each(|t| t.join().unwrap());
+		assert_eq!(expected_result, *thing.lock().unwrap());
+	}
+}
