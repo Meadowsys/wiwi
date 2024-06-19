@@ -37,12 +37,16 @@ jobs:
   feature-check:
     uses: ./.github/workflows/feature-check.yml
 
+  verify-gen-features:
+    uses: ./.github/workflows/verify-gen-features.yml
+
   publish:
     name: publish crate
+    runs-on: macos-14
     needs:
     - test
     - feature-check
-    runs-on: macos-14
+    - verify-gen-features
 
     steps:
     - name: checkout code

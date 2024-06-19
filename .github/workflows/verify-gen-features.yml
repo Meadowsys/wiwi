@@ -1,0 +1,26 @@
+name: verify generated features
+on:
+  workflow_call:
+
+jobs:
+  run:
+    name: run
+    runs-on: macos-14
+
+    steps:
+    - name: checkout code
+      uses: actions/checkout@b4ffde65f46336ab88eb53be808477a3936bae11 # v4.1.1
+
+    - name: setup rust
+      run: rustc --version
+
+    - name: run gen-features script
+      run: |
+        cd scripts
+        cargo build --bin gen-features
+        cd ..
+        ./target/debug/gen-features
+
+    # if there are git changes, files are not up to date, and we error
+    - name: verify generated features are up to date
+      run: git diff --exit-code && git diff --exit-code --cached

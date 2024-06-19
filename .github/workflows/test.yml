@@ -66,3 +66,6 @@ jobs:
 
   feature-check:
     uses: ./.github/workflows/feature-check.yml
+
+  verify-gen-features:
+    uses: ./.github/workflows/verify-gen-features.yml
