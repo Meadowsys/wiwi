@@ -1,5 +1,12 @@
 use std::fs;
 
+// TODO: enhancements for the future:
+// - could combine the two loops on features, by storing it in 3 more intermediate vars,
+//   rather than sorting out refs then putting them in? if that makes sense
+// - checking for unused dependencies
+// - a way to declare dependencies as used, even though no feature depends on them
+//   (likely a #[used] attr or something)
+
 fn main() {
 	let mut _dependencies = decl_dependencies! {
 		"argon2 0.5.3"
