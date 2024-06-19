@@ -434,66 +434,48 @@ fn main() {
 	}
 	generated_manifest += "\n";
 
-	let current_manifest = fs::read_to_string(wiwi_manifest)
-		.expect("could not read Cargo.toml");
-	let start = current_manifest.find(wiwi_manifest_start_marker)
-		.expect("could not find start marker in Cargo.toml");
-	let end = current_manifest.find(wiwi_manifest_end_marker)
-		.expect("could not find end marker in Cargo.toml");
-
-	// start just after the markers
-	// end is fine as is, since that's just before the marker
-	let start = start + wiwi_manifest_start_marker.len();
-
+	let mut start;
+	let mut end;
+	let mut current;
 	let mut output = String::new();
-	output += &current_manifest[..start];
-	output += "\n\n";
-	output += &generated_manifest;
-	output += &current_manifest[end..];
 
-	fs::write(wiwi_manifest, &*output)
-		.expect("failed to write back to Cargo.toml");
+	macro_rules! manipulate_file {
+		{ $filepath:ident, $start_marker:ident, $end_marker:ident in $($stuff:tt)* } => {
+			current = fs::read_to_string($filepath)
+				.unwrap_or_else(|e| panic!("failed to read {}: {e:?}", $filepath));
+			start = current.find($start_marker)
+				.unwrap_or_else(|| panic!("failed to find start marker in {}", $filepath));
+			start += $start_marker.len();
+			end = current.find($end_marker)
+				.unwrap_or_else(|| panic!("failed to find end marker in {}", $filepath));
+			output.clear();
 
-	let current_readme = fs::read_to_string(wiwi_readme)
-		.expect("could not read README.md");
-	let start = current_readme.find(wiwi_readme_start_marker)
-		.expect("could not find start marker in README.md");
-	let end = current_readme.find(wiwi_readme_end_marker)
-		.expect("could not find end marker in README.md");
+			output += &current[..start];
+			output += "\n\n";
+			{ $($stuff)* }
+			output += &current[end..];
 
-	let start = start + wiwi_readme_start_marker.len();
+			fs::write($filepath, &*output)
+				.unwrap_or_else(|e| panic!("failed to write back to {}: {e:?}", $filepath))
+		}
+	}
 
-	let mut output = String::new();
-	output += &current_readme[..start];
-	output += "\n\n";
-	output += &generated_readme_stable;
-	output += "\n";
-	output += &generated_readme_addons;
-	output += "\n";
-	output += &generated_readme_unstable;
-	output += "\n";
-	output += &current_readme[end..];
+	manipulate_file! { wiwi_manifest, wiwi_manifest_start_marker, wiwi_manifest_end_marker in
+		output += &generated_manifest;
+	}
 
-	fs::write(wiwi_readme, &*output)
-		.expect("failed to write back to README.md");
+	manipulate_file! { wiwi_readme, wiwi_readme_start_marker, wiwi_readme_end_marker in
+		output += &generated_readme_stable;
+		output += "\n";
+		output += &generated_readme_addons;
+		output += "\n";
+		output += &generated_readme_unstable;
+		output += "\n";
+	}
 
-	let current_lib = fs::read_to_string(wiwi_lib)
-		.expect("could not read lib.rs");
-	let start = current_lib.find(wiwi_lib_start_marker)
-		.expect("could not find start marker in lib.rs");
-	let end = current_lib.find(wiwi_lib_end_marker)
-		.expect("could not find end marker in lib.rs");
-
-	let start = start + wiwi_lib_start_marker.len();
-
-	let mut output = String::new();
-	output += &current_lib[..start];
-	output += "\n\n";
-	output += &generated_lib;
-	output += &current_lib[end..];
-
-	fs::write(wiwi_lib, &*output)
-		.expect("failed to write back to lib.rs");
+	manipulate_file! { wiwi_lib, wiwi_lib_start_marker, wiwi_lib_end_marker in
+		output += &generated_lib;
+	}
 }
 
 #[derive(Debug)]
