@@ -272,8 +272,8 @@ fn main() {
 		name,
 		feature_type,
 		desc,
-		dependencies,
-		features
+		dependencies: _,
+		features: _
 	} in &_features {
 		macro_rules! append_feature {
 			($output:ident) => {
@@ -375,7 +375,7 @@ fn main() {
 	for Feature {
 		name,
 		feature_type,
-		desc,
+		desc: _,
 		dependencies,
 		features
 	} in &_features {
@@ -726,31 +726,3 @@ macro_rules! const_unwrap {
 	}
 }
 use const_unwrap;
-
-macro_rules! check_strs_eq {
-	($s1:literal, $s2:literal) => {{
-		let s1 = $s1;
-		let s2 = $s2;
-
-		if s1.len() != s2.len() {
-			check_strs_eq!(@panic $s1 $s2);
-		}
-
-		let s1 = s1.as_bytes();
-		let s2 = s2.as_bytes();
-		let mut i = s1.len();
-
-		while i < s1.len() {
-			if s1[i] != s2[i] {
-				check_strs_eq!(@panic $s1 $s2);
-			}
-
-			i += 1;
-		}
-	}};
-
-	(@panic $s1:literal $s2:literal) => {
-		panic!(concat!("strs are not equal: \"", $s1, "\" and ", $s2))
-	};
-}
-use check_strs_eq;
