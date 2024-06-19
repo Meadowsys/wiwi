@@ -4,6 +4,18 @@ Hallo!
 
 ## unreleased
 
+- completely redesigned readme
+  - seperated stable and unstable features, making it easy to see the stable stuff
+- `gen-features` script
+  - now, dependencies and features are declared in there, and it'll check them, and then generate/update the content for all the other places that previously needed to be manually updated, including `Cargo.toml`, `README.md`, `lib.rs`, the prelude, and may come in handy for other places too
+- feature `with-cloned`
+  - stabilised the feature
+- tuples
+  - by default, wiwi will only include code to accomodate tuples with up to 8 elements (where applicable).
+  - created features `large-tuples` and `omega-tuples-of-doom`
+    - `large-tuples` enables implementations for tuples with up to 32 elements
+    - `omega-tuples-of-doom` enables implementations for tuples with up to 128 elements... if for some reason you need this
+
 ## v0.8.0
 
 - created `all-addons` feature, that enables all addon features (3rd-party crate integration)
