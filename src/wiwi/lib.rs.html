@@ -214,7 +214,23 @@
 <a href="#214" id="214">214</a>
 <a href="#215" id="215">215</a>
 <a href="#216" id="216">216</a>
-</pre></div><pre class="rust"><code><span class="attr">#![cfg_attr(docsrs, feature(doc_cfg))]
+</pre></div><pre class="rust"><code><span class="attr">#![cfg_attr(feature = <span class="string">"omega-tuples-of-doom"</span>, recursion_limit = <span class="string">"256"</span>)]
+
+</span><span class="comment">// TODO: review these
+</span><span class="attr">#![allow(
+	clippy::missing_safety_doc,
+	clippy::new_without_default,
+	clippy::should_implement_trait,
+	clippy::upper_case_acronyms,
+	dead_code,
+	unused_imports,
+	unused_macros,
+	unused_mut,
+	unused_variables
+)]
+#![deny(unexpected_cfgs)]
+
+#![cfg_attr(docsrs, feature(doc_cfg))]
 
 #![doc = <span class="macro">include_str!</span>(<span class="string">"../README.md"</span>)]
 #![doc = <span class="string">""</span>]
@@ -257,7 +273,7 @@
 #![cfg_attr(all(feature = <span class="string">"string-pool-unstable"</span>), doc = <span class="string">"- `string-pool` (unstable)"</span>)]
 #![cfg_attr(all(feature = <span class="string">"sudoku-unstable"</span>), doc = <span class="string">"- `sudoku` (unstable)"</span>)]
 #![cfg_attr(all(feature = <span class="string">"to-maybeuninit"</span>), doc = <span class="string">"- `to-maybeuninit`"</span>)]
-#![cfg_attr(all(feature = <span class="string">"with-cloned-unstable"</span>), doc = <span class="string">"- `with-cloned` (unstable)"</span>)]
+#![cfg_attr(all(feature = <span class="string">"with-cloned"</span>), doc = <span class="string">"- `with-cloned`"</span>)]
 #![cfg_attr(all(feature = <span class="string">"z85"</span>), doc = <span class="string">"- `z85`"</span>)]
 
 #![cfg_attr(all(
@@ -283,7 +299,7 @@
 	not(feature = <span class="string">"string-pool-unstable"</span>),
 	not(feature = <span class="string">"sudoku-unstable"</span>),
 	not(feature = <span class="string">"to-maybeuninit"</span>),
-	not(feature = <span class="string">"with-cloned-unstable"</span>),
+	not(feature = <span class="string">"with-cloned"</span>),
 	not(feature = <span class="string">"z85"</span>),
 	not(docsrs)
 ), doc = <span class="string">"No features enabled! (you should probably enable something, otherwise this crate does nothing :p)"</span>)]
@@ -310,22 +326,6 @@
 		<span class="macro">env!</span>(<span class="string">"KIWINGAY_DEPLOY_COMMIT"</span>),
 		<span class="string">")."
 	</span>)
-)]
-
-#![cfg_attr(feature = <span class="string">"omega-tuples-of-doom"</span>, recursion_limit = <span class="string">"256"</span>)]
-
-#![allow(clippy::missing_safety_doc)]
-#![allow(clippy::new_without_default)]
-#![allow(clippy::should_implement_trait)]
-#![allow(clippy::upper_case_acronyms)]
-
-</span><span class="comment">// TODO: remove when more finished
-</span><span class="attr">#![allow(
-	dead_code,
-	unused_imports,
-	unused_macros,
-	unused_mut,
-	unused_variables
 )]
 
 </span><span class="kw">mod </span>_internal;
@@ -421,8 +421,8 @@
 #[cfg_attr(docsrs, doc(cfg(feature = <span class="string">"to-maybeuninit"</span>)))]
 </span><span class="kw">pub mod </span>to_maybeuninit;
 
-<span class="attr">#[cfg(feature = <span class="string">"with-cloned-unstable"</span>)]
-#[cfg_attr(docsrs, doc(cfg(feature = <span class="string">"with-cloned-unstable"</span>)))]
+<span class="attr">#[cfg(feature = <span class="string">"with-cloned"</span>)]
+#[cfg_attr(docsrs, doc(cfg(feature = <span class="string">"with-cloned"</span>)))]
 </span><span class="kw">pub mod </span>with_cloned;
 
 <span class="attr">#[cfg(feature = <span class="string">"z85"</span>)]
