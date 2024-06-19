@@ -1,11 +1,14 @@
 [package]
 name = "wiwi-scripts"
-version = "0.0.0"
-edition = "2021"
+version = { workspace = true }
+edition = { workspace = true }
 publish = false
 
 [dependencies]
 wiwi = { path = ".." }
+
+[[bin]]
+name = "gen-features"
 
 [[bin]]
 name = "generate-hex-table-decoder"

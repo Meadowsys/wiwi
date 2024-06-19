@@ -2195,7 +2195,7 @@ dependencies = [
 
 [[package]]
 name = "wiwi-scripts"
-version = "0.0.0"
+version = "0.8.0"
 dependencies = [
  "wiwi",
 ]
