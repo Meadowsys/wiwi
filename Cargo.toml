@@ -23,7 +23,7 @@ exclude = [
 	".cargo",
 	".github",
 	"codecov.yml",
-	"rust-toolchain.toml",
+	"rust-toolchain.toml"
 ]
 categories = [
 	# "data-structures" # ?
