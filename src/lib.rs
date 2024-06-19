@@ -125,8 +125,6 @@ pub mod aoc;
 #[cfg_attr(docsrs, doc(cfg(feature = "auth-unstable")))]
 pub mod auth;
 
-// test out of date checker script thing
-
 #[cfg(feature = "bitstream-unstable")]
 #[cfg_attr(docsrs, doc(cfg(feature = "bitstream-unstable")))]
 pub mod bitstream;
