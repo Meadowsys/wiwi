@@ -1,3 +1,19 @@
+#![cfg_attr(feature = "omega-tuples-of-doom", recursion_limit = "256")]
+
+// TODO: review these
+#![allow(
+	clippy::missing_safety_doc,
+	clippy::new_without_default,
+	clippy::should_implement_trait,
+	clippy::upper_case_acronyms,
+	dead_code,
+	unused_imports,
+	unused_macros,
+	unused_mut,
+	unused_variables
+)]
+#![deny(unexpected_cfgs)]
+
 #![cfg_attr(docsrs, feature(doc_cfg))]
 
 #![doc = include_str!("../README.md")]
@@ -94,22 +110,6 @@
 		env!("KIWINGAY_DEPLOY_COMMIT"),
 		")."
 	)
-)]
-
-#![cfg_attr(feature = "omega-tuples-of-doom", recursion_limit = "256")]
-
-#![allow(clippy::missing_safety_doc)]
-#![allow(clippy::new_without_default)]
-#![allow(clippy::should_implement_trait)]
-#![allow(clippy::upper_case_acronyms)]
-
-// TODO: remove when more finished
-#![allow(
-	dead_code,
-	unused_imports,
-	unused_macros,
-	unused_mut,
-	unused_variables
 )]
 
 mod _internal;
