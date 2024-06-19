@@ -90,7 +90,7 @@ pub use crate::lazy_wrap::{
 #[cfg(feature = "string-pool-unstable")]
 pub use crate::string_pool::String;
 
-#[cfg(feature = "with-cloned-unstable")]
+#[cfg(feature = "with-cloned")]
 pub use crate::with_cloned::with_cloned;
 
 #[cfg(feature = "z85")]
