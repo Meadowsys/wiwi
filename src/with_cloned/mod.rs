@@ -54,8 +54,9 @@
 /// assert_eq!(*shared_data.lock().unwrap(), 420);
 /// ```
 ///
-/// ... this is not great, since you'd have to use `_shared_data` with an
-/// underscore to refer to the cloned value.
+/// ... this is not great, since you'd have to use `_shared_data`, which is
+/// different from the original one, and the underscore might look kind of ugly,
+/// and it's just not ideal.
 ///
 /// It can also be done with a temporary scope:
 ///
@@ -77,7 +78,8 @@
 /// ```
 ///
 /// ... not really what we would do (really only minor style preferences, nothing
-/// actually relating to function), but still not optimal either way.
+/// actually relating to function), but still has some boilerplate, and not the
+/// most optimal either way.
 ///
 /// In our short(...ish?) time writing rust code, I've already noticed I use this
 /// pattern a lot when dealing with shared state across threads. There are likely
