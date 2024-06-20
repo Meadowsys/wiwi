@@ -80,13 +80,6 @@ pub trait Iter {
 		}
 	}
 
-	fn peekable(self) -> Peek<Self, Self::Item>
-	where
-		Self: Sized
-	{
-		Peek::new(self)
-	}
-
 	fn map<O, F>(self, f: F) -> Map<Self, F>
 	where
 		Self: Sized,
@@ -164,6 +157,27 @@ pub trait Iter {
 		}
 	}
 
+	fn enumerate(self) -> Enumerate<Self>
+	where
+		Self: Sized
+	{
+		Enumerate::new(self)
+	}
+
+	fn enumerate1(self) -> Enumerate1<Self>
+	where
+		Self: Sized
+	{
+		Enumerate1::new(self)
+	}
+
+	fn peekable(self) -> Peek<Self, Self::Item>
+	where
+		Self: Sized
+	{
+		Peek::new(self)
+	}
+
 	/// Takes every element emitted by the underlying iter, and returns it
 	/// `count` times via cloning.
 	///
@@ -233,20 +247,6 @@ pub trait Iter {
 		Self::Item: Clone
 	{
 		RepeatPerItem::new(self, count)
-	}
-
-	fn enumerate(self) -> Enumerate<Self>
-	where
-		Self: Sized
-	{
-		Enumerate::new(self)
-	}
-
-	fn enumerate1(self) -> Enumerate1<Self>
-	where
-		Self: Sized
-	{
-		Enumerate1::new(self)
 	}
 
 	/*
