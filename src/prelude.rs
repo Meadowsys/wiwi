@@ -7,6 +7,7 @@
 	not(feature = "auth-unstable"),
 	not(feature = "bitstream-unstable"),
 	not(feature = "chainer-unstable"),
+	not(feature = "cli-unstable"),
 	not(feature = "clock-timer"),
 	not(feature = "debounce"),
 	not(feature = "defer-unstable"),

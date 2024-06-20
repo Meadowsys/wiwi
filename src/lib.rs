@@ -39,6 +39,7 @@
 #![cfg_attr(all(feature = "auth-unstable"), doc = "- `auth` (unstable)")]
 #![cfg_attr(all(feature = "bitstream-unstable"), doc = "- `bitstream` (unstable)")]
 #![cfg_attr(all(feature = "chainer-unstable"), doc = "- `chainer` (unstable)")]
+#![cfg_attr(all(feature = "cli-unstable"), doc = "- `cli` (unstable)")]
 #![cfg_attr(all(feature = "clock-timer"), doc = "- `clock-timer`")]
 #![cfg_attr(all(feature = "debounce"), doc = "- `debounce`")]
 #![cfg_attr(all(feature = "defer-unstable"), doc = "- `defer` (unstable)")]
@@ -65,6 +66,7 @@
 	not(feature = "auth-unstable"),
 	not(feature = "bitstream-unstable"),
 	not(feature = "chainer-unstable"),
+	not(feature = "cli-unstable"),
 	not(feature = "clock-timer"),
 	not(feature = "debounce"),
 	not(feature = "defer-unstable"),
@@ -132,6 +134,10 @@ pub mod bitstream;
 #[cfg(feature = "chainer-unstable")]
 #[cfg_attr(docsrs, doc(cfg(feature = "chainer-unstable")))]
 pub mod chainer;
+
+#[cfg(feature = "cli-unstable")]
+#[cfg_attr(docsrs, doc(cfg(feature = "cli-unstable")))]
+pub mod cli;
 
 #[cfg(feature = "clock-timer")]
 #[cfg_attr(docsrs, doc(cfg(feature = "clock-timer")))]

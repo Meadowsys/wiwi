@@ -52,6 +52,10 @@ fn main() {
 		"zero-cost wrappers that provide chaining APIs"
 		features: ["iter", "to-maybeuninit"]
 
+		#[unstable]
+		"cli"
+		"command line args parser"
+
 		"clock-timer"
 		"An interval tracking clock, yielding ticks at specified intervals and doing so for a specified duration"
 		dependencies: ["chrono", "tokio"]

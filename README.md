@@ -46,6 +46,7 @@ reminder: **Unstable features are NOT covered by semver!**
 - **`auth`** - Some lower(ish) level utilities to aid in writing an authentication system, in which the client password is never sent across the wire. Quite heavily inspired by [Tuta's authentication/encryption system](https://tuta.com/nl/encryption)
 - **`bitstream`** - bit stream encoder/decoder
 - **`chainer`** - zero-cost wrappers that provide chaining APIs
+- **`cli`** - command line args parser
 - **`defer`** - utilities for deferring running code
 - **`id`** - ID generator, with all IDs generated from one generater guaranteed to be monotonically increasing
 - **`int`** - bigint / uneven int types
