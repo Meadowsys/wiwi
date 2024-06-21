@@ -8,6 +8,9 @@ Hallo!
   - seperated stable and unstable features, making it easy to see the stable stuff
 - `gen-features` script
   - now, dependencies and features are declared in there, and it'll check them, and then generate/update the content for all the other places that previously needed to be manually updated, including `Cargo.toml`, `README.md`, `lib.rs`, the prelude, and may come in handy for other places too
+- feature `cli`
+  - created the feature (unstable)
+  - it's empty lol
 - feature `with-cloned`
   - stabilised the feature
 - tuples
