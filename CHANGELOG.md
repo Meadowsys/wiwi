@@ -2,7 +2,7 @@
 
 Hallo!
 
-## unreleased
+## v0.9.0
 
 - completely redesigned readme
   - seperated stable and unstable features, making it easy to see the stable stuff
