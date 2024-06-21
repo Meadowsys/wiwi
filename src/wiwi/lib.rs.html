@@ -214,6 +214,12 @@
 <a href="#214" id="214">214</a>
 <a href="#215" id="215">215</a>
 <a href="#216" id="216">216</a>
+<a href="#217" id="217">217</a>
+<a href="#218" id="218">218</a>
+<a href="#219" id="219">219</a>
+<a href="#220" id="220">220</a>
+<a href="#221" id="221">221</a>
+<a href="#222" id="222">222</a>
 </pre></div><pre class="rust"><code><span class="attr">#![cfg_attr(feature = <span class="string">"omega-tuples-of-doom"</span>, recursion_limit = <span class="string">"256"</span>)]
 
 </span><span class="comment">// TODO: review these
@@ -255,6 +261,7 @@
 #![cfg_attr(all(feature = <span class="string">"auth-unstable"</span>), doc = <span class="string">"- `auth` (unstable)"</span>)]
 #![cfg_attr(all(feature = <span class="string">"bitstream-unstable"</span>), doc = <span class="string">"- `bitstream` (unstable)"</span>)]
 #![cfg_attr(all(feature = <span class="string">"chainer-unstable"</span>), doc = <span class="string">"- `chainer` (unstable)"</span>)]
+#![cfg_attr(all(feature = <span class="string">"cli-unstable"</span>), doc = <span class="string">"- `cli` (unstable)"</span>)]
 #![cfg_attr(all(feature = <span class="string">"clock-timer"</span>), doc = <span class="string">"- `clock-timer`"</span>)]
 #![cfg_attr(all(feature = <span class="string">"debounce"</span>), doc = <span class="string">"- `debounce`"</span>)]
 #![cfg_attr(all(feature = <span class="string">"defer-unstable"</span>), doc = <span class="string">"- `defer` (unstable)"</span>)]
@@ -281,6 +288,7 @@
 	not(feature = <span class="string">"auth-unstable"</span>),
 	not(feature = <span class="string">"bitstream-unstable"</span>),
 	not(feature = <span class="string">"chainer-unstable"</span>),
+	not(feature = <span class="string">"cli-unstable"</span>),
 	not(feature = <span class="string">"clock-timer"</span>),
 	not(feature = <span class="string">"debounce"</span>),
 	not(feature = <span class="string">"defer-unstable"</span>),
@@ -348,6 +356,10 @@
 <span class="attr">#[cfg(feature = <span class="string">"chainer-unstable"</span>)]
 #[cfg_attr(docsrs, doc(cfg(feature = <span class="string">"chainer-unstable"</span>)))]
 </span><span class="kw">pub mod </span>chainer;
+
+<span class="attr">#[cfg(feature = <span class="string">"cli-unstable"</span>)]
+#[cfg_attr(docsrs, doc(cfg(feature = <span class="string">"cli-unstable"</span>)))]
+</span><span class="kw">pub mod </span>cli;
 
 <span class="attr">#[cfg(feature = <span class="string">"clock-timer"</span>)]
 #[cfg_attr(docsrs, doc(cfg(feature = <span class="string">"clock-timer"</span>)))]

@@ -432,13 +432,6 @@
 		}
 	}
 
-	<span class="kw">fn </span>peekable(<span class="self">self</span>) -&gt; Peek&lt;<span class="self">Self</span>, <span class="self">Self</span>::Item&gt;
-	<span class="kw">where
-		</span><span class="self">Self</span>: Sized
-	{
-		Peek::new(<span class="self">self</span>)
-	}
-
 	<span class="kw">fn </span>map&lt;O, F&gt;(<span class="self">self</span>, f: F) -&gt; Map&lt;<span class="self">Self</span>, F&gt;
 	<span class="kw">where
 		</span><span class="self">Self</span>: Sized,
@@ -516,6 +509,27 @@
 		}
 	}
 
+	<span class="kw">fn </span>enumerate(<span class="self">self</span>) -&gt; Enumerate&lt;<span class="self">Self</span>&gt;
+	<span class="kw">where
+		</span><span class="self">Self</span>: Sized
+	{
+		Enumerate::new(<span class="self">self</span>)
+	}
+
+	<span class="kw">fn </span>enumerate1(<span class="self">self</span>) -&gt; Enumerate1&lt;<span class="self">Self</span>&gt;
+	<span class="kw">where
+		</span><span class="self">Self</span>: Sized
+	{
+		Enumerate1::new(<span class="self">self</span>)
+	}
+
+	<span class="kw">fn </span>peekable(<span class="self">self</span>) -&gt; Peek&lt;<span class="self">Self</span>, <span class="self">Self</span>::Item&gt;
+	<span class="kw">where
+		</span><span class="self">Self</span>: Sized
+	{
+		Peek::new(<span class="self">self</span>)
+	}
+
 	<span class="doccomment">/// Takes every element emitted by the underlying iter, and returns it
 	/// `count` times via cloning.
 	///
@@ -585,20 +599,6 @@
 		<span class="self">Self</span>::Item: Clone
 	{
 		RepeatPerItem::new(<span class="self">self</span>, count)
-	}
-
-	<span class="kw">fn </span>enumerate(<span class="self">self</span>) -&gt; Enumerate&lt;<span class="self">Self</span>&gt;
-	<span class="kw">where
-		</span><span class="self">Self</span>: Sized
-	{
-		Enumerate::new(<span class="self">self</span>)
-	}
-
-	<span class="kw">fn </span>enumerate1(<span class="self">self</span>) -&gt; Enumerate1&lt;<span class="self">Self</span>&gt;
-	<span class="kw">where
-		</span><span class="self">Self</span>: Sized
-	{
-		Enumerate1::new(<span class="self">self</span>)
 	}
 
 	<span class="comment">/*
