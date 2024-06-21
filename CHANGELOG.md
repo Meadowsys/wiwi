@@ -2,6 +2,12 @@
 
 Hallo!
 
+## unreleased
+
+- feature `augment-panic-hook`
+  - created the feature
+  - allows you to augment the current panic hook in a convenient way, running some code on panic, but still calling the existing hook afterwards
+
 ## v0.9.0
 
 - completely redesigned readme

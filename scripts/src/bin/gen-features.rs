@@ -37,6 +37,9 @@ fn main() {
 		"Utilities specific for writing solutions for [Advent of Code](https://adventofcode.com)"
 		features: ["iter"]
 
+		"augment-panic-hook"
+		"allows you to augment the current panic hook in a convenient way, running some code on panic, but still calling the existing hook afterwards"
+
 		#[unstable]
 		"auth"
 		"Some lower(ish) level utilities to aid in writing an authentication system, in which the client password is never sent across the wire. Quite heavily inspired by [Tuta's authentication/encryption system](https://tuta.com/nl/encryption)"

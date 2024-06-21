@@ -66,13 +66,14 @@ uuid = { version = "1.8.0", optional = true }
 zeroize = { version = "1.7.0", optional = true }
 
 [features]
-all = ["clock-timer", "debounce", "h", "hex", "lazy-wrap", "nominal", "to-maybeuninit", "with-cloned", "z85"]
+all = ["augment-panic-hook", "clock-timer", "debounce", "h", "hex", "lazy-wrap", "nominal", "to-maybeuninit", "with-cloned", "z85"]
 all-unstable = ["all", "aoc-unstable", "auth-unstable", "bitstream-unstable", "chainer-unstable", "cli-unstable", "defer-unstable", "id-unstable", "int-unstable", "iter-unstable", "lsl-unstable", "memory-usage-unstable", "minesweeper-unstable", "path-unstable", "serialiser-unstable", "string-pool-unstable", "sudoku-unstable"]
 all-addons = ["hashbrown", "image", "large-tuples", "omega-tuples-of-doom", "serde-json"]
 
 aoc-unstable = [
 	"iter-unstable"
 ]
+augment-panic-hook = []
 auth-unstable = [
 	"dep:argon2",
 	"dep:chacha20poly1305",

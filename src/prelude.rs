@@ -4,6 +4,7 @@
 
 #![cfg_attr(all(
 	not(feature = "aoc-unstable"),
+	not(feature = "augment-panic-hook"),
 	not(feature = "auth-unstable"),
 	not(feature = "bitstream-unstable"),
 	not(feature = "chainer-unstable"),
