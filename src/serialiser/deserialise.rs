@@ -10,6 +10,10 @@ pub fn deserialise<'h, T: Deserialise<'h>>(mut bytes: &'h [u8]) -> Result<T> {
 	Ok(value)
 }
 
-pub fn deserialise_lax<'h, T: Deserialise<'h>>(mut bytes: &'h [u8]) -> Result<T> {
-	T::deserialise(&mut bytes)
+/// Deserialise the next item from the provided slice, ignoring excess
+///
+/// Return the value as well as the remaining slice that wasn't consumed.
+pub fn deserialise_one<'h, T: Deserialise<'h>>(mut bytes: &'h [u8]) -> Result<(T, &'h [u8])> {
+	let res = T::deserialise(&mut bytes);
+	res.map(|val| (val, bytes))
 }
