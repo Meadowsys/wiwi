@@ -6,6 +6,8 @@ pub mod error;
 pub mod marker;
 pub mod number;
 
+/// I wrote a macro to help me write macros. I think something might be wrong,
+/// potentially maybe?
 macro_rules! exported_match_macro {
 	($name:ident: $($match:tt)+) => {
 		#[macro_export]
