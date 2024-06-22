@@ -56,7 +56,8 @@ reminder: **Unstable features are NOT covered by semver!**
 - **`memory-usage`** - Calculate actual memory usage of Rust structs, including derive macro for custom types
 - **`minesweeper`** - core logic components for minesweeper games of arbitrary size
 - **`path`** - UTF-8 only path manipulation utilities written from scratch
-- **`serialiser`** - self describing, stable (once finished) binary serialiser, aiming for small output size by exploiting common patterns in real world data
+- **`serialiser-binary`** - self describing, stable (once finished) binary serialiser, aiming for small output size by exploiting common patterns in real world data
+- **`serialiser-text`** - self describing, stable (once finished) text serialiser, aiming for human readability, and ease of writing
 - **`string-pool`** - Global immutable string pool and String type
 - **`sudoku`** - Sudoku related... stuff
 

@@ -55,7 +55,8 @@
 #![cfg_attr(all(feature = "minesweeper-unstable"), doc = "- `minesweeper` (unstable)")]
 #![cfg_attr(all(feature = "nominal"), doc = "- `nominal`")]
 #![cfg_attr(all(feature = "path-unstable"), doc = "- `path` (unstable)")]
-#![cfg_attr(all(feature = "serialiser-unstable"), doc = "- `serialiser` (unstable)")]
+#![cfg_attr(all(feature = "serialiser-binary-unstable"), doc = "- `serialiser-binary` (unstable)")]
+#![cfg_attr(all(feature = "serialiser-text-unstable"), doc = "- `serialiser-text` (unstable)")]
 #![cfg_attr(all(feature = "string-pool-unstable"), doc = "- `string-pool` (unstable)")]
 #![cfg_attr(all(feature = "sudoku-unstable"), doc = "- `sudoku` (unstable)")]
 #![cfg_attr(all(feature = "to-maybeuninit"), doc = "- `to-maybeuninit`")]
@@ -83,7 +84,8 @@
 	not(feature = "minesweeper-unstable"),
 	not(feature = "nominal"),
 	not(feature = "path-unstable"),
-	not(feature = "serialiser-unstable"),
+	not(feature = "serialiser-binary-unstable"),
+	not(feature = "serialiser-text-unstable"),
 	not(feature = "string-pool-unstable"),
 	not(feature = "sudoku-unstable"),
 	not(feature = "to-maybeuninit"),
@@ -201,9 +203,13 @@ pub mod nominal;
 #[cfg_attr(docsrs, doc(cfg(feature = "path-unstable")))]
 pub mod path;
 
-#[cfg(feature = "serialiser-unstable")]
-#[cfg_attr(docsrs, doc(cfg(feature = "serialiser-unstable")))]
-pub mod serialiser;
+#[cfg(feature = "serialiser-binary-unstable")]
+#[cfg_attr(docsrs, doc(cfg(feature = "serialiser-binary-unstable")))]
+pub mod serialiser_binary;
+
+#[cfg(feature = "serialiser-text-unstable")]
+#[cfg_attr(docsrs, doc(cfg(feature = "serialiser-text-unstable")))]
+pub mod serialiser_text;
 
 #[cfg(feature = "string-pool-unstable")]
 #[cfg_attr(docsrs, doc(cfg(feature = "string-pool-unstable")))]
