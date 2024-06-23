@@ -101,7 +101,11 @@ where
 	fn overflowing_pow(self, rhs: Self) -> (Self, bool);
 }
 
-pub trait BigInt<const BYTES: usize>: Sized {
+pub trait BigInt<const BYTES: usize>: Sized
+where
+	Self: Clone + Debug + Display + Default + Hash,
+	Self: PartialEq<Self> + Eq + PartialOrd<Self> + Ord
+{
 	const MIN: Self;
 	const MAX: Self;
 	const BITS: Self;
