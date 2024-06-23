@@ -4,48 +4,6 @@ use std::hash::Hash;
 use std::iter::{ Sum, Product };
 use std::ops;
 
-pub trait BigInt<const BYTES: usize>: Sized {
-	const MIN: Self;
-	const MAX: Self;
-	const BITS: Self;
-	// TODO: this / generic param ehh weird funny
-	const BYTES: Self;
-
-	fn count_ones(&self) -> Self;
-	fn count_zeros(&self) -> Self;
-	fn leading_zeros(&self) -> Self;
-	fn trailing_zeros(&self) -> Self;
-	fn leading_ones(&self) -> Self;
-	fn trailing_ones(&self) -> Self;
-
-	fn rotate_left(&mut self, n: &Self);
-	fn rotate_right(&mut self, n: &Self);
-
-	fn from_be_ref(x: &Self) -> Self;
-	fn from_le_ref(x: &Self) -> Self;
-	fn from_be(x: Self) -> Self;
-	fn from_le(x: Self) -> Self;
-
-	fn to_be(&self) -> Self;
-	fn to_le(&self) -> Self;
-	fn into_be(self) -> Self;
-	fn into_le(self) -> Self;
-
-	fn from_be_bytes_ref(bytes: &[u8; BYTES]) -> Self;
-	fn from_le_bytes_ref(bytes: &[u8; BYTES]) -> Self;
-	fn from_ne_bytes_ref(bytes: &[u8; BYTES]) -> Self;
-	fn from_be_bytes(bytes: [u8; BYTES]) -> Self;
-	fn from_le_bytes(bytes: [u8; BYTES]) -> Self;
-	fn from_ne_bytes(bytes: [u8; BYTES]) -> Self;
-
-	fn to_be_bytes(&self) -> [u8; BYTES];
-	fn to_le_bytes(&self) -> [u8; BYTES];
-	fn to_ne_bytes(&self) -> [u8; BYTES];
-	fn into_be_bytes(self) -> [u8; BYTES];
-	fn into_le_bytes(self) -> [u8; BYTES];
-	fn into_ne_bytes(self) -> [u8; BYTES];
-}
-
 pub trait Int<const BYTES: usize>: Sized
 where
 	Self: Copy + Debug + Display + Default + Hash,
@@ -89,6 +47,48 @@ where
 	fn to_be_bytes(self) -> [u8; BYTES];
 	fn to_le_bytes(self) -> [u8; BYTES];
 	fn to_ne_bytes(self) -> [u8; BYTES];
+}
+
+pub trait BigInt<const BYTES: usize>: Sized {
+	const MIN: Self;
+	const MAX: Self;
+	const BITS: Self;
+	// TODO: this / generic param ehh weird funny
+	const BYTES: Self;
+
+	fn count_ones(&self) -> Self;
+	fn count_zeros(&self) -> Self;
+	fn leading_zeros(&self) -> Self;
+	fn trailing_zeros(&self) -> Self;
+	fn leading_ones(&self) -> Self;
+	fn trailing_ones(&self) -> Self;
+
+	fn rotate_left(&mut self, n: &Self);
+	fn rotate_right(&mut self, n: &Self);
+
+	fn from_be_ref(x: &Self) -> Self;
+	fn from_le_ref(x: &Self) -> Self;
+	fn from_be(x: Self) -> Self;
+	fn from_le(x: Self) -> Self;
+
+	fn to_be(&self) -> Self;
+	fn to_le(&self) -> Self;
+	fn into_be(self) -> Self;
+	fn into_le(self) -> Self;
+
+	fn from_be_bytes_ref(bytes: &[u8; BYTES]) -> Self;
+	fn from_le_bytes_ref(bytes: &[u8; BYTES]) -> Self;
+	fn from_ne_bytes_ref(bytes: &[u8; BYTES]) -> Self;
+	fn from_be_bytes(bytes: [u8; BYTES]) -> Self;
+	fn from_le_bytes(bytes: [u8; BYTES]) -> Self;
+	fn from_ne_bytes(bytes: [u8; BYTES]) -> Self;
+
+	fn to_be_bytes(&self) -> [u8; BYTES];
+	fn to_le_bytes(&self) -> [u8; BYTES];
+	fn to_ne_bytes(&self) -> [u8; BYTES];
+	fn into_be_bytes(self) -> [u8; BYTES];
+	fn into_le_bytes(self) -> [u8; BYTES];
+	fn into_ne_bytes(self) -> [u8; BYTES];
 }
 
 impl<const BYTES: usize, T: Int<BYTES>> BigInt<BYTES> for T {
