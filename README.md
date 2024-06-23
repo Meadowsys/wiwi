@@ -55,6 +55,7 @@ reminder: **Unstable features are NOT covered by semver!**
 - **`lsl`** - experimental lib to help with writing Second Life scripts in Rust... because yes, I got fed up with it very quickly and immediately missed Rust lol >< It is really only built for a dedicated crate just to write the script, rather than as part of another lib/app
 - **`memory-usage`** - Calculate actual memory usage of Rust structs, including derive macro for custom types
 - **`minesweeper`** - core logic components for minesweeper games of arbitrary size
+- **`num-traits`** - traits for number types and number functionality
 - **`path`** - UTF-8 only path manipulation utilities written from scratch
 - **`serialiser-binary`** - self describing, stable (once finished) binary serialiser, aiming for small output size by exploiting common patterns in real world data
 - **`serialiser-text`** - self describing, stable (once finished) text serialiser, aiming for human readability, and ease of writing

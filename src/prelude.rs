@@ -22,6 +22,7 @@
 	not(feature = "memory-usage-unstable"),
 	not(feature = "minesweeper-unstable"),
 	not(feature = "nominal"),
+	not(feature = "num-traits-unstable"),
 	not(feature = "path-unstable"),
 	not(feature = "serialiser-binary-unstable"),
 	not(feature = "serialiser-text-unstable"),

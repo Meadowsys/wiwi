@@ -117,6 +117,10 @@ fn main() {
 		"zero cost wrapper to put data in a newtype, taking advantage of nominal typing for increased safety"
 
 		#[unstable]
+		"num-traits"
+		"traits for number types and number functionality"
+
+		#[unstable]
 		"path"
 		"UTF-8 only path manipulation utilities written from scratch"
 
