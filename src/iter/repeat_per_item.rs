@@ -1,12 +1,11 @@
 use super::{ IntoIter, Iter, SizeHintBound, SizeHintImpl, SizeHintInner, SizeHintMarker };
+use std::mem::replace;
 
 pub struct RepeatPerItem<I: Iter> {
 	iter: I,
 	/// amount of times to emit each item
 	count: usize,
-	item: Option<Option<I::Item>>,
-	/// amount of times left to emit current item
-	remaining_count: usize
+	state: State<I::Item>
 }
 
 impl<I> RepeatPerItem<I>
@@ -16,24 +15,24 @@ where
 {
 	/// Called by [`Iter::repeat_per_item`]
 	pub(super) fn new(iter: I, count: usize) -> Self {
-		let item = if count == 0 {
-			// marks inner iter as "exhausted"
-			Some(None)
+		let state = if count == 0 {
+			// if it's 0, we just always return None, and don't touch inner iter
+			State::Exhausted
 		} else {
-			None
+			State::None
 		};
 
-		Self {
-			iter,
-			count,
-			item,
-			remaining_count: 0
-		}
+		Self { iter, count, state }
 	}
 
 	/// Consumes `self` and returns the underlying iter.
-	pub fn into_inner(self) -> (I, Option<Option<I::Item>>) {
-		(self.iter, self.item)
+	pub fn into_inner(self) -> (I, Option<(I::Item, usize)>) {
+		let item = if let State::Some { item, remaining_count: count @ 1.. } = self.state {
+			Some((item, count))
+		} else {
+			None
+		};
+		(self.iter, item)
 	}
 }
 
@@ -45,59 +44,54 @@ where
 	type Item = I::Item;
 
 	fn next(&mut self) -> Option<I::Item> {
-		match &mut self.item {
-			None => {
-				// need to get next item
-
-				let item = self.iter.next();
-
-				// we're not checking for 1 here, which feels like a performance penalty
-				// paid for an minority case, including the usual 2+ count case
-				self.item = Some(item.clone());
-				self.remaining_count = self.count - 1;
-
-				item
+		let curr = replace(&mut self.state, State::None);
+		let (res, next) = match curr {
+			State::None => {
+				if let Some(item) = self.iter.next() {
+					(Some(item.clone()), State::Some {
+						item,
+						remaining_count: self.count - 1
+					})
+				} else {
+					(None, State::Exhausted)
+				}
 			}
-
-			Some(None) => {
-				// inner iter is exhausted
-				// we will never call `next()` on it again
-				None
+			State::Exhausted => {
+				(None, State::Exhausted)
 			}
-
-			Some(Some(item)) if self.remaining_count > 1 => {
-				// we'll need the item again to clone it at least once more
-				self.remaining_count -= 1;
-				Some(item.clone())
+			State::Some { item, remaining_count } => {
+				match remaining_count {
+					2.. => {
+						(Some(item.clone()), State::Some { item, remaining_count: remaining_count - 1 })
+					}
+					1 => {
+						(Some(item), State::None)
+					}
+					0 => {
+						// special case for passing 1 in Iter::repeat_per_item call
+						self.state = State::None;
+						return self.next()
+					}
+				}
 			}
+		};
 
-			Some(item @ Some(_)) if self.remaining_count == 1 => {
-				// last iteration for this element
-				let item = item.take();
-				// triggers `None` branch on next iteration
-				self.item = None;
-				// for size_hint
-				self.remaining_count = 0;
-				item
-			}
-
-			Some(Some(_)) => {
-				// special case for 1, only way remaining_count will be 0
-
-				// we don't return again since there's 0 iters remaining for this elem
-				// drop it, iter again
-				self.item = None;
-				self.next()
-			}
-		}
+		self.state = next;
+		res
 	}
 
 	unsafe fn size_hint_impl(&self, _: SizeHintMarker) -> SizeHintImpl {
 		use SizeHintBound::*;
 		use SizeHintInner::*;
 
+		let rem = if let State::Some { remaining_count, .. } = &self.state {
+			*remaining_count
+		} else {
+			0
+		};
+
 		macro_rules! count {
-			($count:ident) => { ($count * self.count) + self.remaining_count }
+			($count:ident) => { ($count * self.count) + rem }
 		}
 
 		match self.iter.size_hint().into_inner() {
@@ -117,6 +111,18 @@ where
 			Range { lower: Hard { count: cl }, upper: Estimate { count: cu } } => { SizeHintImpl::range_lhard_uestimate(count!(cl), count!(cu)) }
 			Range { lower: Hard { count: cl }, upper: Hard { count: cu } } => { SizeHintImpl::range_hard(count!(cl), count!(cu)) }
 		}
+	}
+}
+
+enum State<T> {
+	/// Need to advance iter to get the next item
+	None,
+	/// The inner iter is exhausted
+	Exhausted,
+	/// We have an item here, and remaining iterations to do
+	Some {
+		item: T,
+		remaining_count: usize
 	}
 }
 
@@ -148,14 +154,17 @@ mod tests {
 		assert_eq!(iter, [1, 2, 3]);
 
 		let mut iter = vec![1, 2, 3].into_wiwi_iter().repeat_per_item(2);
+		// 1
 		let _ = iter.next();
+		// 1
 		let _ = iter.next();
+		// 2
 		let _ = iter.next();
 
 		let (iter, item) = iter.into_inner();
 		// TODO: use our own
 		let iter = iter.convert_wiwi_into_std_iterator().collect::<Vec<_>>();
-		assert_eq!(item, Some(Some(2)));
+		assert_eq!(item, Some((2, 1)));
 		assert_eq!(iter, [3]);
 	}
 

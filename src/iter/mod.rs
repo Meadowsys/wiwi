@@ -238,7 +238,7 @@ pub trait Iter {
 	/// assert_eq!(orig_iter.next(), Some(2));
 	/// assert_eq!(orig_iter.next(), Some(3));
 	/// assert_eq!(orig_iter.next(), None);
-	/// assert_eq!(item, Some(None));
+	/// assert_eq!(item, None);
 	/// ```
 	fn repeat_per_item(self, count: usize) -> RepeatPerItem<Self>
 	where
