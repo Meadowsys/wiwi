@@ -232,6 +232,12 @@
 <a href="#232" id="232">232</a>
 <a href="#233" id="233">233</a>
 <a href="#234" id="234">234</a>
+<a href="#235" id="235">235</a>
+<a href="#236" id="236">236</a>
+<a href="#237" id="237">237</a>
+<a href="#238" id="238">238</a>
+<a href="#239" id="239">239</a>
+<a href="#240" id="240">240</a>
 </pre></div><pre class="rust"><code><span class="attr">#![cfg_attr(feature = <span class="string">"omega-tuples-of-doom"</span>, recursion_limit = <span class="string">"256"</span>)]
 
 </span><span class="comment">// TODO: review these
@@ -288,6 +294,7 @@
 #![cfg_attr(all(feature = <span class="string">"memory-usage-unstable"</span>), doc = <span class="string">"- `memory-usage` (unstable)"</span>)]
 #![cfg_attr(all(feature = <span class="string">"minesweeper-unstable"</span>), doc = <span class="string">"- `minesweeper` (unstable)"</span>)]
 #![cfg_attr(all(feature = <span class="string">"nominal"</span>), doc = <span class="string">"- `nominal`"</span>)]
+#![cfg_attr(all(feature = <span class="string">"num-traits-unstable"</span>), doc = <span class="string">"- `num-traits` (unstable)"</span>)]
 #![cfg_attr(all(feature = <span class="string">"path-unstable"</span>), doc = <span class="string">"- `path` (unstable)"</span>)]
 #![cfg_attr(all(feature = <span class="string">"serialiser-binary-unstable"</span>), doc = <span class="string">"- `serialiser-binary` (unstable)"</span>)]
 #![cfg_attr(all(feature = <span class="string">"serialiser-text-unstable"</span>), doc = <span class="string">"- `serialiser-text` (unstable)"</span>)]
@@ -317,6 +324,7 @@
 	not(feature = <span class="string">"memory-usage-unstable"</span>),
 	not(feature = <span class="string">"minesweeper-unstable"</span>),
 	not(feature = <span class="string">"nominal"</span>),
+	not(feature = <span class="string">"num-traits-unstable"</span>),
 	not(feature = <span class="string">"path-unstable"</span>),
 	not(feature = <span class="string">"serialiser-binary-unstable"</span>),
 	not(feature = <span class="string">"serialiser-text-unstable"</span>),
@@ -432,6 +440,10 @@
 <span class="attr">#[cfg(feature = <span class="string">"nominal"</span>)]
 #[cfg_attr(docsrs, doc(cfg(feature = <span class="string">"nominal"</span>)))]
 </span><span class="kw">pub mod </span>nominal;
+
+<span class="attr">#[cfg(feature = <span class="string">"num-traits-unstable"</span>)]
+#[cfg_attr(docsrs, doc(cfg(feature = <span class="string">"num-traits-unstable"</span>)))]
+</span><span class="kw">pub mod </span>num_traits;
 
 <span class="attr">#[cfg(feature = <span class="string">"path-unstable"</span>)]
 #[cfg_attr(docsrs, doc(cfg(feature = <span class="string">"path-unstable"</span>)))]
