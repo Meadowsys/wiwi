@@ -1,29 +1,30 @@
-pub trait Int<const BYTES: usize>: Sized + Clone {
+pub trait Int<const BYTES: usize>: Sized + Copy {
 	const MIN: Self;
 	const MAX: Self;
 	const BITS: Self;
 	// TODO: this / generic param ehh weird funny
 	const BYTES: Self;
 
-	fn count_ones(&self) -> Self;
-	fn count_zeros(&self) -> Self;
-	fn leading_zeros(&self) -> Self;
-	fn trailing_zeros(&self) -> Self;
-	fn leading_ones(&self) -> Self;
-	fn trailing_ones(&self) -> Self;
-	fn rotate_left(&mut self, n: &Self);
-	fn rotate_right(&mut self, n: &Self);
+	fn count_ones(self) -> Self;
+	fn count_zeros(self) -> Self;
+	fn leading_zeros(self) -> Self;
+	fn trailing_zeros(self) -> Self;
+	fn leading_ones(self) -> Self;
+	fn trailing_ones(self) -> Self;
+	fn rotate_left(self, n: Self) -> Self;
+	fn rotate_right(self, n: Self) -> Self;
+	fn from_be(x: Self) -> Self;
+	fn from_le(x: Self) -> Self;
+	fn to_be(self) -> Self;
+	fn to_le(self) -> Self;
 
-	// TODO: from_be
-	// TODO: from_le
-	// TODO: to_be
-	// TODO: to_le
-	// TODO: from_be_bytes
-	// TODO: from_le_bytes
-	// TODO: from_ne_bytes
-	// TODO: to_be_bytes
-	// TODO: to_le_bytes
-	// TODO: to_ne_bytes
+	fn from_be_bytes(bytes: [u8; BYTES]) -> Self;
+	fn from_le_bytes(bytes: [u8; BYTES]) -> Self;
+	fn from_ne_bytes(bytes: [u8; BYTES]) -> Self;
+
+	fn to_be_bytes(self) -> [u8; BYTES];
+	fn to_le_bytes(self) -> [u8; BYTES];
+	fn to_ne_bytes(self) -> [u8; BYTES];
 
 	// TODO: swap_bytes
 	// TODO: reverse_bits
@@ -123,38 +124,87 @@ macro_rules! int_trait_impl {
 				};
 
 				int_trait_impl! {
-					@fn(&self) -> Self
+					@fn(self) -> Self
 					count_ones
 					count_zeros
 					leading_zeros
 					trailing_zeros
 					leading_ones
 					trailing_ones
+					to_be
+					to_le
 				}
 
 				int_trait_impl! {
-					@fn(&mut self, &Self)
+					@fn(self, Self) -> Self
 					rotate_left
 					rotate_right
+				}
+
+				int_trait_impl! {
+					@fn(Self) -> Self
+					from_be
+					from_le
+				}
+
+				int_trait_impl! {
+					@fn([u8; { $int::BITS as usize / 8 }]) -> Self
+					from_be_bytes
+					from_le_bytes
+					from_ne_bytes
+				}
+
+				int_trait_impl! {
+					@fn(self) -> [u8; { $int::BITS as usize / 8 }]
+					to_be_bytes
+					to_le_bytes
+					to_ne_bytes
 				}
 			}
 		)*
 	};
 
-	{ @fn(&self) -> Self $($fn_name:ident)* } => {
+	{ @fn(self) -> Self $($fn_name:ident)* } => {
 		$(
 			#[inline(always)]
-			fn $fn_name(&self) -> Self {
-				Self::$fn_name(*self) as _
+			fn $fn_name(self) -> Self {
+				Self::$fn_name(self as _) as _
 			}
 		)*
 	};
 
-	{ @fn(&mut self, &Self) $($fn_name:ident)* } => {
+	{ @fn(self, Self) -> Self $($fn_name:ident)* } => {
 		$(
 			#[inline(always)]
-			fn $fn_name(&mut self, arg: &Self) {
-				*self = Self::$fn_name(*self, *arg as _) as _
+			fn $fn_name(self, x: Self) -> Self {
+				Self::$fn_name(self, x as _) as _
+			}
+		)*
+	};
+
+	{ @fn(Self) -> Self $($fn_name:ident)* } => {
+		$(
+			#[inline(always)]
+			fn $fn_name(x: Self) -> Self {
+				Self::$fn_name(x)
+			}
+		)*
+	};
+
+	{ @fn([u8; $bytes:expr]) -> Self $($fn_name:ident)* } => {
+		$(
+			#[inline(always)]
+			fn $fn_name(array: [u8; $bytes]) -> Self {
+				Self::$fn_name(array)
+			}
+		)*
+	};
+
+	{ @fn(self) -> [u8; $bytes:expr] $($fn_name:ident)* } => {
+		$(
+			#[inline(always)]
+			fn $fn_name(self) -> [u8; $bytes] {
+				Self::$fn_name(self)
 			}
 		)*
 	};
