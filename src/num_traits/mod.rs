@@ -141,6 +141,54 @@ pub trait BigInt<const BYTES: usize>: Sized {
 	fn into_be_bytes(self) -> [u8; BYTES];
 	fn into_le_bytes(self) -> [u8; BYTES];
 	fn into_ne_bytes(self) -> [u8; BYTES];
+
+	fn checked_add(&self, rhs: &Self) -> Option<Self>;
+	fn checked_sub(&self, rhs: &Self) -> Option<Self>;
+	fn checked_mul(&self, rhs: &Self) -> Option<Self>;
+	fn checked_div(&self, rhs: &Self) -> Option<Self>;
+	fn checked_rem(&self, rhs: &Self) -> Option<Self>;
+	fn checked_shl(&self, rhs: &Self) -> Option<Self>;
+	fn checked_shr(&self, rhs: &Self) -> Option<Self>;
+	fn checked_pow(&self, rhs: &Self) -> Option<Self>;
+
+	// fn strict_add(&self, rhs: &Self) -> Self; // TODO nightly
+	// fn strict_sub(&self, rhs: &Self) -> Self; // TODO nightly
+	// fn strict_mul(&self, rhs: &Self) -> Self; // TODO nightly
+	// fn strict_div(&self, rhs: &Self) -> Self; // TODO nightly
+	// fn strict_rem(&self, rhs: &Self) -> Self; // TODO nightly
+	// fn strict_shl(&self, rhs: &Self) -> Self; // TODO nightly
+	// fn strict_shr(&self, rhs: &Self) -> Self; // TODO nightly
+	// fn strict_pow(&self, rhs: &Self) -> Self; // TODO nightly
+
+	unsafe fn unchecked_add(&self, rhs: &Self) -> Self;
+	unsafe fn unchecked_sub(&self, rhs: &Self) -> Self;
+	unsafe fn unchecked_mul(&self, rhs: &Self) -> Self;
+	// unsafe fn unchecked_shl(&self, rhs: &Self) -> Self;
+	// unsafe fn unchecked_shr(&self, rhs: &Self) -> Self;
+
+	fn saturating_add(&self, rhs: &Self) -> Self;
+	fn saturating_sub(&self, rhs: &Self) -> Self;
+	fn saturating_mul(&self, rhs: &Self) -> Self;
+	fn saturating_div(&self, rhs: &Self) -> Self;
+	fn saturating_pow(&self, rhs: &Self) -> Self;
+
+	fn wrapping_add(&self, rhs: &Self) -> Self;
+	fn wrapping_sub(&self, rhs: &Self) -> Self;
+	fn wrapping_mul(&self, rhs: &Self) -> Self;
+	fn wrapping_div(&self, rhs: &Self) -> Self;
+	fn wrapping_rem(&self, rhs: &Self) -> Self;
+	fn wrapping_shl(&self, rhs: &Self) -> Self;
+	fn wrapping_shr(&self, rhs: &Self) -> Self;
+	fn wrapping_pow(&self, rhs: &Self) -> Self;
+
+	fn overflowing_add(&self, rhs: &Self) -> (Self, bool);
+	fn overflowing_sub(&self, rhs: &Self) -> (Self, bool);
+	fn overflowing_mul(&self, rhs: &Self) -> (Self, bool);
+	fn overflowing_div(&self, rhs: &Self) -> (Self, bool);
+	fn overflowing_rem(&self, rhs: &Self) -> (Self, bool);
+	fn overflowing_shl(&self, rhs: &Self) -> (Self, bool);
+	fn overflowing_shr(&self, rhs: &Self) -> (Self, bool);
+	fn overflowing_pow(&self, rhs: &Self) -> (Self, bool);
 }
 
 impl<const BYTES: usize, T: Int<BYTES>> BigInt<BYTES> for T {
@@ -149,39 +197,87 @@ impl<const BYTES: usize, T: Int<BYTES>> BigInt<BYTES> for T {
 	const BITS: Self = <Self as Int<BYTES>>::BITS;
 	const BYTES: Self = <Self as Int<BYTES>>::BYTES;
 
-	fn count_ones(&self) -> Self { Int::<BYTES>::count_ones(*self) }
-	fn count_zeros(&self) -> Self { Int::<BYTES>::count_zeros(*self) }
-	fn leading_zeros(&self) -> Self { Int::<BYTES>::leading_zeros(*self) }
-	fn trailing_zeros(&self) -> Self { Int::<BYTES>::trailing_zeros(*self) }
-	fn leading_ones(&self) -> Self { Int::<BYTES>::leading_ones(*self) }
-	fn trailing_ones(&self) -> Self { Int::<BYTES>::trailing_ones(*self) }
+	fn count_ones(&self) -> Self { Int::count_ones(*self) }
+	fn count_zeros(&self) -> Self { Int::count_zeros(*self) }
+	fn leading_zeros(&self) -> Self { Int::leading_zeros(*self) }
+	fn trailing_zeros(&self) -> Self { Int::trailing_zeros(*self) }
+	fn leading_ones(&self) -> Self { Int::leading_ones(*self) }
+	fn trailing_ones(&self) -> Self { Int::trailing_ones(*self) }
 
-	fn rotate_left(&mut self, n: &Self) { *self = Int::<BYTES>::rotate_left(*self, *n) }
-	fn rotate_right(&mut self, n: &Self) { *self = Int::<BYTES>::rotate_right(*self, *n) }
+	fn rotate_left(&mut self, n: &Self) { *self = Int::rotate_left(*self, *n) }
+	fn rotate_right(&mut self, n: &Self) { *self = Int::rotate_right(*self, *n) }
 
-	fn from_be_ref(x: &Self) -> Self { Int::<BYTES>::from_be(*x) }
-	fn from_le_ref(x: &Self) -> Self { Int::<BYTES>::from_le(*x) }
-	fn from_be(x: Self) -> Self { Int::<BYTES>::from_be(x) }
-	fn from_le(x: Self) -> Self { Int::<BYTES>::from_le(x) }
+	fn from_be_ref(x: &Self) -> Self { Int::from_be(*x) }
+	fn from_le_ref(x: &Self) -> Self { Int::from_le(*x) }
+	fn from_be(x: Self) -> Self { Int::from_be(x) }
+	fn from_le(x: Self) -> Self { Int::from_le(x) }
 
-	fn to_be(&self) -> Self { Int::<BYTES>::to_be(*self) }
-	fn to_le(&self) -> Self { Int::<BYTES>::to_le(*self) }
-	fn into_be(self) -> Self { Int::<BYTES>::to_be(self) }
-	fn into_le(self) -> Self { Int::<BYTES>::to_le(self) }
+	fn to_be(&self) -> Self { Int::to_be(*self) }
+	fn to_le(&self) -> Self { Int::to_le(*self) }
+	fn into_be(self) -> Self { Int::to_be(self) }
+	fn into_le(self) -> Self { Int::to_le(self) }
 
-	fn from_be_bytes_ref(bytes: &[u8; BYTES]) -> Self { Int::<BYTES>::from_be_bytes(*bytes) }
-	fn from_le_bytes_ref(bytes: &[u8; BYTES]) -> Self { Int::<BYTES>::from_le_bytes(*bytes) }
-	fn from_ne_bytes_ref(bytes: &[u8; BYTES]) -> Self { Int::<BYTES>::from_ne_bytes(*bytes) }
-	fn from_be_bytes(bytes: [u8; BYTES]) -> Self { Int::<BYTES>::from_be_bytes(bytes) }
-	fn from_le_bytes(bytes: [u8; BYTES]) -> Self { Int::<BYTES>::from_le_bytes(bytes) }
-	fn from_ne_bytes(bytes: [u8; BYTES]) -> Self { Int::<BYTES>::from_ne_bytes(bytes) }
+	fn from_be_bytes_ref(bytes: &[u8; BYTES]) -> Self { Int::from_be_bytes(*bytes) }
+	fn from_le_bytes_ref(bytes: &[u8; BYTES]) -> Self { Int::from_le_bytes(*bytes) }
+	fn from_ne_bytes_ref(bytes: &[u8; BYTES]) -> Self { Int::from_ne_bytes(*bytes) }
+	fn from_be_bytes(bytes: [u8; BYTES]) -> Self { Int::from_be_bytes(bytes) }
+	fn from_le_bytes(bytes: [u8; BYTES]) -> Self { Int::from_le_bytes(bytes) }
+	fn from_ne_bytes(bytes: [u8; BYTES]) -> Self { Int::from_ne_bytes(bytes) }
 
-	fn to_be_bytes(&self) -> [u8; BYTES] { Int::<BYTES>::to_be_bytes(*self) }
-	fn to_le_bytes(&self) -> [u8; BYTES] { Int::<BYTES>::to_le_bytes(*self) }
-	fn to_ne_bytes(&self) -> [u8; BYTES] { Int::<BYTES>::to_ne_bytes(*self) }
-	fn into_be_bytes(self) -> [u8; BYTES] { Int::<BYTES>::to_be_bytes(self) }
-	fn into_le_bytes(self) -> [u8; BYTES] { Int::<BYTES>::to_le_bytes(self) }
-	fn into_ne_bytes(self) -> [u8; BYTES] { Int::<BYTES>::to_ne_bytes(self) }
+	fn to_be_bytes(&self) -> [u8; BYTES] { Int::to_be_bytes(*self) }
+	fn to_le_bytes(&self) -> [u8; BYTES] { Int::to_le_bytes(*self) }
+	fn to_ne_bytes(&self) -> [u8; BYTES] { Int::to_ne_bytes(*self) }
+	fn into_be_bytes(self) -> [u8; BYTES] { Int::to_be_bytes(self) }
+	fn into_le_bytes(self) -> [u8; BYTES] { Int::to_le_bytes(self) }
+	fn into_ne_bytes(self) -> [u8; BYTES] { Int::to_ne_bytes(self) }
+
+	fn checked_add(&self, rhs: &Self) -> Option<Self> { Int::checked_add(*self, *rhs) }
+	fn checked_sub(&self, rhs: &Self) -> Option<Self> { Int::checked_sub(*self, *rhs) }
+	fn checked_mul(&self, rhs: &Self) -> Option<Self> { Int::checked_mul(*self, *rhs) }
+	fn checked_div(&self, rhs: &Self) -> Option<Self> { Int::checked_div(*self, *rhs) }
+	fn checked_rem(&self, rhs: &Self) -> Option<Self> { Int::checked_rem(*self, *rhs) }
+	fn checked_shl(&self, rhs: &Self) -> Option<Self> { Int::checked_shl(*self, *rhs) }
+	fn checked_shr(&self, rhs: &Self) -> Option<Self> { Int::checked_shr(*self, *rhs) }
+	fn checked_pow(&self, rhs: &Self) -> Option<Self> { Int::checked_pow(*self, *rhs) }
+
+	// fn strict_add(&self, rhs: &Self) -> Self; // TODO nightly
+	// fn strict_sub(&self, rhs: &Self) -> Self; // TODO nightly
+	// fn strict_mul(&self, rhs: &Self) -> Self; // TODO nightly
+	// fn strict_div(&self, rhs: &Self) -> Self; // TODO nightly
+	// fn strict_rem(&self, rhs: &Self) -> Self; // TODO nightly
+	// fn strict_shl(&self, rhs: &Self) -> Self; // TODO nightly
+	// fn strict_shr(&self, rhs: &Self) -> Self; // TODO nightly
+	// fn strict_pow(&self, rhs: &Self) -> Self; // TODO nightly
+
+	unsafe fn unchecked_add(&self, rhs: &Self) -> Self { Int::unchecked_add(*self, *rhs) }
+	unsafe fn unchecked_sub(&self, rhs: &Self) -> Self { Int::unchecked_sub(*self, *rhs) }
+	unsafe fn unchecked_mul(&self, rhs: &Self) -> Self { Int::unchecked_mul(*self, *rhs) }
+	// unsafe fn unchecked_shl(&self, rhs: &Self) -> Self;
+	// unsafe fn unchecked_shr(&self, rhs: &Self) -> Self;
+
+	fn saturating_add(&self, rhs: &Self) -> Self { Int::saturating_add(*self, *rhs) }
+	fn saturating_sub(&self, rhs: &Self) -> Self { Int::saturating_sub(*self, *rhs) }
+	fn saturating_mul(&self, rhs: &Self) -> Self { Int::saturating_mul(*self, *rhs) }
+	fn saturating_div(&self, rhs: &Self) -> Self { Int::saturating_div(*self, *rhs) }
+	fn saturating_pow(&self, rhs: &Self) -> Self { Int::saturating_pow(*self, *rhs) }
+
+	fn wrapping_add(&self, rhs: &Self) -> Self { Int::wrapping_add(*self, *rhs) }
+	fn wrapping_sub(&self, rhs: &Self) -> Self { Int::wrapping_sub(*self, *rhs) }
+	fn wrapping_mul(&self, rhs: &Self) -> Self { Int::wrapping_mul(*self, *rhs) }
+	fn wrapping_div(&self, rhs: &Self) -> Self { Int::wrapping_div(*self, *rhs) }
+	fn wrapping_rem(&self, rhs: &Self) -> Self { Int::wrapping_rem(*self, *rhs) }
+	fn wrapping_shl(&self, rhs: &Self) -> Self { Int::wrapping_shl(*self, *rhs) }
+	fn wrapping_shr(&self, rhs: &Self) -> Self { Int::wrapping_shr(*self, *rhs) }
+	fn wrapping_pow(&self, rhs: &Self) -> Self { Int::wrapping_pow(*self, *rhs) }
+
+	fn overflowing_add(&self, rhs: &Self) -> (Self, bool) { Int::overflowing_add(*self, *rhs) }
+	fn overflowing_sub(&self, rhs: &Self) -> (Self, bool) { Int::overflowing_sub(*self, *rhs) }
+	fn overflowing_mul(&self, rhs: &Self) -> (Self, bool) { Int::overflowing_mul(*self, *rhs) }
+	fn overflowing_div(&self, rhs: &Self) -> (Self, bool) { Int::overflowing_div(*self, *rhs) }
+	fn overflowing_rem(&self, rhs: &Self) -> (Self, bool) { Int::overflowing_rem(*self, *rhs) }
+	fn overflowing_shl(&self, rhs: &Self) -> (Self, bool) { Int::overflowing_shl(*self, *rhs) }
+	fn overflowing_shr(&self, rhs: &Self) -> (Self, bool) { Int::overflowing_shr(*self, *rhs) }
+	fn overflowing_pow(&self, rhs: &Self) -> (Self, bool) { Int::overflowing_pow(*self, *rhs) }
 }
 
 // TODO: swap_bytes
