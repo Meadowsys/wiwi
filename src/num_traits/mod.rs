@@ -23,31 +23,67 @@ where
 	Self: ops::BitXor<Self, Output = Self> + ops::BitXorAssign<Self>,
 	Self: Sum<Self> + Product<Self>
 {
+	/// The smallest value that can be represented by this int type
 	const MIN: Self;
+	/// The largest value that can be represented by this int type
 	const MAX: Self;
+	/// The size of this integer type in bits
 	const BITS: Self;
+	/// The size of this integer type in bytes
 	// TODO: this / generic param ehh weird funny
 	const BYTES: Self;
 
+	/// Count the amount of ones in the binary representation of `self`
 	fn count_ones(self) -> Self;
+	/// Count the amount of zeros in the binary representation of `self`
 	fn count_zeros(self) -> Self;
+
+	/// Count the amount of leading zeros in the binary representation of `self`
 	fn leading_zeros(self) -> Self;
+	/// Count the amount of trailing zeros in the binary representation of `self`
 	fn trailing_zeros(self) -> Self;
+
+	/// Count the amount of leading ones in the binary representation of `self`
 	fn leading_ones(self) -> Self;
+	/// Count the amount of trailing ones in the binary representation of `self`
 	fn trailing_ones(self) -> Self;
+
+	/// Shifts the bits left by a specified amount, wrapping the truncated bits
+	/// around to the right
 	fn rotate_left(self, n: Self) -> Self;
+	/// Shifts the bits right by a specified amount, wrapping the truncated bits
+	/// around to the left
 	fn rotate_right(self, n: Self) -> Self;
+
+	/// Converts an integer from big endian to native endian
+	///
+	/// On big endian, this does nothing, and on little endian, this swaps the bytes
 	fn from_be(x: Self) -> Self;
+	/// Converts an integer from little endian to native endian
+	///
+	/// On little endian, this does nothing, and on big endian, this swaps the bytes
 	fn from_le(x: Self) -> Self;
+	/// Converts `self` from native endian to big endian
+	///
+	/// On big endian, this does nothing, and on little endian, this swaps the bytes
 	fn to_be(self) -> Self;
+	/// Converts `self` from native endian to little endian
+	///
+	/// On little endian, this does nothing, and on big endian, this swaps the bytes
 	fn to_le(self) -> Self;
 
+	/// Takes a big endian byte array, and creates a native endian integer from it
 	fn from_be_bytes(bytes: [u8; BYTES]) -> Self;
+	/// Takes a little endian byte array, and creates a native endian integer from it
 	fn from_le_bytes(bytes: [u8; BYTES]) -> Self;
+	/// Takes a native endian byte array, and creates a native endian integer from it
 	fn from_ne_bytes(bytes: [u8; BYTES]) -> Self;
 
+	/// Converts `self` to its big endian byte array representation
 	fn to_be_bytes(self) -> [u8; BYTES];
+	/// Converts `self` to its little endian byte array representation
 	fn to_le_bytes(self) -> [u8; BYTES];
+	/// Converts `self` to its native endian byte array representation
 	fn to_ne_bytes(self) -> [u8; BYTES];
 
 	// TODO: below not in bigint
@@ -112,14 +148,26 @@ where
 	// TODO: this / generic param ehh weird funny
 	const BYTES: Self;
 
+	/// Count the amount of ones in the binary representation of `self`
 	fn count_ones(&self) -> Self;
+	/// Count the amount of zeros in the binary representation of `self`
 	fn count_zeros(&self) -> Self;
+
+	/// Count the amount of leading zeros in the binary representation of `self`
 	fn leading_zeros(&self) -> Self;
+	/// Count the amount of trailing zeros in the binary representation of `self`
 	fn trailing_zeros(&self) -> Self;
+
+	/// Count the amount of leading ones in the binary representation of `self`
 	fn leading_ones(&self) -> Self;
+	/// Count the amount of trailing ones in the binary representation of `self`
 	fn trailing_ones(&self) -> Self;
 
+	/// Shifts the bits left by a specified amount, wrapping the truncated bits
+	/// around to the right, storing the result in `self`
 	fn rotate_left(&mut self, n: &Self);
+	/// Shifts the bits right by a specified amount, wrapping the truncated bits
+	/// around to the left, storing the result in `self`
 	fn rotate_right(&mut self, n: &Self);
 
 	fn from_be_ref(x: &Self) -> Self;
