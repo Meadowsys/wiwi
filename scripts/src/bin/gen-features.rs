@@ -169,6 +169,10 @@ fn main() {
 		"by default, tuple implementations (where applicable of course) are available for tuples with up to 8 elements, which should be enough for most uses. Enabling this feature will enable implementations for tuples with up to 32 elements."
 
 		#[addon]
+		"nightly"
+		"enable features only available in nightly rust"
+
+		#[addon]
 		"omega-tuples-of-doom"
 		"_Surely_, no one uses tuples with more than 32 elements in them... but we don't know everyone's use case, so this feature will enable implementations for tuples with up to 128 elements. _Hopefully_, that is enough for everything. :p"
 		features: ["large-tuples"]
