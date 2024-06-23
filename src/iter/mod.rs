@@ -108,7 +108,6 @@ pub trait Iter {
 		use SizeHintBound::*;
 		use SizeHintInner::*;
 
-		// get "starting" count, early exiting if definitive count can be obtained
 		match self.size_hint().into_inner() {
 			// iter asserts it would iterate exactly this many times
 			Single { bound: Hard { count } } => { count }
