@@ -1,3 +1,9 @@
+use std::cmp::{ Eq, Ord, PartialEq, PartialOrd };
+use std::fmt::{ Debug, Display };
+use std::hash::Hash;
+use std::iter::{ Sum, Product };
+use std::ops;
+
 pub trait BigInt<const BYTES: usize>: Sized {
 	const MIN: Self;
 	const MAX: Self;
@@ -40,7 +46,23 @@ pub trait BigInt<const BYTES: usize>: Sized {
 	fn into_ne_bytes(self) -> [u8; BYTES];
 }
 
-pub trait Int<const BYTES: usize>: Sized + Copy {
+pub trait Int<const BYTES: usize>: Sized
+where
+	Self: Copy + Debug + Display + Default + Hash,
+	Self: PartialEq<Self> + Eq + PartialOrd<Self> + Ord,
+	Self: ops::Add<Self, Output = Self> + ops::AddAssign<Self>,
+	Self: ops::Sub<Self, Output = Self> + ops::SubAssign<Self>,
+	Self: ops::Mul<Self, Output = Self> + ops::MulAssign<Self>,
+	Self: ops::Div<Self, Output = Self> + ops::DivAssign<Self>,
+	Self: ops::Rem<Self, Output = Self> + ops::RemAssign<Self>,
+	Self: ops::Shl<Self, Output = Self> + ops::ShlAssign<Self>,
+	Self: ops::Shr<Self, Output = Self> + ops::ShrAssign<Self>,
+	Self: ops::Not<Output = Self>,
+	Self: ops::BitAnd<Self, Output = Self> + ops::BitAndAssign<Self>,
+	Self: ops::BitOr<Self, Output = Self> + ops::BitOrAssign<Self>,
+	Self: ops::BitXor<Self, Output = Self> + ops::BitXorAssign<Self>,
+	Self: Sum<Self> + Product<Self>
+{
 	const MIN: Self;
 	const MAX: Self;
 	const BITS: Self;
