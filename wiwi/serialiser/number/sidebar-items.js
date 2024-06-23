@@ -1,1 +1,0 @@
-window.SIDEBAR_ITEMS = {"macro":["int_range","smallint_negative_as_unsigned_range","smallint_negative_range","smallint_positive_range","smallint_signed_range","smallint_unsigned_range"]};

@@ -203,15 +203,23 @@
 <a href="#203" id="203">203</a>
 <a href="#204" id="204">204</a>
 <a href="#205" id="205">205</a>
+<a href="#206" id="206">206</a>
+<a href="#207" id="207">207</a>
+<a href="#208" id="208">208</a>
+<a href="#209" id="209">209</a>
+<a href="#210" id="210">210</a>
+<a href="#211" id="211">211</a>
+<a href="#212" id="212">212</a>
+<a href="#213" id="213">213</a>
+<a href="#214" id="214">214</a>
 </pre></div><pre class="rust"><code><span class="kw">use super</span>::{ IntoIter, Iter, SizeHintBound, SizeHintImpl, SizeHintInner, SizeHintMarker };
+<span class="kw">use </span>std::mem::replace;
 
 <span class="kw">pub struct </span>RepeatPerItem&lt;I: Iter&gt; {
 	iter: I,
 	<span class="doccomment">/// amount of times to emit each item
 	</span>count: usize,
-	item: <span class="prelude-ty">Option</span>&lt;<span class="prelude-ty">Option</span>&lt;I::Item&gt;&gt;,
-	<span class="doccomment">/// amount of times left to emit current item
-	</span>remaining_count: usize
+	state: State&lt;I::Item&gt;
 }
 
 <span class="kw">impl</span>&lt;I&gt; RepeatPerItem&lt;I&gt;
@@ -221,24 +229,24 @@
 {
 	<span class="doccomment">/// Called by [`Iter::repeat_per_item`]
 	</span><span class="kw">pub</span>(<span class="kw">super</span>) <span class="kw">fn </span>new(iter: I, count: usize) -&gt; <span class="self">Self </span>{
-		<span class="kw">let </span>item = <span class="kw">if </span>count == <span class="number">0 </span>{
-			<span class="comment">// marks inner iter as "exhausted"
-			</span><span class="prelude-val">Some</span>(<span class="prelude-val">None</span>)
+		<span class="kw">let </span>state = <span class="kw">if </span>count == <span class="number">0 </span>{
+			<span class="comment">// if it's 0, we just always return None, and don't touch inner iter
+			</span>State::Exhausted
 		} <span class="kw">else </span>{
-			<span class="prelude-val">None
-		</span>};
+			State::None
+		};
 
-		<span class="self">Self </span>{
-			iter,
-			count,
-			item,
-			remaining_count: <span class="number">0
-		</span>}
+		<span class="self">Self </span>{ iter, count, state }
 	}
 
 	<span class="doccomment">/// Consumes `self` and returns the underlying iter.
-	</span><span class="kw">pub fn </span>into_inner(<span class="self">self</span>) -&gt; (I, <span class="prelude-ty">Option</span>&lt;<span class="prelude-ty">Option</span>&lt;I::Item&gt;&gt;) {
-		(<span class="self">self</span>.iter, <span class="self">self</span>.item)
+	</span><span class="kw">pub fn </span>into_inner(<span class="self">self</span>) -&gt; (I, <span class="prelude-ty">Option</span>&lt;(I::Item, usize)&gt;) {
+		<span class="kw">let </span>item = <span class="kw">if let </span>State::Some { item, remaining_count: count @ <span class="number">1</span>.. } = <span class="self">self</span>.state {
+			<span class="prelude-val">Some</span>((item, count))
+		} <span class="kw">else </span>{
+			<span class="prelude-val">None
+		</span>};
+		(<span class="self">self</span>.iter, item)
 	}
 }
 
@@ -250,59 +258,54 @@
 	<span class="kw">type </span>Item = I::Item;
 
 	<span class="kw">fn </span>next(<span class="kw-2">&amp;mut </span><span class="self">self</span>) -&gt; <span class="prelude-ty">Option</span>&lt;I::Item&gt; {
-		<span class="kw">match </span><span class="kw-2">&amp;mut </span><span class="self">self</span>.item {
-			<span class="prelude-val">None </span>=&gt; {
-				<span class="comment">// need to get next item
-
-				</span><span class="kw">let </span>item = <span class="self">self</span>.iter.next();
-
-				<span class="comment">// we're not checking for 1 here, which feels like a performance penalty
-				// paid for an minority case, including the usual 2+ count case
-				</span><span class="self">self</span>.item = <span class="prelude-val">Some</span>(item.clone());
-				<span class="self">self</span>.remaining_count = <span class="self">self</span>.count - <span class="number">1</span>;
-
-				item
+		<span class="kw">let </span>curr = replace(<span class="kw-2">&amp;mut </span><span class="self">self</span>.state, State::None);
+		<span class="kw">let </span>(res, next) = <span class="kw">match </span>curr {
+			State::None =&gt; {
+				<span class="kw">if let </span><span class="prelude-val">Some</span>(item) = <span class="self">self</span>.iter.next() {
+					(<span class="prelude-val">Some</span>(item.clone()), State::Some {
+						item,
+						remaining_count: <span class="self">self</span>.count - <span class="number">1
+					</span>})
+				} <span class="kw">else </span>{
+					(<span class="prelude-val">None</span>, State::Exhausted)
+				}
 			}
-
-			<span class="prelude-val">Some</span>(<span class="prelude-val">None</span>) =&gt; {
-				<span class="comment">// inner iter is exhausted
-				// we will never call `next()` on it again
-				</span><span class="prelude-val">None
-			</span>}
-
-			<span class="prelude-val">Some</span>(<span class="prelude-val">Some</span>(item)) <span class="kw">if </span><span class="self">self</span>.remaining_count &gt; <span class="number">1 </span>=&gt; {
-				<span class="comment">// we'll need the item again to clone it at least once more
-				</span><span class="self">self</span>.remaining_count -= <span class="number">1</span>;
-				<span class="prelude-val">Some</span>(item.clone())
+			State::Exhausted =&gt; {
+				(<span class="prelude-val">None</span>, State::Exhausted)
 			}
-
-			<span class="prelude-val">Some</span>(item @ <span class="prelude-val">Some</span>(<span class="kw">_</span>)) <span class="kw">if </span><span class="self">self</span>.remaining_count == <span class="number">1 </span>=&gt; {
-				<span class="comment">// last iteration for this element
-				</span><span class="kw">let </span>item = item.take();
-				<span class="comment">// triggers `None` branch on next iteration
-				</span><span class="self">self</span>.item = <span class="prelude-val">None</span>;
-				<span class="comment">// for size_hint
-				</span><span class="self">self</span>.remaining_count = <span class="number">0</span>;
-				item
+			State::Some { item, remaining_count } =&gt; {
+				<span class="kw">match </span>remaining_count {
+					<span class="number">2</span>.. =&gt; {
+						(<span class="prelude-val">Some</span>(item.clone()), State::Some { item, remaining_count: remaining_count - <span class="number">1 </span>})
+					}
+					<span class="number">1 </span>=&gt; {
+						(<span class="prelude-val">Some</span>(item), State::None)
+					}
+					<span class="number">0 </span>=&gt; {
+						<span class="comment">// special case for passing 1 in Iter::repeat_per_item call
+						</span><span class="self">self</span>.state = State::None;
+						<span class="kw">return </span><span class="self">self</span>.next()
+					}
+				}
 			}
+		};
 
-			<span class="prelude-val">Some</span>(<span class="prelude-val">Some</span>(<span class="kw">_</span>)) =&gt; {
-				<span class="comment">// special case for 1, only way remaining_count will be 0
-
-				// we don't return again since there's 0 iters remaining for this elem
-				// drop it, iter again
-				</span><span class="self">self</span>.item = <span class="prelude-val">None</span>;
-				<span class="self">self</span>.next()
-			}
-		}
+		<span class="self">self</span>.state = next;
+		res
 	}
 
 	<span class="kw">unsafe fn </span>size_hint_impl(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="kw">_</span>: SizeHintMarker) -&gt; SizeHintImpl {
 		<span class="kw">use </span>SizeHintBound::<span class="kw-2">*</span>;
 		<span class="kw">use </span>SizeHintInner::<span class="kw-2">*</span>;
 
+		<span class="kw">let </span>rem = <span class="kw">if let </span>State::Some { remaining_count, .. } = <span class="kw-2">&amp;</span><span class="self">self</span>.state {
+			<span class="kw-2">*</span>remaining_count
+		} <span class="kw">else </span>{
+			<span class="number">0
+		</span>};
+
 		<span class="macro">macro_rules!</span> count {
-			(<span class="macro-nonterminal">$count</span>:ident) =&gt; { (<span class="macro-nonterminal">$count </span>* <span class="self">self</span>.count) + <span class="self">self</span>.remaining_count }
+			(<span class="macro-nonterminal">$count</span>:ident) =&gt; { (<span class="macro-nonterminal">$count </span>* <span class="self">self</span>.count) + rem }
 		}
 
 		<span class="kw">match </span><span class="self">self</span>.iter.size_hint().into_inner() {
@@ -322,6 +325,18 @@
 			Range { lower: Hard { count: cl }, upper: Estimate { count: cu } } =&gt; { SizeHintImpl::range_lhard_uestimate(<span class="macro">count!</span>(cl), <span class="macro">count!</span>(cu)) }
 			Range { lower: Hard { count: cl }, upper: Hard { count: cu } } =&gt; { SizeHintImpl::range_hard(<span class="macro">count!</span>(cl), <span class="macro">count!</span>(cu)) }
 		}
+	}
+}
+
+<span class="kw">enum </span>State&lt;T&gt; {
+	<span class="doccomment">/// Need to advance iter to get the next item
+	</span><span class="prelude-val">None</span>,
+	<span class="doccomment">/// The inner iter is exhausted
+	</span>Exhausted,
+	<span class="doccomment">/// We have an item here, and remaining iterations to do
+	</span><span class="prelude-val">Some </span>{
+		item: T,
+		remaining_count: usize
 	}
 }
 
@@ -353,14 +368,17 @@
 		<span class="macro">assert_eq!</span>(iter, [<span class="number">1</span>, <span class="number">2</span>, <span class="number">3</span>]);
 
 		<span class="kw">let </span><span class="kw-2">mut </span>iter = <span class="macro">vec!</span>[<span class="number">1</span>, <span class="number">2</span>, <span class="number">3</span>].into_wiwi_iter().repeat_per_item(<span class="number">2</span>);
-		<span class="kw">let _ </span>= iter.next();
-		<span class="kw">let _ </span>= iter.next();
-		<span class="kw">let _ </span>= iter.next();
+		<span class="comment">// 1
+		</span><span class="kw">let _ </span>= iter.next();
+		<span class="comment">// 1
+		</span><span class="kw">let _ </span>= iter.next();
+		<span class="comment">// 2
+		</span><span class="kw">let _ </span>= iter.next();
 
 		<span class="kw">let </span>(iter, item) = iter.into_inner();
 		<span class="comment">// TODO: use our own
 		</span><span class="kw">let </span>iter = iter.convert_wiwi_into_std_iterator().collect::&lt;Vec&lt;<span class="kw">_</span>&gt;&gt;();
-		<span class="macro">assert_eq!</span>(item, <span class="prelude-val">Some</span>(<span class="prelude-val">Some</span>(<span class="number">2</span>)));
+		<span class="macro">assert_eq!</span>(item, <span class="prelude-val">Some</span>((<span class="number">2</span>, <span class="number">1</span>)));
 		<span class="macro">assert_eq!</span>(iter, [<span class="number">3</span>]);
 	}
 

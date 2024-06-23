@@ -1,1 +1,0 @@
-window.SIDEBAR_ITEMS = {"enum":["Error"],"fn":["err_eof","err_str","err_string","error_eof","error_str","error_string"],"trait":["OptionExt","ResultExt"],"type":["Result"]};

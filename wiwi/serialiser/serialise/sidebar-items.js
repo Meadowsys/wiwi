@@ -1,1 +1,0 @@
-window.SIDEBAR_ITEMS = {"fn":["serialise","serialise_with_options"],"struct":["SerialiseOptions"],"trait":["Serialise"]};

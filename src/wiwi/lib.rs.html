@@ -226,6 +226,12 @@
 <a href="#226" id="226">226</a>
 <a href="#227" id="227">227</a>
 <a href="#228" id="228">228</a>
+<a href="#229" id="229">229</a>
+<a href="#230" id="230">230</a>
+<a href="#231" id="231">231</a>
+<a href="#232" id="232">232</a>
+<a href="#233" id="233">233</a>
+<a href="#234" id="234">234</a>
 </pre></div><pre class="rust"><code><span class="attr">#![cfg_attr(feature = <span class="string">"omega-tuples-of-doom"</span>, recursion_limit = <span class="string">"256"</span>)]
 
 </span><span class="comment">// TODO: review these
@@ -283,7 +289,8 @@
 #![cfg_attr(all(feature = <span class="string">"minesweeper-unstable"</span>), doc = <span class="string">"- `minesweeper` (unstable)"</span>)]
 #![cfg_attr(all(feature = <span class="string">"nominal"</span>), doc = <span class="string">"- `nominal`"</span>)]
 #![cfg_attr(all(feature = <span class="string">"path-unstable"</span>), doc = <span class="string">"- `path` (unstable)"</span>)]
-#![cfg_attr(all(feature = <span class="string">"serialiser-unstable"</span>), doc = <span class="string">"- `serialiser` (unstable)"</span>)]
+#![cfg_attr(all(feature = <span class="string">"serialiser-binary-unstable"</span>), doc = <span class="string">"- `serialiser-binary` (unstable)"</span>)]
+#![cfg_attr(all(feature = <span class="string">"serialiser-text-unstable"</span>), doc = <span class="string">"- `serialiser-text` (unstable)"</span>)]
 #![cfg_attr(all(feature = <span class="string">"string-pool-unstable"</span>), doc = <span class="string">"- `string-pool` (unstable)"</span>)]
 #![cfg_attr(all(feature = <span class="string">"sudoku-unstable"</span>), doc = <span class="string">"- `sudoku` (unstable)"</span>)]
 #![cfg_attr(all(feature = <span class="string">"to-maybeuninit"</span>), doc = <span class="string">"- `to-maybeuninit`"</span>)]
@@ -311,7 +318,8 @@
 	not(feature = <span class="string">"minesweeper-unstable"</span>),
 	not(feature = <span class="string">"nominal"</span>),
 	not(feature = <span class="string">"path-unstable"</span>),
-	not(feature = <span class="string">"serialiser-unstable"</span>),
+	not(feature = <span class="string">"serialiser-binary-unstable"</span>),
+	not(feature = <span class="string">"serialiser-text-unstable"</span>),
 	not(feature = <span class="string">"string-pool-unstable"</span>),
 	not(feature = <span class="string">"sudoku-unstable"</span>),
 	not(feature = <span class="string">"to-maybeuninit"</span>),
@@ -429,9 +437,13 @@
 #[cfg_attr(docsrs, doc(cfg(feature = <span class="string">"path-unstable"</span>)))]
 </span><span class="kw">pub mod </span>path;
 
-<span class="attr">#[cfg(feature = <span class="string">"serialiser-unstable"</span>)]
-#[cfg_attr(docsrs, doc(cfg(feature = <span class="string">"serialiser-unstable"</span>)))]
-</span><span class="kw">pub mod </span>serialiser;
+<span class="attr">#[cfg(feature = <span class="string">"serialiser-binary-unstable"</span>)]
+#[cfg_attr(docsrs, doc(cfg(feature = <span class="string">"serialiser-binary-unstable"</span>)))]
+</span><span class="kw">pub mod </span>serialiser_binary;
+
+<span class="attr">#[cfg(feature = <span class="string">"serialiser-text-unstable"</span>)]
+#[cfg_attr(docsrs, doc(cfg(feature = <span class="string">"serialiser-text-unstable"</span>)))]
+</span><span class="kw">pub mod </span>serialiser_text;
 
 <span class="attr">#[cfg(feature = <span class="string">"string-pool-unstable"</span>)]
 #[cfg_attr(docsrs, doc(cfg(feature = <span class="string">"string-pool-unstable"</span>)))]

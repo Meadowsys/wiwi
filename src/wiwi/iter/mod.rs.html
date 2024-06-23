@@ -349,7 +349,6 @@
 <a href="#349" id="349">349</a>
 <a href="#350" id="350">350</a>
 <a href="#351" id="351">351</a>
-<a href="#352" id="352">352</a>
 </pre></div><pre class="rust"><code><span class="kw">mod </span>adapter;
 <span class="kw">pub use </span>adapter::{
 	AsStdIterator,
@@ -460,8 +459,7 @@
 		<span class="kw">use </span>SizeHintBound::<span class="kw-2">*</span>;
 		<span class="kw">use </span>SizeHintInner::<span class="kw-2">*</span>;
 
-		<span class="comment">// get "starting" count, early exiting if definitive count can be obtained
-		</span><span class="kw">match </span><span class="self">self</span>.size_hint().into_inner() {
+		<span class="kw">match </span><span class="self">self</span>.size_hint().into_inner() {
 			<span class="comment">// iter asserts it would iterate exactly this many times
 			</span>Single { bound: Hard { count } } =&gt; { count }
 
@@ -591,7 +589,7 @@
 	/// assert_eq!(orig_iter.next(), Some(2));
 	/// assert_eq!(orig_iter.next(), Some(3));
 	/// assert_eq!(orig_iter.next(), None);
-	/// assert_eq!(item, Some(None));
+	/// assert_eq!(item, None);
 	/// ```
 	</span><span class="kw">fn </span>repeat_per_item(<span class="self">self</span>, count: usize) -&gt; RepeatPerItem&lt;<span class="self">Self</span>&gt;
 	<span class="kw">where
