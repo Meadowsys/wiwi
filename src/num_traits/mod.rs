@@ -1,3 +1,5 @@
+#![deny(unconditional_recursion)]
+
 use std::cmp::{ Eq, Ord, PartialEq, PartialOrd };
 use std::fmt::{ Debug, Display };
 use std::hash::Hash;
@@ -47,6 +49,56 @@ where
 	fn to_be_bytes(self) -> [u8; BYTES];
 	fn to_le_bytes(self) -> [u8; BYTES];
 	fn to_ne_bytes(self) -> [u8; BYTES];
+
+	// TODO: below not in bigint
+
+	fn checked_add(self, rhs: Self) -> Option<Self>;
+	fn checked_sub(self, rhs: Self) -> Option<Self>;
+	fn checked_mul(self, rhs: Self) -> Option<Self>;
+	fn checked_div(self, rhs: Self) -> Option<Self>;
+	fn checked_rem(self, rhs: Self) -> Option<Self>;
+	fn checked_shl(self, rhs: Self) -> Option<Self>;
+	fn checked_shr(self, rhs: Self) -> Option<Self>;
+	fn checked_pow(self, rhs: Self) -> Option<Self>;
+
+	// fn strict_add(self, rhs: Self) -> Self; // TODO nightly
+	// fn strict_sub(self, rhs: Self) -> Self; // TODO nightly
+	// fn strict_mul(self, rhs: Self) -> Self; // TODO nightly
+	// fn strict_div(self, rhs: Self) -> Self; // TODO nightly
+	// fn strict_rem(self, rhs: Self) -> Self; // TODO nightly
+	// fn strict_shl(self, rhs: Self) -> Self; // TODO nightly
+	// fn strict_shr(self, rhs: Self) -> Self; // TODO nightly
+	// fn strict_pow(self, rhs: Self) -> Self; // TODO nightly
+
+	unsafe fn unchecked_add(self, rhs: Self) -> Self;
+	unsafe fn unchecked_sub(self, rhs: Self) -> Self;
+	unsafe fn unchecked_mul(self, rhs: Self) -> Self;
+	// unsafe fn unchecked_shl(self, rhs: Self) -> Self;
+	// unsafe fn unchecked_shr(self, rhs: Self) -> Self;
+
+	fn saturating_add(self, rhs: Self) -> Self;
+	fn saturating_sub(self, rhs: Self) -> Self;
+	fn saturating_mul(self, rhs: Self) -> Self;
+	fn saturating_div(self, rhs: Self) -> Self;
+	fn saturating_pow(self, rhs: Self) -> Self;
+
+	fn wrapping_add(self, rhs: Self) -> Self;
+	fn wrapping_sub(self, rhs: Self) -> Self;
+	fn wrapping_mul(self, rhs: Self) -> Self;
+	fn wrapping_div(self, rhs: Self) -> Self;
+	fn wrapping_rem(self, rhs: Self) -> Self;
+	fn wrapping_shl(self, rhs: Self) -> Self;
+	fn wrapping_shr(self, rhs: Self) -> Self;
+	fn wrapping_pow(self, rhs: Self) -> Self;
+
+	fn overflowing_add(self, rhs: Self) -> (Self, bool);
+	fn overflowing_sub(self, rhs: Self) -> (Self, bool);
+	fn overflowing_mul(self, rhs: Self) -> (Self, bool);
+	fn overflowing_div(self, rhs: Self) -> (Self, bool);
+	fn overflowing_rem(self, rhs: Self) -> (Self, bool);
+	fn overflowing_shl(self, rhs: Self) -> (Self, bool);
+	fn overflowing_shr(self, rhs: Self) -> (Self, bool);
+	fn overflowing_pow(self, rhs: Self) -> (Self, bool);
 }
 
 pub trait BigInt<const BYTES: usize>: Sized {
@@ -134,23 +186,10 @@ impl<const BYTES: usize, T: Int<BYTES>> BigInt<BYTES> for T {
 
 // TODO: swap_bytes
 // TODO: reverse_bits
-// TODO: checked_add
-// TODO: strict_add
-// TODO: unchecked_add
 // TODO: checked_add_signed
 // TODO: strict_add_signed
-// TODO: checked_sub
-// TODO: strict_sub
-// TODO: unchecked_sub
-// TODO: checked_mul
-// TODO: strict_mul
-// TODO: unchecked_mul
-// TODO: checked_div
-// TODO: strict_div
 // TODO: checked_div_euclid
 // TODO: strict_div_euclid
-// TODO: checked_rem
-// TODO: strict_rem
 // TODO: checked_rem_euclid
 // TODO: strict_rem_euclid
 // TODO: ilog
@@ -161,47 +200,18 @@ impl<const BYTES: usize, T: Int<BYTES>> BigInt<BYTES> for T {
 // TODO: checked_ilog10
 // TODO: checked_neg
 // TODO: strict_neg
-// TODO: checked_shl
-// TODO: strict_shl
-// TODO: unchecked_shl
-// TODO: checked_shr
-// TODO: strict_shr
-// TODO: unchecked_shr
-// TODO: checked_pow
-// TODO: strict_pow
-// TODO: saturating_add
 // TODO: saturating_add_signed
-// TODO: saturating_sub
-// TODO: saturating_mul
-// TODO: saturating_div
-// TODO: saturating_pow
-// TODO: wrapping_add
 // TODO: wrapping_add_signed
-// TODO: wrapping_sub
-// TODO: wrapping_mul
-// TODO: wrapping_div
 // TODO: wrapping_div_euclid
-// TODO: wrapping_rem
 // TODO: wrapping_rem_euclid
 // TODO: wrapping_neg
-// TODO: wrapping_shl
-// TODO: wrapping_shr
-// TODO: wrapping_pow
-// TODO: overflowing_add
 // TODO: carrying_add
 // TODO: overflowing_add_signed
-// TODO: overflowing_sub
 // TODO: borrowing_sub
 // TODO: abs_diff
-// TODO: overflowing_mul
-// TODO: overflowing_div
 // TODO: overflowing_div_euclid
-// TODO: overflowing_rem
 // TODO: overflowing_rem_euclid
 // TODO: overflowing_neg
-// TODO: overflowing_shl
-// TODO: overflowing_shr
-// TODO: overflowing_pow
 // TODO: pow
 // TODO: isqrt
 // TODO: div_euclid
@@ -218,7 +228,7 @@ impl<const BYTES: usize, T: Int<BYTES>> BigInt<BYTES> for T {
 
 
 macro_rules! int_trait_impl {
-	{ $($int:ident)* } => {
+	{ $($int:ident $signed:literal)* } => {
 		$(
 			impl Int<{ $int::BITS as usize / 8 }> for $int {
 				const MIN: $int = $int::MIN;
@@ -245,6 +255,21 @@ macro_rules! int_trait_impl {
 					@fn(self, Self) -> Self
 					rotate_left
 					rotate_right
+
+					saturating_add
+					saturating_sub
+					saturating_mul
+					saturating_div
+					saturating_pow
+
+					wrapping_add
+					wrapping_sub
+					wrapping_mul
+					wrapping_div
+					wrapping_rem
+					wrapping_shl
+					wrapping_shr
+					wrapping_pow
 				}
 
 				int_trait_impl! {
@@ -265,6 +290,39 @@ macro_rules! int_trait_impl {
 					to_be_bytes
 					to_le_bytes
 					to_ne_bytes
+				}
+
+				int_trait_impl! {
+					@fn(self, Self) -> Option<Self>
+					checked_add
+					checked_sub
+					checked_mul
+					checked_div
+					checked_rem
+					checked_shl
+					checked_shr
+					checked_pow
+				}
+
+				int_trait_impl! {
+					@unsafe fn(self, Self) -> Self
+					unchecked_add
+					unchecked_sub
+					unchecked_mul
+					// unchecked_shl
+					// unchecked_shr
+				}
+
+				int_trait_impl! {
+					@fn(self, Self) -> (Self, bool)
+					overflowing_add
+					overflowing_sub
+					overflowing_mul
+					overflowing_div
+					overflowing_rem
+					overflowing_shl
+					overflowing_shr
+					overflowing_pow
 				}
 			}
 		)*
@@ -314,9 +372,45 @@ macro_rules! int_trait_impl {
 			}
 		)*
 	};
+
+	{ @fn(self, Self) -> Option<Self> $($fn_name:ident)* } => {
+		$(
+			#[inline(always)]
+			fn $fn_name(self, x: Self) -> Option<Self> {
+				Self::$fn_name(self, x as _) as _
+			}
+		)*
+	};
+
+	{ @unsafe fn(self, Self) -> Self $($fn_name:ident)* } => {
+		$(
+			#[inline(always)]
+			unsafe fn $fn_name(self, x: Self) -> Self {
+				Self::$fn_name(self, x as _) as _
+			}
+		)*
+	};
+
+	{ @fn(self, Self) -> (Self, bool) $($fn_name:ident)* } => {
+		$(
+			#[inline(always)]
+			fn $fn_name(self, x: Self) -> (Self, bool) {
+				Self::$fn_name(self, x as _)
+			}
+		)*
+	};
 }
 
 int_trait_impl! {
-	u8 u16 u32 u64 u128
-	i8 i16 i32 i64 i128
+	u8 false
+	u16 false
+	u32 false
+	u64 false
+	u128 false
+
+	i8 true
+	i16 true
+	i32 true
+	i64 true
+	i128 true
 }
