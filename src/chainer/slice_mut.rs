@@ -3,7 +3,7 @@ use std::ops::Range;
 use std::slice;
 
 chainer! {
-	chainer: SliceMutChain<'h, T>
+	SliceMutChain<'h, T>
 	inner: &'h mut [T]
 }
 

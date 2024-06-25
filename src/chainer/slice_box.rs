@@ -3,7 +3,7 @@ use super::new::VecChain;
 use std::mem::MaybeUninit;
 
 chainer! {
-	chainer: SliceBoxChain<T>
+	SliceBoxChain<T>
 	inner: Box<[T]>
 }
 

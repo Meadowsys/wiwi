@@ -9,7 +9,7 @@ use std::ops::RangeBounds;
 use std::slice::{ self, SliceIndex };
 
 chainer! {
-	chainer: VecChain<T>
+	VecChain<T>
 	inner: Vec<T>
 }
 

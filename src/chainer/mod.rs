@@ -18,7 +18,7 @@ pub mod new {
 macro_rules! chainer {
 	{
 		$(#[$meta:meta])*
-		chainer: $chain:ident$(<$($generics:tt $(= $generic_default:path)?),*>)?
+		$chain:ident$(<$($generics:tt $(= $generic_default:path)?),*>)?
 		inner: $($nonchain:tt)+
 	} => {
 		$(#[$meta])*
