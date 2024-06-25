@@ -701,6 +701,14 @@ impl<T> VecChain<T> {
 	}
 
 	chain_fn! {
+		rotate_left(inner, mid: usize) => inner.rotate_left(mid)
+	}
+
+	chain_fn! {
+		rotate_right(inner, mid: usize) => inner.rotate_right(mid)
+	}
+
+	chain_fn! {
 		unsafe set_len(inner, new_len: usize) => inner.set_len(new_len)
 	}
 
@@ -960,7 +968,6 @@ impl<T> VecChain<T> {
 	// TODO: strip_prefix/suffix
 	// TODO: select_nth_unstable/by/key
 	// TODO: partition_dedup/by/key
-	// TODO: rotate_left/right
 	// TODO: align_to/mut
 	// TODO: as_simd/mut
 	// TODO: is_sorted/by/key
@@ -998,7 +1005,6 @@ impl<T> VecChain<T> {
 	// TODO: strip_prefix/suffix
 	// TODO: select_nth_unstable/by/key
 	// TODO: partition_dedup/by/key
-	// TODO: rotate_left/right
 	// TODO: clone_within (not in std)?
 	// TODO: align_to/mut
 	// TODO: nightly as_simd/mut
@@ -1231,8 +1237,6 @@ impl<T> VecChain<T> {
 // TODO: rchunks_mut
 // TODO: repeat
 // TODO: reverse
-// TODO: rotate_left
-// TODO: rotate_right
 // TODO: rsplit
 // TODO: rsplit_mut
 // TODO: rsplit_once
