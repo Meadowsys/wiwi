@@ -18,49 +18,53 @@ pub mod new {
 macro_rules! chainer {
 	{
 		$(#[$meta:meta])*
-		$chain:ident$(<$($generics:tt $(= $generic_default:path)?),*>)?
-		inner: $($nonchain:tt)+
+		$(
+			generics_decl: [$($generics_decl:tt)*]
+			generics: [$($generics:tt)*]
+		)?
+		chainer: $chainer:ident
+		nonchain: $($nonchain:tt)+
 	} => {
 		$(#[$meta])*
 		#[repr(transparent)]
 		#[must_use = "chainers always takes ownership of itself, performs the operation, then returns itself again"]
-		pub struct $chain$(<$($generics $(= $generic_default)?),*>)? {
+		pub struct $chainer$(<$($generics_decl)*>)? {
 			inner: $($nonchain)+
 		}
 
-		impl$(<$($generics),*>)? $crate::chainer::traits::private::Sealed for $chain$(<$($generics),*>)? {}
-		impl$(<$($generics),*>)? $crate::chainer::traits::private::Sealed for $($nonchain)+ {}
+		impl$(<$($generics_decl)*>)? $crate::chainer::traits::private::Sealed for $chainer$(<$($generics)*>)? {}
+		impl$(<$($generics_decl)*>)? $crate::chainer::traits::private::Sealed for $($nonchain)+ {}
 
-		impl$(<$($generics),*>)? $crate::chainer::traits::NonChainHalf for $($nonchain)+ {
-			type Chain = $chain$(<$($generics),*>)?;
+		impl$(<$($generics_decl)*>)? $crate::chainer::traits::NonChainHalf for $($nonchain)+ {
+			type Chain = $chainer$(<$($generics)*>)?;
 		}
 
-		impl$(<$($generics),*>)? $crate::chainer::traits::ChainHalf for $chain$(<$($generics),*>)? {
+		impl$(<$($generics_decl)*>)? $crate::chainer::traits::ChainHalf for $chainer$(<$($generics)*>)? {
 			type NonChain = $($nonchain)+;
 		}
 
-		impl$(<$($generics),*>)? ::std::convert::From<$($nonchain)+> for $chain$(<$($generics),*>)? {
+		impl$(<$($generics_decl)*>)? ::std::convert::From<$($nonchain)+> for $chainer$(<$($generics)*>)? {
 			#[inline]
 			fn from(nonchain: $($nonchain)+) -> Self {
 				Self { inner: nonchain }
 			}
 		}
 
-		impl$(<$($generics),*>)? ::std::convert::From<$chain$(<$($generics),*>)?> for $($nonchain)+ {
+		impl$(<$($generics_decl)*>)? ::std::convert::From<$chainer$(<$($generics)*>)?> for $($nonchain)+ {
 			#[inline]
-			fn from(chainer: $chain$(<$($generics),*>)?) -> Self {
+			fn from(chainer: $chainer$(<$($generics)*>)?) -> Self {
 				chainer.inner
 			}
 		}
 
-		impl$(<$($generics),*>)? ::std::convert::AsRef<$($nonchain)+> for $chain$(<$($generics),*>)? {
+		impl$(<$($generics_decl)*>)? ::std::convert::AsRef<$($nonchain)+> for $chainer$(<$($generics)*>)? {
 			#[inline]
 			fn as_ref(&self) -> &$($nonchain)+ {
 				&self.inner
 			}
 		}
 
-		impl$(<$($generics),*>)? ::std::convert::AsMut<$($nonchain)+> for $chain$(<$($generics),*>)? {
+		impl$(<$($generics_decl)*>)? ::std::convert::AsMut<$($nonchain)+> for $chainer$(<$($generics)*>)? {
 			#[inline]
 			fn as_mut(&mut self) -> &mut $($nonchain)+ {
 				&mut self.inner

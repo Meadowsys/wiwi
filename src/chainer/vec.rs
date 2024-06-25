@@ -9,8 +9,10 @@ use std::ops::RangeBounds;
 use std::slice::{ self, SliceIndex };
 
 chainer! {
-	VecChain<T>
-	inner: Vec<T>
+	generics_decl: [T]
+	generics: [T]
+	chainer: VecChain
+	nonchain: Vec<T>
 }
 
 /// Creates a [`VecChain`] containing the arguments

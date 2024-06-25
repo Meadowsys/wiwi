@@ -3,8 +3,10 @@ use std::ops::Range;
 use std::slice;
 
 chainer! {
-	SliceMutChain<'h, T>
-	inner: &'h mut [T]
+	generics_decl: ['h, T]
+	generics: ['h, T]
+	chainer: SliceMutChain
+	nonchain: &'h mut [T]
 }
 
 impl<'h, T> SliceMutChain<'h, T> {

@@ -3,8 +3,10 @@ use super::new::VecChain;
 use std::mem::MaybeUninit;
 
 chainer! {
-	SliceBoxChain<T>
-	inner: Box<[T]>
+	generics_decl: [T]
+	generics: [T]
+	chainer: SliceBoxChain
+	nonchain: Box<[T]>
 }
 
 impl<T> SliceBoxChain<MaybeUninit<T>> {
