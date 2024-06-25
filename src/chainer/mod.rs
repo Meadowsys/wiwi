@@ -31,7 +31,7 @@ macro_rules! chainer {
 		#[repr(transparent)]
 		#[must_use = "chainers always takes ownership of itself, performs the operation, then returns itself again"]
 		pub struct $chainer$(<$($generics_decl)*>)? {
-			inner: $($nonchain)+
+			_nc: $($nonchain)+
 		}
 
 		impl$(<$($generics_decl)*>)? $crate::chainer::traits::private::Sealed for $chainer$(<$($generics)*>)? {}
@@ -46,30 +46,30 @@ macro_rules! chainer {
 		}
 
 		impl$(<$($generics_decl)*>)? ::std::convert::From<$($nonchain)+> for $chainer$(<$($generics)*>)? {
-			#[inline]
+			#[inline(always)]
 			fn from(nonchain: $($nonchain)+) -> Self {
-				Self { inner: nonchain }
+				Self { _nc: nonchain }
 			}
 		}
 
 		impl$(<$($generics_decl)*>)? ::std::convert::From<$chainer$(<$($generics)*>)?> for $($nonchain)+ {
-			#[inline]
+			#[inline(always)]
 			fn from(chainer: $chainer$(<$($generics)*>)?) -> Self {
-				chainer.inner
+				chainer._nc
 			}
 		}
 
 		impl$(<$($generics_decl)*>)? ::std::convert::AsRef<$($nonchain)+> for $chainer$(<$($generics)*>)? {
-			#[inline]
+			#[inline(always)]
 			fn as_ref(&self) -> &$($nonchain)+ {
-				&self.inner
+				&self._nc
 			}
 		}
 
 		impl$(<$($generics_decl)*>)? ::std::convert::AsMut<$($nonchain)+> for $chainer$(<$($generics)*>)? {
-			#[inline]
+			#[inline(always)]
 			fn as_mut(&mut self) -> &mut $($nonchain)+ {
-				&mut self.inner
+				&mut self._nc
 			}
 		}
 	}
@@ -78,6 +78,56 @@ use chainer;
 
 macro_rules! chain_fn {
 	// too many duplicate code I don't like this aa
+
+	{
+		$(#[$meta:meta])*
+		unsafe self $fn_name:ident$([$($generics:tt)*])?($self:ident $(, $($args:tt)*)?) $(where { $($where_clause:tt)* })? => void $body:expr
+	} => {
+		$(#[$meta])*
+		#[inline]
+		pub unsafe fn $fn_name$(<$($generics)*>)?(mut $self $(, $($args)*)?) -> Self $(where $($where_clause)*)? {
+			let _ = $body;
+			$self
+		}
+	};
+
+	{
+		$(#[$meta:meta])*
+		unsafe $fn_name:ident$([$($generics:tt)*])?($nc:ident $(, $($args:tt)*)?) $(where { $($where_clause:tt)* })? => void $body:expr
+	} => {
+		$(#[$meta])*
+		#[inline]
+		pub unsafe fn $fn_name$(<$($generics)*>)?(mut self $(, $($args)*)?) -> Self $(where $($where_clause)*)? {
+			let $nc = $crate::chainer::traits::ChainHalf::as_nonchain_mut(&mut self);
+			let _ = $body;
+			self
+		}
+	};
+
+	{
+		$(#[$meta:meta])*
+		self $fn_name:ident$([$($generics:tt)*])?($self:ident $(, $($args:tt)*)?) $(where { $($where_clause:tt)* })? => void $body:expr
+	} => {
+		$(#[$meta])*
+		#[inline]
+		pub fn $fn_name$(<$($generics)*>)?(mut $self $(, $($args)*)?) -> Self $(where $($where_clause)*)? {
+			let _ = $body;
+			$self
+		}
+	};
+
+	{
+		$(#[$meta:meta])*
+		$fn_name:ident$([$($generics:tt)*])?($nc:ident $(, $($args:tt)*)?) $(where { $($where_clause:tt)* })? => void $body:expr
+	} => {
+		$(#[$meta])*
+		#[inline]
+		pub fn $fn_name$(<$($generics)*>)?(mut self $(, $($args)*)?) -> Self $(where $($where_clause)*)? {
+			let $nc = $crate::chainer::traits::ChainHalf::as_nonchain_mut(&mut self);
+			let _ = $body;
+			self
+		}
+	};
 
 	{
 		$(#[$meta:meta])*
@@ -92,15 +142,13 @@ macro_rules! chain_fn {
 
 	{
 		$(#[$meta:meta])*
-		unsafe move $fn_name:ident$([$($generics:tt)*])?($inner:ident $(, $($args:tt)*)?) $(where { $($where_clause:tt)* })? => $body:expr
+		unsafe move $fn_name:ident$([$($generics:tt)*])?($nc:ident $(, $($args:tt)*)?) $(where { $($where_clause:tt)* })? => $body:expr
 	} => {
 		$(#[$meta])*
 		#[inline]
 		pub unsafe fn $fn_name$(<$($generics)*>)?(mut self $(, $($args)*)?) -> Self $(where $($where_clause)*)? {
-			use $crate::chainer::traits::{ ChainHalf as _, NonChainHalf as _ };
-
-			let mut $inner = self.into_nonchain();
-			$body.into_chainer()
+			let mut $nc = $crate::chainer::traits::ChainHalf::into_nonchain(self);
+			$crate::chainer::traits::NonChainHalf::into_chainer($body)
 		}
 	};
 
@@ -117,15 +165,13 @@ macro_rules! chain_fn {
 
 	{
 		$(#[$meta:meta])*
-		move $fn_name:ident$([$($generics:tt)*])?($inner:ident $(, $($args:tt)*)?) $(where { $($where_clause:tt)* })? => $body:expr
+		move $fn_name:ident$([$($generics:tt)*])?($nc:ident $(, $($args:tt)*)?) $(where { $($where_clause:tt)* })? => $body:expr
 	} => {
 		$(#[$meta])*
 		#[inline]
 		pub fn $fn_name$(<$($generics)*>)?(mut self $(, $($args)*)?) -> Self $(where $($where_clause)*)? {
-			use $crate::chainer::traits::{ ChainHalf as _, NonChainHalf as _ };
-
-			let $inner = self.into_nonchain();
-			$body.into_chainer()
+			let mut $nc = $crate::chainer::traits::ChainHalf::into_nonchain(self);
+			$crate::chainer::traits::NonChainHalf::into_chainer($body)
 		}
 	};
 
@@ -136,24 +182,20 @@ macro_rules! chain_fn {
 		$(#[$meta])*
 		#[inline]
 		pub unsafe fn $fn_name$(<$($generics)*>)?(mut $self $(, $($args)*)?) -> Self $(where $($where_clause)*)? {
-			$body;
-
+			::std::convert::identity::<()>($body);
 			$self
 		}
 	};
 
 	{
 		$(#[$meta:meta])*
-		unsafe $fn_name:ident$([$($generics:tt)*])?($inner:ident $(, $($args:tt)*)?) $(where { $($where_clause:tt)* })? => $body:expr
+		unsafe $fn_name:ident$([$($generics:tt)*])?($nc:ident $(, $($args:tt)*)?) $(where { $($where_clause:tt)* })? => $body:expr
 	} => {
 		$(#[$meta])*
 		#[inline]
 		pub unsafe fn $fn_name$(<$($generics)*>)?(mut self $(, $($args)*)?) -> Self $(where $($where_clause)*)? {
-			use $crate::chainer::traits::ChainHalf as _;
-
-			let $inner = self.as_nonchain_mut();
-			$body;
-
+			let $nc = $crate::chainer::traits::ChainHalf::as_nonchain_mut(&mut self);
+			::std::convert::identity::<()>($body);
 			self
 		}
 	};
@@ -165,24 +207,20 @@ macro_rules! chain_fn {
 		$(#[$meta])*
 		#[inline]
 		pub fn $fn_name$(<$($generics)*>)?(mut $self $(, $($args)*)?) -> Self $(where $($where_clause)*)? {
-			$body;
-
+			::std::convert::identity::<()>($body);
 			$self
 		}
 	};
 
 	{
 		$(#[$meta:meta])*
-		$fn_name:ident$([$($generics:tt)*])?($inner:ident $(, $($args:tt)*)?) $(where { $($where_clause:tt)* })? => $body:expr
+		$fn_name:ident$([$($generics:tt)*])?($nc:ident $(, $($args:tt)*)?) $(where { $($where_clause:tt)* })? => $body:expr
 	} => {
 		$(#[$meta])*
 		#[inline]
 		pub fn $fn_name$(<$($generics)*>)?(mut self $(, $($args)*)?) -> Self $(where $($where_clause)*)? {
-			use $crate::chainer::traits::ChainHalf as _;
-
-			let $inner = self.as_nonchain_mut();
-			$body;
-
+			let $nc = $crate::chainer::traits::ChainHalf::as_nonchain_mut(&mut self);
+			::std::convert::identity::<()>($body);
 			self
 		}
 	};

@@ -11,25 +11,25 @@ where
 	type NonChain;
 
 	/// Borrows `self` as its nonchain
-	#[inline]
+	#[inline(always)]
 	fn as_nonchain(&self) -> &Self::NonChain {
 		self.as_ref()
 	}
 
 	/// Borrows `self` mutably as its nonchain
-	#[inline]
+	#[inline(always)]
 	fn as_nonchain_mut(&mut self) -> &mut Self::NonChain {
 		self.as_mut()
 	}
 
 	/// Converts `self` back into it's nonchain type
-	#[inline]
+	#[inline(always)]
 	fn into_nonchain(self) -> Self::NonChain {
 		self.into()
 	}
 
 	/// Converts a nonchain type into it's chainer
-	#[inline]
+	#[inline(always)]
 	fn from_nonchain(nonchain: Self::NonChain) -> Self {
 		nonchain.into()
 	}
@@ -64,13 +64,13 @@ where
 	type Chain;
 
 	/// Converts `self` into its associated chain type
-	#[inline]
+	#[inline(always)]
 	fn into_chainer(self) -> Self::Chain {
 		self.into()
 	}
 
 	/// Converts a chainer into it's nonchain type
-	#[inline]
+	#[inline(always)]
 	fn from_chainer(chainer: Self::Chain) -> Self {
 		chainer.into()
 	}
