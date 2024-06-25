@@ -124,6 +124,10 @@
 <a href="#124" id="124">124</a>
 <a href="#125" id="125">125</a>
 <a href="#126" id="126">126</a>
+<a href="#127" id="127">127</a>
+<a href="#128" id="128">128</a>
+<a href="#129" id="129">129</a>
+<a href="#130" id="130">130</a>
 </pre></div><pre class="rust"><code><span class="kw">use super</span>::{ Iter, SizeHintBound, SizeHintImpl, SizeHintInner, SizeHintMarker };
 
 <span class="kw">pub trait </span>Peekable: Iter {
@@ -140,11 +144,13 @@
 <span class="kw">where
 	</span>I: Iter&lt;Item = T&gt;
 {
-	<span class="kw">pub</span>(<span class="kw">super</span>) <span class="kw">fn </span>new(iter: I) -&gt; <span class="self">Self </span>{
+	<span class="attr">#[inline]
+	</span><span class="kw">pub</span>(<span class="kw">super</span>) <span class="kw">fn </span>new(iter: I) -&gt; <span class="self">Self </span>{
 		<span class="self">Self </span>{ iter, peeked: <span class="prelude-val">None </span>}
 	}
 
-	<span class="kw">pub fn </span>into_inner(<span class="self">self</span>) -&gt; (I, <span class="prelude-ty">Option</span>&lt;<span class="prelude-ty">Option</span>&lt;T&gt;&gt;) {
+	<span class="attr">#[inline]
+	</span><span class="kw">pub fn </span>into_inner(<span class="self">self</span>) -&gt; (I, <span class="prelude-ty">Option</span>&lt;<span class="prelude-ty">Option</span>&lt;T&gt;&gt;) {
 		<span class="kw">let </span><span class="self">Self </span>{ iter, peeked } = <span class="self">self</span>;
 		(iter, peeked)
 	}
@@ -156,7 +162,8 @@
 {
 	<span class="kw">type </span>Item = I::Item;
 
-	<span class="kw">fn </span>next(<span class="kw-2">&amp;mut </span><span class="self">self</span>) -&gt; <span class="prelude-ty">Option</span>&lt;I::Item&gt; {
+	<span class="attr">#[inline]
+	</span><span class="kw">fn </span>next(<span class="kw-2">&amp;mut </span><span class="self">self</span>) -&gt; <span class="prelude-ty">Option</span>&lt;I::Item&gt; {
 		<span class="self">self</span>.peeked.take().unwrap_or_else(|| <span class="self">self</span>.iter.next())
 	}
 
@@ -192,7 +199,8 @@
 {
 	<span class="kw">type </span>PeekItem = I::Item;
 
-	<span class="kw">fn </span>peek(<span class="kw-2">&amp;mut </span><span class="self">self</span>) -&gt; <span class="prelude-ty">Option</span>&lt;<span class="kw-2">&amp;</span>I::Item&gt; {
+	<span class="attr">#[inline]
+	</span><span class="kw">fn </span>peek(<span class="kw-2">&amp;mut </span><span class="self">self</span>) -&gt; <span class="prelude-ty">Option</span>&lt;<span class="kw-2">&amp;</span>I::Item&gt; {
 		<span class="self">self</span>.peeked.get_or_insert_with(|| <span class="self">self</span>.iter.next()).as_ref()
 	}
 }

@@ -709,7 +709,6 @@
 <a href="#709" id="709">709</a>
 <a href="#710" id="710">710</a>
 <a href="#711" id="711">711</a>
-<a href="#712" id="712">712</a>
 </pre></div><pre class="rust"><code><span class="kw">use super</span>::{ IntoIter, Iter, SizeHintBound, SizeHintImpl, SizeHintInner, SizeHintMarker };
 <span class="kw">use </span>std::ptr;
 
@@ -777,7 +776,8 @@
 			<span class="kw">type </span>Item = ($(<span class="macro-nonterminal">$rem_t::Item</span>,)* <span class="macro-nonterminal">$curr_t::Item</span>,);
 			<span class="kw">type </span>Iter = <span class="macro-nonterminal">$curr_s</span>&lt;$(<span class="macro-nonterminal">$rem_t::Iter</span>,)* <span class="macro-nonterminal">$curr_t::Iter</span>&gt;;
 
-			<span class="kw">fn </span>into_wiwi_iter(<span class="self">self</span>) -&gt; <span class="self">Self</span>::Iter {
+			<span class="attr">#[inline]
+			</span><span class="kw">fn </span>into_wiwi_iter(<span class="self">self</span>) -&gt; <span class="self">Self</span>::Iter {
 				<span class="kw">let </span>($(<span class="macro-nonterminal">$rem_f</span>,)* <span class="macro-nonterminal">$curr_f</span>,) = <span class="self">self</span>;
 				<span class="macro-nonterminal">$curr_s </span>{
 					$(<span class="macro-nonterminal">$rem_f</span>: <span class="macro-nonterminal">$rem_f</span>.into_wiwi_iter(),)*
@@ -822,7 +822,8 @@
 	};
 }
 
-<span class="kw">unsafe fn </span>min_size_hint(h1: SizeHintImpl, h2: SizeHintImpl) -&gt; SizeHintImpl {
+<span class="comment">// was this a good idea? 🤔
+</span><span class="kw">unsafe fn </span>min_size_hint(h1: SizeHintImpl, h2: SizeHintImpl) -&gt; SizeHintImpl {
 	<span class="kw">use </span>SizeHintInner::<span class="kw-2">*</span>;
 	<span class="kw">use </span>SizeHintBound::<span class="kw-2">*</span>;
 
@@ -1242,10 +1243,7 @@
 	(Tuple29 I29 iter29 <span class="number">29</span>) (Tuple30 I30 iter30 <span class="number">30</span>) (Tuple31 I31 iter31 <span class="number">31</span>) (Tuple32 I32 iter32 <span class="number">32</span>)
 }
 
-<span class="attr">#[cfg(all(
-	feature = <span class="string">"large-tuples"</span>,
-	feature = <span class="string">"omega-tuples-of-doom"
-</span>))]
+<span class="attr">#[cfg(feature = <span class="string">"omega-tuples-of-doom"</span>)]
 </span><span class="macro">iter_tuple_impl!</span> {
 	(Tuple1   I1   iter1   <span class="number">1</span>)   (Tuple2   I2   iter2   <span class="number">2</span>)   (Tuple3   I3   iter3   <span class="number">3</span>)   (Tuple4   I4   iter4   <span class="number">4</span>)
 	(Tuple5   I5   iter5   <span class="number">5</span>)   (Tuple6   I6   iter6   <span class="number">6</span>)   (Tuple7   I7   iter7   <span class="number">7</span>)   (Tuple8   I8   iter8   <span class="number">8</span>)

@@ -52,9 +52,14 @@
 <a href="#52" id="52">52</a>
 <a href="#53" id="53">53</a>
 <a href="#54" id="54">54</a>
+<a href="#55" id="55">55</a>
+<a href="#56" id="56">56</a>
+<a href="#57" id="57">57</a>
+<a href="#58" id="58">58</a>
 </pre></div><pre class="rust"><code><span class="kw">use super</span>::{ Enumerate, Iter, SizeHintImpl, SizeHintMarker };
 
-<span class="kw">pub struct </span>Enumerate1&lt;I&gt; {
+<span class="attr">#[repr(transparent)]
+</span><span class="kw">pub struct </span>Enumerate1&lt;I&gt; {
 	<span class="comment">// just sets `inner.count` to 1 and then piggy backs off of it
 	</span>inner: Enumerate&lt;I&gt;
 }
@@ -63,7 +68,8 @@
 <span class="kw">where
 	</span>I: Iter
 {
-	<span class="kw">pub</span>(<span class="kw">super</span>) <span class="kw">fn </span>new(iter: I) -&gt; <span class="self">Self </span>{
+	<span class="attr">#[inline]
+	</span><span class="kw">pub</span>(<span class="kw">super</span>) <span class="kw">fn </span>new(iter: I) -&gt; <span class="self">Self </span>{
 		<span class="kw">let </span><span class="kw-2">mut </span>inner = Enumerate::new(iter);
 		inner.count = <span class="number">1</span>;
 		<span class="self">Self </span>{ inner }
@@ -76,11 +82,13 @@
 {
 	<span class="kw">type </span>Item = (I::Item, usize);
 
-	<span class="kw">fn </span>next(<span class="kw-2">&amp;mut </span><span class="self">self</span>) -&gt; <span class="prelude-ty">Option</span>&lt;(I::Item, usize)&gt; {
+	<span class="attr">#[inline]
+	</span><span class="kw">fn </span>next(<span class="kw-2">&amp;mut </span><span class="self">self</span>) -&gt; <span class="prelude-ty">Option</span>&lt;(I::Item, usize)&gt; {
 		<span class="self">self</span>.inner.next()
 	}
 
-	<span class="kw">unsafe fn </span>size_hint_impl(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="kw">_</span>: SizeHintMarker) -&gt; SizeHintImpl {
+	<span class="attr">#[inline]
+	</span><span class="kw">unsafe fn </span>size_hint_impl(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="kw">_</span>: SizeHintMarker) -&gt; SizeHintImpl {
 		<span class="self">self</span>.inner.size_hint().into()
 	}
 }

@@ -127,6 +127,8 @@
 <a href="#127" id="127">127</a>
 <a href="#128" id="128">128</a>
 <a href="#129" id="129">129</a>
+<a href="#130" id="130">130</a>
+<a href="#131" id="131">131</a>
 </pre></div><pre class="rust"><code><span class="kw">use </span>std::{ slice, vec };
 <span class="kw">use </span>std::marker::PhantomData;
 <span class="kw">use </span>std::mem::{ ManuallyDrop, size_of };
@@ -154,7 +156,8 @@
 <span class="kw">impl</span>&lt;T&gt; Iter <span class="kw">for </span>VecIntoIter&lt;T&gt; {
 	<span class="kw">type </span>Item = T;
 
-	<span class="kw">fn </span>next(<span class="kw-2">&amp;mut </span><span class="self">self</span>) -&gt; <span class="prelude-ty">Option</span>&lt;T&gt; {
+	<span class="attr">#[inline]
+	</span><span class="kw">fn </span>next(<span class="kw-2">&amp;mut </span><span class="self">self</span>) -&gt; <span class="prelude-ty">Option</span>&lt;T&gt; {
 		<span class="kw">if </span><span class="self">self</span>.remaining == <span class="number">0 </span>{ <span class="kw">return </span><span class="prelude-val">None </span>}
 
 		<span class="kw">let </span>ptr = <span class="self">self</span>.ptr;
@@ -166,7 +169,8 @@
 		<span class="prelude-val">Some</span>(<span class="kw">unsafe </span>{ ptr.read() })
 	}
 
-	<span class="kw">unsafe fn </span>size_hint_impl(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="kw">_</span>: SizeHintMarker) -&gt; SizeHintImpl {
+	<span class="attr">#[inline]
+	</span><span class="kw">unsafe fn </span>size_hint_impl(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="kw">_</span>: SizeHintMarker) -&gt; SizeHintImpl {
 		SizeHintImpl::hard(<span class="self">self</span>.remaining)
 	}
 }
@@ -181,8 +185,6 @@
 				<span class="kw">let </span>original_ptr = <span class="self">self</span>.ptr.sub(consumed) <span class="kw">as </span><span class="kw-2">*mut </span>T;
 
 				<span class="comment">// copy remaining elements to the front of ptr
-				// will overlap depeding on total items / amount returned by the iter
-				// (eg. 5 items, 4 remaining, so copying from indices 1..5 to 0..4)
 				</span>ptr::copy(<span class="self">self</span>.ptr, original_ptr, <span class="self">self</span>.remaining);
 
 				original_ptr
@@ -192,7 +194,8 @@
 		<span class="comment">// This is probably the safest way to do this...
 		// TODO: improve this with alloc api when it's stabilised?
 
-		// ... let Vec handle the rest
+		// ... let Vec handle the rest (including dropping contained values
+		// and deallocating)
 		</span><span class="kw">let _ </span>= <span class="kw">unsafe </span>{ Vec::from_raw_parts(ptr, <span class="self">self</span>.remaining, <span class="self">self</span>.capacity) };
 	}
 }
@@ -201,7 +204,8 @@
 	<span class="kw">type </span>Item = T;
 	<span class="kw">type </span>Iter = VecIntoIter&lt;T&gt;;
 
-	<span class="kw">fn </span>into_wiwi_iter(<span class="self">self</span>) -&gt; VecIntoIter&lt;T&gt; {
+	<span class="attr">#[inline]
+	</span><span class="kw">fn </span>into_wiwi_iter(<span class="self">self</span>) -&gt; VecIntoIter&lt;T&gt; {
 		<span class="kw">let </span>me = ManuallyDrop::new(<span class="self">self</span>);
 
 		<span class="kw">let </span>ptr = me.as_ptr();

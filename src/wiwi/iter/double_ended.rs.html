@@ -24,19 +24,24 @@
 <a href="#24" id="24">24</a>
 <a href="#25" id="25">25</a>
 <a href="#26" id="26">26</a>
+<a href="#27" id="27">27</a>
+<a href="#28" id="28">28</a>
+<a href="#29" id="29">29</a>
 </pre></div><pre class="rust"><code><span class="kw">use super</span>::{ Iter, Rev };
 
 <span class="kw">pub trait </span>DoubleEndedIter: Iter {
 	<span class="kw">fn </span>next_back(<span class="kw-2">&amp;mut </span><span class="self">self</span>) -&gt; <span class="prelude-ty">Option</span>&lt;<span class="self">Self</span>::Item&gt;;
 
-	<span class="kw">fn </span>rev(<span class="self">self</span>) -&gt; Rev&lt;<span class="self">Self</span>&gt;
+	<span class="attr">#[inline]
+	</span><span class="kw">fn </span>rev(<span class="self">self</span>) -&gt; Rev&lt;<span class="self">Self</span>&gt;
 	<span class="kw">where
 		</span><span class="self">Self</span>: Sized
 	{
 		Rev::new(<span class="self">self</span>)
 	}
 
-	<span class="kw">fn </span>for_each_back&lt;F&gt;(<span class="kw-2">mut </span><span class="self">self</span>, <span class="kw-2">mut </span>f: F)
+	<span class="attr">#[inline]
+	</span><span class="kw">fn </span>for_each_back&lt;F&gt;(<span class="kw-2">mut </span><span class="self">self</span>, <span class="kw-2">mut </span>f: F)
 	<span class="kw">where
 		</span><span class="self">Self</span>: Sized,
 		F: FnMut(<span class="self">Self</span>::Item)
@@ -46,7 +51,8 @@
 }
 
 <span class="kw">impl</span>&lt;I: DoubleEndedIter&gt; DoubleEndedIter <span class="kw">for </span><span class="kw-2">&amp;mut </span>I {
-	<span class="kw">fn </span>next_back(<span class="kw-2">&amp;mut </span><span class="self">self</span>) -&gt; <span class="prelude-ty">Option</span>&lt;<span class="self">Self</span>::Item&gt; {
+	<span class="attr">#[inline]
+	</span><span class="kw">fn </span>next_back(<span class="kw-2">&amp;mut </span><span class="self">self</span>) -&gt; <span class="prelude-ty">Option</span>&lt;<span class="self">Self</span>::Item&gt; {
 		(<span class="kw-2">**</span><span class="self">self</span>).next_back()
 	}
 }

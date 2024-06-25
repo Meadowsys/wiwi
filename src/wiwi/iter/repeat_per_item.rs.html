@@ -212,6 +212,7 @@
 <a href="#212" id="212">212</a>
 <a href="#213" id="213">213</a>
 <a href="#214" id="214">214</a>
+<a href="#215" id="215">215</a>
 </pre></div><pre class="rust"><code><span class="kw">use super</span>::{ IntoIter, Iter, SizeHintBound, SizeHintImpl, SizeHintInner, SizeHintMarker };
 <span class="kw">use </span>std::mem::replace;
 
@@ -227,7 +228,7 @@
 	</span>I: Iter,
 	I::Item: Clone
 {
-	<span class="doccomment">/// Called by [`Iter::repeat_per_item`]
+	<span class="attr">#[inline]
 	</span><span class="kw">pub</span>(<span class="kw">super</span>) <span class="kw">fn </span>new(iter: I, count: usize) -&gt; <span class="self">Self </span>{
 		<span class="kw">let </span>state = <span class="kw">if </span>count == <span class="number">0 </span>{
 			<span class="comment">// if it's 0, we just always return None, and don't touch inner iter
@@ -240,6 +241,7 @@
 	}
 
 	<span class="doccomment">/// Consumes `self` and returns the underlying iter.
+	</span><span class="attr">#[inline]
 	</span><span class="kw">pub fn </span>into_inner(<span class="self">self</span>) -&gt; (I, <span class="prelude-ty">Option</span>&lt;(I::Item, usize)&gt;) {
 		<span class="kw">let </span>item = <span class="kw">if let </span>State::Some { item, remaining_count: count @ <span class="number">1</span>.. } = <span class="self">self</span>.state {
 			<span class="prelude-val">Some</span>((item, count))

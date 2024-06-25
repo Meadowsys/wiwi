@@ -349,6 +349,16 @@
 <a href="#349" id="349">349</a>
 <a href="#350" id="350">350</a>
 <a href="#351" id="351">351</a>
+<a href="#352" id="352">352</a>
+<a href="#353" id="353">353</a>
+<a href="#354" id="354">354</a>
+<a href="#355" id="355">355</a>
+<a href="#356" id="356">356</a>
+<a href="#357" id="357">357</a>
+<a href="#358" id="358">358</a>
+<a href="#359" id="359">359</a>
+<a href="#360" id="360">360</a>
+<a href="#361" id="361">361</a>
 </pre></div><pre class="rust"><code><span class="kw">mod </span>adapter;
 <span class="kw">pub use </span>adapter::{
 	AsStdIterator,
@@ -404,7 +414,8 @@
 
 	<span class="kw">fn </span>next(<span class="kw-2">&amp;mut </span><span class="self">self</span>) -&gt; <span class="prelude-ty">Option</span>&lt;<span class="self">Self</span>::Item&gt;;
 
-	<span class="kw">fn </span>size_hint(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; SizeHint {
+	<span class="attr">#[inline]
+	</span><span class="kw">fn </span>size_hint(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; SizeHint {
 		<span class="comment">// SAFETY: `unsafe` on the impl method is to make implementors assert
 		// (for hard bounds) that it is implemented correctly. We have no invariants
 		// to uphold
@@ -417,11 +428,13 @@
 	/// Implementors must guarantee that the iter will adhere strictly to its
 	/// returned size hint. This is important for hard bounds, where the user of
 	/// the iter is allowed to rely on it for soundness reasons.
+	</span><span class="attr">#[inline]
 	</span><span class="kw">unsafe fn </span>size_hint_impl(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="kw">_</span>: SizeHintMarker) -&gt; SizeHintImpl {
 		SizeHintImpl::unknown()
 	}
 
-	<span class="kw">fn </span>for_each&lt;F&gt;(<span class="kw-2">mut </span><span class="self">self</span>, <span class="kw-2">mut </span>f: F)
+	<span class="attr">#[inline]
+	</span><span class="kw">fn </span>for_each&lt;F&gt;(<span class="kw-2">mut </span><span class="self">self</span>, <span class="kw-2">mut </span>f: F)
 	<span class="kw">where
 		</span><span class="self">Self</span>: Sized,
 		F: FnMut(<span class="self">Self</span>::Item)
@@ -431,7 +444,8 @@
 		}
 	}
 
-	<span class="kw">fn </span>map&lt;O, F&gt;(<span class="self">self</span>, f: F) -&gt; Map&lt;<span class="self">Self</span>, F&gt;
+	<span class="attr">#[inline]
+	</span><span class="kw">fn </span>map&lt;O, F&gt;(<span class="self">self</span>, f: F) -&gt; Map&lt;<span class="self">Self</span>, F&gt;
 	<span class="kw">where
 		</span><span class="self">Self</span>: Sized,
 		F: FnMut(<span class="self">Self</span>::Item) -&gt; O
@@ -507,21 +521,24 @@
 		}
 	}
 
-	<span class="kw">fn </span>enumerate(<span class="self">self</span>) -&gt; Enumerate&lt;<span class="self">Self</span>&gt;
+	<span class="attr">#[inline]
+	</span><span class="kw">fn </span>enumerate(<span class="self">self</span>) -&gt; Enumerate&lt;<span class="self">Self</span>&gt;
 	<span class="kw">where
 		</span><span class="self">Self</span>: Sized
 	{
 		Enumerate::new(<span class="self">self</span>)
 	}
 
-	<span class="kw">fn </span>enumerate1(<span class="self">self</span>) -&gt; Enumerate1&lt;<span class="self">Self</span>&gt;
+	<span class="attr">#[inline]
+	</span><span class="kw">fn </span>enumerate1(<span class="self">self</span>) -&gt; Enumerate1&lt;<span class="self">Self</span>&gt;
 	<span class="kw">where
 		</span><span class="self">Self</span>: Sized
 	{
 		Enumerate1::new(<span class="self">self</span>)
 	}
 
-	<span class="kw">fn </span>peekable(<span class="self">self</span>) -&gt; Peek&lt;<span class="self">Self</span>, <span class="self">Self</span>::Item&gt;
+	<span class="attr">#[inline]
+	</span><span class="kw">fn </span>peekable(<span class="self">self</span>) -&gt; Peek&lt;<span class="self">Self</span>, <span class="self">Self</span>::Item&gt;
 	<span class="kw">where
 		</span><span class="self">Self</span>: Sized
 	{
@@ -591,6 +608,7 @@
 	/// assert_eq!(orig_iter.next(), None);
 	/// assert_eq!(item, None);
 	/// ```
+	</span><span class="attr">#[inline]
 	</span><span class="kw">fn </span>repeat_per_item(<span class="self">self</span>, count: usize) -&gt; RepeatPerItem&lt;<span class="self">Self</span>&gt;
 	<span class="kw">where
 		</span><span class="self">Self</span>: Sized,
@@ -696,7 +714,9 @@
 
 <span class="kw">impl</span>&lt;I: Iter&gt; Iter <span class="kw">for </span><span class="kw-2">&amp;mut </span>I {
 	<span class="kw">type </span>Item = I::Item;
-	<span class="kw">fn </span>next(<span class="kw-2">&amp;mut </span><span class="self">self</span>) -&gt; <span class="prelude-ty">Option</span>&lt;I::Item&gt; {
+
+	<span class="attr">#[inline]
+	</span><span class="kw">fn </span>next(<span class="kw-2">&amp;mut </span><span class="self">self</span>) -&gt; <span class="prelude-ty">Option</span>&lt;I::Item&gt; {
 		(<span class="kw-2">**</span><span class="self">self</span>).next()
 	}
 }
