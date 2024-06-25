@@ -15,8 +15,13 @@ pub use vec::{ vec_chain, VecChain };
 // TODO: check callbacks and use chaining apis there? maybe?
 
 macro_rules! chainer {
+	(@doclink link: $doclink:literal, nonchain: $($nonchain:tt)+) => { $doclink };
+
+	(@doclink nonchain: $($nonchain:tt)+) => { stringify!($($nonchain)+) };
+
 	{
 		$(#[$meta:meta])*
+		$(doclink: $doclink:literal)?
 		$(
 			generics_decl: [$($generics_decl:tt)*]
 			generics: [$($generics:tt)*]
@@ -24,6 +29,12 @@ macro_rules! chainer {
 		chainer: $chainer:ident
 		nonchain: $($nonchain:tt)+
 	} => {
+		/// Struct providing a chaining API for
+		#[doc = concat!("[`", stringify!($($nonchain)+), "`]")]
+		#[doc = ""]
+		// this attr is problematic, for some reason
+		// #[doc = concat!("[`", stringify!($($nonchain)+), "`]: ", chainer!(@doclink $(link: $doclink,)? $($nonchain)+))]
+		#[doc = ""]
 		$(#[$meta])*
 		#[repr(transparent)]
 		#[must_use = "chainers always takes ownership of itself, performs the operation, then returns itself again"]
@@ -69,7 +80,7 @@ macro_rules! chainer {
 				&mut self._nc
 			}
 		}
-	}
+	};
 }
 use chainer;
 
