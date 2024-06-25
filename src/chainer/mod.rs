@@ -6,6 +6,7 @@ mod traits;
 mod array;
 mod slice_box;
 mod slice_mut;
+mod slice_ref;
 mod vec;
 
 /// Temporary
