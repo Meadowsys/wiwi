@@ -10,6 +10,8 @@ pub mod new {
 	pub use super::vec::{ vec_chain, VecChain };
 }
 
+// TODO: check callbacks and use chaining apis there? maybe?
+
 macro_rules! chainer {
 	{
 		$(#[$meta:meta])*

@@ -161,6 +161,7 @@ impl<T> VecChain<T> {
 
 	chain_fn! {
 		as_chunks[const N: usize, CB](inner, cb: CB) where {
+			// TODO: chainer?
 			CB: FnOnce(&[[T; N]], &[T])
 		} => unsafe {
 			let len = inner.len();
@@ -181,6 +182,7 @@ impl<T> VecChain<T> {
 
 	chain_fn! {
 		as_chunks_mut[const N: usize, CB](inner, cb: CB) where {
+			// TODO: chainer?
 			CB: FnOnce(&mut [[T; N]], &mut [T])
 		} => unsafe {
 			let len = inner.len();
@@ -201,6 +203,7 @@ impl<T> VecChain<T> {
 
 	chain_fn! {
 		unsafe as_chunks_unchecked[const N: usize, CB](inner, cb: CB) where {
+			// TODO: chainer?
 			CB: FnOnce(&[[T; N]])
 		} => {
 			let ptr = inner.as_ptr() as *const [T; N];
@@ -213,6 +216,7 @@ impl<T> VecChain<T> {
 
 	chain_fn! {
 		unsafe as_chunks_unchecked_mut[const N: usize, CB](inner, cb: CB) where {
+			// TODO: chainer?
 			CB: FnOnce(&mut [[T; N]])
 		} => {
 			let ptr = inner.as_mut_ptr() as *mut [T; N];
@@ -225,6 +229,7 @@ impl<T> VecChain<T> {
 
 	chain_fn! {
 		as_rchunks[const N: usize, CB](inner, cb: CB) where {
+			// TODO: chainer?
 			CB: FnOnce(&[T], &[[T; N]])
 		} => unsafe {
 			let len = inner.len();
@@ -244,6 +249,7 @@ impl<T> VecChain<T> {
 
 	chain_fn! {
 		as_rchunks_mut[const N: usize, CB](inner, cb: CB) where {
+			// TODO: chainer?
 			CB: FnOnce(&mut [T], &mut [[T; N]])
 		} => unsafe {
 			let len = inner.len();
@@ -417,24 +423,28 @@ impl<T> VecChain<T> {
 
 	chain_fn! {
 		first[CB](inner, cb: CB) where {
+			// TODO: chainer?
 			CB: FnOnce(Option<&T>)
 		} => cb(inner.first())
 	}
 
 	chain_fn! {
 		first_mut[CB](inner, cb: CB) where {
+			// TODO: chainer?
 			CB: FnOnce(Option<&mut T>)
 		} => cb(inner.first_mut())
 	}
 
 	chain_fn! {
 		first_chunk[const N: usize, CB](inner, cb: CB) where {
+			// TODO: chainer?
 			CB: FnOnce(Option<&[T; N]>)
 		} => cb(inner.first_chunk())
 	}
 
 	chain_fn! {
 		first_chunk_mut[const N: usize, CB](inner, cb: CB) where {
+			// TODO: chainer?
 			CB: FnOnce(Option<&mut [T; N]>)
 		} => cb(inner.first_chunk_mut())
 	}
@@ -442,6 +452,7 @@ impl<T> VecChain<T> {
 	chain_fn! {
 		get[I, CB](inner, index: I, cb: CB) where {
 			I: SliceIndex<[T]>,
+			// TODO: chainer?
 			CB: FnOnce(Option<&I::Output>)
 		} => cb(inner.get(index))
 	}
@@ -449,6 +460,7 @@ impl<T> VecChain<T> {
 	chain_fn! {
 		get_mut[I, CB](inner, index: I, cb: CB) where {
 			I: SliceIndex<[T]>,
+			// TODO: chainer?
 			CB: FnOnce(Option<&mut I::Output>)
 		} => cb(inner.get_mut(index))
 	}
@@ -456,6 +468,7 @@ impl<T> VecChain<T> {
 	chain_fn! {
 		unsafe get_unchecked[I, CB](inner, index: I, cb: CB) where {
 			I: SliceIndex<[T]>,
+			// TODO: chainer?
 			CB: FnOnce(&I::Output)
 		} => cb(inner.get_unchecked(index))
 	}
@@ -463,6 +476,7 @@ impl<T> VecChain<T> {
 	chain_fn! {
 		unsafe get_unchecked_mut[I, CB](inner, index: I, cb: CB) where {
 			I: SliceIndex<[T]>,
+			// TODO: chainer?
 			CB: FnOnce(&mut I::Output)
 		} => cb(inner.get_unchecked_mut(index))
 	}
@@ -521,24 +535,28 @@ impl<T> VecChain<T> {
 
 	chain_fn! {
 		last[CB](inner, cb: CB) where {
+			// TODO: chainer?
 			CB: FnOnce(Option<&T>)
 		} => cb(inner.last())
 	}
 
 	chain_fn! {
 		last_mut[CB](inner, cb: CB) where {
+			// TODO: chainer?
 			CB: FnOnce(Option<&mut T>)
 		} => cb(inner.last_mut())
 	}
 
 	chain_fn! {
 		last_chunk[const N: usize, CB](inner, cb: CB) where {
+			// TODO: chainer?
 			CB: FnOnce(Option<&[T; N]>)
 		} => cb(inner.last_chunk())
 	}
 
 	chain_fn! {
 		last_chunk_mut[const N: usize, CB](inner, cb: CB) where {
+			// TODO: chainer?
 			CB: FnOnce(Option<&mut [T; N]>)
 		} => cb(inner.last_chunk_mut())
 	}
@@ -741,12 +759,14 @@ impl<T> VecChain<T> {
 		splice[R, I, CB](inner, range: R, replace_with: I, cb: CB) where {
 			R: RangeBounds<usize>,
 			I: IntoIter<Item = T>,
+			// TODO: chainer?
 			CB: FnOnce(vec::Splice<IterAdapter<I::Iter>>)
 		} => cb(inner.splice(range, replace_with.convert_wiwi_into_std_iterator()))
 	}
 
 	chain_fn! {
 		split_at_spare_mut[CB](inner, cb: CB) where {
+			// TODO: chainer?
 			CB: FnOnce(&mut [T], &mut [MaybeUninit<T>])
 		} => unsafe {
 			// TODO: use std impl when its stabilised
@@ -766,48 +786,56 @@ impl<T> VecChain<T> {
 
 	chain_fn! {
 		split_first[CB](inner, cb: CB) where {
+			// TODO: chainer?
 			CB: FnOnce(Option<(&T, &[T])>)
 		} => cb(inner.split_first())
 	}
 
 	chain_fn! {
 		split_first_mut[CB](inner, cb: CB) where {
+			// TODO: chainer?
 			CB: FnOnce(Option<(&mut T, &mut [T])>)
 		} => cb(inner.split_first_mut())
 	}
 
 	chain_fn! {
 		split_first_chunk[const N: usize, CB](inner, cb: CB) where {
+			// TODO: chainer?
 			CB: FnOnce(Option<(&[T; N], &[T])>)
 		} => cb(inner.split_first_chunk())
 	}
 
 	chain_fn! {
 		split_first_chunk_mut[const N: usize, CB](inner, cb: CB) where {
+			// TODO: chainer?
 			CB: FnOnce(Option<(&mut [T; N], &mut [T])>)
 		} => cb(inner.split_first_chunk_mut())
 	}
 
 	chain_fn! {
 		split_last[CB](inner, cb: CB) where {
+			// TODO: chainer?
 			CB: FnOnce(Option<(&T, &[T])>)
 		} => cb(inner.split_last())
 	}
 
 	chain_fn! {
 		split_last_mut[CB](inner, cb: CB) where {
+			// TODO: chainer?
 			CB: FnOnce(Option<(&mut T, &mut [T])>)
 		} => cb(inner.split_last_mut())
 	}
 
 	chain_fn! {
 		split_last_chunk[const N: usize, CB](inner, cb: CB) where {
+			// TODO: chainer?
 			CB: FnOnce(Option<(&[T], &[T; N])>)
 		} => cb(inner.split_last_chunk())
 	}
 
 	chain_fn! {
 		split_last_chunk_mut[const N: usize, CB](inner, cb: CB) where {
+			// TODO: chainer?
 			CB: FnOnce(Option<(&mut [T], &mut [T; N])>)
 		} => cb(inner.split_last_chunk_mut())
 	}
@@ -886,12 +914,14 @@ impl<T> VecChain<T> {
 		///    });
 		/// ```
 		spare_capacity_mut[CB](inner, cb: CB) where {
+			// TODO: chainer?
 			CB: FnOnce(&mut [MaybeUninit<T>])
 		} => cb(inner.spare_capacity_mut())
 	}
 
 	chain_fn! {
 		windows[CB](inner, size: usize, cb: CB) where {
+			// TODO: chainer?
 			CB: FnOnce(IterAdapter<slice::Windows<T>>)
 		} => cb(inner.windows(size).convert_std_into_wiwi_iter())
 	}
