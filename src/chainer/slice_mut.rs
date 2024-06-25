@@ -10,15 +10,15 @@ chainer! {
 }
 
 impl<'h, T> SliceMutChain<'h, T> {
-	pub fn from_mut(val: &'h mut T) -> Self {
+	pub fn from_ref(val: &'h mut T) -> Self {
 		slice::from_mut(val).into()
 	}
 
-	pub unsafe fn from_raw_parts_mut(data: *mut T, len: usize) -> Self {
+	pub unsafe fn from_raw_parts(data: *mut T, len: usize) -> Self {
 		slice::from_raw_parts_mut(data, len).into()
 	}
 
-	// TODO: from_ptr_range_mut nightly
+	// TODO: from_ptr_range nightly
 }
 
 // TODO: align_to
