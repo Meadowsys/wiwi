@@ -137,9 +137,7 @@ macro_rules! chain_fn {
 		pub unsafe fn $fn_name$(<$($generics)*>)?(mut $self $(, $($args)*)?) -> Self $(where $($where_clause)*)? {
 			$body;
 
-			// shush warning for things like todo! macro etc
-			#[allow(unreachable_code)]
-			{ $self }
+			$self
 		}
 	};
 
@@ -155,9 +153,7 @@ macro_rules! chain_fn {
 			let $inner = self.as_nonchain_mut();
 			$body;
 
-			// shush warning for things like todo! macro etc
-			#[allow(unreachable_code)]
-			{ self }
+			self
 		}
 	};
 
@@ -170,9 +166,7 @@ macro_rules! chain_fn {
 		pub fn $fn_name$(<$($generics)*>)?(mut $self $(, $($args)*)?) -> Self $(where $($where_clause)*)? {
 			$body;
 
-			// shush warning for things like todo! macro etc
-			#[allow(unreachable_code)]
-			{ $self }
+			$self
 		}
 	};
 
@@ -188,9 +182,7 @@ macro_rules! chain_fn {
 			let $inner = self.as_nonchain_mut();
 			$body;
 
-			// shush warning for things like todo! macro etc
-			#[allow(unreachable_code)]
-			{ self }
+			self
 		}
 	};
 }
