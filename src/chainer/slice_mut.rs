@@ -166,3 +166,97 @@ impl<'h, T> SliceMutChain<'h, T> {
 // TODO: try_new_zeroed_slice
 // TODO: utf8_chunks
 // TODO: windows
+
+// TODO: trait impls
+// TODO: AsMut<[T]>
+// TODO: AsMut<[T]>
+// TODO: AsMut<[T]>
+// TODO: AsMut<[T]>
+// TODO: AsRef<[T]>
+// TODO: AsRef<[T]>
+// TODO: AsRef<[T]>
+// TODO: AsRef<[T]>
+// TODO: AsRef<[T]>
+// TODO: AsRef<[T]>
+// TODO: AsRef<[T]>
+// TODO: AsRef<[T]>
+// TODO: AsRef<[u8]>
+// TODO: AsRef<[u8]>
+// TODO: AsRef<[u8]>
+// TODO: AsciiExt
+// TODO: Borrow<[T]>
+// TODO: Borrow<[T]>
+// TODO: BorrowMut<[T]>
+// TODO: BorrowMut<[T]>
+// TODO: BufRead
+// TODO: Clone
+// TODO: Concat<T>
+// TODO: Concat<str>
+// TODO: ConstParamTy
+// TODO: Debug
+// TODO: Default
+// TODO: Default
+// TODO: Default
+// TODO: Eq
+// TODO: From<&'a [T]>
+// TODO: From<&'data mut [MaybeUninit<u8>]>
+// TODO: From<&'data mut [u8]>
+// TODO: From<&[T]>
+// TODO: From<&[T]>
+// TODO: From<&[T]>
+// TODO: From<&[T]>
+// TODO: From<&mut [T]>
+// TODO: From<Box<str, A>>
+// TODO: From<Cow<'_, [T]>>
+// TODO: From<Vec<T, A>>
+// TODO: From<[T; N]>
+// TODO: FromIterator<I>
+// TODO: Hash
+// TODO: Index<I>
+// TODO: IndexMut<I>
+// TODO: IntoIterator
+// TODO: IntoIterator
+// TODO: Join<&OsStr>
+// TODO: Join<&T>
+// TODO: Join<&[T]>
+// TODO: Join<&str>
+// TODO: Ord
+// TODO: PartialEq<&[U]>
+// TODO: PartialEq<&[U]>
+// TODO: PartialEq<&[U]>
+// TODO: PartialEq<&[U]>
+// TODO: PartialEq<&mut [U]>
+// TODO: PartialEq<&mut [U]>
+// TODO: PartialEq<&mut [U]>
+// TODO: PartialEq<&mut [U]>
+// TODO: PartialEq<Vec<U, A>>
+// TODO: PartialEq<Vec<U, A>>
+// TODO: PartialEq<Vec<U, A>>
+// TODO: PartialEq<[U; N]>
+// TODO: PartialEq<[U; N]>
+// TODO: PartialEq<[U; N]>
+// TODO: PartialEq<[U]>
+// TODO: PartialEq<[U]>
+// TODO: PartialEq<[U]>
+// TODO: PartialOrd
+// TODO: Pattern<'a>
+// TODO: Read
+// TODO: SliceIndex<[T]>
+// TODO: SliceIndex<[T]>
+// TODO: SliceIndex<[T]>
+// TODO: SliceIndex<[T]>
+// TODO: SliceIndex<[T]>
+// TODO: SliceIndex<[T]>
+// TODO: SliceIndex<[T]>
+// TODO: SliceIndex<[T]>
+// TODO: SlicePattern
+// TODO: StructuralPartialEq
+// TODO: ToOwned
+// TODO: ToSocketAddrs
+// TODO: TryFrom<&'a [T]>
+// TODO: TryFrom<&'a mut [T]>
+// TODO: TryFrom<&[T]>
+// TODO: TryFrom<&[T]>
+// TODO: TryFrom<&mut [T]>
+// TODO: TryFrom<&mut [T]>
+// TODO: Write
