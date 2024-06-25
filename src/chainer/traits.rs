@@ -1,7 +1,7 @@
 use super::*;
 use std::convert::{ AsRef, AsMut };
 
-/// Methods relating to a chainer and it's nonchain type, including conversion methods
+/// Trait implemented on chainers
 pub trait ChainHalf
 where
 	Self: Sized + private::Sealed + Into<Self::NonChain> + AsRef<Self::NonChain> + AsMut<Self::NonChain>,
@@ -54,7 +54,7 @@ where
 // /// // ...
 // /// // do funny things with chaining API c:
 // /// ```
-/// Methods relating to a nonchain and it's chainer type, including conversion methods
+/// Trait implemented on the nonchain for chainers
 pub trait NonChainHalf
 where
 	Self: Sized + private::Sealed + Into<Self::Chain>,

@@ -64,8 +64,9 @@ impl<T> VecChain<T> {
 	/// capacity is zero.
 	///
 	/// There is NO GUARANTEE that this function will allocate an exact amount
-	/// of memory. If knowing the actual allocated capacity is important, always
-	/// do so using the [`capacity`](Self::capacity) function.
+	/// of memory, so do not rely on this for soundness. If knowing the actual
+	/// allocated capacity is important, always do so using the
+	/// [`capacity`](Self::capacity) function.
 	///
 	/// If the element type (ie. `T`) is a ZST, the vector chainer will never
 	/// allocate, and will always have a capacity of `usize::MAX` bytes.
@@ -1103,11 +1104,7 @@ impl<T, const N: usize> VecChain<[T; N]> {
 // TODO: into_raw_parts_with_alloc
 // TODO: is_empty
 // TODO: leak
-// TODO: len
-// TODO: new
 // TODO: new_in
-// TODO: pop
-// TODO: pop_if
 // TODO: push
 // TODO: push_within_capacity
 // TODO: remove
@@ -1117,7 +1114,6 @@ impl<T, const N: usize> VecChain<[T; N]> {
 // TODO: resize_with
 // TODO: retain
 // TODO: retain_mut
-// TODO: set_len
 // TODO: shrink_to
 // TODO: shrink_to_fit
 // TODO: spare_capacity_mut
