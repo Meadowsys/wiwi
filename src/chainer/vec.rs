@@ -1079,32 +1079,6 @@ impl<T, const N: usize> VecChain<[T; N]> {
 	}
 }
 
-impl<T> VecChain<T> {
-	chain_fn! {
-		/// Sorts, then dedups, the vector chain.
-		///
-		/// Nonstandard API, suggested by my good friend
-		/// [Silk Rose] c:
-		///
-		/// This works exactly the same as `chain.sort().dedup()`.
-		///
-		/// # Examples
-		///
-		/// ```
-		/// # use wiwi::chainer::new::{ ChainHalf, VecChain };
-		/// let chain = VecChain::new()
-		///    .extend_from_slice(&[1, 5, 2, 2, 5, 3, 7, 1, 2, 4, 8])
-		///    .sort_and_dedup();
-		/// assert_eq!(chain.as_nonchain(), &[1, 2, 3, 4, 5, 7, 8])
-		/// ```
-		///
-		/// [Silk Rose]: https://github.com/silkrose
-		move self sort_and_dedup(self) where {
-			T: Ord
-		} => self.sort().dedup()
-	}
-}
-
 // TODO: allocator
 // TODO: append
 // TODO: as_mut_ptr
