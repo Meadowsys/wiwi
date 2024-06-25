@@ -1,32 +1,34 @@
 use super::*;
 use std::convert::{ AsRef, AsMut };
 
-// /// Convert any chain type back into its original, non-chaining-API type
-// ///
-// /// This is the reversal operation of [`NonChainHalf`].
+/// Methods relating to a chainer and it's nonchain type, including conversion methods
 pub trait ChainHalf
 where
 	Self: Sized + private::Sealed + Into<Self::NonChain> + AsRef<Self::NonChain> + AsMut<Self::NonChain>,
 	Self::NonChain: Into<Self> + NonChainHalf<Chain = Self>
 {
+	/// This chainer's nonchain
 	type NonChain;
 
+	/// Borrows `self` as its nonchain
 	#[inline]
 	fn as_nonchain(&self) -> &Self::NonChain {
 		self.as_ref()
 	}
 
+	/// Borrows `self` mutably as its nonchain
 	#[inline]
 	fn as_nonchain_mut(&mut self) -> &mut Self::NonChain {
 		self.as_mut()
 	}
 
-	// /// Converts `self` into the original, non-chaining-API type
+	/// Converts `self` back into it's nonchain type
 	#[inline]
 	fn into_nonchain(self) -> Self::NonChain {
 		self.into()
 	}
 
+	/// Converts a nonchain type into it's chainer
 	#[inline]
 	fn from_nonchain(nonchain: Self::NonChain) -> Self {
 		nonchain.into()
@@ -52,26 +54,30 @@ where
 // /// // ...
 // /// // do funny things with chaining API c:
 // /// ```
+/// Methods relating to a nonchain and it's chainer type, including conversion methods
 pub trait NonChainHalf
 where
 	Self: Sized + private::Sealed + Into<Self::Chain>,
 	Self::Chain: Into<Self> + ChainHalf<NonChain = Self> + AsRef<Self> + AsMut<Self>
 {
-	// /// The preferred chainer of this type
+	/// This type's chainer
 	type Chain;
 
-	// /// Converts `self` into its associated chain type
+	/// Converts `self` into its associated chain type
 	#[inline]
 	fn into_chainer(self) -> Self::Chain {
 		self.into()
 	}
 
+	/// Converts a chainer into it's nonchain type
 	#[inline]
 	fn from_chainer(chainer: Self::Chain) -> Self {
 		chainer.into()
 	}
 }
 
+/// notouchie
 pub(super) mod private {
+	/// notouchie
 	pub trait Sealed {}
 }
