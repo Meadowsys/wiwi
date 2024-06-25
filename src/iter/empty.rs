@@ -5,6 +5,7 @@ pub struct Empty<T> {
 	nothinglol: PhantomData<T>
 }
 
+#[inline]
 pub fn empty<T>() -> Empty<T> {
 	Empty { nothinglol: PhantomData }
 }
@@ -17,6 +18,7 @@ impl<T> Iter for Empty<T> {
 		None
 	}
 
+	#[inline]
 	unsafe fn size_hint_impl(&self, _: SizeHintMarker) -> SizeHintImpl {
 		SizeHintImpl::hard(0)
 	}

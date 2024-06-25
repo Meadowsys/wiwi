@@ -191,10 +191,7 @@ impl_dyn_mem_usage_tuple! {
 	T29 T30 T31 T32
 }
 
-#[cfg(all(
-	feature = "large-tuples",
-	feature = "omega-tuples-of-doom"
-))]
+#[cfg(feature = "omega-tuples-of-doom")]
 impl_dyn_mem_usage_tuple! {
 	T1   T2   T3   T4
 	T5   T6   T7   T8

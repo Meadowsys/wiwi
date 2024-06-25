@@ -13,7 +13,7 @@ where
 	I: Iter,
 	I::Item: Clone
 {
-	/// Called by [`Iter::repeat_per_item`]
+	#[inline]
 	pub(super) fn new(iter: I, count: usize) -> Self {
 		let state = if count == 0 {
 			// if it's 0, we just always return None, and don't touch inner iter
@@ -26,6 +26,7 @@ where
 	}
 
 	/// Consumes `self` and returns the underlying iter.
+	#[inline]
 	pub fn into_inner(self) -> (I, Option<(I::Item, usize)>) {
 		let item = if let State::Some { item, remaining_count: count @ 1.. } = self.state {
 			Some((item, count))

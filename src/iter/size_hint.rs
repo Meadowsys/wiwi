@@ -201,6 +201,7 @@ impl PartialEq<SizeHintImpl> for SizeHint {
 }
 
 impl From<(usize, Option<usize>)> for SizeHintImpl {
+	#[inline]
 	fn from(value: (usize, Option<usize>)) -> Self {
 		let (lower, upper) = value;
 

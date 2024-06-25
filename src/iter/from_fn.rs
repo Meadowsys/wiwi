@@ -5,6 +5,7 @@ pub struct FromFn<F> {
 	inner: F
 }
 
+#[inline]
 pub fn from_fn<T, F>(f: F) -> FromFn<F>
 where
 	F: FnMut() -> Option<T>

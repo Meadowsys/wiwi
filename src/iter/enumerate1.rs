@@ -1,5 +1,6 @@
 use super::{ Enumerate, Iter, SizeHintImpl, SizeHintMarker };
 
+#[repr(transparent)]
 pub struct Enumerate1<I> {
 	// just sets `inner.count` to 1 and then piggy backs off of it
 	inner: Enumerate<I>
@@ -9,6 +10,7 @@ impl<I> Enumerate1<I>
 where
 	I: Iter
 {
+	#[inline]
 	pub(super) fn new(iter: I) -> Self {
 		let mut inner = Enumerate::new(iter);
 		inner.count = 1;
@@ -22,10 +24,12 @@ where
 {
 	type Item = (I::Item, usize);
 
+	#[inline]
 	fn next(&mut self) -> Option<(I::Item, usize)> {
 		self.inner.next()
 	}
 
+	#[inline]
 	unsafe fn size_hint_impl(&self, _: SizeHintMarker) -> SizeHintImpl {
 		self.inner.size_hint().into()
 	}

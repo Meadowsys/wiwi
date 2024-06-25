@@ -10,10 +10,12 @@ where
 	I: Iter,
 	F: FnMut(I::Item) -> O
 {
+	#[inline]
 	pub(super) fn new(iter: I, f: F) -> Self {
 		Self { iter, f }
 	}
 
+	#[inline]
 	pub fn into_inner(self) -> (I, F) {
 		let Self { iter, f } = self;
 		(iter, f)
@@ -27,10 +29,12 @@ where
 {
 	type Item = O;
 
+	#[inline]
 	fn next(&mut self) -> Option<O> {
 		self.iter.next().map(&mut self.f)
 	}
 
+	#[inline]
 	unsafe fn size_hint_impl(&self, _: SizeHintMarker) -> SizeHintImpl {
 		self.iter.size_hint().into()
 	}

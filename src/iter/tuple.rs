@@ -65,6 +65,7 @@ macro_rules! iter_tuple_impl {
 			type Item = ($($rem_t::Item,)* $curr_t::Item,);
 			type Iter = $curr_s<$($rem_t::Iter,)* $curr_t::Iter>;
 
+			#[inline]
 			fn into_wiwi_iter(self) -> Self::Iter {
 				let ($($rem_f,)* $curr_f,) = self;
 				$curr_s {
@@ -110,6 +111,7 @@ macro_rules! iter_tuple_impl {
 	};
 }
 
+// was this a good idea? 🤔
 unsafe fn min_size_hint(h1: SizeHintImpl, h2: SizeHintImpl) -> SizeHintImpl {
 	use SizeHintInner::*;
 	use SizeHintBound::*;
@@ -530,10 +532,7 @@ iter_tuple_impl! {
 	(Tuple29 I29 iter29 29) (Tuple30 I30 iter30 30) (Tuple31 I31 iter31 31) (Tuple32 I32 iter32 32)
 }
 
-#[cfg(all(
-	feature = "large-tuples",
-	feature = "omega-tuples-of-doom"
-))]
+#[cfg(feature = "omega-tuples-of-doom")]
 iter_tuple_impl! {
 	(Tuple1   I1   iter1   1)   (Tuple2   I2   iter2   2)   (Tuple3   I3   iter3   3)   (Tuple4   I4   iter4   4)
 	(Tuple5   I5   iter5   5)   (Tuple6   I6   iter6   6)   (Tuple7   I7   iter7   7)   (Tuple8   I8   iter8   8)

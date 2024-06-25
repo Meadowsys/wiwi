@@ -3,6 +3,7 @@ use super::{ Iter, Rev };
 pub trait DoubleEndedIter: Iter {
 	fn next_back(&mut self) -> Option<Self::Item>;
 
+	#[inline]
 	fn rev(self) -> Rev<Self>
 	where
 		Self: Sized
@@ -10,6 +11,7 @@ pub trait DoubleEndedIter: Iter {
 		Rev::new(self)
 	}
 
+	#[inline]
 	fn for_each_back<F>(mut self, mut f: F)
 	where
 		Self: Sized,
@@ -20,6 +22,7 @@ pub trait DoubleEndedIter: Iter {
 }
 
 impl<I: DoubleEndedIter> DoubleEndedIter for &mut I {
+	#[inline]
 	fn next_back(&mut self) -> Option<Self::Item> {
 		(**self).next_back()
 	}

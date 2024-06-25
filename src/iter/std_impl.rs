@@ -25,6 +25,7 @@ pub struct VecIntoIter<T> {
 impl<T> Iter for VecIntoIter<T> {
 	type Item = T;
 
+	#[inline]
 	fn next(&mut self) -> Option<T> {
 		if self.remaining == 0 { return None }
 
@@ -37,6 +38,7 @@ impl<T> Iter for VecIntoIter<T> {
 		Some(unsafe { ptr.read() })
 	}
 
+	#[inline]
 	unsafe fn size_hint_impl(&self, _: SizeHintMarker) -> SizeHintImpl {
 		SizeHintImpl::hard(self.remaining)
 	}
@@ -52,8 +54,6 @@ impl<T> Drop for VecIntoIter<T> {
 				let original_ptr = self.ptr.sub(consumed) as *mut T;
 
 				// copy remaining elements to the front of ptr
-				// will overlap depeding on total items / amount returned by the iter
-				// (eg. 5 items, 4 remaining, so copying from indices 1..5 to 0..4)
 				ptr::copy(self.ptr, original_ptr, self.remaining);
 
 				original_ptr
@@ -63,7 +63,8 @@ impl<T> Drop for VecIntoIter<T> {
 		// This is probably the safest way to do this...
 		// TODO: improve this with alloc api when it's stabilised?
 
-		// ... let Vec handle the rest
+		// ... let Vec handle the rest (including dropping contained values
+		// and deallocating)
 		let _ = unsafe { Vec::from_raw_parts(ptr, self.remaining, self.capacity) };
 	}
 }
@@ -72,6 +73,7 @@ impl<T> IntoIter for Vec<T> {
 	type Item = T;
 	type Iter = VecIntoIter<T>;
 
+	#[inline]
 	fn into_wiwi_iter(self) -> VecIntoIter<T> {
 		let me = ManuallyDrop::new(self);
 

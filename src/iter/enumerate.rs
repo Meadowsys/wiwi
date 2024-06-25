@@ -10,6 +10,7 @@ impl<I> Enumerate<I>
 where
 	I: Iter
 {
+	#[inline]
 	pub(super) fn new(iter: I) -> Self {
 		Self { iter, count: 0 }
 	}
@@ -21,6 +22,7 @@ where
 {
 	type Item = (I::Item, usize);
 
+	#[inline]
 	fn next(&mut self) -> Option<(I::Item, usize)> {
 		let next = self.iter.next()?;
 		let next_i = self.count;
@@ -30,6 +32,7 @@ where
 		Some((next, next_i))
 	}
 
+	#[inline]
 	unsafe fn size_hint_impl(&self, _: SizeHintMarker) -> SizeHintImpl {
 		self.iter.size_hint().into()
 	}

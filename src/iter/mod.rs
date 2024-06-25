@@ -53,6 +53,7 @@ pub trait Iter {
 
 	fn next(&mut self) -> Option<Self::Item>;
 
+	#[inline]
 	fn size_hint(&self) -> SizeHint {
 		// SAFETY: `unsafe` on the impl method is to make implementors assert
 		// (for hard bounds) that it is implemented correctly. We have no invariants
@@ -66,10 +67,12 @@ pub trait Iter {
 	/// Implementors must guarantee that the iter will adhere strictly to its
 	/// returned size hint. This is important for hard bounds, where the user of
 	/// the iter is allowed to rely on it for soundness reasons.
+	#[inline]
 	unsafe fn size_hint_impl(&self, _: SizeHintMarker) -> SizeHintImpl {
 		SizeHintImpl::unknown()
 	}
 
+	#[inline]
 	fn for_each<F>(mut self, mut f: F)
 	where
 		Self: Sized,
@@ -80,6 +83,7 @@ pub trait Iter {
 		}
 	}
 
+	#[inline]
 	fn map<O, F>(self, f: F) -> Map<Self, F>
 	where
 		Self: Sized,
@@ -156,6 +160,7 @@ pub trait Iter {
 		}
 	}
 
+	#[inline]
 	fn enumerate(self) -> Enumerate<Self>
 	where
 		Self: Sized
@@ -163,6 +168,7 @@ pub trait Iter {
 		Enumerate::new(self)
 	}
 
+	#[inline]
 	fn enumerate1(self) -> Enumerate1<Self>
 	where
 		Self: Sized
@@ -170,6 +176,7 @@ pub trait Iter {
 		Enumerate1::new(self)
 	}
 
+	#[inline]
 	fn peekable(self) -> Peek<Self, Self::Item>
 	where
 		Self: Sized
@@ -240,6 +247,7 @@ pub trait Iter {
 	/// assert_eq!(orig_iter.next(), None);
 	/// assert_eq!(item, None);
 	/// ```
+	#[inline]
 	fn repeat_per_item(self, count: usize) -> RepeatPerItem<Self>
 	where
 		Self: Sized,
@@ -345,6 +353,8 @@ pub trait Iter {
 
 impl<I: Iter> Iter for &mut I {
 	type Item = I::Item;
+
+	#[inline]
 	fn next(&mut self) -> Option<I::Item> {
 		(**self).next()
 	}

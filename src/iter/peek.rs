@@ -14,10 +14,12 @@ impl<I, T> Peek<I, T>
 where
 	I: Iter<Item = T>
 {
+	#[inline]
 	pub(super) fn new(iter: I) -> Self {
 		Self { iter, peeked: None }
 	}
 
+	#[inline]
 	pub fn into_inner(self) -> (I, Option<Option<T>>) {
 		let Self { iter, peeked } = self;
 		(iter, peeked)
@@ -30,6 +32,7 @@ where
 {
 	type Item = I::Item;
 
+	#[inline]
 	fn next(&mut self) -> Option<I::Item> {
 		self.peeked.take().unwrap_or_else(|| self.iter.next())
 	}
@@ -66,6 +69,7 @@ where
 {
 	type PeekItem = I::Item;
 
+	#[inline]
 	fn peek(&mut self) -> Option<&I::Item> {
 		self.peeked.get_or_insert_with(|| self.iter.next()).as_ref()
 	}
