@@ -75,36 +75,44 @@
 <a href="#75" id="75">75</a>
 <a href="#76" id="76">76</a>
 <a href="#77" id="77">77</a>
+<a href="#78" id="78">78</a>
+<a href="#79" id="79">79</a>
+<a href="#80" id="80">80</a>
+<a href="#81" id="81">81</a>
+<a href="#82" id="82">82</a>
+<a href="#83" id="83">83</a>
 </pre></div><pre class="rust"><code><span class="kw">use super</span>::<span class="kw-2">*</span>;
 <span class="kw">use </span>std::convert::{ AsRef, AsMut };
 
-<span class="comment">// /// Convert any chain type back into its original, non-chaining-API type
-// ///
-// /// This is the reversal operation of [`NonChainHalf`].
+<span class="doccomment">/// Methods relating to a chainer and it's nonchain type, including conversion methods
 </span><span class="kw">pub trait </span>ChainHalf
 <span class="kw">where
 	</span><span class="self">Self</span>: Sized + private::Sealed + Into&lt;<span class="self">Self</span>::NonChain&gt; + AsRef&lt;<span class="self">Self</span>::NonChain&gt; + AsMut&lt;<span class="self">Self</span>::NonChain&gt;,
 	<span class="self">Self</span>::NonChain: Into&lt;<span class="self">Self</span>&gt; + NonChainHalf&lt;Chain = <span class="self">Self</span>&gt;
 {
-	<span class="kw">type </span>NonChain;
+	<span class="doccomment">/// This chainer's nonchain
+	</span><span class="kw">type </span>NonChain;
 
-	<span class="attr">#[inline]
+	<span class="doccomment">/// Borrows `self` as its nonchain
+	</span><span class="attr">#[inline]
 	</span><span class="kw">fn </span>as_nonchain(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; <span class="kw-2">&amp;</span><span class="self">Self</span>::NonChain {
 		<span class="self">self</span>.as_ref()
 	}
 
-	<span class="attr">#[inline]
+	<span class="doccomment">/// Borrows `self` mutably as its nonchain
+	</span><span class="attr">#[inline]
 	</span><span class="kw">fn </span>as_nonchain_mut(<span class="kw-2">&amp;mut </span><span class="self">self</span>) -&gt; <span class="kw-2">&amp;mut </span><span class="self">Self</span>::NonChain {
 		<span class="self">self</span>.as_mut()
 	}
 
-	<span class="comment">// /// Converts `self` into the original, non-chaining-API type
+	<span class="doccomment">/// Converts `self` back into it's nonchain type
 	</span><span class="attr">#[inline]
 	</span><span class="kw">fn </span>into_nonchain(<span class="self">self</span>) -&gt; <span class="self">Self</span>::NonChain {
 		<span class="self">self</span>.into()
 	}
 
-	<span class="attr">#[inline]
+	<span class="doccomment">/// Converts a nonchain type into it's chainer
+	</span><span class="attr">#[inline]
 	</span><span class="kw">fn </span>from_nonchain(nonchain: <span class="self">Self</span>::NonChain) -&gt; <span class="self">Self </span>{
 		nonchain.into()
 	}
@@ -129,27 +137,31 @@
 // /// // ...
 // /// // do funny things with chaining API c:
 // /// ```
+</span><span class="doccomment">/// Methods relating to a nonchain and it's chainer type, including conversion methods
 </span><span class="kw">pub trait </span>NonChainHalf
 <span class="kw">where
 	</span><span class="self">Self</span>: Sized + private::Sealed + Into&lt;<span class="self">Self</span>::Chain&gt;,
 	<span class="self">Self</span>::Chain: Into&lt;<span class="self">Self</span>&gt; + ChainHalf&lt;NonChain = <span class="self">Self</span>&gt; + AsRef&lt;<span class="self">Self</span>&gt; + AsMut&lt;<span class="self">Self</span>&gt;
 {
-	<span class="comment">// /// The preferred chainer of this type
+	<span class="doccomment">/// This type's chainer
 	</span><span class="kw">type </span>Chain;
 
-	<span class="comment">// /// Converts `self` into its associated chain type
+	<span class="doccomment">/// Converts `self` into its associated chain type
 	</span><span class="attr">#[inline]
 	</span><span class="kw">fn </span>into_chainer(<span class="self">self</span>) -&gt; <span class="self">Self</span>::Chain {
 		<span class="self">self</span>.into()
 	}
 
-	<span class="attr">#[inline]
+	<span class="doccomment">/// Converts a chainer into it's nonchain type
+	</span><span class="attr">#[inline]
 	</span><span class="kw">fn </span>from_chainer(chainer: <span class="self">Self</span>::Chain) -&gt; <span class="self">Self </span>{
 		chainer.into()
 	}
 }
 
-<span class="kw">pub</span>(<span class="kw">super</span>) <span class="kw">mod </span>private {
-	<span class="kw">pub trait </span>Sealed {}
+<span class="doccomment">/// notouchie
+</span><span class="kw">pub</span>(<span class="kw">super</span>) <span class="kw">mod </span>private {
+	<span class="doccomment">/// notouchie
+	</span><span class="kw">pub trait </span>Sealed {}
 }
 </code></pre></div></section></main></body></html>
