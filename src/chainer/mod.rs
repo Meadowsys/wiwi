@@ -3,6 +3,7 @@ pub use old::*;
 
 mod traits;
 
+mod array;
 mod slice_box;
 mod slice_mut;
 mod vec;
