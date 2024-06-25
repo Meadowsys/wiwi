@@ -1,6 +1,6 @@
-use super::{ chainer, chain_fn, new::{ ChainHalf, NonChainHalf } };
+use super::{ chainer, chain_fn, ChainHalf, NonChainHalf };
 use std::ops::Range;
-use std::slice;
+use std::{ mem, slice };
 
 chainer! {
 	generics_decl: ['h, T]
@@ -10,15 +10,37 @@ chainer! {
 }
 
 impl<'h, T> SliceRefChain<'h, T> {
+	#[inline]
 	pub fn from_ref(val: &'h T) -> Self {
 		slice::from_ref(val).into()
 	}
 
+	#[inline]
 	pub unsafe fn from_raw_parts(data: *const T, len: usize) -> Self {
 		slice::from_raw_parts(data, len).into()
 	}
 
 	// TODO: from_ptr_range nightly
+}
+
+impl<'h, T> SliceRefChain<'h, T> {}
+
+impl<'h, T, const N: usize> SliceRefChain<'h, [T; N]> {
+	pub fn flatten(self) -> SliceRefChain<'h, T> {
+		// TODO: use SizedTypeProperties / slice `flatten` when stabilised
+		let len = if mem::size_of::<T>() == 0 {
+			self.as_nonchain()
+				.len()
+				.checked_mul(N)
+				.expect("slice len overflow")
+		} else {
+			// TODO: use unchecked mul
+			self.as_nonchain().len() * N
+		};
+
+		let ptr = *self.as_nonchain() as *const [[T; N]] as *const T;
+		unsafe { slice::from_raw_parts(ptr, len).into() }
+	}
 }
 
 // TODO: align_to

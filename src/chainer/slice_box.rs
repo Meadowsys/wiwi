@@ -1,5 +1,4 @@
-use super::{ chainer, chain_fn, new::{ ChainHalf, NonChainHalf } };
-use super::new::VecChain;
+use super::{ chainer, chain_fn, ChainHalf, NonChainHalf, VecChain };
 use std::mem::MaybeUninit;
 
 chainer! {
@@ -10,7 +9,8 @@ chainer! {
 }
 
 impl<T> SliceBoxChain<MaybeUninit<T>> {
-	pub fn new_uninit_slice(len: usize) -> Self {
+	#[inline]
+	pub fn new_uninit(len: usize) -> Self {
 		unsafe {
 			VecChain::with_capacity(len)
 				.set_len(len)
@@ -20,10 +20,17 @@ impl<T> SliceBoxChain<MaybeUninit<T>> {
 		}
 	}
 
+	#[inline]
 	pub fn new_zeroed(len: usize) -> Self {
-		let mut this = Self::new_uninit_slice(len);
+		let mut this = Self::new_uninit(len);
 		unsafe { this.as_nonchain_mut().as_mut_ptr().write_bytes(0, len) }
 		this
+	}
+
+	#[inline]
+	pub unsafe fn assume_init(self) -> SliceBoxChain<T> {
+		let raw = Box::into_raw(self.into_nonchain());
+		Box::from_raw(raw as *mut [_]).into()
 	}
 }
 

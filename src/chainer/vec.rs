@@ -1,7 +1,5 @@
 use crate::iter::{ IntoIter, IntoStdIterator, IntoWiwiIter, IterAdapter };
-// TODO: restore
-// use super::{ chainer, chain_fn, ChainHalf, NonChainHalf };
-use super::{ chainer, chain_fn, new::{ ChainHalf, NonChainHalf } };
+use super::{ chainer, chain_fn, ChainHalf, NonChainHalf };
 use std::{ ptr, vec };
 use std::cmp::Ordering;
 use std::mem::{ self, MaybeUninit };

@@ -1,4 +1,4 @@
-use crate::chainer::{ ArrayChain, IntoChainer, SliceRefChain };
+use crate::chainer::{ ArrayChain, ChainHalf, NonChainHalf, SliceRefChain };
 use crate::iter::*;
 use std::mem::MaybeUninit;
 
@@ -22,7 +22,7 @@ impl Board {
 		debug_assert_eq!({
 			SliceRefChain::<_>::from(&game as &[_])
 				.flatten()
-				.nonchain_slice()
+				.into_nonchain()
 				.len()
 		}, 81);
 
@@ -325,9 +325,9 @@ pub mod solution_encoding {
 	///
 	/// All cells in `bytes` must have a value within `1..=9`.
 	pub unsafe fn encode_byte_array_unchecked(bytes: &[u8; 81]) -> Encoded {
-		let mut out = ArrayChain::new_uninit().into_inner();
+		let mut out = ArrayChain::new_uninit();
 
-		let mut out_ptr = out.as_mut_ptr() as *mut u8;
+		let mut out_ptr = out.as_nonchain_mut().as_mut_ptr() as *mut u8;
 		let mut bytes_ptr = bytes.as_ptr();
 
 		for _ in 0usize..16 {
@@ -352,19 +352,19 @@ pub mod solution_encoding {
 
 		out_ptr.write(*bytes_ptr);
 
-		Encoded { inner: out.into_chainer().assume_init().into_inner() }
+		Encoded { inner: out.assume_init().into_nonchain() }
 	}
 
 	pub unsafe fn decode_board_unchecked(board: &Encoded) -> [u8; 81] {
-		let mut out = ArrayChain::new_uninit().into_inner();
+		let mut out = ArrayChain::new_uninit();
 
-		let mut out_ptr = out.as_mut_ptr() as *mut u8;
+		let mut out_ptr = out.as_nonchain_mut().as_mut_ptr() as *mut u8;
 		let mut board_ptr = board.inner.as_ptr();
 
 		for _ in 0usize..16 {
-			let mut current = ArrayChain::new_uninit().into_inner();
-			board_ptr.copy_to_nonoverlapping(current.as_mut_ptr() as *mut _, 2);
-			let mut current = u16::from_le_bytes(current.into_chainer().assume_init().into_inner());
+			let mut current = ArrayChain::new_uninit();
+			board_ptr.copy_to_nonoverlapping(current.as_nonchain_mut().as_mut_ptr() as _, 2);
+			let mut current = u16::from_le_bytes(current.assume_init().into_nonchain());
 			board_ptr = board_ptr.add(2);
 
 			out_ptr = out_ptr.add(5);
@@ -379,7 +379,7 @@ pub mod solution_encoding {
 
 		out_ptr.write(*board_ptr);
 
-		out.into_chainer().assume_init().into_inner()
+		out.assume_init().into_nonchain()
 	}
 
 	pub const fn encoded_all_ones() -> Encoded {

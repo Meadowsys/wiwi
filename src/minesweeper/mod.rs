@@ -1,4 +1,4 @@
-use crate::chainer::{ IntoChainer, SliceBoxChain, VecChain };
+use crate::chainer::{ ChainHalf, NonChainHalf, SliceBoxChain, VecChain };
 use crate::iter::{ IntoStdIterator, IntoWiwiIter, Iter };
 use crate::z85::{ encode_z85, decode_z85 };
 use rand::{ Rng, seq::SliceRandom, thread_rng };
@@ -35,7 +35,7 @@ impl Board {
 		let board = unsafe {
 			SliceBoxChain::new_zeroed(w.get() * h.get())
 				.assume_init()
-				.into_inner()
+				.into_nonchain()
 		};
 		Self { w, h, board }
 	}
@@ -71,7 +71,7 @@ impl Board {
 					.into_chainer(),
 				|board, i| unsafe { board.swap_unchecked(i, (0..=i).sample_single(&mut rng)) }
 			)
-			.nonchain_inner()
+			.into_nonchain()
 			.into_iter()
 			// assume fresh board (ie. no exiting mines)
 			.filter(|(_, cr, cc)| !(*cr == r && *cc == c))
@@ -245,7 +245,7 @@ impl Board {
 				self.board.iter_mut().collect::<Vec<_>>().into_chainer(),
 				|board, i| unsafe { board.swap_unchecked(i, (0..=i).sample_single(&mut rng)) }
 			)
-			.nonchain_inner()
+			.into_nonchain()
 			.into_iter()
 			.filter(|cell| !cell.is_mine())
 			.take(mines)
@@ -317,7 +317,7 @@ impl Board {
 				bytes.push(byte)
 			});
 
-		encode_z85(bytes.nonchain_slice())
+		encode_z85(bytes.as_nonchain())
 	}
 
 	pub fn deserialise(s: &str) -> Option<Self> {

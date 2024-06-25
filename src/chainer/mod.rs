@@ -1,19 +1,16 @@
-pub mod old;
-pub use old::*;
-
 mod traits;
+pub use traits::{ ChainHalf, NonChainHalf };
 
 mod array;
+pub use array::ArrayChain;
 mod slice_box;
+pub use slice_box::SliceBoxChain;
 mod slice_mut;
+pub use slice_mut::SliceMutChain;
 mod slice_ref;
+pub use slice_ref::SliceRefChain;
 mod vec;
-
-/// Temporary
-pub mod new {
-	pub use super::traits::{ ChainHalf, NonChainHalf };
-	pub use super::vec::{ vec_chain, VecChain };
-}
+pub use vec::{ vec_chain, VecChain };
 
 // TODO: check callbacks and use chaining apis there? maybe?
 

@@ -1,4 +1,4 @@
-use super::{ chainer, chain_fn, new::{ ChainHalf, NonChainHalf } };
+use super::{ chainer, chain_fn, ChainHalf, NonChainHalf };
 use std::ops::Range;
 use std::slice;
 
@@ -10,10 +10,12 @@ chainer! {
 }
 
 impl<'h, T> SliceMutChain<'h, T> {
+	#[inline]
 	pub fn from_ref(val: &'h mut T) -> Self {
 		slice::from_mut(val).into()
 	}
 
+	#[inline]
 	pub unsafe fn from_raw_parts(data: *mut T, len: usize) -> Self {
 		slice::from_raw_parts_mut(data, len).into()
 	}

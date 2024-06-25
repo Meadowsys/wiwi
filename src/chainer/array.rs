@@ -1,10 +1,43 @@
-use super::{ chainer, chain_fn, new::{ ChainHalf, NonChainHalf } };
+use super::{ chainer, chain_fn, ChainHalf, NonChainHalf };
+use std::mem::{ ManuallyDrop, MaybeUninit };
+use std::ptr;
 
 chainer! {
 	generics_decl: [T, const N: usize]
 	generics: [T, N]
 	chainer: ArrayChain
 	nonchain: [T; N]
+}
+
+impl<T, const N: usize> ArrayChain<MaybeUninit<T>, N> {
+	#[inline]
+	pub fn new_uninit() -> Self {
+		unsafe {
+			MaybeUninit::<[MaybeUninit<T>; N]>::uninit()
+				.assume_init()
+				.into()
+		}
+	}
+
+	#[inline]
+	pub fn new_zeroed() -> Self {
+		unsafe {
+			MaybeUninit::<[MaybeUninit<T>; N]>::zeroed()
+				.assume_init()
+				.into()
+		}
+	}
+
+	#[inline]
+	pub unsafe fn assume_init(self) -> ArrayChain<T, N> {
+		// TODO: this is subpar (its copying), but I can't find a better way to do it?
+		// all ways to do it seem to be unstable (transmute is too dumb, transmute_unchecked
+		// is unstable and likely won't ever be stable, MaybeUninit::array_assume_init
+		// is unstable (it uses transmute_unchecked internally))
+		let me = ManuallyDrop::new(self);
+		let ptr = me.as_nonchain() as *const [MaybeUninit<T>; N] as *const [T; N];
+		ptr::read(ptr).into()
+	}
 }
 
 // TODO: as_ascii
