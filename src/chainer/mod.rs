@@ -2,6 +2,9 @@ pub mod old;
 pub use old::*;
 
 mod traits;
+
+mod slice_box;
+mod slice_mut;
 mod vec;
 
 /// Temporary
