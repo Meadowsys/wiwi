@@ -8,9 +8,9 @@ chainer! {
 	nonchain: Box<[T]>
 }
 
-impl<T> SliceBoxChain<MaybeUninit<T>> {
+impl<T> SliceBoxChain<T> {
 	#[inline]
-	pub fn new_uninit(len: usize) -> Self {
+	pub fn new_uninit(len: usize) -> SliceBoxChain<MaybeUninit<T>> {
 		unsafe {
 			VecChain::with_capacity(len)
 				.set_len(len)
@@ -21,12 +21,14 @@ impl<T> SliceBoxChain<MaybeUninit<T>> {
 	}
 
 	#[inline]
-	pub fn new_zeroed(len: usize) -> Self {
+	pub fn new_zeroed(len: usize) -> SliceBoxChain<MaybeUninit<T>> {
 		let mut this = Self::new_uninit(len);
 		unsafe { this.as_nonchain_mut().as_mut_ptr().write_bytes(0, len) }
 		this
 	}
+}
 
+impl<T> SliceBoxChain<MaybeUninit<T>> {
 	#[inline]
 	pub unsafe fn assume_init(self) -> SliceBoxChain<T> {
 		let raw = Box::into_raw(self.into_nonchain());

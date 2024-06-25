@@ -9,9 +9,9 @@ chainer! {
 	nonchain: [T; N]
 }
 
-impl<T, const N: usize> ArrayChain<MaybeUninit<T>, N> {
+impl<T, const N: usize> ArrayChain<T, N> {
 	#[inline]
-	pub fn new_uninit() -> Self {
+	pub fn new_uninit() -> ArrayChain<MaybeUninit<T>, N> {
 		unsafe {
 			MaybeUninit::<[MaybeUninit<T>; N]>::uninit()
 				.assume_init()
@@ -20,14 +20,16 @@ impl<T, const N: usize> ArrayChain<MaybeUninit<T>, N> {
 	}
 
 	#[inline]
-	pub fn new_zeroed() -> Self {
+	pub fn new_zeroed() -> ArrayChain<MaybeUninit<T>, N> {
 		unsafe {
 			MaybeUninit::<[MaybeUninit<T>; N]>::zeroed()
 				.assume_init()
 				.into()
 		}
 	}
+}
 
+impl<T, const N: usize> ArrayChain<MaybeUninit<T>, N> {
 	#[inline]
 	pub unsafe fn assume_init(self) -> ArrayChain<T, N> {
 		// TODO: this is subpar (its copying), but I can't find a better way to do it?
