@@ -20,13 +20,13 @@ chainer! {
 /// # Examples
 ///
 /// ```
-/// # use wiwi::chainer::new::{ VecChain, NonChainHalf, vec_chain };
+/// # use wiwi::chainer::{ VecChain, NonChainHalf, vec_chain };
 /// let chain = vec![0u8; 32].into_chainer();
 /// let chain = vec_chain![0u8; 32];
 /// ```
 #[macro_export]
 macro_rules! vec_chain {
-	[$($tt:tt)*] => { $crate::chainer::new::VecChain::from(vec![$($tt)*]) }
+	[$($tt:tt)*] => { $crate::chainer::VecChain::from(vec![$($tt)*]) }
 }
 pub use vec_chain;
 
@@ -40,7 +40,7 @@ impl<T> VecChain<T> {
 	/// # Examples
 	///
 	/// ```
-	/// # use wiwi::chainer::new::VecChain;
+	/// # use wiwi::chainer::VecChain;
 	/// // a chain thingie! yay!...
 	/// let chain = VecChain::new();
 	/// # let chain: VecChain<String> = chain;
@@ -77,7 +77,7 @@ impl<T> VecChain<T> {
 	/// # Examples
 	///
 	/// ```
-	/// # use wiwi::chainer::new::VecChain;
+	/// # use wiwi::chainer::VecChain;
 	/// # let mut len = 0;
 	/// # let mut initial_capacity = 0;
 	/// # let mut capacity = 0;
@@ -493,7 +493,7 @@ impl<T> VecChain<T> {
 		/// # Examples
 		///
 		/// ```
-		/// # use wiwi::chainer::new::VecChain;
+		/// # use wiwi::chainer::VecChain;
 		/// # let mut before = false;
 		/// # let mut after = false;
 		/// let chain = VecChain::new()
@@ -568,7 +568,7 @@ impl<T> VecChain<T> {
 		/// # Examples
 		///
 		/// ```
-		/// # use wiwi::chainer::new::VecChain;
+		/// # use wiwi::chainer::VecChain;
 		/// # let mut len = 0;
 		/// let chain = VecChain::new()
 		///    .extend_from_slice(&[1, 2, 3, 4, 5])
@@ -586,7 +586,7 @@ impl<T> VecChain<T> {
 		///
 		/// ```
 		/// # use std::mem::MaybeUninit;
-		/// # use wiwi::chainer::new::VecChain;
+		/// # use wiwi::chainer::VecChain;
 		/// # let mut len = MaybeUninit::uninit();
 		/// let chain = VecChain::new()
 		///    .extend_from_slice(&[1, 2, 3, 4, 5])
@@ -900,7 +900,7 @@ impl<T> VecChain<T> {
 		/// # Examples
 		///
 		/// ```
-		/// # use wiwi::chainer::new::VecChain;
+		/// # use wiwi::chainer::VecChain;
 		/// # let mut spare_len = 0;
 		/// # let mut new_spare_len = 0;
 		/// let chain = VecChain::with_capacity(10)
