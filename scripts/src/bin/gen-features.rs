@@ -99,8 +99,6 @@ fn main() {
 		#[unstable]
 		"lsl"
 		"experimental lib to help with writing Second Life scripts in Rust... because yes, I got fed up with it very quickly and immediately missed Rust lol >< It is really only built for a dedicated crate just to write the script, rather than as part of another lib/app"
-		dependencies: ["hashbrown", "spin-sleep", "uuid"]
-		features: ["hex", "id"]
 
 		#[unstable]
 		"memory-usage"
