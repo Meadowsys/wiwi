@@ -113,7 +113,10 @@ iter-unstable = []
 lazy-wrap = [
 	"dep:parking_lot"
 ]
-lsl-unstable = []
+lsl-unstable = [
+	"dep:hashbrown",
+	"id-unstable"
+]
 memory-usage-unstable = [
 	"wiwiwiwiwi/memory-usage"
 ]
