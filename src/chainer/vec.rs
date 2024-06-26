@@ -1,4 +1,3 @@
-use crate::iter::{ IntoIter, IntoStdIterator, IntoWiwiIter, IterAdapter };
 use super::{ chainer, chain_fn, ChainHalf, NonChainHalf };
 use std::{ ptr, vec };
 use std::cmp::Ordering;
@@ -810,10 +809,10 @@ impl<T> VecChain<T> {
 	chain_fn! {
 		splice[R, I, CB](nc, range: R, replace_with: I, cb: CB) where {
 			R: RangeBounds<usize>,
-			I: IntoIter<Item = T>,
+			I: IntoIterator<Item = T>,
 			// TODO: chainer?
-			CB: FnOnce(vec::Splice<IterAdapter<I::Iter>>)
-		} => cb(nc.splice(range, replace_with.convert_wiwi_into_std_iterator()))
+			CB: FnOnce(vec::Splice<I::IntoIter>)
+		} => cb(nc.splice(range, replace_with))
 	}
 
 	chain_fn! {
@@ -939,8 +938,8 @@ impl<T> VecChain<T> {
 	chain_fn! {
 		windows[CB](nc, size: usize, cb: CB) where {
 			// TODO: chainer?
-			CB: FnOnce(IterAdapter<slice::Windows<T>>)
-		} => cb(nc.windows(size).convert_std_into_wiwi_iter())
+			CB: FnOnce(slice::Windows<T>)
+		} => cb(nc.windows(size))
 	}
 
 

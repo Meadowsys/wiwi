@@ -53,7 +53,6 @@ fn main() {
 		#[unstable]
 		"chainer"
 		"zero-cost wrappers that provide chaining APIs"
-		features: ["iter", "to-maybeuninit"]
 
 		#[unstable]
 		"cli"

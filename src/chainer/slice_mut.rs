@@ -1,4 +1,3 @@
-use crate::iter::{ IntoIter, IntoStdIterator, IntoWiwiIter, IterAdapter };
 use super::{ chainer, chain_fn, ChainHalf, NonChainHalf };
 use std::{ ptr, vec };
 use std::cmp::Ordering;
@@ -549,8 +548,8 @@ impl<'h, T> SliceMutChain<'h, T> {
 	chain_fn! {
 		windows[CB](nc, size: usize, cb: CB) where {
 			// TODO: chainer?
-			CB: FnOnce(IterAdapter<slice::Windows<T>>)
-		} => cb(nc.windows(size).convert_std_into_wiwi_iter())
+			CB: FnOnce(slice::Windows<T>)
+		} => cb(nc.windows(size))
 	}
 }
 

@@ -85,10 +85,7 @@ auth-unstable = [
 	"z85"
 ]
 bitstream-unstable = []
-chainer-unstable = [
-	"iter-unstable",
-	"to-maybeuninit"
-]
+chainer-unstable = []
 cli-unstable = []
 clock-timer = [
 	"dep:chrono",
