@@ -72,7 +72,6 @@ impl<T, const N: usize> AsRef<[T]> for ArrayChain<T, N> {
 // TODO: Borrow<[T]>
 // TODO: BorrowMut<[T]>
 // TODO: ConstParamTy
-// TODO: Debug
 // TODO: Eq
 // TODO: From<&'a [T; N]>
 // TODO: From<&[T; N]>
@@ -328,7 +327,6 @@ impl<T, const N: usize> AsRef<[T]> for ArrayChain<T, N> {
 // TODO: Concat<T>
 // TODO: Concat<str>
 // TODO: ConstParamTy
-// TODO: Debug
 // TODO: Eq
 // TODO: From<&'a [T]>
 // TODO: From<&'data mut [MaybeUninit<u8>]>

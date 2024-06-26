@@ -84,24 +84,44 @@ macro_rules! chainer {
 		#[allow(clippy::non_canonical_clone_impl)] // shut
 		impl$(<$($generics_decl)*>)? ::std::clone::Clone for $chainer$(<$($generics)*>)?
 		where
-			$($nonchain)+: Clone
+			$($nonchain)+: ::std::clone::Clone
 		{
 			fn clone(&self) -> Self {
-				<$($nonchain)+ as Clone>::clone(&self.as_nonchain()).into()
+				<$($nonchain)+ as ::std::clone::Clone>::clone(&self.as_nonchain()).into()
 			}
 		}
 
 		impl$(<$($generics_decl)*>)? ::std::marker::Copy for $chainer$(<$($generics)*>)?
 		where
-			$($nonchain)+: Copy
+			$($nonchain)+: ::std::marker::Copy
 		{}
+
+		impl$(<$($generics_decl)*>)? ::std::fmt::Debug for $chainer$(<$($generics)*>)?
+		where
+			$($nonchain)+: ::std::fmt::Debug
+		{
+			fn fmt(&self, f: &mut ::std::fmt::Formatter<'_>) -> ::std::fmt::Result {
+				f.debug_struct(stringify!($chainer))
+					.field("_", self.as_nonchain())
+					.finish()
+			}
+		}
 
 		impl$(<$($generics_decl)*>)? ::std::default::Default for $chainer$(<$($generics)*>)?
 		where
-			$($nonchain)+: Default
+			$($nonchain)+: ::std::default::Default
 		{
 			fn default() -> Self {
-				<$($nonchain)+ as Default>::default().into()
+				<$($nonchain)+ as ::std::default::Default>::default().into()
+			}
+		}
+
+		impl$(<$($generics_decl)*>)? ::std::fmt::Display for $chainer$(<$($generics)*>)?
+		where
+			$($nonchain)+: ::std::fmt::Display
+		{
+			fn fmt(&self, f: &mut ::std::fmt::Formatter<'_>) -> ::std::fmt::Result {
+				::std::fmt::Display::fmt(self.as_nonchain(), f)
 			}
 		}
 	};

@@ -408,7 +408,7 @@ impl<T> VecChain<T> {
 		} => nc.extend_from_within(src)
 	}
 
-	// extract_if
+	// TODO: extract_if
 
 	chain_fn! {
 		fill(nc, value: T) where {
@@ -765,6 +765,41 @@ impl<T> VecChain<T> {
 	}
 
 	chain_fn! {
+		/// Calls the provided closure with the spare capacity of the vector as
+		/// a slice of [`MaybeUninit<T>`]
+		///
+		/// # Examples
+		///
+		/// ```
+		/// # use wiwi::chainer::VecChain;
+		/// # let mut spare_len = 0;
+		/// # let mut new_spare_len = 0;
+		/// let chain = VecChain::with_capacity(10)
+		///    .extend_from_slice(&[1, 2, 3, 4, 5])
+		///    .spare_capacity_mut(|mut spare| {
+		///       spare_len = spare.len();
+		///
+		///       // VecChain allocated at least 10 elements worth of space
+		///       // since we pushed 5 elements, it should have at least
+		///       // 5 elements of spare capacity left
+		///       assert!(spare_len >= 5);
+		///    })
+		///    .push(6)
+		///    .push(7)
+		///    .spare_capacity_mut(|mut spare| {
+		///       new_spare_len = spare.len();
+		///
+		///       // Just pushed 2 more elements, so there's 2 less spare capacity left
+		///       assert_eq!(spare_len - 2, new_spare_len);
+		///    });
+		/// ```
+		spare_capacity_mut[CB](nc, cb: CB) where {
+			// TODO: chainer?
+			CB: FnOnce(&mut [MaybeUninit<T>])
+		} => cb(nc.spare_capacity_mut())
+	}
+
+	chain_fn! {
 		splice[R, I, CB](nc, range: R, replace_with: I, cb: CB) where {
 			R: RangeBounds<usize>,
 			I: IntoIter<Item = T>,
@@ -892,41 +927,6 @@ impl<T> VecChain<T> {
 	}
 
 	// TODO: try_reserve/exact
-
-	chain_fn! {
-		/// Calls the provided closure with the spare capacity of the vector as
-		/// a slice of [`MaybeUninit<T>`]
-		///
-		/// # Examples
-		///
-		/// ```
-		/// # use wiwi::chainer::VecChain;
-		/// # let mut spare_len = 0;
-		/// # let mut new_spare_len = 0;
-		/// let chain = VecChain::with_capacity(10)
-		///    .extend_from_slice(&[1, 2, 3, 4, 5])
-		///    .spare_capacity_mut(|mut spare| {
-		///       spare_len = spare.len();
-		///
-		///       // VecChain allocated at least 10 elements worth of space
-		///       // since we pushed 5 elements, it should have at least
-		///       // 5 elements of spare capacity left
-		///       assert!(spare_len >= 5);
-		///    })
-		///    .push(6)
-		///    .push(7)
-		///    .spare_capacity_mut(|mut spare| {
-		///       new_spare_len = spare.len();
-		///
-		///       // Just pushed 2 more elements, so there's 2 less spare capacity left
-		///       assert_eq!(spare_len - 2, new_spare_len);
-		///    });
-		/// ```
-		spare_capacity_mut[CB](nc, cb: CB) where {
-			// TODO: chainer?
-			CB: FnOnce(&mut [MaybeUninit<T>])
-		} => cb(nc.spare_capacity_mut())
-	}
 
 	chain_fn! {
 		windows[CB](nc, size: usize, cb: CB) where {
@@ -1078,6 +1078,18 @@ impl<T, const N: usize> VecChain<[T; N]> {
 	}
 }
 
+impl<T> AsMut<[T]> for VecChain<T> {
+	fn as_mut(&mut self) -> &mut [T] {
+		self.as_nonchain_mut()
+	}
+}
+
+impl<T> AsRef<[T]> for VecChain<T> {
+	fn as_ref(&self) -> &[T] {
+		self.as_nonchain()
+	}
+}
+
 // TODO: allocator
 // TODO: as_mut_ptr
 // TODO: as_mut_slice
@@ -1183,11 +1195,6 @@ impl<T, const N: usize> VecChain<[T; N]> {
 // TODO: trait impls
 // TODO: Borrow<[T]>
 // TODO: BorrowMut<[T]>
-// TODO: Debug
-// TODO: Deref
-// TODO: DerefMut
-// TODO: DerefPure
-// TODO: Drop
 // TODO: Eq
 // TODO: Extend<&'a T>
 // TODO: Extend<T>

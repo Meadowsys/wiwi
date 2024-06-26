@@ -216,7 +216,6 @@ impl<'h, T, const N: usize> SliceRefChain<'h, [T; N]> {
 // TODO: Concat<T>
 // TODO: Concat<str>
 // TODO: ConstParamTy
-// TODO: Debug
 // TODO: Eq
 // TODO: From<&'a [T]>
 // TODO: From<&'data mut [MaybeUninit<u8>]>

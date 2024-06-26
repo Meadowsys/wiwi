@@ -209,7 +209,6 @@ impl<T> SliceBoxChain<MaybeUninit<T>> {
 // TODO: Concat<T>
 // TODO: Concat<str>
 // TODO: ConstParamTy
-// TODO: Debug
 // TODO: Eq
 // TODO: From<&'a [T]>
 // TODO: From<&'data mut [MaybeUninit<u8>]>
