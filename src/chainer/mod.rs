@@ -37,13 +37,15 @@ macro_rules! chainer {
 		where
 			$($nonchain)+: ::std::cmp::PartialEq<$($nonchain)+>
 		{
-			fn eq(&self, other: &$($right)+) -> bool {
+			#[inline]
+			fn eq(&self, other: &$($right)+) -> ::std::primitive::bool {
 				<$($nonchain)+ as ::std::cmp::PartialEq<$($nonchain)+>>::eq($left_expr(self), $right_expr(other))
 			}
 
 			// overriding this in case nonchain has overridden it
 			#[allow(clippy::partialeq_ne_impl)]
-			fn ne(&self, other: &$($right)+) -> bool {
+			#[inline]
+			fn ne(&self, other: &$($right)+) -> ::std::primitive::bool {
 				<$($nonchain)+ as ::std::cmp::PartialEq<$($nonchain)+>>::ne($left_expr(self), $right_expr(other))
 			}
 		}
@@ -52,23 +54,28 @@ macro_rules! chainer {
 		where
 			$($nonchain)+: ::std::cmp::PartialOrd<$($nonchain)+>
 		{
+			#[inline]
 			fn partial_cmp(&self, other: &$($right)+) -> ::std::option::Option<::std::cmp::Ordering> {
 				<$($nonchain)+ as ::std::cmp::PartialOrd<$($nonchain)+>>::partial_cmp($left_expr(self), $right_expr(other))
 			}
 
-			fn lt(&self, other: &$($right)+) -> bool {
+			#[inline]
+			fn lt(&self, other: &$($right)+) -> ::std::primitive::bool {
 				<$($nonchain)+ as ::std::cmp::PartialOrd<$($nonchain)+>>::lt($left_expr(self), $right_expr(other))
 			}
 
-			fn le(&self, other: &$($right)+) -> bool {
+			#[inline]
+			fn le(&self, other: &$($right)+) -> ::std::primitive::bool {
 				<$($nonchain)+ as ::std::cmp::PartialOrd<$($nonchain)+>>::le($left_expr(self), $right_expr(other))
 			}
 
-			fn gt(&self, other: &$($right)+) -> bool {
+			#[inline]
+			fn gt(&self, other: &$($right)+) -> ::std::primitive::bool {
 				<$($nonchain)+ as ::std::cmp::PartialOrd<$($nonchain)+>>::gt($left_expr(self), $right_expr(other))
 			}
 
-			fn ge(&self, other: &$($right)+) -> bool {
+			#[inline]
+			fn ge(&self, other: &$($right)+) -> ::std::primitive::bool {
 				<$($nonchain)+ as ::std::cmp::PartialOrd<$($nonchain)+>>::ge($left_expr(self), $right_expr(other))
 			}
 		}
@@ -145,6 +152,7 @@ macro_rules! chainer {
 		where
 			$($nonchain)+: ::std::clone::Clone
 		{
+			#[inline]
 			fn clone(&self) -> Self {
 				<$($nonchain)+ as ::std::clone::Clone>::clone(&self.as_nonchain()).into()
 			}
@@ -171,6 +179,7 @@ macro_rules! chainer {
 		where
 			$($nonchain)+: ::std::default::Default
 		{
+			#[inline]
 			fn default() -> Self {
 				<$($nonchain)+ as ::std::default::Default>::default().into()
 			}
@@ -181,6 +190,7 @@ macro_rules! chainer {
 		where
 			$($nonchain)+: ::std::fmt::Display
 		{
+			#[inline]
 			fn fmt(&self, f: &mut ::std::fmt::Formatter<'_>) -> ::std::fmt::Result {
 				::std::fmt::Display::fmt(self.as_nonchain(), f)
 			}
@@ -195,18 +205,22 @@ macro_rules! chainer {
 		where
 			$($nonchain)+: ::std::cmp::Ord
 		{
+			#[inline]
 			fn cmp(&self, other: &Self) -> ::std::cmp::Ordering {
 				<$($nonchain)+ as ::std::cmp::Ord>::cmp(self.as_nonchain(), other.as_nonchain())
 			}
 
+			#[inline]
 			fn max(self, other: Self) -> Self {
 				<$($nonchain)+ as ::std::cmp::Ord>::max(self.into_nonchain(), other.into_nonchain()).into()
 			}
 
+			#[inline]
 			fn min(self, other: Self) -> Self {
 				<$($nonchain)+ as ::std::cmp::Ord>::min(self.into_nonchain(), other.into_nonchain()).into()
 			}
 
+			#[inline]
 			fn clamp(self, min: Self, max: Self) -> Self {
 				<$($nonchain)+ as ::std::cmp::Ord>::clamp(self.into_nonchain(), min.into_nonchain(), max.into_nonchain()).into()
 			}
