@@ -1064,6 +1064,24 @@ impl VecChain<u8> {
 	// TODO: as_ascii/unchecked nightly
 }
 
+impl<T> VecChain<T> {
+	pub fn nc_ptr(&self) -> *const T {
+		self.as_nonchain().as_ptr()
+	}
+
+	pub fn nc_ptr_mut(&mut self) -> *mut T {
+		self.as_nonchain_mut().as_mut_ptr()
+	}
+
+	pub fn nc_slice(&self) -> &[T] {
+		self.as_nonchain()
+	}
+
+	pub fn nc_slice_mut(&mut self) -> &mut [T] {
+		self.as_nonchain_mut()
+	}
+}
+
 impl<T, const N: usize> VecChain<[T; N]> {
 	pub fn flatten(mut self) -> VecChain<T> {
 		let (len, cap) = if mem::size_of::<T>() == 0 {
@@ -1099,10 +1117,6 @@ impl<T> AsRef<[T]> for VecChain<T> {
 }
 
 // TODO: allocator
-// TODO: as_mut_ptr
-// TODO: as_mut_slice
-// TODO: as_ptr
-// TODO: as_slice
 // TODO: drain
 // TODO: extract_if
 // TODO: from_raw_parts
@@ -1128,9 +1142,7 @@ impl<T> AsRef<[T]> for VecChain<T> {
 // TODO: as_ascii
 // TODO: as_ascii_unchecked
 // TODO: as_bytes
-// TODO: as_mut_ptr
 // TODO: as_mut_ptr_range
-// TODO: as_ptr
 // TODO: as_ptr_range
 // TODO: as_simd
 // TODO: as_simd_mut

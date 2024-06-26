@@ -560,10 +560,29 @@ impl<'h> SliceMutChain<'h, f32> {
 		sort_floats(nc) => nc.sort_unstable_by(f32::total_cmp)
 	}
 }
+
 impl<'h> SliceMutChain<'h, f64> {
 	chain_fn! {
 		// TODO: call std once stabilised
 		sort_floats(nc) => nc.sort_unstable_by(f64::total_cmp)
+	}
+}
+
+impl<'h, T> SliceMutChain<'h, T> {
+	pub fn nc_ptr(&self) -> *const T {
+		self.as_nonchain().as_ptr()
+	}
+
+	pub fn nc_ptr_mut(&mut self) -> *mut T {
+		self.as_nonchain_mut().as_mut_ptr()
+	}
+
+	pub fn nc_slice(&'h self) -> &'h [T] {
+		self.as_nonchain()
+	}
+
+	pub fn nc_slice_mut(&'h mut self) -> &'h mut [T] {
+		self.as_nonchain_mut()
 	}
 }
 
@@ -575,9 +594,7 @@ impl<'h> SliceMutChain<'h, f64> {
 // TODO: as_ascii
 // TODO: as_ascii_unchecked
 // TODO: as_bytes
-// TODO: as_mut_ptr
 // TODO: as_mut_ptr_range
-// TODO: as_ptr
 // TODO: as_ptr_range
 // TODO: as_simd
 // TODO: as_simd_mut

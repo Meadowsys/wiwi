@@ -50,6 +50,24 @@ impl<T> SliceBoxChain<MaybeUninit<T>> {
 	}
 }
 
+impl<T> SliceBoxChain<T> {
+	pub fn nc_ptr(&self) -> *const T {
+		self.as_nonchain().as_ptr()
+	}
+
+	pub fn nc_ptr_mut(&mut self) -> *mut T {
+		self.as_nonchain_mut().as_mut_ptr()
+	}
+
+	pub fn nc_slice(&self) -> &[T] {
+		self.as_nonchain()
+	}
+
+	pub fn nc_slice_mut(&mut self) -> &mut [T] {
+		self.as_nonchain_mut()
+	}
+}
+
 // TODO: align_to
 // TODO: align_to_mut
 // TODO: array_chunks
@@ -62,9 +80,7 @@ impl<T> SliceBoxChain<MaybeUninit<T>> {
 // TODO: as_chunks_mut
 // TODO: as_chunks_unchecked
 // TODO: as_chunks_unchecked_mut
-// TODO: as_mut_ptr
 // TODO: as_mut_ptr_range
-// TODO: as_ptr
 // TODO: as_ptr_range
 // TODO: as_rchunks
 // TODO: as_rchunks_mut

@@ -43,6 +43,16 @@ impl<'h, T, const N: usize> SliceRefChain<'h, [T; N]> {
 	}
 }
 
+impl<'h, T> SliceRefChain<'h, T> {
+	pub fn nc_ptr(&self) -> *const T {
+		self.as_nonchain().as_ptr()
+	}
+
+	pub fn nc_slice(&'h self) -> &[T] {
+		self.as_nonchain()
+	}
+}
+
 // TODO: align_to
 // TODO: align_to_mut
 // TODO: array_chunks
@@ -55,9 +65,7 @@ impl<'h, T, const N: usize> SliceRefChain<'h, [T; N]> {
 // TODO: as_chunks_mut
 // TODO: as_chunks_unchecked
 // TODO: as_chunks_unchecked_mut
-// TODO: as_mut_ptr
 // TODO: as_mut_ptr_range
-// TODO: as_ptr
 // TODO: as_ptr_range
 // TODO: as_rchunks
 // TODO: as_rchunks_mut
