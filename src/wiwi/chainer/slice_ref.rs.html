@@ -279,6 +279,14 @@
 <a href="#279" id="279">279</a>
 <a href="#280" id="280">280</a>
 <a href="#281" id="281">281</a>
+<a href="#282" id="282">282</a>
+<a href="#283" id="283">283</a>
+<a href="#284" id="284">284</a>
+<a href="#285" id="285">285</a>
+<a href="#286" id="286">286</a>
+<a href="#287" id="287">287</a>
+<a href="#288" id="288">288</a>
+<a href="#289" id="289">289</a>
 </pre></div><pre class="rust"><code><span class="kw">use super</span>::{ chainer, chain_fn, ChainHalf, NonChainHalf };
 <span class="kw">use </span>std::ops::Range;
 <span class="kw">use </span>std::{ mem, slice };
@@ -324,6 +332,16 @@
 	}
 }
 
+<span class="kw">impl</span>&lt;<span class="lifetime">'h</span>, T&gt; SliceRefChain&lt;<span class="lifetime">'h</span>, T&gt; {
+	<span class="kw">pub fn </span>nc_ptr(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; <span class="kw-2">*const </span>T {
+		<span class="self">self</span>.as_nonchain().as_ptr()
+	}
+
+	<span class="kw">pub fn </span>nc_slice(<span class="kw-2">&amp;</span><span class="lifetime">'h </span><span class="self">self</span>) -&gt; <span class="kw-2">&amp;</span>[T] {
+		<span class="self">self</span>.as_nonchain()
+	}
+}
+
 <span class="comment">// TODO: align_to
 // TODO: align_to_mut
 // TODO: array_chunks
@@ -336,9 +354,7 @@
 // TODO: as_chunks_mut
 // TODO: as_chunks_unchecked
 // TODO: as_chunks_unchecked_mut
-// TODO: as_mut_ptr
 // TODO: as_mut_ptr_range
-// TODO: as_ptr
 // TODO: as_ptr_range
 // TODO: as_rchunks
 // TODO: as_rchunks_mut

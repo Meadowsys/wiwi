@@ -253,6 +253,7 @@
 <a href="#253" id="253">253</a>
 <a href="#254" id="254">254</a>
 <a href="#255" id="255">255</a>
+<a href="#256" id="256">256</a>
 </pre></div><pre class="rust"><code><span class="kw">use </span>rand::{ Rng, rngs::ThreadRng, thread_rng };
 <span class="kw">use </span>std::time::{ SystemTime, UNIX_EPOCH };
 <span class="kw">use </span>std::num::NonZeroU64;
@@ -293,6 +294,7 @@
 }
 
 <span class="attr">#[repr(transparent)]
+#[derive(Clone, Copy, Debug, Hash, PartialEq, Eq, PartialOrd, Ord)]
 </span><span class="kw">pub struct </span>GeneratedID {
 	<span class="doccomment">/// [`NonZeroU64`] to allow for null ptr optimisation
 	</span>unsigned: NonZeroU64

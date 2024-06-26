@@ -738,6 +738,32 @@
 <a href="#738" id="738">738</a>
 <a href="#739" id="739">739</a>
 <a href="#740" id="740">740</a>
+<a href="#741" id="741">741</a>
+<a href="#742" id="742">742</a>
+<a href="#743" id="743">743</a>
+<a href="#744" id="744">744</a>
+<a href="#745" id="745">745</a>
+<a href="#746" id="746">746</a>
+<a href="#747" id="747">747</a>
+<a href="#748" id="748">748</a>
+<a href="#749" id="749">749</a>
+<a href="#750" id="750">750</a>
+<a href="#751" id="751">751</a>
+<a href="#752" id="752">752</a>
+<a href="#753" id="753">753</a>
+<a href="#754" id="754">754</a>
+<a href="#755" id="755">755</a>
+<a href="#756" id="756">756</a>
+<a href="#757" id="757">757</a>
+<a href="#758" id="758">758</a>
+<a href="#759" id="759">759</a>
+<a href="#760" id="760">760</a>
+<a href="#761" id="761">761</a>
+<a href="#762" id="762">762</a>
+<a href="#763" id="763">763</a>
+<a href="#764" id="764">764</a>
+<a href="#765" id="765">765</a>
+<a href="#766" id="766">766</a>
 </pre></div><pre class="rust"><code><span class="kw">use </span><span class="kw">crate</span>::iter::{ IntoIter, IntoStdIterator, IntoWiwiIter, IterAdapter };
 <span class="kw">use super</span>::{ chainer, chain_fn, ChainHalf, NonChainHalf };
 <span class="kw">use </span>std::{ ptr, vec };
@@ -1292,8 +1318,38 @@
 			</span>CB: FnOnce(IterAdapter&lt;slice::Windows&lt;T&gt;&gt;)
 		} =&gt; cb(nc.windows(size).convert_std_into_wiwi_iter())
 	}
+}
 
+<span class="kw">impl</span>&lt;<span class="lifetime">'h</span>&gt; SliceMutChain&lt;<span class="lifetime">'h</span>, f32&gt; {
+	<span class="macro">chain_fn!</span> {
+		<span class="comment">// TODO: call std once stabilised
+		</span>sort_floats(nc) =&gt; nc.sort_unstable_by(f32::total_cmp)
+	}
+}
 
+<span class="kw">impl</span>&lt;<span class="lifetime">'h</span>&gt; SliceMutChain&lt;<span class="lifetime">'h</span>, f64&gt; {
+	<span class="macro">chain_fn!</span> {
+		<span class="comment">// TODO: call std once stabilised
+		</span>sort_floats(nc) =&gt; nc.sort_unstable_by(f64::total_cmp)
+	}
+}
+
+<span class="kw">impl</span>&lt;<span class="lifetime">'h</span>, T&gt; SliceMutChain&lt;<span class="lifetime">'h</span>, T&gt; {
+	<span class="kw">pub fn </span>nc_ptr(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; <span class="kw-2">*const </span>T {
+		<span class="self">self</span>.as_nonchain().as_ptr()
+	}
+
+	<span class="kw">pub fn </span>nc_ptr_mut(<span class="kw-2">&amp;mut </span><span class="self">self</span>) -&gt; <span class="kw-2">*mut </span>T {
+		<span class="self">self</span>.as_nonchain_mut().as_mut_ptr()
+	}
+
+	<span class="kw">pub fn </span>nc_slice(<span class="kw-2">&amp;</span><span class="lifetime">'h </span><span class="self">self</span>) -&gt; <span class="kw-2">&amp;</span><span class="lifetime">'h </span>[T] {
+		<span class="self">self</span>.as_nonchain()
+	}
+
+	<span class="kw">pub fn </span>nc_slice_mut(<span class="kw-2">&amp;</span><span class="lifetime">'h </span><span class="kw-2">mut </span><span class="self">self</span>) -&gt; <span class="kw-2">&amp;</span><span class="lifetime">'h </span><span class="kw-2">mut </span>[T] {
+		<span class="self">self</span>.as_nonchain_mut()
+	}
 }
 
 <span class="comment">// TODO: align_to
@@ -1304,9 +1360,7 @@
 // TODO: as_ascii
 // TODO: as_ascii_unchecked
 // TODO: as_bytes
-// TODO: as_mut_ptr
 // TODO: as_mut_ptr_range
-// TODO: as_ptr
 // TODO: as_ptr_range
 // TODO: as_simd
 // TODO: as_simd_mut
@@ -1356,8 +1410,6 @@
 // TODO: select_nth_unstable
 // TODO: select_nth_unstable_by
 // TODO: select_nth_unstable_by_key
-// TODO: sort_floats
-// TODO: sort_floats
 // TODO: split
 // TODO: split_at
 // TODO: split_at_checked

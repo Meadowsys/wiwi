@@ -1424,6 +1424,18 @@
 <a href="#1424" id="1424">1424</a>
 <a href="#1425" id="1425">1425</a>
 <a href="#1426" id="1426">1426</a>
+<a href="#1427" id="1427">1427</a>
+<a href="#1428" id="1428">1428</a>
+<a href="#1429" id="1429">1429</a>
+<a href="#1430" id="1430">1430</a>
+<a href="#1431" id="1431">1431</a>
+<a href="#1432" id="1432">1432</a>
+<a href="#1433" id="1433">1433</a>
+<a href="#1434" id="1434">1434</a>
+<a href="#1435" id="1435">1435</a>
+<a href="#1436" id="1436">1436</a>
+<a href="#1437" id="1437">1437</a>
+<a href="#1438" id="1438">1438</a>
 </pre></div><pre class="rust"><code><span class="kw">use </span><span class="kw">crate</span>::iter::{ IntoIter, IntoStdIterator, IntoWiwiIter, IterAdapter };
 <span class="kw">use super</span>::{ chainer, chain_fn, ChainHalf, NonChainHalf };
 <span class="kw">use </span>std::{ ptr, vec };
@@ -2490,6 +2502,24 @@
 	<span class="comment">// TODO: as_ascii/unchecked nightly
 </span>}
 
+<span class="kw">impl</span>&lt;T&gt; VecChain&lt;T&gt; {
+	<span class="kw">pub fn </span>nc_ptr(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; <span class="kw-2">*const </span>T {
+		<span class="self">self</span>.as_nonchain().as_ptr()
+	}
+
+	<span class="kw">pub fn </span>nc_ptr_mut(<span class="kw-2">&amp;mut </span><span class="self">self</span>) -&gt; <span class="kw-2">*mut </span>T {
+		<span class="self">self</span>.as_nonchain_mut().as_mut_ptr()
+	}
+
+	<span class="kw">pub fn </span>nc_slice(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; <span class="kw-2">&amp;</span>[T] {
+		<span class="self">self</span>.as_nonchain()
+	}
+
+	<span class="kw">pub fn </span>nc_slice_mut(<span class="kw-2">&amp;mut </span><span class="self">self</span>) -&gt; <span class="kw-2">&amp;mut </span>[T] {
+		<span class="self">self</span>.as_nonchain_mut()
+	}
+}
+
 <span class="kw">impl</span>&lt;T, <span class="kw">const </span>N: usize&gt; VecChain&lt;[T; N]&gt; {
 	<span class="kw">pub fn </span>flatten(<span class="kw-2">mut </span><span class="self">self</span>) -&gt; VecChain&lt;T&gt; {
 		<span class="kw">let </span>(len, cap) = <span class="kw">if </span>mem::size_of::&lt;T&gt;() == <span class="number">0 </span>{
@@ -2525,10 +2555,6 @@
 }
 
 <span class="comment">// TODO: allocator
-// TODO: as_mut_ptr
-// TODO: as_mut_slice
-// TODO: as_ptr
-// TODO: as_slice
 // TODO: drain
 // TODO: extract_if
 // TODO: from_raw_parts
@@ -2554,9 +2580,7 @@
 // TODO: as_ascii
 // TODO: as_ascii_unchecked
 // TODO: as_bytes
-// TODO: as_mut_ptr
 // TODO: as_mut_ptr_range
-// TODO: as_ptr
 // TODO: as_ptr_range
 // TODO: as_simd
 // TODO: as_simd_mut
