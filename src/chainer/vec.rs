@@ -1,4 +1,4 @@
-use super::{ chainer, chain_fn, ChainHalf, NonChainHalf };
+use super::{ chainer, chain_fn, ChainHalf, NonChainHalf, SliceMutChain, SliceRefChain };
 use std::{ ptr, str, vec };
 use std::cmp::Ordering;
 use std::mem::{ self, MaybeUninit };
@@ -171,8 +171,7 @@ impl<T> VecChain<T> {
 
 	chain_fn! {
 		as_chunks[const N: usize, CB](nc, cb: CB) where {
-			// TODO: chainer?
-			CB: FnOnce(&[[T; N]], &[T])
+			CB: FnOnce(SliceRefChain<[T; N]>, SliceRefChain<T>)
 		} => unsafe {
 			let len = nc.len();
 			let ptr = nc.as_ptr();
@@ -186,14 +185,13 @@ impl<T> VecChain<T> {
 			let full_chunk = slice::from_raw_parts(full_ptr, full);
 			let partial_chunk = slice::from_raw_parts(partial_ptr, partial);
 
-			cb(full_chunk, partial_chunk);
+			cb(full_chunk.into_chainer(), partial_chunk.into_chainer());
 		}
 	}
 
 	chain_fn! {
 		as_chunks_mut[const N: usize, CB](nc, cb: CB) where {
-			// TODO: chainer?
-			CB: FnOnce(&mut [[T; N]], &mut [T])
+			CB: FnOnce(SliceMutChain<[T; N]>, SliceMutChain<T>)
 		} => unsafe {
 			let len = nc.len();
 			let ptr = nc.as_mut_ptr();
@@ -207,40 +205,37 @@ impl<T> VecChain<T> {
 			let full_chunk = slice::from_raw_parts_mut(full_ptr, full);
 			let partial_chunk = slice::from_raw_parts_mut(partial_ptr, partial);
 
-			cb(full_chunk, partial_chunk);
+			cb(full_chunk.into_chainer(), partial_chunk.into_chainer());
 		}
 	}
 
 	chain_fn! {
 		unsafe as_chunks_unchecked[const N: usize, CB](nc, cb: CB) where {
-			// TODO: chainer?
-			CB: FnOnce(&[[T; N]])
+			CB: FnOnce(SliceRefChain<[T; N]>)
 		} => {
 			let ptr = nc.as_ptr() as *const [T; N];
 			let chunks = nc.len() / N;
 
 			let slice = slice::from_raw_parts(ptr, chunks);
-			cb(slice);
+			cb(slice.into_chainer());
 		}
 	}
 
 	chain_fn! {
 		unsafe as_chunks_unchecked_mut[const N: usize, CB](nc, cb: CB) where {
-			// TODO: chainer?
-			CB: FnOnce(&mut [[T; N]])
+			CB: FnOnce(SliceMutChain<[T; N]>)
 		} => {
 			let ptr = nc.as_mut_ptr() as *mut [T; N];
 			let chunks = nc.len() / N;
 
 			let slice = slice::from_raw_parts_mut(ptr, chunks);
-			cb(slice);
+			cb(slice.into_chainer());
 		}
 	}
 
 	chain_fn! {
 		as_rchunks[const N: usize, CB](nc, cb: CB) where {
-			// TODO: chainer?
-			CB: FnOnce(&[T], &[[T; N]])
+			CB: FnOnce(SliceRefChain<T>, SliceRefChain<[T; N]>)
 		} => unsafe {
 			let len = nc.len();
 			let ptr = nc.as_ptr();
@@ -253,14 +248,13 @@ impl<T> VecChain<T> {
 			let partial_chunk = slice::from_raw_parts(ptr, partial);
 			let full_chunk = slice::from_raw_parts(full_ptr, full);
 
-			cb(partial_chunk, full_chunk);
+			cb(partial_chunk.into_chainer(), full_chunk.into_chainer());
 		}
 	}
 
 	chain_fn! {
 		as_rchunks_mut[const N: usize, CB](nc, cb: CB) where {
-			// TODO: chainer?
-			CB: FnOnce(&mut [T], &mut [[T; N]])
+			CB: FnOnce(SliceMutChain<T>, SliceMutChain<[T; N]>)
 		} => unsafe {
 			let len = nc.len();
 			let ptr = nc.as_mut_ptr();
@@ -273,7 +267,7 @@ impl<T> VecChain<T> {
 			let partial_chunk = slice::from_raw_parts_mut(ptr, partial);
 			let full_chunk = slice::from_raw_parts_mut(full_ptr, full);
 
-			cb(partial_chunk, full_chunk);
+			cb(partial_chunk.into_chainer(), full_chunk.into_chainer());
 		}
 	}
 
@@ -807,7 +801,7 @@ impl<T> VecChain<T> {
 		/// let chain = VecChain::with_capacity(10)
 		///    .extend_from_slice(&[1, 2, 3, 4, 5])
 		///    .spare_capacity_mut(|mut spare| {
-		///       spare_len = spare.len();
+		///       spare.len(&mut spare_len);
 		///
 		///       // VecChain allocated at least 10 elements worth of space
 		///       // since we pushed 5 elements, it should have at least
@@ -817,16 +811,15 @@ impl<T> VecChain<T> {
 		///    .push(6)
 		///    .push(7)
 		///    .spare_capacity_mut(|mut spare| {
-		///       new_spare_len = spare.len();
+		///       spare.len(&mut new_spare_len);
 		///
 		///       // Just pushed 2 more elements, so there's 2 less spare capacity left
 		///       assert_eq!(spare_len - 2, new_spare_len);
 		///    });
 		/// ```
 		spare_capacity_mut[CB](nc, cb: CB) where {
-			// TODO: chainer?
-			CB: FnOnce(&mut [MaybeUninit<T>])
-		} => cb(nc.spare_capacity_mut())
+			CB: FnOnce(SliceMutChain<MaybeUninit<T>>)
+		} => cb(nc.spare_capacity_mut().into_chainer())
 	}
 
 	chain_fn! {
@@ -840,8 +833,7 @@ impl<T> VecChain<T> {
 
 	chain_fn! {
 		split_at_spare_mut[CB](nc, cb: CB) where {
-			// TODO: chainer?
-			CB: FnOnce(&mut [T], &mut [MaybeUninit<T>])
+			CB: FnOnce(SliceMutChain<T>, SliceMutChain<MaybeUninit<T>>)
 		} => unsafe {
 			// TODO: use std impl when its stabilised
 			let ptr = nc.as_mut_ptr();
@@ -854,7 +846,7 @@ impl<T> VecChain<T> {
 			let init = slice::from_raw_parts_mut(ptr, len);
 			let spare = slice::from_raw_parts_mut(spare_ptr, spare_len);
 
-			cb(init, spare);
+			cb(init.into_chainer(), spare.into_chainer());
 		}
 	}
 
@@ -1442,12 +1434,13 @@ mod tests {
 			.extend_from_slice(&[1usize, 2, 3, 4, 5, 6, 7, 8])
 			.reserve(8)
 			.split_at_spare_mut(|mut slice, mut uninit| {
-				uninit_len = uninit.len();
+				uninit_len = uninit.as_nonchain().len();
 
-				assert_eq!(slice, &[1, 2, 3, 4, 5, 6, 7, 8]);
-				assert!(uninit.len() >= 8);
+				assert_eq!(slice.as_nonchain(), &[1, 2, 3, 4, 5, 6, 7, 8]);
+				assert!(uninit.as_nonchain().len() >= 8);
 
-				uninit.iter_mut()
+				uninit.as_nonchain_mut()
+					.iter_mut()
 					.enumerate()
 					.take(4)
 					.for_each(|(i, slot)| {
@@ -1461,8 +1454,8 @@ mod tests {
 				.len(&mut len)
 				.set_len(len + 4)
 				.split_at_spare_mut(|mut slice, mut uninit| {
-					assert_eq!(slice, &[1, 2, 3, 4, 5, 6, 7, 8, 0, 1, 2, 3]);
-					assert_eq!(uninit_len - 4, uninit.len());
+					assert_eq!(slice.as_nonchain(), &[1, 2, 3, 4, 5, 6, 7, 8, 0, 1, 2, 3]);
+					assert_eq!(uninit_len - 4, uninit.as_nonchain().len());
 				});
 		}
 	}
@@ -1498,18 +1491,18 @@ mod tests {
 		fn check<'h>(
 			expected_chunks: &[&[u8; N]],
 			expected_remainder: &'h [u8]
-		) -> impl FnOnce(&[[u8; N]], &[u8]) + 'h {
+		) -> impl FnOnce(SliceRefChain<[u8; N]>, SliceRefChain<u8>) + 'h {
 			let expected_chunks = expected_chunks
 				.into_iter()
 				.map(|item| **item)
 				.collect::<Vec<_>>();
 
 			move |chunks, rem| {
-				assert_eq!(expected_chunks.len(), chunks.len(), "wrong num of chunks");
-				assert_eq!(expected_remainder.len(), rem.len(), "wrong num of elements in remainder");
+				assert_eq!(expected_chunks.len(), chunks.as_nonchain().len(), "wrong num of chunks");
+				assert_eq!(expected_remainder.len(), rem.as_nonchain().len(), "wrong num of elements in remainder");
 
-				assert_eq!(expected_chunks, chunks);
-				assert_eq!(expected_remainder, rem);
+				assert_eq!(expected_chunks, *chunks.as_nonchain());
+				assert_eq!(expected_remainder, *rem.as_nonchain());
 			}
 		}
 
