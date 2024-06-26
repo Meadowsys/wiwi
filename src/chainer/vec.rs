@@ -1109,11 +1109,21 @@ impl VecChain<u8> {
 			let trimmed_start = _tmp_trim_ascii_start_amount(nc);
 			let trimmed_end = _tmp_trim_ascii_end_amount(nc);
 
-			let ptr = nc.as_mut_ptr();
-			let new_len = nc.len() - (trimmed_start + trimmed_end);
+			let total_trimmed = trimmed_start + trimmed_end;
+			if total_trimmed > nc.len() {
+				// this means the trimmed area had overlap, and that's
+				// only possible if everything is whitespace. if there's one
+				// singular non whitespace in there, total_trimmed will be one
+				// less than nc.len()
+				nc.set_len(0)
+			} else {
+				let ptr = nc.as_mut_ptr();
+				let new_len = nc.len() - total_trimmed;
 
-			ptr::copy(nc.as_ptr().add(trimmed_start), ptr, new_len);
-			nc.set_len(new_len);
+				ptr::copy(nc.as_ptr().add(trimmed_start), ptr, new_len);
+				nc.set_len(new_len);
+			}
+
 		}
 	}
 
@@ -1130,7 +1140,7 @@ impl VecChain<u8> {
 			let ptr = nc.as_mut_ptr();
 			let new_len = nc.len() - trimmed;
 
-			ptr::copy(nc.as_ptr(), ptr, new_len);
+			ptr::copy(nc.as_ptr().add(trimmed), ptr, new_len);
 			nc.set_len(new_len);
 		}
 	}
@@ -1374,6 +1384,16 @@ mod tests {
 	use super::*;
 
 	#[test]
+	fn conversion() {
+		let slice = &[1u8, 2, 3, 4, 5] as &[_];
+		let mut chain = VecChain::new()
+			.extend_from_slice(slice);
+
+		assert_eq!(slice, chain.as_nonchain());
+		assert_eq!(slice, chain.as_nonchain_mut());
+	}
+
+	#[test]
 	fn creation() {
 		let mut new_len = 0;
 		let mut new_capacity = 0;
@@ -1400,16 +1420,6 @@ mod tests {
 		assert_eq!(with_capacity_capacity, 30);
 		assert_eq!(zst_len, 0);
 		assert_eq!(zst_capacity, usize::MAX);
-	}
-
-	#[test]
-	fn conversion() {
-		let slice = &[1u8, 2, 3, 4, 5] as &[_];
-		let mut chain = VecChain::new()
-			.extend_from_slice(slice);
-
-		assert_eq!(slice, chain.as_nonchain());
-		assert_eq!(slice, chain.as_nonchain_mut());
 	}
 
 	#[test]
@@ -1446,6 +1456,14 @@ mod tests {
 		assert!(!is_empty);
 		assert!(is_empty_new);
 		assert!(is_empty_with_cap);
+	}
+
+	#[test]
+	fn reverse() {
+		let chain = VecChain::new()
+			.extend_from_slice(&[1, 2, 3, 4, 5, 6, 7, 8])
+			.reverse();
+		assert_eq!(chain.as_nonchain(), &[8, 7, 6, 5, 4, 3, 2, 1]);
 	}
 
 	#[test]
@@ -1496,11 +1514,29 @@ mod tests {
 	}
 
 	#[test]
-	fn reverse() {
-		let chain = VecChain::new()
-			.extend_from_slice(&[1, 2, 3, 4, 5, 6, 7, 8])
-			.reverse();
-		assert_eq!(chain.as_nonchain(), &[8, 7, 6, 5, 4, 3, 2, 1]);
+	fn trim_ascii() {
+		// (original, trimmed_start, trimmed_end, trimmed_both)
+		let strs = [
+			// generic random
+			(" uwu ", "uwu ", " uwu", "uwu"),
+			// all spaces
+			("     ", "", "", ""),
+			// different types of whitespace (also space in the middle)
+			(
+				"\t\n\x0c\r you're cute \x0c\n\r \t",
+				"you're cute \x0c\n\r \t",
+				"\t\n\x0c\r you're cute",
+				"you're cute",
+			)
+		];
+
+		for (original, trimmed_start, trimmed_end, trimmed_both) in strs {
+			let original = original.as_bytes().to_vec().into_chainer();
+
+			assert_eq!(&**original.clone().trim_ascii_start().as_nonchain(), trimmed_start.as_bytes());
+			assert_eq!(&**original.clone().trim_ascii_end().as_nonchain(), trimmed_end.as_bytes());
+			assert_eq!(&**original.trim_ascii().as_nonchain(), trimmed_both.as_bytes());
+		}
 	}
 
 	#[test]
