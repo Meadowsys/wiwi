@@ -104,7 +104,8 @@ id-unstable = [
 	"dep:rand"
 ]
 int-unstable = [
-	"wiwiwiwiwi/int"
+	"wiwiwiwiwi/int",
+	"num-traits-unstable"
 ]
 iter-unstable = []
 lazy-wrap = [

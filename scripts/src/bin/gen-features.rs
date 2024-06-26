@@ -86,6 +86,7 @@ fn main() {
 		"int"
 		"bigint / uneven int types"
 		dependencies: ["macro"]
+		features: ["num-traits"]
 
 		#[unstable]
 		"iter"

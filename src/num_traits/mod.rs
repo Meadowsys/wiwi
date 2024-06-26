@@ -32,6 +32,13 @@ where
 	/// The size of this integer type in bytes
 	// TODO: this / generic param ehh weird funny
 	const BYTES: Self;
+	/// Zero
+	const ZERO: Self;
+	/// One
+	const ONE: Self;
+
+	/// Cast a boolean into `Self`
+	fn from_bool(b: bool) -> Self;
 
 	/// Count the amount of ones in the binary representation of `self`
 	fn count_ones(self) -> Self;
@@ -142,11 +149,22 @@ where
 	Self: Clone + Debug + Display + Default + Hash,
 	Self: PartialEq<Self> + Eq + PartialOrd<Self> + Ord
 {
+	/// The smallest value that can be represented by this int type
 	const MIN: Self;
+	/// The largest value that can be represented by this int type
 	const MAX: Self;
+	/// The size of this integer type in bits
 	const BITS: Self;
+	/// The size of this integer type in bytes
 	// TODO: this / generic param ehh weird funny
 	const BYTES: Self;
+	/// Zero
+	const ZERO: Self;
+	/// One
+	const ONE: Self;
+
+	/// Cast a boolean into `Self`
+	fn from_bool(b: bool) -> Self;
 
 	/// Count the amount of ones in the binary representation of `self`
 	fn count_ones(&self) -> Self;
@@ -248,6 +266,10 @@ impl<const BYTES: usize, T: Int<BYTES>> BigInt<BYTES> for T {
 	const MAX: Self = <Self as Int<BYTES>>::MAX;
 	const BITS: Self = <Self as Int<BYTES>>::BITS;
 	const BYTES: Self = <Self as Int<BYTES>>::BYTES;
+	const ZERO: Self = <Self as Int<BYTES>>::ZERO;
+	const ONE: Self = <Self as Int<BYTES>>::ONE;
+
+	fn from_bool(b: bool) -> Self { Int::from_bool(b) }
 
 	fn count_ones(&self) -> Self { Int::count_ones(*self) }
 	fn count_zeros(&self) -> Self { Int::count_zeros(*self) }
@@ -386,6 +408,10 @@ macro_rules! int_trait_impl {
 					assert!($int::BITS % 8 == 0);
 					$int::BITS as $int / 8
 				};
+				const ZERO: $int = 0;
+				const ONE: $int = 1;
+
+				fn from_bool(b: bool) -> Self { b as _ }
 
 				int_trait_impl! {
 					@fn(self) -> Self

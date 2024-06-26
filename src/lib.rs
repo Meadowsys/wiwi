@@ -1,3 +1,5 @@
+#![cfg_attr(feature = "nightly", feature(cfg_overflow_checks))]
+
 #![cfg_attr(feature = "omega-tuples-of-doom", recursion_limit = "256")]
 
 // TODO: review these
