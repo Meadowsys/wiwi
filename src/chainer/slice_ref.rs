@@ -213,14 +213,10 @@ impl<'h, T, const N: usize> SliceRefChain<'h, [T; N]> {
 // TODO: BorrowMut<[T]>
 // TODO: BorrowMut<[T]>
 // TODO: BufRead
-// TODO: Clone
 // TODO: Concat<T>
 // TODO: Concat<str>
 // TODO: ConstParamTy
 // TODO: Debug
-// TODO: Default
-// TODO: Default
-// TODO: Default
 // TODO: Eq
 // TODO: From<&'a [T]>
 // TODO: From<&'data mut [MaybeUninit<u8>]>

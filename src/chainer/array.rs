@@ -42,6 +42,18 @@ impl<T, const N: usize> ArrayChain<MaybeUninit<T>, N> {
 	}
 }
 
+impl<T, const N: usize> AsMut<[T]> for ArrayChain<T, N> {
+	fn as_mut(&mut self) -> &mut [T] {
+		self.as_nonchain_mut()
+	}
+}
+
+impl<T, const N: usize> AsRef<[T]> for ArrayChain<T, N> {
+	fn as_ref(&self) -> &[T] {
+		self.as_nonchain()
+	}
+}
+
 // TODO: as_ascii
 // TODO: as_ascii_unchecked
 // TODO: as_mut_slice
@@ -57,49 +69,10 @@ impl<T, const N: usize> ArrayChain<MaybeUninit<T>, N> {
 // TODO: try_map
 
 // TODO: trait impls
-// TODO: AsMut<[T; N]>
-// TODO: AsMut<[T]>
-// TODO: AsRef<[T; N]>
-// TODO: AsRef<[T]>
 // TODO: Borrow<[T]>
 // TODO: BorrowMut<[T]>
-// TODO: Clone
 // TODO: ConstParamTy
-// TODO: Copy
 // TODO: Debug
-// TODO: Default
-// TODO: Default
-// TODO: Default
-// TODO: Default
-// TODO: Default
-// TODO: Default
-// TODO: Default
-// TODO: Default
-// TODO: Default
-// TODO: Default
-// TODO: Default
-// TODO: Default
-// TODO: Default
-// TODO: Default
-// TODO: Default
-// TODO: Default
-// TODO: Default
-// TODO: Default
-// TODO: Default
-// TODO: Default
-// TODO: Default
-// TODO: Default
-// TODO: Default
-// TODO: Default
-// TODO: Default
-// TODO: Default
-// TODO: Default
-// TODO: Default
-// TODO: Default
-// TODO: Default
-// TODO: Default
-// TODO: Default
-// TODO: Default
 // TODO: Eq
 // TODO: From<&'a [T; N]>
 // TODO: From<&[T; N]>
@@ -352,14 +325,10 @@ impl<T, const N: usize> ArrayChain<MaybeUninit<T>, N> {
 // TODO: BorrowMut<[T]>
 // TODO: BorrowMut<[T]>
 // TODO: BufRead
-// TODO: Clone
 // TODO: Concat<T>
 // TODO: Concat<str>
 // TODO: ConstParamTy
 // TODO: Debug
-// TODO: Default
-// TODO: Default
-// TODO: Default
 // TODO: Eq
 // TODO: From<&'a [T]>
 // TODO: From<&'data mut [MaybeUninit<u8>]>

@@ -193,14 +193,10 @@ impl<'h, T> SliceMutChain<'h, T> {
 // TODO: BorrowMut<[T]>
 // TODO: BorrowMut<[T]>
 // TODO: BufRead
-// TODO: Clone
 // TODO: Concat<T>
 // TODO: Concat<str>
 // TODO: ConstParamTy
 // TODO: Debug
-// TODO: Default
-// TODO: Default
-// TODO: Default
 // TODO: Eq
 // TODO: From<&'a [T]>
 // TODO: From<&'data mut [MaybeUninit<u8>]>

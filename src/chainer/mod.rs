@@ -67,6 +67,13 @@ macro_rules! chainer {
 			}
 		}
 
+		impl$(<$($generics_decl)*>)? ::std::convert::AsMut<$($nonchain)+> for $chainer$(<$($generics)*>)? {
+			#[inline(always)]
+			fn as_mut(&mut self) -> &mut $($nonchain)+ {
+				&mut self._nc
+			}
+		}
+
 		impl$(<$($generics_decl)*>)? ::std::convert::AsRef<$($nonchain)+> for $chainer$(<$($generics)*>)? {
 			#[inline(always)]
 			fn as_ref(&self) -> &$($nonchain)+ {
@@ -74,10 +81,27 @@ macro_rules! chainer {
 			}
 		}
 
-		impl$(<$($generics_decl)*>)? ::std::convert::AsMut<$($nonchain)+> for $chainer$(<$($generics)*>)? {
-			#[inline(always)]
-			fn as_mut(&mut self) -> &mut $($nonchain)+ {
-				&mut self._nc
+		#[allow(clippy::non_canonical_clone_impl)] // shut
+		impl$(<$($generics_decl)*>)? ::std::clone::Clone for $chainer$(<$($generics)*>)?
+		where
+			$($nonchain)+: Clone
+		{
+			fn clone(&self) -> Self {
+				<$($nonchain)+ as Clone>::clone(&self.as_nonchain()).into()
+			}
+		}
+
+		impl$(<$($generics_decl)*>)? ::std::marker::Copy for $chainer$(<$($generics)*>)?
+		where
+			$($nonchain)+: Copy
+		{}
+
+		impl$(<$($generics_decl)*>)? ::std::default::Default for $chainer$(<$($generics)*>)?
+		where
+			$($nonchain)+: Default
+		{
+			fn default() -> Self {
+				<$($nonchain)+ as Default>::default().into()
 			}
 		}
 	};

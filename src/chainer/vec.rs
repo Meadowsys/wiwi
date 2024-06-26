@@ -1272,9 +1272,7 @@ impl<T, const N: usize> VecChain<[T; N]> {
 // TODO: AsRef<[T]>
 // TODO: Borrow<[T]>
 // TODO: BorrowMut<[T]>
-// TODO: Clone
 // TODO: Debug
-// TODO: Default
 // TODO: Deref
 // TODO: DerefMut
 // TODO: DerefPure
