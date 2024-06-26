@@ -28,6 +28,20 @@ impl<T> SliceBoxChain<T> {
 	}
 }
 
+impl SliceBoxChain<f32> {
+	chain_fn! {
+		// TODO: call std once stabilised
+		sort_floats(nc) => nc.sort_unstable_by(f32::total_cmp)
+	}
+}
+
+impl SliceBoxChain<f64> {
+	chain_fn! {
+		// TODO: call std once stabilised
+		sort_floats(nc) => nc.sort_unstable_by(f64::total_cmp)
+	}
+}
+
 impl<T> SliceBoxChain<MaybeUninit<T>> {
 	#[inline]
 	pub unsafe fn assume_init(self) -> SliceBoxChain<T> {
@@ -134,8 +148,6 @@ impl<T> SliceBoxChain<MaybeUninit<T>> {
 // TODO: sort_by
 // TODO: sort_by_cached_key
 // TODO: sort_by_key
-// TODO: sort_floats
-// TODO: sort_floats
 // TODO: sort_unstable
 // TODO: sort_unstable_by
 // TODO: sort_unstable_by_key

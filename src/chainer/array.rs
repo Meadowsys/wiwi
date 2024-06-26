@@ -29,6 +29,20 @@ impl<T, const N: usize> ArrayChain<T, N> {
 	}
 }
 
+impl<const N: usize> ArrayChain<f32, N> {
+	chain_fn! {
+		// TODO: call std once stabilised
+		sort_floats(nc) => nc.sort_unstable_by(f32::total_cmp)
+	}
+}
+
+impl<const N: usize> ArrayChain<f64, N> {
+	chain_fn! {
+		// TODO: call std once stabilised
+		sort_floats(nc) => nc.sort_unstable_by(f64::total_cmp)
+	}
+}
+
 impl<T, const N: usize> ArrayChain<MaybeUninit<T>, N> {
 	#[inline]
 	pub unsafe fn assume_init(self) -> ArrayChain<T, N> {
@@ -252,8 +266,6 @@ impl<T, const N: usize> AsRef<[T]> for ArrayChain<T, N> {
 // TODO: sort_by
 // TODO: sort_by_cached_key
 // TODO: sort_by_key
-// TODO: sort_floats
-// TODO: sort_floats
 // TODO: sort_unstable
 // TODO: sort_unstable_by
 // TODO: sort_unstable_by_key

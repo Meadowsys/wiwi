@@ -12,6 +12,8 @@ pub use slice_ref::SliceRefChain;
 mod vec;
 pub use vec::{ vec_chain, VecChain };
 
+// construction, chaining, conversion, traits
+
 // TODO: check callbacks and use chaining apis there? maybe?
 
 macro_rules! chainer {

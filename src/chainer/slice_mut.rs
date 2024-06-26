@@ -552,8 +552,19 @@ impl<'h, T> SliceMutChain<'h, T> {
 			CB: FnOnce(IterAdapter<slice::Windows<T>>)
 		} => cb(nc.windows(size).convert_std_into_wiwi_iter())
 	}
+}
 
-
+impl<'h> SliceMutChain<'h, f32> {
+	chain_fn! {
+		// TODO: call std once stabilised
+		sort_floats(nc) => nc.sort_unstable_by(f32::total_cmp)
+	}
+}
+impl<'h> SliceMutChain<'h, f64> {
+	chain_fn! {
+		// TODO: call std once stabilised
+		sort_floats(nc) => nc.sort_unstable_by(f64::total_cmp)
+	}
 }
 
 // TODO: align_to
@@ -616,8 +627,6 @@ impl<'h, T> SliceMutChain<'h, T> {
 // TODO: select_nth_unstable
 // TODO: select_nth_unstable_by
 // TODO: select_nth_unstable_by_key
-// TODO: sort_floats
-// TODO: sort_floats
 // TODO: split
 // TODO: split_at
 // TODO: split_at_checked
