@@ -262,9 +262,26 @@
 <a href="#262" id="262">262</a>
 <a href="#263" id="263">263</a>
 <a href="#264" id="264">264</a>
-</pre></div><pre class="rust"><code><span class="kw">use super</span>::{ chainer, chain_fn, new::{ ChainHalf, NonChainHalf } };
+<a href="#265" id="265">265</a>
+<a href="#266" id="266">266</a>
+<a href="#267" id="267">267</a>
+<a href="#268" id="268">268</a>
+<a href="#269" id="269">269</a>
+<a href="#270" id="270">270</a>
+<a href="#271" id="271">271</a>
+<a href="#272" id="272">272</a>
+<a href="#273" id="273">273</a>
+<a href="#274" id="274">274</a>
+<a href="#275" id="275">275</a>
+<a href="#276" id="276">276</a>
+<a href="#277" id="277">277</a>
+<a href="#278" id="278">278</a>
+<a href="#279" id="279">279</a>
+<a href="#280" id="280">280</a>
+<a href="#281" id="281">281</a>
+</pre></div><pre class="rust"><code><span class="kw">use super</span>::{ chainer, chain_fn, ChainHalf, NonChainHalf };
 <span class="kw">use </span>std::ops::Range;
-<span class="kw">use </span>std::slice;
+<span class="kw">use </span>std::{ mem, slice };
 
 <span class="macro">chainer!</span> {
 	generics_decl: [<span class="lifetime">'h</span>, T]
@@ -274,16 +291,38 @@
 }
 
 <span class="kw">impl</span>&lt;<span class="lifetime">'h</span>, T&gt; SliceRefChain&lt;<span class="lifetime">'h</span>, T&gt; {
-	<span class="kw">pub fn </span>from_ref(val: <span class="kw-2">&amp;</span><span class="lifetime">'h </span>T) -&gt; <span class="self">Self </span>{
+	<span class="attr">#[inline]
+	</span><span class="kw">pub fn </span>from_ref(val: <span class="kw-2">&amp;</span><span class="lifetime">'h </span>T) -&gt; <span class="self">Self </span>{
 		slice::from_ref(val).into()
 	}
 
-	<span class="kw">pub unsafe fn </span>from_raw_parts(data: <span class="kw-2">*const </span>T, len: usize) -&gt; <span class="self">Self </span>{
+	<span class="attr">#[inline]
+	</span><span class="kw">pub unsafe fn </span>from_raw_parts(data: <span class="kw-2">*const </span>T, len: usize) -&gt; <span class="self">Self </span>{
 		slice::from_raw_parts(data, len).into()
 	}
 
 	<span class="comment">// TODO: from_ptr_range nightly
 </span>}
+
+<span class="kw">impl</span>&lt;<span class="lifetime">'h</span>, T&gt; SliceRefChain&lt;<span class="lifetime">'h</span>, T&gt; {}
+
+<span class="kw">impl</span>&lt;<span class="lifetime">'h</span>, T, <span class="kw">const </span>N: usize&gt; SliceRefChain&lt;<span class="lifetime">'h</span>, [T; N]&gt; {
+	<span class="kw">pub fn </span>flatten(<span class="self">self</span>) -&gt; SliceRefChain&lt;<span class="lifetime">'h</span>, T&gt; {
+		<span class="comment">// TODO: use SizedTypeProperties / slice `flatten` when stabilised
+		</span><span class="kw">let </span>len = <span class="kw">if </span>mem::size_of::&lt;T&gt;() == <span class="number">0 </span>{
+			<span class="self">self</span>.as_nonchain()
+				.len()
+				.checked_mul(N)
+				.expect(<span class="string">"slice len overflow"</span>)
+		} <span class="kw">else </span>{
+			<span class="comment">// TODO: use unchecked mul
+			</span><span class="self">self</span>.as_nonchain().len() * N
+		};
+
+		<span class="kw">let </span>ptr = <span class="kw-2">*</span><span class="self">self</span>.as_nonchain() <span class="kw">as </span><span class="kw-2">*const </span>[[T; N]] <span class="kw">as </span><span class="kw-2">*const </span>T;
+		<span class="kw">unsafe </span>{ slice::from_raw_parts(ptr, len).into() }
+	}
+}
 
 <span class="comment">// TODO: align_to
 // TODO: align_to_mut
@@ -455,14 +494,9 @@
 // TODO: BorrowMut&lt;[T]&gt;
 // TODO: BorrowMut&lt;[T]&gt;
 // TODO: BufRead
-// TODO: Clone
 // TODO: Concat&lt;T&gt;
 // TODO: Concat&lt;str&gt;
 // TODO: ConstParamTy
-// TODO: Debug
-// TODO: Default
-// TODO: Default
-// TODO: Default
 // TODO: Eq
 // TODO: From&lt;&amp;'a [T]&gt;
 // TODO: From&lt;&amp;'data mut [MaybeUninit&lt;u8&gt;]&gt;

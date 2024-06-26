@@ -1,1 +1,0 @@
-window.SIDEBAR_ITEMS = {"fn":["script"],"struct":["Script","ScriptBuilder"]};

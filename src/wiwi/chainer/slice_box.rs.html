@@ -268,8 +268,11 @@
 <a href="#268" id="268">268</a>
 <a href="#269" id="269">269</a>
 <a href="#270" id="270">270</a>
-</pre></div><pre class="rust"><code><span class="kw">use super</span>::{ chainer, chain_fn, new::{ ChainHalf, NonChainHalf } };
-<span class="kw">use </span><span class="kw">super</span>::new::VecChain;
+<a href="#271" id="271">271</a>
+<a href="#272" id="272">272</a>
+<a href="#273" id="273">273</a>
+<a href="#274" id="274">274</a>
+</pre></div><pre class="rust"><code><span class="kw">use super</span>::{ chainer, chain_fn, ChainHalf, NonChainHalf, VecChain };
 <span class="kw">use </span>std::mem::MaybeUninit;
 
 <span class="macro">chainer!</span> {
@@ -279,8 +282,9 @@
 	nonchain: Box&lt;[T]&gt;
 }
 
-<span class="kw">impl</span>&lt;T&gt; SliceBoxChain&lt;MaybeUninit&lt;T&gt;&gt; {
-	<span class="kw">pub fn </span>new_uninit_slice(len: usize) -&gt; <span class="self">Self </span>{
+<span class="kw">impl</span>&lt;T&gt; SliceBoxChain&lt;T&gt; {
+	<span class="attr">#[inline]
+	</span><span class="kw">pub fn </span>new_uninit(len: usize) -&gt; SliceBoxChain&lt;MaybeUninit&lt;T&gt;&gt; {
 		<span class="kw">unsafe </span>{
 			VecChain::with_capacity(len)
 				.set_len(len)
@@ -290,10 +294,19 @@
 		}
 	}
 
-	<span class="kw">pub fn </span>new_zeroed(len: usize) -&gt; <span class="self">Self </span>{
-		<span class="kw">let </span><span class="kw-2">mut </span>this = <span class="self">Self</span>::new_uninit_slice(len);
+	<span class="attr">#[inline]
+	</span><span class="kw">pub fn </span>new_zeroed(len: usize) -&gt; SliceBoxChain&lt;MaybeUninit&lt;T&gt;&gt; {
+		<span class="kw">let </span><span class="kw-2">mut </span>this = <span class="self">Self</span>::new_uninit(len);
 		<span class="kw">unsafe </span>{ this.as_nonchain_mut().as_mut_ptr().write_bytes(<span class="number">0</span>, len) }
 		this
+	}
+}
+
+<span class="kw">impl</span>&lt;T&gt; SliceBoxChain&lt;MaybeUninit&lt;T&gt;&gt; {
+	<span class="attr">#[inline]
+	</span><span class="kw">pub unsafe fn </span>assume_init(<span class="self">self</span>) -&gt; SliceBoxChain&lt;T&gt; {
+		<span class="kw">let </span>raw = Box::into_raw(<span class="self">self</span>.into_nonchain());
+		Box::from_raw(raw <span class="kw">as </span><span class="kw-2">*mut </span>[<span class="kw">_</span>]).into()
 	}
 }
 
@@ -467,14 +480,9 @@
 // TODO: BorrowMut&lt;[T]&gt;
 // TODO: BorrowMut&lt;[T]&gt;
 // TODO: BufRead
-// TODO: Clone
 // TODO: Concat&lt;T&gt;
 // TODO: Concat&lt;str&gt;
 // TODO: ConstParamTy
-// TODO: Debug
-// TODO: Default
-// TODO: Default
-// TODO: Default
 // TODO: Eq
 // TODO: From&lt;&amp;'a [T]&gt;
 // TODO: From&lt;&amp;'data mut [MaybeUninit&lt;u8&gt;]&gt;

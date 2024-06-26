@@ -510,7 +510,7 @@
 <a href="#510" id="510">510</a>
 <a href="#511" id="511">511</a>
 <a href="#512" id="512">512</a>
-</pre></div><pre class="rust"><code><span class="kw">use </span><span class="kw">crate</span>::chainer::{ IntoChainer, SliceBoxChain, VecChain };
+</pre></div><pre class="rust"><code><span class="kw">use </span><span class="kw">crate</span>::chainer::{ ChainHalf, NonChainHalf, SliceBoxChain, VecChain };
 <span class="kw">use </span><span class="kw">crate</span>::iter::{ IntoStdIterator, IntoWiwiIter, Iter };
 <span class="kw">use </span><span class="kw">crate</span>::z85::{ encode_z85, decode_z85 };
 <span class="kw">use </span>rand::{ Rng, seq::SliceRandom, thread_rng };
@@ -547,7 +547,7 @@
 		</span><span class="kw">let </span>board = <span class="kw">unsafe </span>{
 			SliceBoxChain::new_zeroed(w.get() * h.get())
 				.assume_init()
-				.into_inner()
+				.into_nonchain()
 		};
 		<span class="self">Self </span>{ w, h, board }
 	}
@@ -583,7 +583,7 @@
 					.into_chainer(),
 				|board, i| <span class="kw">unsafe </span>{ board.swap_unchecked(i, (<span class="number">0</span>..=i).sample_single(<span class="kw-2">&amp;mut </span>rng)) }
 			)
-			.nonchain_inner()
+			.into_nonchain()
 			.into_iter()
 			<span class="comment">// assume fresh board (ie. no exiting mines)
 			</span>.filter(|(<span class="kw">_</span>, cr, cc)| !(<span class="kw-2">*</span>cr == r &amp;&amp; <span class="kw-2">*</span>cc == c))
@@ -757,7 +757,7 @@
 				<span class="self">self</span>.board.iter_mut().collect::&lt;Vec&lt;<span class="kw">_</span>&gt;&gt;().into_chainer(),
 				|board, i| <span class="kw">unsafe </span>{ board.swap_unchecked(i, (<span class="number">0</span>..=i).sample_single(<span class="kw-2">&amp;mut </span>rng)) }
 			)
-			.nonchain_inner()
+			.into_nonchain()
 			.into_iter()
 			.filter(|cell| !cell.is_mine())
 			.take(mines)
@@ -829,7 +829,7 @@
 				bytes.push(byte)
 			});
 
-		encode_z85(bytes.nonchain_slice())
+		encode_z85(bytes.as_nonchain())
 	}
 
 	<span class="kw">pub fn </span>deserialise(s: <span class="kw-2">&amp;</span>str) -&gt; <span class="prelude-ty">Option</span>&lt;<span class="self">Self</span>&gt; {

@@ -479,7 +479,7 @@
 <a href="#479" id="479">479</a>
 <a href="#480" id="480">480</a>
 <a href="#481" id="481">481</a>
-</pre></div><pre class="rust"><code><span class="kw">use </span><span class="kw">crate</span>::chainer::{ ArrayChain, IntoChainer, SliceRefChain };
+</pre></div><pre class="rust"><code><span class="kw">use </span><span class="kw">crate</span>::chainer::{ ArrayChain, ChainHalf, NonChainHalf, SliceRefChain };
 <span class="kw">use </span><span class="kw">crate</span>::iter::<span class="kw-2">*</span>;
 <span class="kw">use </span>std::mem::MaybeUninit;
 
@@ -503,7 +503,7 @@
 		<span class="macro">debug_assert_eq!</span>({
 			SliceRefChain::&lt;<span class="kw">_</span>&gt;::from(<span class="kw-2">&amp;</span>game <span class="kw">as </span><span class="kw-2">&amp;</span>[<span class="kw">_</span>])
 				.flatten()
-				.nonchain_slice()
+				.into_nonchain()
 				.len()
 		}, <span class="number">81</span>);
 
@@ -806,9 +806,9 @@
 	///
 	/// All cells in `bytes` must have a value within `1..=9`.
 	</span><span class="kw">pub unsafe fn </span>encode_byte_array_unchecked(bytes: <span class="kw-2">&amp;</span>[u8; <span class="number">81</span>]) -&gt; Encoded {
-		<span class="kw">let </span><span class="kw-2">mut </span>out = ArrayChain::new_uninit().into_inner();
+		<span class="kw">let </span><span class="kw-2">mut </span>out = ArrayChain::new_uninit();
 
-		<span class="kw">let </span><span class="kw-2">mut </span>out_ptr = out.as_mut_ptr() <span class="kw">as </span><span class="kw-2">*mut </span>u8;
+		<span class="kw">let </span><span class="kw-2">mut </span>out_ptr = out.as_nonchain_mut().as_mut_ptr() <span class="kw">as </span><span class="kw-2">*mut </span>u8;
 		<span class="kw">let </span><span class="kw-2">mut </span>bytes_ptr = bytes.as_ptr();
 
 		<span class="kw">for _ in </span><span class="number">0usize</span>..<span class="number">16 </span>{
@@ -833,19 +833,19 @@
 
 		out_ptr.write(<span class="kw-2">*</span>bytes_ptr);
 
-		Encoded { inner: out.into_chainer().assume_init().into_inner() }
+		Encoded { inner: out.assume_init().into_nonchain() }
 	}
 
 	<span class="kw">pub unsafe fn </span>decode_board_unchecked(board: <span class="kw-2">&amp;</span>Encoded) -&gt; [u8; <span class="number">81</span>] {
-		<span class="kw">let </span><span class="kw-2">mut </span>out = ArrayChain::new_uninit().into_inner();
+		<span class="kw">let </span><span class="kw-2">mut </span>out = ArrayChain::new_uninit();
 
-		<span class="kw">let </span><span class="kw-2">mut </span>out_ptr = out.as_mut_ptr() <span class="kw">as </span><span class="kw-2">*mut </span>u8;
+		<span class="kw">let </span><span class="kw-2">mut </span>out_ptr = out.as_nonchain_mut().as_mut_ptr() <span class="kw">as </span><span class="kw-2">*mut </span>u8;
 		<span class="kw">let </span><span class="kw-2">mut </span>board_ptr = board.inner.as_ptr();
 
 		<span class="kw">for _ in </span><span class="number">0usize</span>..<span class="number">16 </span>{
-			<span class="kw">let </span><span class="kw-2">mut </span>current = ArrayChain::new_uninit().into_inner();
-			board_ptr.copy_to_nonoverlapping(current.as_mut_ptr() <span class="kw">as </span><span class="kw-2">*mut </span><span class="kw">_</span>, <span class="number">2</span>);
-			<span class="kw">let </span><span class="kw-2">mut </span>current = u16::from_le_bytes(current.into_chainer().assume_init().into_inner());
+			<span class="kw">let </span><span class="kw-2">mut </span>current = ArrayChain::new_uninit();
+			board_ptr.copy_to_nonoverlapping(current.as_nonchain_mut().as_mut_ptr() <span class="kw">as _</span>, <span class="number">2</span>);
+			<span class="kw">let </span><span class="kw-2">mut </span>current = u16::from_le_bytes(current.assume_init().into_nonchain());
 			board_ptr = board_ptr.add(<span class="number">2</span>);
 
 			out_ptr = out_ptr.add(<span class="number">5</span>);
@@ -860,7 +860,7 @@
 
 		out_ptr.write(<span class="kw-2">*</span>board_ptr);
 
-		out.into_chainer().assume_init().into_inner()
+		out.assume_init().into_nonchain()
 	}
 
 	<span class="kw">pub const fn </span>encoded_all_ones() -&gt; Encoded {

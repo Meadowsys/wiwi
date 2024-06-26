@@ -388,13 +388,62 @@
 <a href="#388" id="388">388</a>
 <a href="#389" id="389">389</a>
 <a href="#390" id="390">390</a>
-</pre></div><pre class="rust"><code><span class="kw">use super</span>::{ chainer, chain_fn, new::{ ChainHalf, NonChainHalf } };
+<a href="#391" id="391">391</a>
+<a href="#392" id="392">392</a>
+</pre></div><pre class="rust"><code><span class="kw">use super</span>::{ chainer, chain_fn, ChainHalf, NonChainHalf };
+<span class="kw">use </span>std::mem::{ ManuallyDrop, MaybeUninit };
+<span class="kw">use </span>std::ptr;
 
 <span class="macro">chainer!</span> {
 	generics_decl: [T, <span class="kw">const </span>N: usize]
 	generics: [T, N]
 	chainer: ArrayChain
 	nonchain: [T; N]
+}
+
+<span class="kw">impl</span>&lt;T, <span class="kw">const </span>N: usize&gt; ArrayChain&lt;T, N&gt; {
+	<span class="attr">#[inline]
+	</span><span class="kw">pub fn </span>new_uninit() -&gt; ArrayChain&lt;MaybeUninit&lt;T&gt;, N&gt; {
+		<span class="kw">unsafe </span>{
+			MaybeUninit::&lt;[MaybeUninit&lt;T&gt;; N]&gt;::uninit()
+				.assume_init()
+				.into()
+		}
+	}
+
+	<span class="attr">#[inline]
+	</span><span class="kw">pub fn </span>new_zeroed() -&gt; ArrayChain&lt;MaybeUninit&lt;T&gt;, N&gt; {
+		<span class="kw">unsafe </span>{
+			MaybeUninit::&lt;[MaybeUninit&lt;T&gt;; N]&gt;::zeroed()
+				.assume_init()
+				.into()
+		}
+	}
+}
+
+<span class="kw">impl</span>&lt;T, <span class="kw">const </span>N: usize&gt; ArrayChain&lt;MaybeUninit&lt;T&gt;, N&gt; {
+	<span class="attr">#[inline]
+	</span><span class="kw">pub unsafe fn </span>assume_init(<span class="self">self</span>) -&gt; ArrayChain&lt;T, N&gt; {
+		<span class="comment">// TODO: this is subpar (its copying), but I can't find a better way to do it?
+		// all ways to do it seem to be unstable (transmute is too dumb, transmute_unchecked
+		// is unstable and likely won't ever be stable, MaybeUninit::array_assume_init
+		// is unstable (it uses transmute_unchecked internally))
+		</span><span class="kw">let </span>me = ManuallyDrop::new(<span class="self">self</span>);
+		<span class="kw">let </span>ptr = me.as_nonchain() <span class="kw">as </span><span class="kw-2">*const </span>[MaybeUninit&lt;T&gt;; N] <span class="kw">as </span><span class="kw-2">*const </span>[T; N];
+		ptr::read(ptr).into()
+	}
+}
+
+<span class="kw">impl</span>&lt;T, <span class="kw">const </span>N: usize&gt; AsMut&lt;[T]&gt; <span class="kw">for </span>ArrayChain&lt;T, N&gt; {
+	<span class="kw">fn </span>as_mut(<span class="kw-2">&amp;mut </span><span class="self">self</span>) -&gt; <span class="kw-2">&amp;mut </span>[T] {
+		<span class="self">self</span>.as_nonchain_mut()
+	}
+}
+
+<span class="kw">impl</span>&lt;T, <span class="kw">const </span>N: usize&gt; AsRef&lt;[T]&gt; <span class="kw">for </span>ArrayChain&lt;T, N&gt; {
+	<span class="kw">fn </span>as_ref(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; <span class="kw-2">&amp;</span>[T] {
+		<span class="self">self</span>.as_nonchain()
+	}
 }
 
 <span class="comment">// TODO: as_ascii
@@ -412,49 +461,9 @@
 // TODO: try_map
 
 // TODO: trait impls
-// TODO: AsMut&lt;[T; N]&gt;
-// TODO: AsMut&lt;[T]&gt;
-// TODO: AsRef&lt;[T; N]&gt;
-// TODO: AsRef&lt;[T]&gt;
 // TODO: Borrow&lt;[T]&gt;
 // TODO: BorrowMut&lt;[T]&gt;
-// TODO: Clone
 // TODO: ConstParamTy
-// TODO: Copy
-// TODO: Debug
-// TODO: Default
-// TODO: Default
-// TODO: Default
-// TODO: Default
-// TODO: Default
-// TODO: Default
-// TODO: Default
-// TODO: Default
-// TODO: Default
-// TODO: Default
-// TODO: Default
-// TODO: Default
-// TODO: Default
-// TODO: Default
-// TODO: Default
-// TODO: Default
-// TODO: Default
-// TODO: Default
-// TODO: Default
-// TODO: Default
-// TODO: Default
-// TODO: Default
-// TODO: Default
-// TODO: Default
-// TODO: Default
-// TODO: Default
-// TODO: Default
-// TODO: Default
-// TODO: Default
-// TODO: Default
-// TODO: Default
-// TODO: Default
-// TODO: Default
 // TODO: Eq
 // TODO: From&lt;&amp;'a [T; N]&gt;
 // TODO: From&lt;&amp;[T; N]&gt;
@@ -707,14 +716,9 @@
 // TODO: BorrowMut&lt;[T]&gt;
 // TODO: BorrowMut&lt;[T]&gt;
 // TODO: BufRead
-// TODO: Clone
 // TODO: Concat&lt;T&gt;
 // TODO: Concat&lt;str&gt;
 // TODO: ConstParamTy
-// TODO: Debug
-// TODO: Default
-// TODO: Default
-// TODO: Default
 // TODO: Eq
 // TODO: From&lt;&amp;'a [T]&gt;
 // TODO: From&lt;&amp;'data mut [MaybeUninit&lt;u8&gt;]&gt;

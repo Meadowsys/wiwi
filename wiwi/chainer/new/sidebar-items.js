@@ -1,1 +1,0 @@
-window.SIDEBAR_ITEMS = {"macro":["vec_chain"],"struct":["VecChain"],"trait":["ChainHalf","NonChainHalf"]};

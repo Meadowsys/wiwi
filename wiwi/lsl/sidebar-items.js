@@ -1,1 +1,1 @@
-window.SIDEBAR_ITEMS = {"mod":["callback_api"]};
+window.SIDEBAR_ITEMS = {};
