@@ -4,9 +4,26 @@ Hallo!
 
 ## unreleased
 
+- created `nightly` addon features, to enable features only available in nightly rust
+  - As of now, there's nothing taking advantage of it yet
 - feature `augment-panic-hook`
   - created the feature
   - allows you to augment the current panic hook in a convenient way, running some code on panic, but still calling the existing hook afterwards
+- feature `chainer`
+  - create chainers `ArrayChain`, `SliceMutChain`, `SliceRefChain`, with some method impls
+  - implement more methods on `VecChain`
+  - implement many standard traits, like `Clone`, `Default`, etc
+    - This is done through `chainer!` macro, so all chainer structs will have it where applicabl
+    - they are implemented by the chain type if the nonchain type implements it as well, and for the most part just delegate the impl into the inner struct (one exception is `Debug`, where the chainer struct makes itself known, but still forwards to inner)
+  - some more documentation
+- feature `lsl`
+  - yeeted it all, we're starting over lol
+  - started sketching out the structs for it again
+- feature `num-traits`
+  - created the feature (unstable)
+  - `Int` trait for std integers and integers that are trivial to copy (ie. implements `Copy`)
+  - `BigInt` for integers that shouldn't be copied around
+    - All ints that implement `Int` get `BigInt` for free as well
 
 ## v0.9.0
 
