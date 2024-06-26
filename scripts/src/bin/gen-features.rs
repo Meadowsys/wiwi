@@ -110,7 +110,7 @@ fn main() {
 		"minesweeper"
 		"core logic components for minesweeper games of arbitrary size"
 		dependencies: ["rand"]
-		features: ["chainer", "z85"]
+		features: ["chainer", "iter", "z85"]
 
 		"nominal"
 		"zero cost wrapper to put data in a newtype, taking advantage of nominal typing for increased safety"

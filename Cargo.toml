@@ -120,6 +120,7 @@ memory-usage-unstable = [
 minesweeper-unstable = [
 	"dep:rand",
 	"chainer-unstable",
+	"iter-unstable",
 	"z85"
 ]
 nominal = []
