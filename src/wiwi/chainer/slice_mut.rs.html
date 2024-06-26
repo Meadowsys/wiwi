@@ -763,9 +763,7 @@
 <a href="#763" id="763">763</a>
 <a href="#764" id="764">764</a>
 <a href="#765" id="765">765</a>
-<a href="#766" id="766">766</a>
-</pre></div><pre class="rust"><code><span class="kw">use </span><span class="kw">crate</span>::iter::{ IntoIter, IntoStdIterator, IntoWiwiIter, IterAdapter };
-<span class="kw">use super</span>::{ chainer, chain_fn, ChainHalf, NonChainHalf };
+</pre></div><pre class="rust"><code><span class="kw">use super</span>::{ chainer, chain_fn, ChainHalf, NonChainHalf };
 <span class="kw">use </span>std::{ ptr, vec };
 <span class="kw">use </span>std::cmp::Ordering;
 <span class="kw">use </span>std::mem::MaybeUninit;
@@ -1315,8 +1313,8 @@
 	</span><span class="macro">chain_fn!</span> {
 		windows[CB](nc, size: usize, cb: CB) <span class="kw">where </span>{
 			<span class="comment">// TODO: chainer?
-			</span>CB: FnOnce(IterAdapter&lt;slice::Windows&lt;T&gt;&gt;)
-		} =&gt; cb(nc.windows(size).convert_std_into_wiwi_iter())
+			</span>CB: FnOnce(slice::Windows&lt;T&gt;)
+		} =&gt; cb(nc.windows(size))
 	}
 }
 

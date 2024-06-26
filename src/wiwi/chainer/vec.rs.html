@@ -1436,9 +1436,160 @@
 <a href="#1436" id="1436">1436</a>
 <a href="#1437" id="1437">1437</a>
 <a href="#1438" id="1438">1438</a>
-</pre></div><pre class="rust"><code><span class="kw">use </span><span class="kw">crate</span>::iter::{ IntoIter, IntoStdIterator, IntoWiwiIter, IterAdapter };
-<span class="kw">use super</span>::{ chainer, chain_fn, ChainHalf, NonChainHalf };
-<span class="kw">use </span>std::{ ptr, vec };
+<a href="#1439" id="1439">1439</a>
+<a href="#1440" id="1440">1440</a>
+<a href="#1441" id="1441">1441</a>
+<a href="#1442" id="1442">1442</a>
+<a href="#1443" id="1443">1443</a>
+<a href="#1444" id="1444">1444</a>
+<a href="#1445" id="1445">1445</a>
+<a href="#1446" id="1446">1446</a>
+<a href="#1447" id="1447">1447</a>
+<a href="#1448" id="1448">1448</a>
+<a href="#1449" id="1449">1449</a>
+<a href="#1450" id="1450">1450</a>
+<a href="#1451" id="1451">1451</a>
+<a href="#1452" id="1452">1452</a>
+<a href="#1453" id="1453">1453</a>
+<a href="#1454" id="1454">1454</a>
+<a href="#1455" id="1455">1455</a>
+<a href="#1456" id="1456">1456</a>
+<a href="#1457" id="1457">1457</a>
+<a href="#1458" id="1458">1458</a>
+<a href="#1459" id="1459">1459</a>
+<a href="#1460" id="1460">1460</a>
+<a href="#1461" id="1461">1461</a>
+<a href="#1462" id="1462">1462</a>
+<a href="#1463" id="1463">1463</a>
+<a href="#1464" id="1464">1464</a>
+<a href="#1465" id="1465">1465</a>
+<a href="#1466" id="1466">1466</a>
+<a href="#1467" id="1467">1467</a>
+<a href="#1468" id="1468">1468</a>
+<a href="#1469" id="1469">1469</a>
+<a href="#1470" id="1470">1470</a>
+<a href="#1471" id="1471">1471</a>
+<a href="#1472" id="1472">1472</a>
+<a href="#1473" id="1473">1473</a>
+<a href="#1474" id="1474">1474</a>
+<a href="#1475" id="1475">1475</a>
+<a href="#1476" id="1476">1476</a>
+<a href="#1477" id="1477">1477</a>
+<a href="#1478" id="1478">1478</a>
+<a href="#1479" id="1479">1479</a>
+<a href="#1480" id="1480">1480</a>
+<a href="#1481" id="1481">1481</a>
+<a href="#1482" id="1482">1482</a>
+<a href="#1483" id="1483">1483</a>
+<a href="#1484" id="1484">1484</a>
+<a href="#1485" id="1485">1485</a>
+<a href="#1486" id="1486">1486</a>
+<a href="#1487" id="1487">1487</a>
+<a href="#1488" id="1488">1488</a>
+<a href="#1489" id="1489">1489</a>
+<a href="#1490" id="1490">1490</a>
+<a href="#1491" id="1491">1491</a>
+<a href="#1492" id="1492">1492</a>
+<a href="#1493" id="1493">1493</a>
+<a href="#1494" id="1494">1494</a>
+<a href="#1495" id="1495">1495</a>
+<a href="#1496" id="1496">1496</a>
+<a href="#1497" id="1497">1497</a>
+<a href="#1498" id="1498">1498</a>
+<a href="#1499" id="1499">1499</a>
+<a href="#1500" id="1500">1500</a>
+<a href="#1501" id="1501">1501</a>
+<a href="#1502" id="1502">1502</a>
+<a href="#1503" id="1503">1503</a>
+<a href="#1504" id="1504">1504</a>
+<a href="#1505" id="1505">1505</a>
+<a href="#1506" id="1506">1506</a>
+<a href="#1507" id="1507">1507</a>
+<a href="#1508" id="1508">1508</a>
+<a href="#1509" id="1509">1509</a>
+<a href="#1510" id="1510">1510</a>
+<a href="#1511" id="1511">1511</a>
+<a href="#1512" id="1512">1512</a>
+<a href="#1513" id="1513">1513</a>
+<a href="#1514" id="1514">1514</a>
+<a href="#1515" id="1515">1515</a>
+<a href="#1516" id="1516">1516</a>
+<a href="#1517" id="1517">1517</a>
+<a href="#1518" id="1518">1518</a>
+<a href="#1519" id="1519">1519</a>
+<a href="#1520" id="1520">1520</a>
+<a href="#1521" id="1521">1521</a>
+<a href="#1522" id="1522">1522</a>
+<a href="#1523" id="1523">1523</a>
+<a href="#1524" id="1524">1524</a>
+<a href="#1525" id="1525">1525</a>
+<a href="#1526" id="1526">1526</a>
+<a href="#1527" id="1527">1527</a>
+<a href="#1528" id="1528">1528</a>
+<a href="#1529" id="1529">1529</a>
+<a href="#1530" id="1530">1530</a>
+<a href="#1531" id="1531">1531</a>
+<a href="#1532" id="1532">1532</a>
+<a href="#1533" id="1533">1533</a>
+<a href="#1534" id="1534">1534</a>
+<a href="#1535" id="1535">1535</a>
+<a href="#1536" id="1536">1536</a>
+<a href="#1537" id="1537">1537</a>
+<a href="#1538" id="1538">1538</a>
+<a href="#1539" id="1539">1539</a>
+<a href="#1540" id="1540">1540</a>
+<a href="#1541" id="1541">1541</a>
+<a href="#1542" id="1542">1542</a>
+<a href="#1543" id="1543">1543</a>
+<a href="#1544" id="1544">1544</a>
+<a href="#1545" id="1545">1545</a>
+<a href="#1546" id="1546">1546</a>
+<a href="#1547" id="1547">1547</a>
+<a href="#1548" id="1548">1548</a>
+<a href="#1549" id="1549">1549</a>
+<a href="#1550" id="1550">1550</a>
+<a href="#1551" id="1551">1551</a>
+<a href="#1552" id="1552">1552</a>
+<a href="#1553" id="1553">1553</a>
+<a href="#1554" id="1554">1554</a>
+<a href="#1555" id="1555">1555</a>
+<a href="#1556" id="1556">1556</a>
+<a href="#1557" id="1557">1557</a>
+<a href="#1558" id="1558">1558</a>
+<a href="#1559" id="1559">1559</a>
+<a href="#1560" id="1560">1560</a>
+<a href="#1561" id="1561">1561</a>
+<a href="#1562" id="1562">1562</a>
+<a href="#1563" id="1563">1563</a>
+<a href="#1564" id="1564">1564</a>
+<a href="#1565" id="1565">1565</a>
+<a href="#1566" id="1566">1566</a>
+<a href="#1567" id="1567">1567</a>
+<a href="#1568" id="1568">1568</a>
+<a href="#1569" id="1569">1569</a>
+<a href="#1570" id="1570">1570</a>
+<a href="#1571" id="1571">1571</a>
+<a href="#1572" id="1572">1572</a>
+<a href="#1573" id="1573">1573</a>
+<a href="#1574" id="1574">1574</a>
+<a href="#1575" id="1575">1575</a>
+<a href="#1576" id="1576">1576</a>
+<a href="#1577" id="1577">1577</a>
+<a href="#1578" id="1578">1578</a>
+<a href="#1579" id="1579">1579</a>
+<a href="#1580" id="1580">1580</a>
+<a href="#1581" id="1581">1581</a>
+<a href="#1582" id="1582">1582</a>
+<a href="#1583" id="1583">1583</a>
+<a href="#1584" id="1584">1584</a>
+<a href="#1585" id="1585">1585</a>
+<a href="#1586" id="1586">1586</a>
+<a href="#1587" id="1587">1587</a>
+<a href="#1588" id="1588">1588</a>
+<a href="#1589" id="1589">1589</a>
+<a href="#1590" id="1590">1590</a>
+</pre></div><pre class="rust"><code><span class="kw">use super</span>::{ chainer, chain_fn, ChainHalf, NonChainHalf, SliceMutChain, SliceRefChain };
+<span class="kw">use </span>std::{ ptr, str, vec };
 <span class="kw">use </span>std::cmp::Ordering;
 <span class="kw">use </span>std::mem::{ <span class="self">self</span>, MaybeUninit };
 <span class="kw">use </span>std::ops::RangeBounds;
@@ -1593,7 +1744,8 @@
 		/// # Examples
 		///
 		/// TODO
-		</span>append(nc, other: <span class="kw-2">&amp;mut </span><span class="self">Self</span>) =&gt; nc.append(other.as_nonchain_mut())
+		</span>append(nc, other: <span class="kw-2">&amp;mut </span><span class="self">Self</span>)
+			=&gt; nc.append(other.as_nonchain_mut())
 	}
 
 	<span class="macro">chain_fn!</span> {
@@ -1603,13 +1755,13 @@
 		/// # Examples
 		///
 		/// TODO
-		</span>append_nonchain(nc, other: <span class="kw-2">&amp;mut </span>Vec&lt;T&gt;) =&gt; nc.append(other)
+		</span>append_nonchain(nc, other: <span class="kw-2">&amp;mut </span>Vec&lt;T&gt;)
+			=&gt; nc.append(other)
 	}
 
 	<span class="macro">chain_fn!</span> {
 		as_chunks[<span class="kw">const </span>N: usize, CB](nc, cb: CB) <span class="kw">where </span>{
-			<span class="comment">// TODO: chainer?
-			</span>CB: FnOnce(<span class="kw-2">&amp;</span>[[T; N]], <span class="kw-2">&amp;</span>[T])
+			CB: FnOnce(SliceRefChain&lt;[T; N]&gt;, SliceRefChain&lt;T&gt;)
 		} =&gt; <span class="kw">unsafe </span>{
 			<span class="kw">let </span>len = nc.len();
 			<span class="kw">let </span>ptr = nc.as_ptr();
@@ -1623,14 +1775,13 @@
 			<span class="kw">let </span>full_chunk = slice::from_raw_parts(full_ptr, full);
 			<span class="kw">let </span>partial_chunk = slice::from_raw_parts(partial_ptr, partial);
 
-			cb(full_chunk, partial_chunk);
+			cb(full_chunk.into_chainer(), partial_chunk.into_chainer());
 		}
 	}
 
 	<span class="macro">chain_fn!</span> {
 		as_chunks_mut[<span class="kw">const </span>N: usize, CB](nc, cb: CB) <span class="kw">where </span>{
-			<span class="comment">// TODO: chainer?
-			</span>CB: FnOnce(<span class="kw-2">&amp;mut </span>[[T; N]], <span class="kw-2">&amp;mut </span>[T])
+			CB: FnOnce(SliceMutChain&lt;[T; N]&gt;, SliceMutChain&lt;T&gt;)
 		} =&gt; <span class="kw">unsafe </span>{
 			<span class="kw">let </span>len = nc.len();
 			<span class="kw">let </span>ptr = nc.as_mut_ptr();
@@ -1644,40 +1795,37 @@
 			<span class="kw">let </span>full_chunk = slice::from_raw_parts_mut(full_ptr, full);
 			<span class="kw">let </span>partial_chunk = slice::from_raw_parts_mut(partial_ptr, partial);
 
-			cb(full_chunk, partial_chunk);
+			cb(full_chunk.into_chainer(), partial_chunk.into_chainer());
 		}
 	}
 
 	<span class="macro">chain_fn!</span> {
 		<span class="kw">unsafe </span>as_chunks_unchecked[<span class="kw">const </span>N: usize, CB](nc, cb: CB) <span class="kw">where </span>{
-			<span class="comment">// TODO: chainer?
-			</span>CB: FnOnce(<span class="kw-2">&amp;</span>[[T; N]])
+			CB: FnOnce(SliceRefChain&lt;[T; N]&gt;)
 		} =&gt; {
 			<span class="kw">let </span>ptr = nc.as_ptr() <span class="kw">as </span><span class="kw-2">*const </span>[T; N];
 			<span class="kw">let </span>chunks = nc.len() / N;
 
 			<span class="kw">let </span>slice = slice::from_raw_parts(ptr, chunks);
-			cb(slice);
+			cb(slice.into_chainer());
 		}
 	}
 
 	<span class="macro">chain_fn!</span> {
 		<span class="kw">unsafe </span>as_chunks_unchecked_mut[<span class="kw">const </span>N: usize, CB](nc, cb: CB) <span class="kw">where </span>{
-			<span class="comment">// TODO: chainer?
-			</span>CB: FnOnce(<span class="kw-2">&amp;mut </span>[[T; N]])
+			CB: FnOnce(SliceMutChain&lt;[T; N]&gt;)
 		} =&gt; {
 			<span class="kw">let </span>ptr = nc.as_mut_ptr() <span class="kw">as </span><span class="kw-2">*mut </span>[T; N];
 			<span class="kw">let </span>chunks = nc.len() / N;
 
 			<span class="kw">let </span>slice = slice::from_raw_parts_mut(ptr, chunks);
-			cb(slice);
+			cb(slice.into_chainer());
 		}
 	}
 
 	<span class="macro">chain_fn!</span> {
 		as_rchunks[<span class="kw">const </span>N: usize, CB](nc, cb: CB) <span class="kw">where </span>{
-			<span class="comment">// TODO: chainer?
-			</span>CB: FnOnce(<span class="kw-2">&amp;</span>[T], <span class="kw-2">&amp;</span>[[T; N]])
+			CB: FnOnce(SliceRefChain&lt;T&gt;, SliceRefChain&lt;[T; N]&gt;)
 		} =&gt; <span class="kw">unsafe </span>{
 			<span class="kw">let </span>len = nc.len();
 			<span class="kw">let </span>ptr = nc.as_ptr();
@@ -1690,14 +1838,13 @@
 			<span class="kw">let </span>partial_chunk = slice::from_raw_parts(ptr, partial);
 			<span class="kw">let </span>full_chunk = slice::from_raw_parts(full_ptr, full);
 
-			cb(partial_chunk, full_chunk);
+			cb(partial_chunk.into_chainer(), full_chunk.into_chainer());
 		}
 	}
 
 	<span class="macro">chain_fn!</span> {
 		as_rchunks_mut[<span class="kw">const </span>N: usize, CB](nc, cb: CB) <span class="kw">where </span>{
-			<span class="comment">// TODO: chainer?
-			</span>CB: FnOnce(<span class="kw-2">&amp;mut </span>[T], <span class="kw-2">&amp;mut </span>[[T; N]])
+			CB: FnOnce(SliceMutChain&lt;T&gt;, SliceMutChain&lt;[T; N]&gt;)
 		} =&gt; <span class="kw">unsafe </span>{
 			<span class="kw">let </span>len = nc.len();
 			<span class="kw">let </span>ptr = nc.as_mut_ptr();
@@ -1710,7 +1857,7 @@
 			<span class="kw">let </span>partial_chunk = slice::from_raw_parts_mut(ptr, partial);
 			<span class="kw">let </span>full_chunk = slice::from_raw_parts_mut(full_ptr, full);
 
-			cb(partial_chunk, full_chunk);
+			cb(partial_chunk.into_chainer(), full_chunk.into_chainer());
 		}
 	}
 
@@ -1753,15 +1900,18 @@
 	}
 
 	<span class="macro">chain_fn!</span> {
-		capacity(nc, out: <span class="kw-2">&amp;mut </span>usize) =&gt; <span class="kw-2">*</span>out = nc.capacity()
+		capacity(nc, out: <span class="kw-2">&amp;mut </span>usize)
+			=&gt; <span class="kw-2">*</span>out = nc.capacity()
 	}
 
 	<span class="macro">chain_fn!</span> {
-		capacity_uninit(nc, out: <span class="kw-2">&amp;mut </span>MaybeUninit&lt;usize&gt;) =&gt; void out.write(nc.capacity())
+		capacity_uninit(nc, out: <span class="kw-2">&amp;mut </span>MaybeUninit&lt;usize&gt;)
+			=&gt; void out.write(nc.capacity())
 	}
 
 	<span class="macro">chain_fn!</span> {
-		clear(nc) =&gt; nc.clear()
+		clear(nc)
+			=&gt; nc.clear()
 	}
 
 	<span class="macro">chain_fn!</span> {
@@ -1929,7 +2079,8 @@
 	}
 
 	<span class="macro">chain_fn!</span> {
-		insert(nc, index: usize, element: T) =&gt; nc.insert(index, element)
+		insert(nc, index: usize, element: T)
+			=&gt; nc.insert(index, element)
 	}
 
 	<span class="macro">chain_fn!</span> {
@@ -1950,7 +2101,8 @@
 		/// assert!(before);
 		/// assert!(!after);
 		/// ```
-		</span>is_empty(nc, out: <span class="kw-2">&amp;mut </span>bool) =&gt; <span class="kw-2">*</span>out = nc.is_empty()
+		</span>is_empty(nc, out: <span class="kw-2">&amp;mut </span>bool)
+			=&gt; <span class="kw-2">*</span>out = nc.is_empty()
 	}
 
 	<span class="macro">chain_fn!</span> {
@@ -1977,7 +2129,8 @@
 		/// assert!(before);
 		/// assert!(!after);
 		/// ```
-		</span>is_empty_uninit(nc, out: <span class="kw-2">&amp;mut </span>MaybeUninit&lt;bool&gt;) =&gt; void out.write(nc.is_empty())
+		</span>is_empty_uninit(nc, out: <span class="kw-2">&amp;mut </span>MaybeUninit&lt;bool&gt;)
+			=&gt; void out.write(nc.is_empty())
 	}
 
 	<span class="macro">chain_fn!</span> {
@@ -2022,7 +2175,8 @@
 		///
 		/// assert_eq!(len, 5);
 		/// ```
-		</span>len(nc, out: <span class="kw-2">&amp;mut </span>usize) =&gt; <span class="kw-2">*</span>out = nc.len()
+		</span>len(nc, out: <span class="kw-2">&amp;mut </span>usize)
+			=&gt; <span class="kw-2">*</span>out = nc.len()
 	}
 
 	<span class="macro">chain_fn!</span> {
@@ -2041,15 +2195,18 @@
 		/// let len = unsafe { len.assume_init() };
 		/// assert_eq!(len, 5);
 		/// ```
-		</span>len_uninit(nc, out: <span class="kw-2">&amp;mut </span>MaybeUninit&lt;usize&gt;) =&gt; void out.write(nc.len())
+		</span>len_uninit(nc, out: <span class="kw-2">&amp;mut </span>MaybeUninit&lt;usize&gt;)
+			=&gt; void out.write(nc.len())
 	}
 
 	<span class="macro">chain_fn!</span> {
-		pop(nc, out: <span class="kw-2">&amp;mut </span><span class="prelude-ty">Option</span>&lt;T&gt;) =&gt; <span class="kw-2">*</span>out = nc.pop()
+		pop(nc, out: <span class="kw-2">&amp;mut </span><span class="prelude-ty">Option</span>&lt;T&gt;)
+			=&gt; <span class="kw-2">*</span>out = nc.pop()
 	}
 
 	<span class="macro">chain_fn!</span> {
-		pop_uninit(nc, out: <span class="kw-2">&amp;mut </span>MaybeUninit&lt;<span class="prelude-ty">Option</span>&lt;T&gt;&gt;) =&gt; void out.write(nc.pop())
+		pop_uninit(nc, out: <span class="kw-2">&amp;mut </span>MaybeUninit&lt;<span class="prelude-ty">Option</span>&lt;T&gt;&gt;)
+			=&gt; void out.write(nc.pop())
 	}
 
 	<span class="macro">chain_fn!</span> {
@@ -2075,7 +2232,8 @@
 	}
 
 	<span class="macro">chain_fn!</span> {
-		push(nc, value: T) =&gt; nc.push(value)
+		push(nc, value: T)
+			=&gt; nc.push(value)
 	}
 
 	<span class="macro">chain_fn!</span> {
@@ -2095,11 +2253,13 @@
 	}
 
 	<span class="macro">chain_fn!</span> {
-		remove(nc, index: usize, out: <span class="kw-2">&amp;mut </span>T) =&gt; <span class="kw-2">*</span>out = nc.remove(index)
+		remove(nc, index: usize, out: <span class="kw-2">&amp;mut </span>T)
+			=&gt; <span class="kw-2">*</span>out = nc.remove(index)
 	}
 
 	<span class="macro">chain_fn!</span> {
-		remove_uninit(nc, index: usize, out: <span class="kw-2">&amp;mut </span>MaybeUninit&lt;T&gt;) =&gt; void out.write(nc.remove(index))
+		remove_uninit(nc, index: usize, out: <span class="kw-2">&amp;mut </span>MaybeUninit&lt;T&gt;)
+			=&gt; void out.write(nc.remove(index))
 	}
 
 	<span class="macro">chain_fn!</span> {
@@ -2110,11 +2270,13 @@
 	}
 
 	<span class="macro">chain_fn!</span> {
-		reserve(nc, additional: usize) =&gt; nc.reserve(additional)
+		reserve(nc, additional: usize)
+			=&gt; nc.reserve(additional)
 	}
 
 	<span class="macro">chain_fn!</span> {
-		reserve_exact(nc, additional: usize) =&gt; nc.reserve_exact(additional)
+		reserve_exact(nc, additional: usize)
+			=&gt; nc.reserve_exact(additional)
 	}
 
 	<span class="macro">chain_fn!</span> {
@@ -2142,27 +2304,33 @@
 	}
 
 	<span class="macro">chain_fn!</span> {
-		reverse(nc) =&gt; nc.reverse()
+		reverse(nc)
+			=&gt; nc.reverse()
 	}
 
 	<span class="macro">chain_fn!</span> {
-		rotate_left(nc, mid: usize) =&gt; nc.rotate_left(mid)
+		rotate_left(nc, mid: usize)
+			=&gt; nc.rotate_left(mid)
 	}
 
 	<span class="macro">chain_fn!</span> {
-		rotate_right(nc, mid: usize) =&gt; nc.rotate_right(mid)
+		rotate_right(nc, mid: usize)
+			=&gt; nc.rotate_right(mid)
 	}
 
 	<span class="macro">chain_fn!</span> {
-		<span class="kw">unsafe </span>set_len(nc, new_len: usize) =&gt; nc.set_len(new_len)
+		<span class="kw">unsafe </span>set_len(nc, new_len: usize)
+			=&gt; nc.set_len(new_len)
 	}
 
 	<span class="macro">chain_fn!</span> {
-		shrink_to(nc, min_capacity: usize) =&gt; nc.shrink_to(min_capacity)
+		shrink_to(nc, min_capacity: usize)
+			=&gt; nc.shrink_to(min_capacity)
 	}
 
 	<span class="macro">chain_fn!</span> {
-		shrink_to_fit(nc) =&gt; nc.shrink_to_fit()
+		shrink_to_fit(nc)
+			=&gt; nc.shrink_to_fit()
 	}
 
 	<span class="macro">chain_fn!</span> {
@@ -2223,7 +2391,7 @@
 		/// let chain = VecChain::with_capacity(10)
 		///    .extend_from_slice(&amp;[1, 2, 3, 4, 5])
 		///    .spare_capacity_mut(|mut spare| {
-		///       spare_len = spare.len();
+		///       spare.len(&amp;mut spare_len);
 		///
 		///       // VecChain allocated at least 10 elements worth of space
 		///       // since we pushed 5 elements, it should have at least
@@ -2233,31 +2401,29 @@
 		///    .push(6)
 		///    .push(7)
 		///    .spare_capacity_mut(|mut spare| {
-		///       new_spare_len = spare.len();
+		///       spare.len(&amp;mut new_spare_len);
 		///
 		///       // Just pushed 2 more elements, so there's 2 less spare capacity left
 		///       assert_eq!(spare_len - 2, new_spare_len);
 		///    });
 		/// ```
 		</span>spare_capacity_mut[CB](nc, cb: CB) <span class="kw">where </span>{
-			<span class="comment">// TODO: chainer?
-			</span>CB: FnOnce(<span class="kw-2">&amp;mut </span>[MaybeUninit&lt;T&gt;])
-		} =&gt; cb(nc.spare_capacity_mut())
+			CB: FnOnce(SliceMutChain&lt;MaybeUninit&lt;T&gt;&gt;)
+		} =&gt; cb(nc.spare_capacity_mut().into_chainer())
 	}
 
 	<span class="macro">chain_fn!</span> {
 		splice[R, I, CB](nc, range: R, replace_with: I, cb: CB) <span class="kw">where </span>{
 			R: RangeBounds&lt;usize&gt;,
-			I: IntoIter&lt;Item = T&gt;,
+			I: IntoIterator&lt;Item = T&gt;,
 			<span class="comment">// TODO: chainer?
-			</span>CB: FnOnce(vec::Splice&lt;IterAdapter&lt;I::Iter&gt;&gt;)
-		} =&gt; cb(nc.splice(range, replace_with.convert_wiwi_into_std_iterator()))
+			</span>CB: FnOnce(vec::Splice&lt;I::IntoIter&gt;)
+		} =&gt; cb(nc.splice(range, replace_with))
 	}
 
 	<span class="macro">chain_fn!</span> {
 		split_at_spare_mut[CB](nc, cb: CB) <span class="kw">where </span>{
-			<span class="comment">// TODO: chainer?
-			</span>CB: FnOnce(<span class="kw-2">&amp;mut </span>[T], <span class="kw-2">&amp;mut </span>[MaybeUninit&lt;T&gt;])
+			CB: FnOnce(SliceMutChain&lt;T&gt;, SliceMutChain&lt;MaybeUninit&lt;T&gt;&gt;)
 		} =&gt; <span class="kw">unsafe </span>{
 			<span class="comment">// TODO: use std impl when its stabilised
 			</span><span class="kw">let </span>ptr = nc.as_mut_ptr();
@@ -2270,7 +2436,7 @@
 			<span class="kw">let </span>init = slice::from_raw_parts_mut(ptr, len);
 			<span class="kw">let </span>spare = slice::from_raw_parts_mut(spare_ptr, spare_len);
 
-			cb(init, spare);
+			cb(init.into_chainer(), spare.into_chainer());
 		}
 	}
 
@@ -2345,7 +2511,8 @@
 	}
 
 	<span class="macro">chain_fn!</span> {
-		swap(nc, a: usize, b: usize) =&gt; nc.swap(a, b)
+		swap(nc, a: usize, b: usize)
+			=&gt; nc.swap(a, b)
 	}
 
 	<span class="macro">chain_fn!</span> {
@@ -2357,19 +2524,23 @@
 	}
 
 	<span class="macro">chain_fn!</span> {
-		swap_remove(nc, index: usize, out: <span class="kw-2">&amp;mut </span>T) =&gt; <span class="kw-2">*</span>out = nc.swap_remove(index)
+		swap_remove(nc, index: usize, out: <span class="kw-2">&amp;mut </span>T)
+			=&gt; <span class="kw-2">*</span>out = nc.swap_remove(index)
 	}
 
 	<span class="macro">chain_fn!</span> {
-		swap_remove_uninit(nc, index: usize, out: <span class="kw-2">&amp;mut </span>MaybeUninit&lt;T&gt;) =&gt; void out.write(nc.swap_remove(index))
+		swap_remove_uninit(nc, index: usize, out: <span class="kw-2">&amp;mut </span>MaybeUninit&lt;T&gt;)
+			=&gt; void out.write(nc.swap_remove(index))
 	}
 
 	<span class="macro">chain_fn!</span> {
-		swap_with_slice(nc, other: <span class="kw-2">&amp;mut </span>[T]) =&gt; nc.swap_with_slice(other)
+		swap_with_slice(nc, other: <span class="kw-2">&amp;mut </span>[T])
+			=&gt; nc.swap_with_slice(other)
 	}
 
 	<span class="macro">chain_fn!</span> {
-		truncate(nc, len: usize) =&gt; nc.truncate(len)
+		truncate(nc, len: usize)
+			=&gt; nc.truncate(len)
 	}
 
 	<span class="comment">// TODO: try_reserve/exact
@@ -2377,19 +2548,11 @@
 	</span><span class="macro">chain_fn!</span> {
 		windows[CB](nc, size: usize, cb: CB) <span class="kw">where </span>{
 			<span class="comment">// TODO: chainer?
-			</span>CB: FnOnce(IterAdapter&lt;slice::Windows&lt;T&gt;&gt;)
-		} =&gt; cb(nc.windows(size).convert_std_into_wiwi_iter())
+			</span>CB: FnOnce(slice::Windows&lt;T&gt;)
+		} =&gt; cb(nc.windows(size))
 	}
 
-
-	<span class="comment">// TODO: utf8_chunks
-	// TODO: eq_ignore_ascii_case
-	// TODO: escape_ascii
-	// TODO: trim_ascii_start/end
-	// TODO: trim_ascii
-
-	// doc link: https://doc.rust-lang.org/std/vec/struct.Vec.html#method.first_chunk
-	// TODO: iter/mut
+	<span class="comment">// TODO: iter/mut
 
 	// TODO: chunks/mut
 	// TODO: chunks_exact/mut
@@ -2461,7 +2624,6 @@
 	// TODO: get_many_unchecked_mut
 	// TODO: get_many_mut
 	// TODO: get_many/get_many_unchecked (non mut? not in std?)
-	// TODO: eq_ignore_ascii_case
 	// TODO: make_ascii_uppercase/lowercase
 	// TODO: escape_ascii
 	// TODO: trim_ascii
@@ -2471,32 +2633,112 @@
 <span class="kw">impl </span>VecChain&lt;f32&gt; {
 	<span class="macro">chain_fn!</span> {
 		<span class="comment">// TODO: call std once stabilised
-		</span>sort_floats(nc) =&gt; nc.sort_unstable_by(f32::total_cmp)
+		</span>sort_floats(nc)
+			=&gt; nc.sort_unstable_by(f32::total_cmp)
 	}
 }
 
 <span class="kw">impl </span>VecChain&lt;f64&gt; {
 	<span class="macro">chain_fn!</span> {
 		<span class="comment">// TODO: call std once stabilised
-		</span>sort_floats(nc) =&gt; nc.sort_unstable_by(f64::total_cmp)
+		</span>sort_floats(nc)
+			=&gt; nc.sort_unstable_by(f64::total_cmp)
 	}
 }
 
 <span class="kw">impl </span>VecChain&lt;u8&gt; {
 	<span class="macro">chain_fn!</span> {
-		is_ascii(nc, out: <span class="kw-2">&amp;mut </span>bool) =&gt; <span class="kw-2">*</span>out = nc.is_ascii()
+		eq_ignore_ascii_case(nc, other: <span class="kw-2">&amp;</span>VecChain&lt;u8&gt;, out: <span class="kw-2">&amp;mut </span>bool)
+			=&gt; <span class="kw-2">*</span>out = nc.eq_ignore_ascii_case(other.as_nonchain())
 	}
 
 	<span class="macro">chain_fn!</span> {
-		is_ascii_uninit(nc, out: <span class="kw-2">&amp;mut </span>MaybeUninit&lt;bool&gt;) =&gt; void out.write(nc.is_ascii())
+		eq_ignore_ascii_case_uninit(nc, other: <span class="kw-2">&amp;</span>VecChain&lt;u8&gt;, out: <span class="kw-2">&amp;mut </span>MaybeUninit&lt;bool&gt;)
+			=&gt; void out.write(nc.eq_ignore_ascii_case(other.as_nonchain()))
 	}
 
 	<span class="macro">chain_fn!</span> {
-		make_ascii_lowercase(nc) =&gt; nc.make_ascii_lowercase()
+		eq_ignore_ascii_case_nonchain(nc, other: <span class="kw-2">&amp;</span>[u8], out: <span class="kw-2">&amp;mut </span>bool)
+			=&gt; <span class="kw-2">*</span>out = nc.eq_ignore_ascii_case(other)
 	}
 
 	<span class="macro">chain_fn!</span> {
-		make_ascii_uppercase(nc) =&gt; nc.make_ascii_uppercase()
+		eq_ignore_ascii_case_nonchain_uninit(nc, other: <span class="kw-2">&amp;</span>[u8], out: <span class="kw-2">&amp;mut </span>MaybeUninit&lt;bool&gt;)
+			=&gt; void out.write(nc.eq_ignore_ascii_case(other))
+	}
+
+	<span class="macro">chain_fn!</span> {
+		escape_ascii[CB](nc, cb: CB) <span class="kw">where </span>{
+			CB: FnOnce(slice::EscapeAscii)
+		} =&gt; cb(nc.escape_ascii())
+	}
+
+	<span class="macro">chain_fn!</span> {
+		is_ascii(nc, out: <span class="kw-2">&amp;mut </span>bool)
+			=&gt; <span class="kw-2">*</span>out = nc.is_ascii()
+	}
+
+	<span class="macro">chain_fn!</span> {
+		is_ascii_uninit(nc, out: <span class="kw-2">&amp;mut </span>MaybeUninit&lt;bool&gt;)
+			=&gt; void out.write(nc.is_ascii())
+	}
+
+	<span class="macro">chain_fn!</span> {
+		make_ascii_lowercase(nc)
+			=&gt; nc.make_ascii_lowercase()
+	}
+
+	<span class="macro">chain_fn!</span> {
+		make_ascii_uppercase(nc)
+			=&gt; nc.make_ascii_uppercase()
+	}
+
+	<span class="macro">chain_fn!</span> {
+		<span class="doccomment">/// Trims off the leading and trailing ASCII whitespace in place
+		</span>trim_ascii(nc) =&gt; <span class="kw">unsafe </span>{
+			<span class="kw">let </span>trimmed_start = _tmp_trim_ascii_start_amount(nc);
+			<span class="kw">let </span>trimmed_end = _tmp_trim_ascii_end_amount(nc);
+
+			<span class="kw">let </span>total_trimmed = trimmed_start + trimmed_end;
+			<span class="kw">if </span>total_trimmed &gt; nc.len() {
+				<span class="comment">// this means the trimmed area had overlap, and that's
+				// only possible if everything is whitespace. if there's one
+				// singular non whitespace in there, total_trimmed will be one
+				// less than nc.len()
+				</span>nc.set_len(<span class="number">0</span>)
+			} <span class="kw">else </span>{
+				<span class="kw">let </span>ptr = nc.as_mut_ptr();
+				<span class="kw">let </span>new_len = nc.len() - total_trimmed;
+
+				ptr::copy(nc.as_ptr().add(trimmed_start), ptr, new_len);
+				nc.set_len(new_len);
+			}
+
+		}
+	}
+
+	<span class="macro">chain_fn!</span> {
+		trim_ascii_end(nc) =&gt; <span class="kw">unsafe </span>{
+			nc.set_len(nc.len() - _tmp_trim_ascii_end_amount(nc))
+		}
+	}
+
+	<span class="macro">chain_fn!</span> {
+		trim_ascii_start(nc) =&gt; <span class="kw">unsafe </span>{
+			<span class="kw">let </span>trimmed = _tmp_trim_ascii_start_amount(nc);
+
+			<span class="kw">let </span>ptr = nc.as_mut_ptr();
+			<span class="kw">let </span>new_len = nc.len() - trimmed;
+
+			ptr::copy(nc.as_ptr().add(trimmed), ptr, new_len);
+			nc.set_len(new_len);
+		}
+	}
+
+	<span class="macro">chain_fn!</span> {
+		utf8_chunks[CB](nc, cb: CB) <span class="kw">where </span>{
+			CB: FnOnce(str::Utf8Chunks)
+		} =&gt; cb(nc.utf8_chunks())
 	}
 
 	<span class="comment">// TODO: as_ascii/unchecked nightly
@@ -2593,7 +2835,6 @@
 // TODO: chunks_mut
 // TODO: concat
 // TODO: connect
-// TODO: eq_ignore_ascii_case
 // TODO: escape_ascii
 // TODO: flatten_mut
 // TODO: get_many_mut
@@ -2700,9 +2941,47 @@
 // TODO: TryFrom&lt;Vec&lt;T&gt;&gt;
 // TODO: Write
 
-</span><span class="attr">#[cfg(test)]
+</span><span class="attr">#[inline]
+</span><span class="kw">fn </span>_tmp_trim_ascii_start_amount(<span class="kw-2">mut </span>bytes: <span class="kw-2">&amp;</span>[u8]) -&gt; usize {
+	<span class="kw">let </span><span class="kw-2">mut </span>count = <span class="number">0</span>;
+	<span class="kw">while let </span>[first, rest @ ..] = bytes {
+		<span class="kw">if </span>first.is_ascii_whitespace() {
+			bytes = rest;
+			count += <span class="number">1</span>;
+		} <span class="kw">else </span>{
+			<span class="kw">break</span>;
+		}
+	}
+	count
+}
+
+<span class="attr">#[inline]
+</span><span class="kw">fn </span>_tmp_trim_ascii_end_amount(<span class="kw-2">mut </span>bytes: <span class="kw-2">&amp;</span>[u8]) -&gt; usize {
+	<span class="kw">let </span><span class="kw-2">mut </span>count = <span class="number">0</span>;
+	<span class="kw">while let </span>[rest @ .., last] = bytes {
+		<span class="kw">if </span>last.is_ascii_whitespace() {
+			bytes = rest;
+			count += <span class="number">1</span>;
+		} <span class="kw">else </span>{
+			<span class="kw">break</span>;
+		}
+	}
+	count
+}
+
+<span class="attr">#[cfg(test)]
 </span><span class="kw">mod </span>tests {
 	<span class="kw">use super</span>::<span class="kw-2">*</span>;
+
+	<span class="attr">#[test]
+	</span><span class="kw">fn </span>conversion() {
+		<span class="kw">let </span>slice = <span class="kw-2">&amp;</span>[<span class="number">1u8</span>, <span class="number">2</span>, <span class="number">3</span>, <span class="number">4</span>, <span class="number">5</span>] <span class="kw">as </span><span class="kw-2">&amp;</span>[<span class="kw">_</span>];
+		<span class="kw">let </span><span class="kw-2">mut </span>chain = VecChain::new()
+			.extend_from_slice(slice);
+
+		<span class="macro">assert_eq!</span>(slice, chain.as_nonchain());
+		<span class="macro">assert_eq!</span>(slice, chain.as_nonchain_mut());
+	}
 
 	<span class="attr">#[test]
 	</span><span class="kw">fn </span>creation() {
@@ -2731,16 +3010,6 @@
 		<span class="macro">assert_eq!</span>(with_capacity_capacity, <span class="number">30</span>);
 		<span class="macro">assert_eq!</span>(zst_len, <span class="number">0</span>);
 		<span class="macro">assert_eq!</span>(zst_capacity, usize::MAX);
-	}
-
-	<span class="attr">#[test]
-	</span><span class="kw">fn </span>conversion() {
-		<span class="kw">let </span>slice = <span class="kw-2">&amp;</span>[<span class="number">1u8</span>, <span class="number">2</span>, <span class="number">3</span>, <span class="number">4</span>, <span class="number">5</span>] <span class="kw">as </span><span class="kw-2">&amp;</span>[<span class="kw">_</span>];
-		<span class="kw">let </span><span class="kw-2">mut </span>chain = VecChain::new()
-			.extend_from_slice(slice);
-
-		<span class="macro">assert_eq!</span>(slice, chain.as_nonchain());
-		<span class="macro">assert_eq!</span>(slice, chain.as_nonchain_mut());
 	}
 
 	<span class="attr">#[test]
@@ -2780,18 +3049,27 @@
 	}
 
 	<span class="attr">#[test]
+	</span><span class="kw">fn </span>reverse() {
+		<span class="kw">let </span>chain = VecChain::new()
+			.extend_from_slice(<span class="kw-2">&amp;</span>[<span class="number">1</span>, <span class="number">2</span>, <span class="number">3</span>, <span class="number">4</span>, <span class="number">5</span>, <span class="number">6</span>, <span class="number">7</span>, <span class="number">8</span>])
+			.reverse();
+		<span class="macro">assert_eq!</span>(chain.as_nonchain(), <span class="kw-2">&amp;</span>[<span class="number">8</span>, <span class="number">7</span>, <span class="number">6</span>, <span class="number">5</span>, <span class="number">4</span>, <span class="number">3</span>, <span class="number">2</span>, <span class="number">1</span>]);
+	}
+
+	<span class="attr">#[test]
 	</span><span class="kw">fn </span>split_at_spare_mut() {
 		<span class="kw">let </span><span class="kw-2">mut </span>uninit_len = <span class="number">0</span>;
 		<span class="kw">let </span>chain = VecChain::new()
 			.extend_from_slice(<span class="kw-2">&amp;</span>[<span class="number">1usize</span>, <span class="number">2</span>, <span class="number">3</span>, <span class="number">4</span>, <span class="number">5</span>, <span class="number">6</span>, <span class="number">7</span>, <span class="number">8</span>])
 			.reserve(<span class="number">8</span>)
 			.split_at_spare_mut(|<span class="kw-2">mut </span>slice, <span class="kw-2">mut </span>uninit| {
-				uninit_len = uninit.len();
+				uninit_len = uninit.as_nonchain().len();
 
-				<span class="macro">assert_eq!</span>(slice, <span class="kw-2">&amp;</span>[<span class="number">1</span>, <span class="number">2</span>, <span class="number">3</span>, <span class="number">4</span>, <span class="number">5</span>, <span class="number">6</span>, <span class="number">7</span>, <span class="number">8</span>]);
-				<span class="macro">assert!</span>(uninit.len() &gt;= <span class="number">8</span>);
+				<span class="macro">assert_eq!</span>(slice.as_nonchain(), <span class="kw-2">&amp;</span>[<span class="number">1</span>, <span class="number">2</span>, <span class="number">3</span>, <span class="number">4</span>, <span class="number">5</span>, <span class="number">6</span>, <span class="number">7</span>, <span class="number">8</span>]);
+				<span class="macro">assert!</span>(uninit.as_nonchain().len() &gt;= <span class="number">8</span>);
 
-				uninit.iter_mut()
+				uninit.as_nonchain_mut()
+					.iter_mut()
 					.enumerate()
 					.take(<span class="number">4</span>)
 					.for_each(|(i, slot)| {
@@ -2805,8 +3083,8 @@
 				.len(<span class="kw-2">&amp;mut </span>len)
 				.set_len(len + <span class="number">4</span>)
 				.split_at_spare_mut(|<span class="kw-2">mut </span>slice, <span class="kw-2">mut </span>uninit| {
-					<span class="macro">assert_eq!</span>(slice, <span class="kw-2">&amp;</span>[<span class="number">1</span>, <span class="number">2</span>, <span class="number">3</span>, <span class="number">4</span>, <span class="number">5</span>, <span class="number">6</span>, <span class="number">7</span>, <span class="number">8</span>, <span class="number">0</span>, <span class="number">1</span>, <span class="number">2</span>, <span class="number">3</span>]);
-					<span class="macro">assert_eq!</span>(uninit_len - <span class="number">4</span>, uninit.len());
+					<span class="macro">assert_eq!</span>(slice.as_nonchain(), <span class="kw-2">&amp;</span>[<span class="number">1</span>, <span class="number">2</span>, <span class="number">3</span>, <span class="number">4</span>, <span class="number">5</span>, <span class="number">6</span>, <span class="number">7</span>, <span class="number">8</span>, <span class="number">0</span>, <span class="number">1</span>, <span class="number">2</span>, <span class="number">3</span>]);
+					<span class="macro">assert_eq!</span>(uninit_len - <span class="number">4</span>, uninit.as_nonchain().len());
 				});
 		}
 	}
@@ -2826,11 +3104,29 @@
 	}
 
 	<span class="attr">#[test]
-	</span><span class="kw">fn </span>reverse() {
-		<span class="kw">let </span>chain = VecChain::new()
-			.extend_from_slice(<span class="kw-2">&amp;</span>[<span class="number">1</span>, <span class="number">2</span>, <span class="number">3</span>, <span class="number">4</span>, <span class="number">5</span>, <span class="number">6</span>, <span class="number">7</span>, <span class="number">8</span>])
-			.reverse();
-		<span class="macro">assert_eq!</span>(chain.as_nonchain(), <span class="kw-2">&amp;</span>[<span class="number">8</span>, <span class="number">7</span>, <span class="number">6</span>, <span class="number">5</span>, <span class="number">4</span>, <span class="number">3</span>, <span class="number">2</span>, <span class="number">1</span>]);
+	</span><span class="kw">fn </span>trim_ascii() {
+		<span class="comment">// (original, trimmed_start, trimmed_end, trimmed_both)
+		</span><span class="kw">let </span>strs = [
+			<span class="comment">// generic random
+			</span>(<span class="string">" uwu "</span>, <span class="string">"uwu "</span>, <span class="string">" uwu"</span>, <span class="string">"uwu"</span>),
+			<span class="comment">// all spaces
+			</span>(<span class="string">"     "</span>, <span class="string">""</span>, <span class="string">""</span>, <span class="string">""</span>),
+			<span class="comment">// different types of whitespace (also space in the middle)
+			</span>(
+				<span class="string">"\t\n\x0c\r you're cute \x0c\n\r \t"</span>,
+				<span class="string">"you're cute \x0c\n\r \t"</span>,
+				<span class="string">"\t\n\x0c\r you're cute"</span>,
+				<span class="string">"you're cute"</span>,
+			)
+		];
+
+		<span class="kw">for </span>(original, trimmed_start, trimmed_end, trimmed_both) <span class="kw">in </span>strs {
+			<span class="kw">let </span>original = original.as_bytes().to_vec().into_chainer();
+
+			<span class="macro">assert_eq!</span>(<span class="kw-2">&amp;**</span>original.clone().trim_ascii_start().as_nonchain(), trimmed_start.as_bytes());
+			<span class="macro">assert_eq!</span>(<span class="kw-2">&amp;**</span>original.clone().trim_ascii_end().as_nonchain(), trimmed_end.as_bytes());
+			<span class="macro">assert_eq!</span>(<span class="kw-2">&amp;**</span>original.trim_ascii().as_nonchain(), trimmed_both.as_bytes());
+		}
 	}
 
 	<span class="attr">#[test]
@@ -2842,18 +3138,26 @@
 		<span class="kw">fn </span>check&lt;<span class="lifetime">'h</span>&gt;(
 			expected_chunks: <span class="kw-2">&amp;</span>[<span class="kw-2">&amp;</span>[u8; N]],
 			expected_remainder: <span class="kw-2">&amp;</span><span class="lifetime">'h </span>[u8]
-		) -&gt; <span class="kw">impl </span>FnOnce(<span class="kw-2">&amp;</span>[[u8; N]], <span class="kw-2">&amp;</span>[u8]) + <span class="lifetime">'h </span>{
+		) -&gt; <span class="kw">impl </span>FnOnce(SliceRefChain&lt;[u8; N]&gt;, SliceRefChain&lt;u8&gt;) + <span class="lifetime">'h </span>{
 			<span class="kw">let </span>expected_chunks = expected_chunks
 				.into_iter()
 				.map(|item| <span class="kw-2">**</span>item)
 				.collect::&lt;Vec&lt;<span class="kw">_</span>&gt;&gt;();
 
 			<span class="kw">move </span>|chunks, rem| {
-				<span class="macro">assert_eq!</span>(expected_chunks.len(), chunks.len(), <span class="string">"wrong num of chunks"</span>);
-				<span class="macro">assert_eq!</span>(expected_remainder.len(), rem.len(), <span class="string">"wrong num of elements in remainder"</span>);
+				<span class="macro">assert_eq!</span>(
+					expected_chunks.len(),
+					chunks.as_nonchain().len(),
+					<span class="string">"wrong num of chunks"
+				</span>);
+				<span class="macro">assert_eq!</span>(
+					expected_remainder.len(),
+					rem.as_nonchain().len(),
+					<span class="string">"wrong num of elements in remainder"
+				</span>);
 
-				<span class="macro">assert_eq!</span>(expected_chunks, chunks);
-				<span class="macro">assert_eq!</span>(expected_remainder, rem);
+				<span class="macro">assert_eq!</span>(expected_chunks, <span class="kw-2">*</span>chunks.as_nonchain());
+				<span class="macro">assert_eq!</span>(expected_remainder, <span class="kw-2">*</span>rem.as_nonchain());
 			}
 		}
 
