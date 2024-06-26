@@ -1519,8 +1519,16 @@ mod tests {
 				.collect::<Vec<_>>();
 
 			move |chunks, rem| {
-				assert_eq!(expected_chunks.len(), chunks.as_nonchain().len(), "wrong num of chunks");
-				assert_eq!(expected_remainder.len(), rem.as_nonchain().len(), "wrong num of elements in remainder");
+				assert_eq!(
+					expected_chunks.len(),
+					chunks.as_nonchain().len(),
+					"wrong num of chunks"
+				);
+				assert_eq!(
+					expected_remainder.len(),
+					rem.as_nonchain().len(),
+					"wrong num of elements in remainder"
+				);
 
 				assert_eq!(expected_chunks, *chunks.as_nonchain());
 				assert_eq!(expected_remainder, *rem.as_nonchain());
