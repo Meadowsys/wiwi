@@ -1106,39 +1106,32 @@ impl VecChain<u8> {
 	chain_fn! {
 		/// Trims off the leading and trailing ASCII whitespace in place
 		trim_ascii(nc) => unsafe {
-			// could just be trim start then trim end
-			let len = nc.len();
+			let trimmed_start = _tmp_trim_ascii_start_amount(nc);
+			let trimmed_end = _tmp_trim_ascii_end_amount(nc);
 
-			let trimmed_start = nc.trim_ascii_start();
-			let trimmed_start_len = trimmed_start.len();
-			let offset_start = len - trimmed_start_len;
-
-			let trimmed = trimmed_start.trim_ascii_end();
-			let trimmed_len = trimmed.len();
-
-			let src = nc.as_ptr().add(offset_start);
 			let ptr = nc.as_mut_ptr();
-			ptr::copy(src, ptr, trimmed_len);
-			nc.set_len(trimmed_len);
+			let new_len = nc.len() - (trimmed_start + trimmed_end);
+
+			ptr::copy(nc.as_ptr().add(trimmed_start), ptr, new_len);
+			nc.set_len(new_len);
 		}
 	}
 
 	chain_fn! {
 		trim_ascii_end(nc) => unsafe {
-			let len = nc.trim_ascii_end().len();
-			nc.set_len(len)
+			nc.set_len(nc.len() - _tmp_trim_ascii_end_amount(nc))
 		}
 	}
 
 	chain_fn! {
 		trim_ascii_start(nc) => unsafe {
-			let len = nc.trim_ascii_start().len();
-			let offset_start = nc.len() - len;
+			let trimmed = _tmp_trim_ascii_start_amount(nc);
 
-			let src = nc.as_ptr().add(offset_start);
 			let ptr = nc.as_mut_ptr();
-			ptr::copy(src, ptr, len);
-			nc.set_len(len);
+			let new_len = nc.len() - trimmed;
+
+			ptr::copy(nc.as_ptr(), ptr, new_len);
+			nc.set_len(new_len);
 		}
 	}
 
@@ -1347,6 +1340,34 @@ impl<T> AsRef<[T]> for VecChain<T> {
 // TODO: TryFrom<Vec<T, A>>
 // TODO: TryFrom<Vec<T>>
 // TODO: Write
+
+#[inline]
+fn _tmp_trim_ascii_start_amount(mut bytes: &[u8]) -> usize {
+	let mut count = 0;
+	while let [first, rest @ ..] = bytes {
+		if first.is_ascii_whitespace() {
+			bytes = rest;
+			count += 1;
+		} else {
+			break;
+		}
+	}
+	count
+}
+
+#[inline]
+fn _tmp_trim_ascii_end_amount(mut bytes: &[u8]) -> usize {
+	let mut count = 0;
+	while let [rest @ .., last] = bytes {
+		if last.is_ascii_whitespace() {
+			bytes = rest;
+			count += 1;
+		} else {
+			break;
+		}
+	}
+	count
+}
 
 #[cfg(test)]
 mod tests {
