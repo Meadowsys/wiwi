@@ -151,12 +151,20 @@ impl<T> VecChain<T> {
 	chain_fn! {
 		/// Takes and moves all elements from another `VecChain` into `self`,
 		/// leaving it empty.
+		///
+		/// # Examples
+		///
+		/// TODO
 		append(nc, other: &mut Self) => nc.append(other.as_nonchain_mut())
 	}
 
 	chain_fn! {
 		/// Takes and moves all elements from a `Vec` into `self`,
 		/// leaving it empty.
+		///
+		/// # Examples
+		///
+		/// TODO
 		append_nonchain(nc, other: &mut Vec<T>) => nc.append(other)
 	}
 
