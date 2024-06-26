@@ -38,6 +38,8 @@ where
 	const ONE: Self;
 
 	/// Cast a boolean into `Self`
+	///
+	/// This returns `0` if `b` is `false`, and `1` if `b` is `true`
 	fn from_bool(b: bool) -> Self;
 
 	/// Count the amount of ones in the binary representation of `self`
