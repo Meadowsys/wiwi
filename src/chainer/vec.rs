@@ -1,5 +1,5 @@
 use super::{ chainer, chain_fn, ChainHalf, NonChainHalf };
-use std::{ ptr, vec };
+use std::{ ptr, str, vec };
 use std::cmp::Ordering;
 use std::mem::{ self, MaybeUninit };
 use std::ops::RangeBounds;
@@ -154,7 +154,8 @@ impl<T> VecChain<T> {
 		/// # Examples
 		///
 		/// TODO
-		append(nc, other: &mut Self) => nc.append(other.as_nonchain_mut())
+		append(nc, other: &mut Self)
+			=> nc.append(other.as_nonchain_mut())
 	}
 
 	chain_fn! {
@@ -164,7 +165,8 @@ impl<T> VecChain<T> {
 		/// # Examples
 		///
 		/// TODO
-		append_nonchain(nc, other: &mut Vec<T>) => nc.append(other)
+		append_nonchain(nc, other: &mut Vec<T>)
+			=> nc.append(other)
 	}
 
 	chain_fn! {
@@ -314,15 +316,18 @@ impl<T> VecChain<T> {
 	}
 
 	chain_fn! {
-		capacity(nc, out: &mut usize) => *out = nc.capacity()
+		capacity(nc, out: &mut usize)
+			=> *out = nc.capacity()
 	}
 
 	chain_fn! {
-		capacity_uninit(nc, out: &mut MaybeUninit<usize>) => void out.write(nc.capacity())
+		capacity_uninit(nc, out: &mut MaybeUninit<usize>)
+			=> void out.write(nc.capacity())
 	}
 
 	chain_fn! {
-		clear(nc) => nc.clear()
+		clear(nc)
+			=> nc.clear()
 	}
 
 	chain_fn! {
@@ -490,7 +495,8 @@ impl<T> VecChain<T> {
 	}
 
 	chain_fn! {
-		insert(nc, index: usize, element: T) => nc.insert(index, element)
+		insert(nc, index: usize, element: T)
+			=> nc.insert(index, element)
 	}
 
 	chain_fn! {
@@ -511,7 +517,8 @@ impl<T> VecChain<T> {
 		/// assert!(before);
 		/// assert!(!after);
 		/// ```
-		is_empty(nc, out: &mut bool) => *out = nc.is_empty()
+		is_empty(nc, out: &mut bool)
+			=> *out = nc.is_empty()
 	}
 
 	chain_fn! {
@@ -538,7 +545,8 @@ impl<T> VecChain<T> {
 		/// assert!(before);
 		/// assert!(!after);
 		/// ```
-		is_empty_uninit(nc, out: &mut MaybeUninit<bool>) => void out.write(nc.is_empty())
+		is_empty_uninit(nc, out: &mut MaybeUninit<bool>)
+			=> void out.write(nc.is_empty())
 	}
 
 	chain_fn! {
@@ -583,7 +591,8 @@ impl<T> VecChain<T> {
 		///
 		/// assert_eq!(len, 5);
 		/// ```
-		len(nc, out: &mut usize) => *out = nc.len()
+		len(nc, out: &mut usize)
+			=> *out = nc.len()
 	}
 
 	chain_fn! {
@@ -602,15 +611,18 @@ impl<T> VecChain<T> {
 		/// let len = unsafe { len.assume_init() };
 		/// assert_eq!(len, 5);
 		/// ```
-		len_uninit(nc, out: &mut MaybeUninit<usize>) => void out.write(nc.len())
+		len_uninit(nc, out: &mut MaybeUninit<usize>)
+			=> void out.write(nc.len())
 	}
 
 	chain_fn! {
-		pop(nc, out: &mut Option<T>) => *out = nc.pop()
+		pop(nc, out: &mut Option<T>)
+			=> *out = nc.pop()
 	}
 
 	chain_fn! {
-		pop_uninit(nc, out: &mut MaybeUninit<Option<T>>) => void out.write(nc.pop())
+		pop_uninit(nc, out: &mut MaybeUninit<Option<T>>)
+			=> void out.write(nc.pop())
 	}
 
 	chain_fn! {
@@ -636,7 +648,8 @@ impl<T> VecChain<T> {
 	}
 
 	chain_fn! {
-		push(nc, value: T) => nc.push(value)
+		push(nc, value: T)
+			=> nc.push(value)
 	}
 
 	chain_fn! {
@@ -656,11 +669,13 @@ impl<T> VecChain<T> {
 	}
 
 	chain_fn! {
-		remove(nc, index: usize, out: &mut T) => *out = nc.remove(index)
+		remove(nc, index: usize, out: &mut T)
+			=> *out = nc.remove(index)
 	}
 
 	chain_fn! {
-		remove_uninit(nc, index: usize, out: &mut MaybeUninit<T>) => void out.write(nc.remove(index))
+		remove_uninit(nc, index: usize, out: &mut MaybeUninit<T>)
+			=> void out.write(nc.remove(index))
 	}
 
 	chain_fn! {
@@ -671,11 +686,13 @@ impl<T> VecChain<T> {
 	}
 
 	chain_fn! {
-		reserve(nc, additional: usize) => nc.reserve(additional)
+		reserve(nc, additional: usize)
+			=> nc.reserve(additional)
 	}
 
 	chain_fn! {
-		reserve_exact(nc, additional: usize) => nc.reserve_exact(additional)
+		reserve_exact(nc, additional: usize)
+			=> nc.reserve_exact(additional)
 	}
 
 	chain_fn! {
@@ -703,27 +720,33 @@ impl<T> VecChain<T> {
 	}
 
 	chain_fn! {
-		reverse(nc) => nc.reverse()
+		reverse(nc)
+			=> nc.reverse()
 	}
 
 	chain_fn! {
-		rotate_left(nc, mid: usize) => nc.rotate_left(mid)
+		rotate_left(nc, mid: usize)
+			=> nc.rotate_left(mid)
 	}
 
 	chain_fn! {
-		rotate_right(nc, mid: usize) => nc.rotate_right(mid)
+		rotate_right(nc, mid: usize)
+			=> nc.rotate_right(mid)
 	}
 
 	chain_fn! {
-		unsafe set_len(nc, new_len: usize) => nc.set_len(new_len)
+		unsafe set_len(nc, new_len: usize)
+			=> nc.set_len(new_len)
 	}
 
 	chain_fn! {
-		shrink_to(nc, min_capacity: usize) => nc.shrink_to(min_capacity)
+		shrink_to(nc, min_capacity: usize)
+			=> nc.shrink_to(min_capacity)
 	}
 
 	chain_fn! {
-		shrink_to_fit(nc) => nc.shrink_to_fit()
+		shrink_to_fit(nc)
+			=> nc.shrink_to_fit()
 	}
 
 	chain_fn! {
@@ -906,7 +929,8 @@ impl<T> VecChain<T> {
 	}
 
 	chain_fn! {
-		swap(nc, a: usize, b: usize) => nc.swap(a, b)
+		swap(nc, a: usize, b: usize)
+			=> nc.swap(a, b)
 	}
 
 	chain_fn! {
@@ -918,19 +942,23 @@ impl<T> VecChain<T> {
 	}
 
 	chain_fn! {
-		swap_remove(nc, index: usize, out: &mut T) => *out = nc.swap_remove(index)
+		swap_remove(nc, index: usize, out: &mut T)
+			=> *out = nc.swap_remove(index)
 	}
 
 	chain_fn! {
-		swap_remove_uninit(nc, index: usize, out: &mut MaybeUninit<T>) => void out.write(nc.swap_remove(index))
+		swap_remove_uninit(nc, index: usize, out: &mut MaybeUninit<T>)
+			=> void out.write(nc.swap_remove(index))
 	}
 
 	chain_fn! {
-		swap_with_slice(nc, other: &mut [T]) => nc.swap_with_slice(other)
+		swap_with_slice(nc, other: &mut [T])
+			=> nc.swap_with_slice(other)
 	}
 
 	chain_fn! {
-		truncate(nc, len: usize) => nc.truncate(len)
+		truncate(nc, len: usize)
+			=> nc.truncate(len)
 	}
 
 	// TODO: try_reserve/exact
@@ -942,14 +970,6 @@ impl<T> VecChain<T> {
 		} => cb(nc.windows(size))
 	}
 
-
-	// TODO: utf8_chunks
-	// TODO: eq_ignore_ascii_case
-	// TODO: escape_ascii
-	// TODO: trim_ascii_start/end
-	// TODO: trim_ascii
-
-	// doc link: https://doc.rust-lang.org/std/vec/struct.Vec.html#method.first_chunk
 	// TODO: iter/mut
 
 	// TODO: chunks/mut
@@ -1022,7 +1042,6 @@ impl<T> VecChain<T> {
 	// TODO: get_many_unchecked_mut
 	// TODO: get_many_mut
 	// TODO: get_many/get_many_unchecked (non mut? not in std?)
-	// TODO: eq_ignore_ascii_case
 	// TODO: make_ascii_uppercase/lowercase
 	// TODO: escape_ascii
 	// TODO: trim_ascii
@@ -1032,32 +1051,109 @@ impl<T> VecChain<T> {
 impl VecChain<f32> {
 	chain_fn! {
 		// TODO: call std once stabilised
-		sort_floats(nc) => nc.sort_unstable_by(f32::total_cmp)
+		sort_floats(nc)
+			=> nc.sort_unstable_by(f32::total_cmp)
 	}
 }
 
 impl VecChain<f64> {
 	chain_fn! {
 		// TODO: call std once stabilised
-		sort_floats(nc) => nc.sort_unstable_by(f64::total_cmp)
+		sort_floats(nc)
+			=> nc.sort_unstable_by(f64::total_cmp)
 	}
 }
 
 impl VecChain<u8> {
 	chain_fn! {
-		is_ascii(nc, out: &mut bool) => *out = nc.is_ascii()
+		eq_ignore_ascii_case(nc, other: &VecChain<u8>, out: &mut bool)
+			=> *out = nc.eq_ignore_ascii_case(other.as_nonchain())
 	}
 
 	chain_fn! {
-		is_ascii_uninit(nc, out: &mut MaybeUninit<bool>) => void out.write(nc.is_ascii())
+		eq_ignore_ascii_case_uninit(nc, other: &VecChain<u8>, out: &mut MaybeUninit<bool>)
+			=> void out.write(nc.eq_ignore_ascii_case(other.as_nonchain()))
 	}
 
 	chain_fn! {
-		make_ascii_lowercase(nc) => nc.make_ascii_lowercase()
+		eq_ignore_ascii_case_nonchain(nc, other: &[u8], out: &mut bool)
+			=> *out = nc.eq_ignore_ascii_case(other)
 	}
 
 	chain_fn! {
-		make_ascii_uppercase(nc) => nc.make_ascii_uppercase()
+		eq_ignore_ascii_case_nonchain_uninit(nc, other: &[u8], out: &mut MaybeUninit<bool>)
+			=> void out.write(nc.eq_ignore_ascii_case(other))
+	}
+
+	chain_fn! {
+		escape_ascii[CB](nc, cb: CB) where {
+			CB: FnOnce(slice::EscapeAscii)
+		} => cb(nc.escape_ascii())
+	}
+
+	chain_fn! {
+		is_ascii(nc, out: &mut bool)
+			=> *out = nc.is_ascii()
+	}
+
+	chain_fn! {
+		is_ascii_uninit(nc, out: &mut MaybeUninit<bool>)
+			=> void out.write(nc.is_ascii())
+	}
+
+	chain_fn! {
+		make_ascii_lowercase(nc)
+			=> nc.make_ascii_lowercase()
+	}
+
+	chain_fn! {
+		make_ascii_uppercase(nc)
+			=> nc.make_ascii_uppercase()
+	}
+
+	chain_fn! {
+		/// Trims off the leading and trailing ASCII whitespace in place
+		trim_ascii(nc) => unsafe {
+			// could just be trim start then trim end
+			let len = nc.len();
+
+			let trimmed_start = nc.trim_ascii_start();
+			let trimmed_start_len = trimmed_start.len();
+			let offset_start = len - trimmed_start_len;
+
+			let trimmed = trimmed_start.trim_ascii_end();
+			let trimmed_len = trimmed.len();
+
+			let src = nc.as_ptr().add(offset_start);
+			let ptr = nc.as_mut_ptr();
+			ptr::copy(src, ptr, trimmed_len);
+			nc.set_len(trimmed_len);
+		}
+	}
+
+	chain_fn! {
+		trim_ascii_end(nc) => unsafe {
+			let len = nc.trim_ascii_end().len();
+			nc.set_len(len)
+		}
+	}
+
+	chain_fn! {
+		trim_ascii_start(nc) => unsafe {
+			let len = nc.trim_ascii_start().len();
+			let offset_start = nc.len() - len;
+
+			let src = nc.as_ptr().add(offset_start);
+			let ptr = nc.as_mut_ptr();
+			ptr::copy(src, ptr, len);
+			nc.set_len(len);
+		}
+	}
+
+	chain_fn! {
+		utf8_chunks[CB](nc, cb: CB) where {
+			CB: FnOnce(str::Utf8Chunks)
+		} => cb(nc.utf8_chunks())
 	}
 
 	// TODO: as_ascii/unchecked nightly
@@ -1154,7 +1250,6 @@ impl<T> AsRef<[T]> for VecChain<T> {
 // TODO: chunks_mut
 // TODO: concat
 // TODO: connect
-// TODO: eq_ignore_ascii_case
 // TODO: escape_ascii
 // TODO: flatten_mut
 // TODO: get_many_mut
