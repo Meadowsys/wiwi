@@ -1330,7 +1330,7 @@ mod tests {
 	}
 
 	#[test]
-	fn with_split_at_spare_mut() {
+	fn split_at_spare_mut() {
 		let mut uninit_len = 0;
 		let chain = VecChain::new()
 			.extend_from_slice(&[1usize, 2, 3, 4, 5, 6, 7, 8])
