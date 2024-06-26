@@ -38,6 +38,7 @@ pub struct IDGenerator {
 }
 
 #[repr(transparent)]
+#[derive(Clone, Copy, Debug, Hash, PartialEq, Eq, PartialOrd, Ord)]
 pub struct GeneratedID {
 	/// [`NonZeroU64`] to allow for null ptr optimisation
 	unsigned: NonZeroU64
