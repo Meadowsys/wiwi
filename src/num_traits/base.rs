@@ -1,7 +1,7 @@
 use std::mem::{ size_of, align_of };
 
 /// Common base for all numbers
-pub trait Base: Sized + private::Sealed {
+pub trait Base: Sized + Clone + private::Sealed {
 	/// Min (finite) value of this number type
 	const MIN: Self;
 	/// Max (finite) value of this number type
