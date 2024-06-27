@@ -19,8 +19,8 @@ pub use add_regular::Add;
 // pub use add_unchecked::AddUnchecked;
 // mod add_strict;
 // pub use add_strict::AddStrict;
-// mod add_overflowing;
-// pub use add_overflowing::AddOverflowing;
+mod add_overflowing;
+pub use add_overflowing::AddOverflowing;
 // mod add_saturating;
 // pub use add_saturating::AddSaturating;
 // mod add_wrapping;
@@ -30,9 +30,13 @@ pub use add_regular::Add;
 
 mod sub_regular;
 pub use sub_regular::Sub;
+mod sub_overflowing;
+pub use sub_overflowing::SubOverflowing;
 
 mod mul_regular;
 pub use mul_regular::Mul;
+mod mul_overflowing;
+pub use mul_overflowing::MulOverflowing;
 
 mod div_regular;
 pub use div_regular::Div;
@@ -40,6 +44,8 @@ mod div_int;
 pub use div_int::DivInt;
 mod div_float;
 pub use div_float::DivFloat;
+mod div_overflowing;
+pub use div_overflowing::DivOverflowing;
 
 // mod rem_regular;
 // pub use rem_regular::Rem;
