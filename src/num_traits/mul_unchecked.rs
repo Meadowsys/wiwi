@@ -14,6 +14,7 @@ macro_rules! impl_num_trait_mul_unchecked {
 	{ $($num:ident)* } => {
 		$(
 			impl MulUnchecked for $num {
+				#[inline]
 				unsafe fn mul_unchecked(self, rhs: $num) -> $num {
 					// TODO: use actually unchecked mul when it's been longer in stable
 					self * rhs

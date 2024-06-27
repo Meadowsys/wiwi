@@ -7,6 +7,7 @@ pub trait AddCarrying: AddOverflowing {
 	/// # Examples
 	///
 	/// TODO
+	#[inline]
 	fn add_carrying(self, rhs: Self, carry: bool) -> (Self, bool) {
 		let (res, carry1) = self.add_overflowing(rhs);
 		let (res, carry2) = res.add_overflowing(Self::from_bool(carry));

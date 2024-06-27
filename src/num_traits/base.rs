@@ -75,6 +75,7 @@ macro_rules! impl_num_trait_base {
 			const BYTES: usize = size_of::<$num>();
 			const ALIGN: usize = align_of::<$num>();
 
+			#[inline(always)]
 			fn from_bool($b: bool) -> $num { $from_bool }
 		}
 	};

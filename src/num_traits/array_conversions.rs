@@ -61,12 +61,18 @@ macro_rules! impl_num_trait_array_conversions {
 	{ $($num:ident)* } => {
 		$(
 			impl ArrayConversions<{ $num::BYTES }> for $num {
+				#[inline]
 				fn into_le_bytes(self) -> [u8; $num::BYTES] { $num::to_le_bytes(self) }
+				#[inline]
 				fn into_be_bytes(self) -> [u8; $num::BYTES] { $num::to_be_bytes(self) }
+				#[inline]
 				fn into_ne_bytes(self) -> [u8; $num::BYTES] { $num::to_ne_bytes(self) }
 
+				#[inline]
 				fn from_le_bytes(bytes: [u8; $num::BYTES]) -> $num { $num::from_le_bytes(bytes) }
+				#[inline]
 				fn from_be_bytes(bytes: [u8; $num::BYTES]) -> $num { $num::from_be_bytes(bytes) }
+				#[inline]
 				fn from_ne_bytes(bytes: [u8; $num::BYTES]) -> $num { $num::from_ne_bytes(bytes) }
 			}
 		)*
