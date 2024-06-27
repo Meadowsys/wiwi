@@ -222,7 +222,7 @@ pub struct Nominal<T, M> {
 
 impl<T, M> Nominal<T, M> {
 	/// Creates a nominal struct with the given value
-	#[inline]
+	#[inline(always)]
 	pub fn new(item: T) -> Self {
 		Self { item, marker: PhantomData }
 	}
@@ -233,7 +233,7 @@ impl<T, M> Nominal<T, M> {
 	/// same method as on [`Option`] and [`Result`], which implies panicking, but
 	/// this method will not panick.
 	// TODO: was into_inner better?
-	#[inline]
+	#[inline(always)]
 	pub fn unwrap_value(self) -> T {
 		self.item
 	}
@@ -243,7 +243,7 @@ impl<T, M> Nominal<T, M> {
 	/// Note: [`Deref`](std::ops::Deref) is not implemented on purpose,
 	/// to prevent unintentional auto-derefs
 	// TODO: should we reconsider the above?
-	#[inline]
+	#[inline(always)]
 	pub fn wrapped_ref(&self) -> &T {
 		&self.item
 	}
@@ -253,7 +253,7 @@ impl<T, M> Nominal<T, M> {
 	/// Note: [`DerefMut`](std::ops::DerefMut) is not implemented on purpose,
 	/// to prevent unintentional auto-derefs
 	// TODO: should we reconsider the above?
-	#[inline]
+	#[inline(always)]
 	pub fn wrapped_mut(&mut self) -> &mut T {
 		&mut self.item
 	}
@@ -264,14 +264,14 @@ impl<T, M> Nominal<T, M> {
 	/// If you're using this function, make sure you know why you're using it!
 	/// after all, the whole point of this is to seperate otherwise identical
 	/// types into newtypes based on semantic meaning.
-	#[inline]
+	#[inline(always)]
 	pub fn transmute_wrapper<M2>(self) -> Nominal<T, M2> {
 		Nominal::new(self.unwrap_value())
 	}
 
 	/// Consumes and "map"s the wrapped value into another value, wrapping it in
 	/// a nominal type with the same marker
-	#[inline]
+	#[inline(always)]
 	pub fn map_value<T2, F>(self, f: F) -> Nominal<T2, M>
 	where
 		F: FnOnce(T) -> T2
@@ -285,7 +285,7 @@ impl<T, M> Nominal<T, M> {
 	///
 	/// [`map_value`]: Self::map_value
 	/// [`transmute_wrapper`]: Self::transmute_wrapper
-	#[inline]
+	#[inline(always)]
 	pub fn map_transmute<T2, M2, F>(self, f: F) -> Nominal<T2, M2>
 	where
 		F: FnOnce(T) -> T2
@@ -295,7 +295,7 @@ impl<T, M> Nominal<T, M> {
 
 	/// Consumes and asyncronously "map"s the wrapped value into another value,
 	/// wrapping it in a nominal type with the same marker
-	#[inline]
+	#[inline(always)]
 	pub async fn async_map_value<T2, F, Fu>(self, f: F) -> Nominal<T2, M>
 	where
 		F: FnOnce(T) -> Fu,
@@ -310,7 +310,7 @@ impl<T, M> Nominal<T, M> {
 	///
 	/// [`async_map_value`]: Self::async_map_value
 	/// [`transmute_wrapper`]: Self::transmute_wrapper
-	#[inline]
+	#[inline(always)]
 	pub async fn async_map_transmute<T2, M2, F, Fu>(self, f: F) -> Nominal<T2, M>
 	where
 		F: FnOnce(T) -> Fu,
@@ -326,14 +326,14 @@ impl<T, M, E> Nominal<Result<T, E>, M> {
 	///
 	/// The value gets wrapped, but the error does not. Both are not otherwise
 	/// modified in any way.
-	#[inline]
+	#[inline(always)]
 	pub fn transpose(self) -> Result<Nominal<T, M>, E> {
 		self.unwrap_value().map(Nominal::new)
 	}
 
 	/// Maps the [`Ok`] value of a [`Result`], wrapping the resulting [`Result`]
 	/// in a nominal type with the same marker
-	#[inline]
+	#[inline(always)]
 	pub fn map_result_ok<T2, F>(self, f: F) -> Nominal<Result<T2, E>, M>
 	where
 		F: FnOnce(T) -> T2
@@ -343,7 +343,7 @@ impl<T, M, E> Nominal<Result<T, E>, M> {
 
 	/// Maps the [`Err`] value of a [`Result`], wrapping the resulting [`Result`]
 	/// in a nominal type with the same marker
-	#[inline]
+	#[inline(always)]
 	pub fn map_result_err<E2, F>(self, f: F) -> Nominal<Result<T, E2>, M>
 	where
 		F: FnOnce(E) -> E2
@@ -357,14 +357,14 @@ impl<T, M> Nominal<Option<T>, M> {
 	/// wrapped value
 	///
 	/// The value is not otherwise modified in any way.
-	#[inline]
+	#[inline(always)]
 	pub fn transpose(self) -> Option<Nominal<T, M>> {
 		self.unwrap_value().map(Nominal::new)
 	}
 
 	/// Maps the [`Some`] value of an [`Option`], wrapping the resulting [`Option`]
 	/// in a nominal type with the same marker
-	#[inline]
+	#[inline(always)]
 	pub fn map_option_some<T2, F>(self, f: F) -> Nominal<Option<T2>, M>
 	where
 		F: FnOnce(T) -> T2
@@ -374,7 +374,7 @@ impl<T, M> Nominal<Option<T>, M> {
 }
 
 impl<T, M> From<T> for Nominal<T, M> {
-	#[inline]
+	#[inline(always)]
 	fn from(value: T) -> Self {
 		Self::new(value)
 	}
@@ -383,12 +383,12 @@ impl<T, M> From<T> for Nominal<T, M> {
 // delegate trait impls by just calling T's impl
 
 impl<T: Clone, M> Clone for Nominal<T, M> {
-	#[inline]
+	#[inline(always)]
 	fn clone(&self) -> Self {
 		self.wrapped_ref().clone().into()
 	}
 
-	#[inline]
+	#[inline(always)]
 	fn clone_from(&mut self, source: &Self) {
 		self.wrapped_mut().clone_from(source.wrapped_ref())
 	}
@@ -397,7 +397,7 @@ impl<T: Clone, M> Clone for Nominal<T, M> {
 impl<T: Copy, M> Copy for Nominal<T, M> {}
 
 impl<T: Debug, M> Debug for Nominal<T, M> {
-	#[inline]
+	#[inline(always)]
 	fn fmt(&self, f: &mut Formatter<'_>) -> fmt::Result {
 		f.debug_struct("Nominal")
 			.field("value", self.wrapped_ref())
@@ -406,26 +406,26 @@ impl<T: Debug, M> Debug for Nominal<T, M> {
 }
 
 impl<T: Display, M> Display for Nominal<T, M> {
-	#[inline]
+	#[inline(always)]
 	fn fmt(&self, f: &mut Formatter<'_>) -> fmt::Result {
 		self.wrapped_ref().fmt(f)
 	}
 }
 
 impl<T: Default, M> Default for Nominal<T, M> {
-	#[inline]
+	#[inline(always)]
 	fn default() -> Self {
 		T::default().into()
 	}
 }
 
 impl<T: Hash, M> Hash for Nominal<T, M> {
-	#[inline]
+	#[inline(always)]
 	fn hash<H: Hasher>(&self, state: &mut H) {
 		self.wrapped_ref().hash(state)
 	}
 
-	#[inline]
+	#[inline(always)]
 	fn hash_slice<H: Hasher>(data: &[Self], state: &mut H)
 	where
 		Self: Sized
@@ -437,7 +437,7 @@ impl<T: Hash, M> Hash for Nominal<T, M> {
 }
 
 impl<T: PartialEq<TR>, M, TR, MR> PartialEq<Nominal<TR, MR>> for Nominal<T, M> {
-	#[inline]
+	#[inline(always)]
 	fn eq(&self, other: &Nominal<TR, MR>) -> bool {
 		self.wrapped_ref().eq(other.wrapped_ref())
 		// <T as PartialEq>::eq(self.ref_inner(), other.ref_inner())
@@ -446,7 +446,7 @@ impl<T: PartialEq<TR>, M, TR, MR> PartialEq<Nominal<TR, MR>> for Nominal<T, M> {
 	// we override ne here since T might have overridden ne, in which case this
 	// impl will correctly call it
 	#[allow(clippy::partialeq_ne_impl)]
-	#[inline]
+	#[inline(always)]
 	fn ne(&self, other: &Nominal<TR, MR>) -> bool {
 		self.wrapped_ref().ne(other.wrapped_ref())
 	}
@@ -455,49 +455,49 @@ impl<T: PartialEq<TR>, M, TR, MR> PartialEq<Nominal<TR, MR>> for Nominal<T, M> {
 impl<T: Eq, M> Eq for Nominal<T, M> {}
 
 impl<T: PartialOrd<TR>, M, TR, MR> PartialOrd<Nominal<TR, MR>> for Nominal<T, M> {
-	#[inline]
+	#[inline(always)]
 	fn partial_cmp(&self, other: &Nominal<TR, MR>) -> Option<Ordering> {
 		self.wrapped_ref().partial_cmp(other.wrapped_ref())
 	}
 
-	#[inline]
+	#[inline(always)]
 	fn lt(&self, other: &Nominal<TR, MR>) -> bool {
 		self.wrapped_ref().lt(other.wrapped_ref())
 	}
 
-	#[inline]
+	#[inline(always)]
 	fn le(&self, other: &Nominal<TR, MR>) -> bool {
 		self.wrapped_ref().le(other.wrapped_ref())
 	}
 
-	#[inline]
+	#[inline(always)]
 	fn gt(&self, other: &Nominal<TR, MR>) -> bool {
 		self.wrapped_ref().gt(other.wrapped_ref())
 	}
 
-	#[inline]
+	#[inline(always)]
 	fn ge(&self, other: &Nominal<TR, MR>) -> bool {
 		self.wrapped_ref().ge(other.wrapped_ref())
 	}
 }
 
 impl<T: Ord, M> Ord for Nominal<T, M> {
-	#[inline]
+	#[inline(always)]
 	fn cmp(&self, other: &Self) -> Ordering {
 		self.wrapped_ref().cmp(other.wrapped_ref())
 	}
 
-	#[inline]
+	#[inline(always)]
 	fn max(self, other: Self) -> Self {
 		self.unwrap_value().max(other.unwrap_value()).into()
 	}
 
-	#[inline]
+	#[inline(always)]
 	fn min(self, other: Self) -> Self {
 		self.unwrap_value().min(other.unwrap_value()).into()
 	}
 
-	#[inline]
+	#[inline(always)]
 	fn clamp(self, min: Self, max: Self) -> Self {
 		self.unwrap_value().clamp(min.unwrap_value(), max.unwrap_value()).into()
 	}
