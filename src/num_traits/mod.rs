@@ -258,6 +258,10 @@ pub use mul_regular::Mul;
 
 mod div_regular;
 pub use div_regular::Div;
+mod div_int;
+pub use div_int::DivInt;
+mod div_float;
+pub use div_float::DivFloat;
 
 mod rem_regular;
 pub use rem_regular::Rem;
