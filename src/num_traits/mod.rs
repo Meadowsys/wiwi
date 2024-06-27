@@ -16,6 +16,8 @@ mod array_conversions;
 pub use array_conversions::ArrayConversions;
 mod from_lossless;
 pub use from_lossless::*;
+mod into_lossless;
+pub use into_lossless::*;
 
 mod add_regular;
 pub use add_regular::Add;

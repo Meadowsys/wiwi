@@ -14,7 +14,7 @@ macro_rules! decl_from_lossless {
 		/// convert a
 		#[doc = concat!("`", stringify!($from), "`")]
 		/// to the number type while guaranteeing absolutely no losses for all
-		/// values. This is not the same as an `as` cast!
+		/// possible values. This is not the same as an `as` cast!
 		pub trait $trait_name: Base {
 			fn $fn_name(val: $from) -> Self;
 		}
