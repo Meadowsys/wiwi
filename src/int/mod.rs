@@ -1,4 +1,4 @@
 pub mod ints;
 
-// mod add;
-// mod sub;
+mod add;
+mod sub;

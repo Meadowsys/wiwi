@@ -1,4 +1,4 @@
-use crate::num_traits::Int;
+use crate::num_traits::UnsignedInt;
 use std::mem::MaybeUninit;
 
 // /// Performs standard addition, with overflow checking depending on overflow
@@ -61,7 +61,7 @@ use std::mem::MaybeUninit;
 // 	res
 // }
 
-pub fn overflowing_add<I: Int<BYTES_PER_INT>, const BYTES_PER_INT: usize, const BYTES: usize>(
+pub fn overflowing_add<I: UnsignedInt<BYTES_PER_INT>, const BYTES_PER_INT: usize, const BYTES: usize>(
 	int1: [I; BYTES],
 	int2: [I; BYTES]
 ) -> ([I; BYTES], bool) {
@@ -78,8 +78,8 @@ pub fn overflowing_add<I: Int<BYTES_PER_INT>, const BYTES_PER_INT: usize, const 
 			let i1 = *int1_ptr.add(i);
 			let i2 = *int2_ptr.add(i);
 
-			let (res, carry1) = i1.overflowing_add(i2);
-			let (res, carry2) = res.overflowing_add(I::from_bool(carry));
+			let (res, carry1) = i1.add_overflowing(i2);
+			let (res, carry2) = res.add_overflowing(I::from_bool(carry));
 
 			result_ptr.add(i).write(res);
 			carry = carry1 || carry2;

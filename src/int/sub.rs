@@ -1,7 +1,7 @@
-use crate::num_traits::Int;
+use crate::num_traits::UnsignedInt;
 use std::mem::MaybeUninit;
 
-fn overflowing_sub<I: Int<BYTES_PER_INT>, const BYTES_PER_INT: usize, const BYTES: usize>(
+fn overflowing_sub<I: UnsignedInt<BYTES_PER_INT>, const BYTES_PER_INT: usize, const BYTES: usize>(
 	int1: [I; BYTES],
 	int2: [I; BYTES]
 ) -> ([I; BYTES], bool) {
@@ -18,8 +18,8 @@ fn overflowing_sub<I: Int<BYTES_PER_INT>, const BYTES_PER_INT: usize, const BYTE
 			let i1 = *int1_ptr.add(i);
 			let i2 = *int2_ptr.add(i);
 
-			let (res, borrow1) = i1.overflowing_sub(i2);
-			let (res, borrow2) = res.overflowing_sub(I::from_bool(borrow));
+			let (res, borrow1) = i1.sub_overflowing(i2);
+			let (res, borrow2) = res.sub_overflowing(I::from_bool(borrow));
 
 			result_ptr.add(i).write(res);
 			borrow = borrow1 || borrow2;

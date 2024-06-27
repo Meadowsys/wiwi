@@ -592,7 +592,7 @@ int_trait_impl! {
 }
 */
 
-pub trait UnsignedInt<const BYTES: usize>: Sized
+pub trait UnsignedInt<const BYTES: usize>: Sized + sealed::UnsignedInt
 where
 	Self: Copy + Debug + Display + Default + Hash,
 	Self: PartialEq<Self> + Eq + PartialOrd<Self> + Ord,
@@ -637,7 +637,7 @@ where
 	// fn add_checked(self, rhs: Self);
 	// fn add_unchecked(self, rhs: Self);
 	// fn add_strict(self, rhs: Self);
-	// fn add_overflowing(self, rhs: Self);
+	fn add_overflowing(self, rhs: Self) -> (Self, bool);
 	// fn add_saturating(self, rhs: Self);
 	// fn add_wrapping(self, rhs: Self);
 	// fn add_carrying(self, rhs: Self);
@@ -646,7 +646,7 @@ where
 	// fn sub_checked(self, rhs: Self);
 	// fn sub_unchecked(self, rhs: Self);
 	// fn sub_strict(self, rhs: Self);
-	// fn sub_overflowing(self, rhs: Self);
+	fn sub_overflowing(self, rhs: Self) -> (Self, bool);
 	// fn sub_saturating(self, rhs: Self);
 	// fn sub_wrapping(self, rhs: Self);
 	// fn sub_carrying(self, rhs: Self);
@@ -742,13 +742,15 @@ where
 	// fn ilog10_carrying(self, rhs: Self);
 }
 
-pub trait WideningUnsignedInt<const BYTES: usize, const WIDENED: usize>: UnsignedInt<BYTES> {
+pub trait WideningUnsignedInt<const BYTES: usize, const WIDENED: usize>: UnsignedInt<BYTES> + sealed::WideningUnsignedInt {
 	type Widening: UnsignedInt<WIDENED>;
 }
 
 macro_rules! unsigned_int_trait_impl {
 	{ $int:ident $($widening:ident $($rest:ident)*)? } => {
 		const _: () = assert!($int::BITS % 8 == 0);
+
+		impl sealed::UnsignedInt for $int {}
 
 		impl UnsignedInt<{ $int::BITS as usize / 8 }> for $int {
 			const MIN: $int = $int::MIN;
@@ -758,12 +760,17 @@ macro_rules! unsigned_int_trait_impl {
 			const ZERO: $int = 0;
 			const ONE: $int = 1;
 
-			fn from_bool(b: bool) -> Self { b as _ }
+			fn from_bool(b: bool) -> $int { b as _ }
+
+			fn add_overflowing(self, rhs: $int) -> ($int, bool) { <$int>::overflowing_add(self, rhs) }
+
+			fn sub_overflowing(self, rhs: $int) -> ($int, bool) { <$int>::overflowing_add(self, rhs) }
 		}
 
 		$(
 			const _: () = assert!($int::BITS as usize * 2 == $widening::BITS as usize);
 
+			impl sealed::WideningUnsignedInt for $int {}
 			impl WideningUnsignedInt<{ $int::BITS as usize / 8 }, { $widening::BITS as usize / 8 }> for $int {
 				type Widening = $widening;
 			}
@@ -774,3 +781,11 @@ macro_rules! unsigned_int_trait_impl {
 }
 
 unsigned_int_trait_impl! { u8 u16 u32 u64 u128 }
+
+/// notouch
+mod sealed {
+	/// notouch
+	pub trait UnsignedInt {}
+	/// notouch
+	pub trait WideningUnsignedInt {}
+}
