@@ -82,11 +82,10 @@ pub fn overflowing_add<
 			let i1 = *int1_ptr.add(i);
 			let i2 = *int2_ptr.add(i);
 
-			let (res, carry1) = i1.add_overflowing(i2);
-			let (res, carry2) = res.add_overflowing(I::from_bool(carry));
+			let (r, c) = I::add_carrying(i1, i2, carry);
 
-			result_ptr.add(i).write(res);
-			carry = carry1 || carry2;
+			result_ptr.add(i).write(r);
+			carry = c;
 		}
 
 		(result.assume_init(), carry)

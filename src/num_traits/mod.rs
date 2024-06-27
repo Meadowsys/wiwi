@@ -635,25 +635,25 @@ where
 
 	// fn add_regular(self, rhs: Self);
 	// fn add_checked(self, rhs: Self);
-	// fn add_unchecked(self, rhs: Self);
+	// unsafe fn add_unchecked(self, rhs: Self);
 	// fn add_strict(self, rhs: Self);
 	fn add_overflowing(self, rhs: Self) -> (Self, bool);
 	// fn add_saturating(self, rhs: Self);
 	// fn add_wrapping(self, rhs: Self);
-	// fn add_carrying(self, rhs: Self);
+	fn add_carrying(self, rhs: Self, carry: bool) -> (Self, bool);
 
 	// fn sub_regular(self, rhs: Self);
 	// fn sub_checked(self, rhs: Self);
-	// fn sub_unchecked(self, rhs: Self);
+	// unsafe fn sub_unchecked(self, rhs: Self);
 	// fn sub_strict(self, rhs: Self);
 	fn sub_overflowing(self, rhs: Self) -> (Self, bool);
 	// fn sub_saturating(self, rhs: Self);
 	// fn sub_wrapping(self, rhs: Self);
-	// fn sub_carrying(self, rhs: Self);
+	fn sub_borrowing(self, rhs: Self, borrow: bool) -> (Self, bool);
 
 	// fn mul_regular(self, rhs: Self);
 	// fn mul_checked(self, rhs: Self);
-	// fn mul_unchecked(self, rhs: Self);
+	unsafe fn mul_unchecked(self, rhs: Self) -> Self;
 	// fn mul_strict(self, rhs: Self);
 	// fn mul_overflowing(self, rhs: Self);
 	// fn mul_saturating(self, rhs: Self);
@@ -662,7 +662,7 @@ where
 
 	// fn div_regular(self, rhs: Self);
 	// fn div_checked(self, rhs: Self);
-	// fn div_unchecked(self, rhs: Self);
+	// unsafe fn div_unchecked(self, rhs: Self);
 	// fn div_strict(self, rhs: Self);
 	// fn div_overflowing(self, rhs: Self);
 	// fn div_saturating(self, rhs: Self);
@@ -671,7 +671,7 @@ where
 
 	// fn rem_regular(self, rhs: Self);
 	// fn rem_checked(self, rhs: Self);
-	// fn rem_unchecked(self, rhs: Self);
+	// unsafe fn rem_unchecked(self, rhs: Self);
 	// fn rem_strict(self, rhs: Self);
 	// fn rem_overflowing(self, rhs: Self);
 	// fn rem_saturating(self, rhs: Self);
@@ -680,7 +680,7 @@ where
 
 	// fn shl_regular(self, rhs: Self);
 	// fn shl_checked(self, rhs: Self);
-	// fn shl_unchecked(self, rhs: Self);
+	// unsafe fn shl_unchecked(self, rhs: Self);
 	// fn shl_strict(self, rhs: Self);
 	// fn shl_overflowing(self, rhs: Self);
 	// fn shl_saturating(self, rhs: Self);
@@ -689,7 +689,7 @@ where
 
 	// fn shr_regular(self, rhs: Self);
 	// fn shr_checked(self, rhs: Self);
-	// fn shr_unchecked(self, rhs: Self);
+	// unsafe fn shr_unchecked(self, rhs: Self);
 	// fn shr_strict(self, rhs: Self);
 	// fn shr_overflowing(self, rhs: Self);
 	// fn shr_saturating(self, rhs: Self);
@@ -698,7 +698,7 @@ where
 
 	// fn pow_regular(self, rhs: Self);
 	// fn pow_checked(self, rhs: Self);
-	// fn pow_unchecked(self, rhs: Self);
+	// unsafe fn pow_unchecked(self, rhs: Self);
 	// fn pow_strict(self, rhs: Self);
 	// fn pow_overflowing(self, rhs: Self);
 	// fn pow_saturating(self, rhs: Self);
@@ -707,7 +707,7 @@ where
 
 	// fn neg_regular(self, rhs: Self);
 	// fn neg_checked(self, rhs: Self);
-	// fn neg_unchecked(self, rhs: Self);
+	// unsafe fn neg_unchecked(self, rhs: Self);
 	// fn neg_strict(self, rhs: Self);
 	// fn neg_overflowing(self, rhs: Self);
 	// fn neg_saturating(self, rhs: Self);
@@ -716,7 +716,7 @@ where
 
 	// fn ilog_regular(self, rhs: Self);
 	// fn ilog_checked(self, rhs: Self);
-	// fn ilog_unchecked(self, rhs: Self);
+	// unsafe fn ilog_unchecked(self, rhs: Self);
 	// fn ilog_strict(self, rhs: Self);
 	// fn ilog_overflowing(self, rhs: Self);
 	// fn ilog_saturating(self, rhs: Self);
@@ -725,7 +725,7 @@ where
 
 	// fn ilog2_regular(self, rhs: Self);
 	// fn ilog2_checked(self, rhs: Self);
-	// fn ilog2_unchecked(self, rhs: Self);
+	// unsafe fn ilog2_unchecked(self, rhs: Self);
 	// fn ilog2_strict(self, rhs: Self);
 	// fn ilog2_overflowing(self, rhs: Self);
 	// fn ilog2_saturating(self, rhs: Self);
@@ -734,7 +734,7 @@ where
 
 	// fn ilog10_regular(self, rhs: Self);
 	// fn ilog10_checked(self, rhs: Self);
-	// fn ilog10_unchecked(self, rhs: Self);
+	// unsafe fn ilog10_unchecked(self, rhs: Self);
 	// fn ilog10_strict(self, rhs: Self);
 	// fn ilog10_overflowing(self, rhs: Self);
 	// fn ilog10_saturating(self, rhs: Self);
@@ -744,6 +744,8 @@ where
 
 pub trait WideningUnsignedInt<const BYTES: usize, const WIDENED: usize>: UnsignedInt<BYTES> + sealed::WideningUnsignedInt {
 	type Widening: UnsignedInt<WIDENED>;
+
+	fn mul_widening(self, rhs: Self) -> Self::Widening;
 }
 
 macro_rules! unsigned_int_trait_impl {
@@ -763,8 +765,23 @@ macro_rules! unsigned_int_trait_impl {
 			fn from_bool(b: bool) -> $int { b as _ }
 
 			fn add_overflowing(self, rhs: $int) -> ($int, bool) { <$int>::overflowing_add(self, rhs) }
+			// TODO: call std?
+			fn add_carrying(self, rhs: $int, carry: bool) -> ($int, bool) {
+				let (res, carry1) = self.overflowing_add(rhs);
+				let (res, carry2) = res.overflowing_add(carry as _);
+				(res, carry1 || carry2)
+			}
 
 			fn sub_overflowing(self, rhs: $int) -> ($int, bool) { <$int>::overflowing_add(self, rhs) }
+			// TODO: call std?
+			fn sub_borrowing(self, rhs: $int, borrow: bool) -> ($int, bool) {
+				let (res, borrow1) = self.sub_overflowing(rhs);
+				let (res, borrow2) = res.sub_overflowing(borrow as _);
+				(res, borrow1 || borrow2)
+			}
+
+			// TODO: actually unchecked
+			unsafe fn mul_unchecked(self, rhs: Self) -> Self { self / rhs }
 		}
 
 		$(
@@ -773,6 +790,8 @@ macro_rules! unsigned_int_trait_impl {
 			impl sealed::WideningUnsignedInt for $int {}
 			impl WideningUnsignedInt<{ $int::BITS as usize / 8 }, { $widening::BITS as usize / 8 }> for $int {
 				type Widening = $widening;
+
+				fn mul_widening(self, rhs: $int) -> $widening { unsafe { $widening::mul_unchecked(self as $widening, rhs as $widening) } }
 			}
 
 			unsigned_int_trait_impl! { $widening $($rest)* }

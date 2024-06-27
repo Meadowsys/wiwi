@@ -22,11 +22,10 @@ fn overflowing_sub<
 			let i1 = *int1_ptr.add(i);
 			let i2 = *int2_ptr.add(i);
 
-			let (res, borrow1) = i1.sub_overflowing(i2);
-			let (res, borrow2) = res.sub_overflowing(I::from_bool(borrow));
+			let (r, b) = I::sub_borrowing(i1, i2, borrow);
 
-			result_ptr.add(i).write(res);
-			borrow = borrow1 || borrow2;
+			result_ptr.add(i).write(r);
+			borrow = b;
 		}
 
 		(result.assume_init(), borrow)
