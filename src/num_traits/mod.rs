@@ -4,7 +4,6 @@ use std::cmp::{ Eq, Ord, PartialEq, PartialOrd };
 use std::fmt::{ Debug, Display };
 use std::hash::Hash;
 use std::iter::{ Sum, Product };
-use std::mem::size_of;
 use std::ops;
 
 pub trait UnsignedInt<const BYTES: usize>: Sized + sealed::UnsignedInt
@@ -229,152 +228,49 @@ mod sealed {
 	pub trait WideningUnsignedInt {}
 }
 
-pub trait Base: Sized {
-	const BITS: usize = size_of::<Self>();
-	const BYTES: usize = size_of::<Self>();
-}
+mod base;
+pub use base::Base;
+mod add_regular;
+pub use add_regular::AddRegular;
+mod add_checked;
+pub use add_checked::AddChecked;
+mod add_unchecked;
+pub use add_unchecked::AddUnchecked;
+mod add_strict;
+pub use add_strict::AddStrict;
+mod add_overflowing;
+pub use add_overflowing::AddOverflowing;
+mod add_saturating;
+pub use add_saturating::AddSaturating;
+mod add_wrapping;
+pub use add_wrapping::AddWrapping;
+mod add_carrying;
+pub use add_carrying::AddCarrying;
+mod sub_regular;
+pub use sub_regular::SubRegular;
+mod mul_regular;
+pub use mul_regular::MulRegular;
+mod div_regular;
+pub use div_regular::DivRegular;
+mod rem_regular;
+pub use rem_regular::RemRegular;
+mod shl_regular;
+pub use shl_regular::ShlRegular;
+mod shr_regular;
+pub use shr_regular::ShrRegular;
+mod pow_regular;
+pub use pow_regular::PowRegular;
+mod neg_regular;
+pub use neg_regular::NegRegular;
+mod not_regular;
+pub use not_regular::NotRegular;
+mod and_regular;
+pub use and_regular::AndRegular;
+mod or_regular;
+pub use or_regular::OrRegular;
+mod xor_regular;
+pub use xor_regular::XorRegular;
+mod array_conversions;
+pub use array_conversions::ArrayConversions;
 
-/// Trait for number types that support addition
-pub trait AddRegular: Sized + Base + ops::Add<Self, Output = Self> {
-	#[inline]
-	fn add_regular(self, rhs: Self) -> Self {
-		self + rhs
-	}
-}
-
-/// Trait for number types that support checked addition
-pub trait AddChecked: Sized {
-	fn add_checked(self, rhs: Self) -> Option<Self>;
-}
-
-/// Trait for number types that support unchecked addition
-pub trait AddUnchecked: Sized {
-	unsafe fn add_unchecked(self, rhs: Self) -> Self;
-}
-
-/// Trait for number types that support strict addition
-pub trait AddStrict: Sized {
-	fn add_strict(self, rhs: Self) -> Self;
-}
-
-/// Trait for number types that support overflowing addition
-pub trait AddOverflowing: Sized {
-	fn add_overflowing(self, rhs: Self) -> (Self, bool);
-}
-
-/// Trait for number types that support saturating addition
-pub trait AddSaturating: Sized {
-	fn add_saturating(self, rhs: Self) -> Self;
-}
-
-/// Trait for number types that support wrapping addition
-pub trait AddWrapping: Sized {
-	fn add_wrapping(self, rhs: Self) -> Self;
-}
-
-/// Trait for number types that support carrying addition
-pub trait AddCarrying: Sized {
-	fn add_carrying(self, rhs: Self, carry: bool) -> (Self, bool);
-}
-
-/// Trait for number types that support subtraction
-pub trait SubRegular: Sized + Base + ops::Sub<Self, Output = Self> {
-	#[inline]
-	fn sub_regular(self, rhs: Self) -> Self {
-		self - rhs
-	}
-}
-
-/// Trait for number types that support multiplication
-pub trait MulRegular: Sized + Base + ops::Mul<Self, Output = Self> {
-	#[inline]
-	fn mul_regular(self, rhs: Self) -> Self {
-		self * rhs
-	}
-}
-
-/// Trait for number types that support division
-pub trait DivRegular: Sized + Base + ops::Div<Self, Output = Self> {
-	#[inline]
-	fn div_regular(self, rhs: Self) -> Self {
-		self / rhs
-	}
-}
-
-/// Trait for number types that support modulo, or the remainder operator
-pub trait RemRegular: Sized + Base + ops::Rem<Self, Output = Self> {
-	#[inline]
-	fn rem_regular(self, rhs: Self) -> Self {
-		self % rhs
-	}
-}
-
-/// Trait for number types that support left shift
-pub trait ShlRegular: Sized + Base + ops::Shl<Self, Output = Self> {
-	#[inline]
-	fn shl_regular(self, rhs: Self) -> Self {
-		self << rhs
-	}
-}
-
-/// Trait for number types that support right shift
-pub trait ShrRegular: Sized + Base + ops::Shr<Self, Output = Self> {
-	#[inline]
-	fn shr_regular(self, rhs: Self) -> Self {
-		self >> rhs
-	}
-}
-
-/// Trait for number types that support exponent
-pub trait PowRegular: Sized + Base {
-	fn pow_regular(self, exp: Self) -> Self;
-}
-
-/// Trait for number types that support negating
-pub trait NegRegular: Sized + Base {
-	fn neg_regular(self) -> Self;
-}
-
-/// Trait for number types that support the bitwise NOT operator
-pub trait NotRegular: Sized + Base + ops::Not<Output = Self> {
-	#[inline]
-	fn not_regular(self) -> Self {
-		!self
-	}
-}
-
-/// Trait for number types that support the bitwise AND operator
-pub trait AndRegular: Sized + Base + ops::BitAnd<Self, Output = Self> {
-	#[inline]
-	fn and_regular(self, rhs: Self) -> Self {
-		self & rhs
-	}
-}
-
-/// Trait for number types that support the bitwise OR operator
-pub trait OrRegular: Sized + Base + ops::BitOr<Self, Output = Self> {
-	#[inline]
-	fn or_regular(self, rhs: Self) -> Self {
-		self | rhs
-	}
-}
-
-/// Trait for number types that support the bitwise XOR operator
-pub trait XorRegular: Sized + Base + ops::BitXor<Self, Output = Self> {
-	#[inline]
-	fn xor_regular(self, rhs: Self) -> Self {
-		self ^ rhs
-	}
-}
-
-// TODO: ilog/2/10 sum(?) product(?)
-
-pub trait ArrayConversions<const BYTES: usize>: Sized + Base {
-	fn into_le_bytes(self) -> [u8; BYTES];
-	fn into_be_bytes(self) -> [u8; BYTES];
-	fn into_ne_bytes(self) -> [u8; BYTES];
-
-	fn from_le_bytes(bytes: [u8; BYTES]) -> Self;
-	fn from_be_bytes(bytes: [u8; BYTES]) -> Self;
-	fn from_ne_bytes(bytes: [u8; BYTES]) -> Self;
-}
+// // TODO: ilog/2/10 sum(?) product(?)
