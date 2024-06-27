@@ -11,11 +11,11 @@ pub trait Base: Sized {
 	/// `1`
 	const ONE: Self;
 	/// Size of this number in bits
-	const BITS: usize = size_of::<Self>() * 8;
+	const BITS: usize;
 	/// Size of this number type in bytes
-	const BYTES: usize = size_of::<Self>();
+	const BYTES: usize;
 	/// Align of this number type in bytes
-	const ALIGN: usize = align_of::<Self>();
+	const ALIGN: usize;
 }
 
 macro_rules! impl_num_trait_base {
@@ -26,6 +26,12 @@ macro_rules! impl_num_trait_base {
 				const MAX: $int = $int::MAX;
 				const ZERO: $int = 0 as _;
 				const ONE: $int = 1 as _;
+				// shut up I can't
+				// floats don't have ::BITS
+				#[allow(clippy::manual_bits)]
+				const BITS: usize = size_of::<$int>() * 8;
+				const BYTES: usize = size_of::<$int>();
+				const ALIGN: usize = align_of::<$int>();
 			}
 		)*
 	}
