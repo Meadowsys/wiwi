@@ -745,7 +745,10 @@ where
 pub trait WideningUnsignedInt<const BYTES: usize, const WIDENED: usize>: UnsignedInt<BYTES> + sealed::WideningUnsignedInt {
 	type Widening: UnsignedInt<WIDENED>;
 
-	fn mul_widening(self, rhs: Self) -> Self::Widening;
+	/// (l, h) (little endian)
+	fn split_wide(wide: Self::Widening) -> (Self, Self);
+
+	fn mul_widening_nosplit(self, rhs: Self) -> Self::Widening;
 }
 
 macro_rules! unsigned_int_trait_impl {
@@ -781,7 +784,7 @@ macro_rules! unsigned_int_trait_impl {
 			}
 
 			// TODO: actually unchecked
-			unsafe fn mul_unchecked(self, rhs: Self) -> Self { self / rhs }
+			unsafe fn mul_unchecked(self, rhs: $int) -> $int { self * rhs }
 		}
 
 		$(
@@ -791,7 +794,9 @@ macro_rules! unsigned_int_trait_impl {
 			impl WideningUnsignedInt<{ $int::BITS as usize / 8 }, { $widening::BITS as usize / 8 }> for $int {
 				type Widening = $widening;
 
-				fn mul_widening(self, rhs: $int) -> $widening { unsafe { $widening::mul_unchecked(self as $widening, rhs as $widening) } }
+				fn split_wide(wide: $widening) -> ($int, $int) { (wide as $int, (wide >> $int::BITS) as $int) }
+
+				fn mul_widening_nosplit(self, rhs: $int) -> $widening { unsafe { $widening::mul_unchecked(self as $widening, rhs as $widening) } }
 			}
 
 			unsigned_int_trait_impl! { $widening $($rest)* }
