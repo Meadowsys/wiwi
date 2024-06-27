@@ -78,23 +78,18 @@
 <a href="#78" id="78">78</a>
 <a href="#79" id="79">79</a>
 <a href="#80" id="80">80</a>
-<a href="#81" id="81">81</a>
-<a href="#82" id="82">82</a>
-<a href="#83" id="83">83</a>
-</pre></div><pre class="rust"><code><span class="kw">use </span><span class="kw">crate</span>::num_traits::WideningUnsignedInt;
+</pre></div><pre class="rust"><code><span class="kw">use </span><span class="kw">crate</span>::num_traits::{ AddCarrying, AddOverflowing, MulWidening };
 <span class="kw">use </span>std::mem::MaybeUninit;
 
 <span class="comment">// TODO: generic params can't be used in const exprs because I dunno why
 // so we just return 2 arrays, in le order (so it can be transmuted to [I; BYTES * 2])
-</span><span class="kw">pub fn </span>widening_mul&lt;
-	<span class="kw">const </span>BYTES_PER_INT: usize,
-	<span class="kw">const </span>BYTES: usize,
-	<span class="kw">const </span>BYTES_PER_INT_WIDENED: usize,
-	I: WideningUnsignedInt&lt;BYTES_PER_INT, BYTES_PER_INT_WIDENED&gt;
-&gt;(
+</span><span class="kw">pub fn </span>widening_mul&lt;<span class="kw">const </span>BYTES: usize, I&gt;(
 	int1: [I; BYTES],
 	int2: [I; BYTES]
-) -&gt; [[I; BYTES]; <span class="number">2</span>] {
+) -&gt; [[I; BYTES]; <span class="number">2</span>]
+<span class="kw">where
+	</span>I: AddCarrying + AddOverflowing + MulWidening + Copy
+{
 	<span class="comment">// it is not possible to overflow the double sized array
 
 	</span><span class="kw">unsafe </span>{
@@ -109,8 +104,7 @@
 			<span class="kw">for </span>i_inner <span class="kw">in </span><span class="number">0</span>..BYTES {
 				<span class="kw">let </span>i2 = <span class="kw-2">*</span>int2_ptr.add(i_inner);
 
-				<span class="kw">let </span>wide = I::mul_widening_nosplit(i1, i2);
-				<span class="kw">let </span>(l, h) = I::split_wide(wide);
+				<span class="kw">let </span>(l, h) = I::mul_widening(i1, i2);
 
 				<span class="kw">let </span>base = i_outer + i_inner;
 				<span class="kw">let </span><span class="kw-2">mut </span>base_ptr = result_ptr.add(base);

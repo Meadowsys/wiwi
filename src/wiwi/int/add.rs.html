@@ -111,11 +111,7 @@
 <a href="#111" id="111">111</a>
 <a href="#112" id="112">112</a>
 <a href="#113" id="113">113</a>
-<a href="#114" id="114">114</a>
-<a href="#115" id="115">115</a>
-<a href="#116" id="116">116</a>
-<a href="#117" id="117">117</a>
-</pre></div><pre class="rust"><code><span class="kw">use </span><span class="kw">crate</span>::num_traits::UnsignedInt;
+</pre></div><pre class="rust"><code><span class="kw">use </span><span class="kw">crate</span>::num_traits::AddCarrying;
 <span class="kw">use </span>std::mem::MaybeUninit;
 
 <span class="comment">// /// Performs standard addition, with overflow checking depending on overflow
@@ -178,11 +174,7 @@
 // 	res
 // }
 
-</span><span class="kw">pub fn </span>overflowing_add&lt;
-	<span class="kw">const </span>BYTES_PER_INT: usize,
-	<span class="kw">const </span>BYTES: usize,
-	I: UnsignedInt&lt;BYTES_PER_INT&gt;
-&gt;(
+</span><span class="kw">pub fn </span>overflowing_add&lt;<span class="kw">const </span>BYTES: usize, I: AddCarrying + Copy&gt;(
 	int1: [I; BYTES],
 	int2: [I; BYTES]
 ) -&gt; ([I; BYTES], bool) {
