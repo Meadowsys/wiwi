@@ -2,6 +2,13 @@ use super::Base;
 
 /// Plain addition
 pub trait Add: Base + std::ops::Add<Self, Output = Self> {
+	/// Performs plain addition
+	///
+	/// It does the same as what the `+` operator does
+	///
+	/// # Examples
+	///
+	/// TODO
 	#[inline]
 	fn add_regular(self, rhs: Self) -> Self {
 		self + rhs

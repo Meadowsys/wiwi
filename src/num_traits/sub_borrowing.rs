@@ -2,6 +2,11 @@ use super::SubOverflowing;
 
 /// Borrowing subtraction
 pub trait SubBorrowing: SubOverflowing {
+	/// Performs borrowing subtraction
+	///
+	/// # Examples
+	///
+	/// TODO
 	#[inline]
 	fn sub_borrowing(self, rhs: Self, borrow: bool) -> (Self, bool) {
 		let (res, borrow1) = self.sub_overflowing(rhs);

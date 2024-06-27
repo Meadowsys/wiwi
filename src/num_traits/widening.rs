@@ -1,8 +1,13 @@
 use super::Base;
 
+/// Numbers that can be "widened" to another number type that's double it's size
 pub trait Widening: Base {
+	/// The "widened" type, the type that's twice the size as this one
 	type Wide: Base;
+
+	/// Extend `self` out into the widened type (without changing its value)
 	fn widen(self) -> Self::Wide;
+
 	/// Splits the wide integer into its lower and upper parts
 	///
 	/// The returned value is (low, high), ie. first element is the lower half,

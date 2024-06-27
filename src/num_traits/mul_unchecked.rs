@@ -1,6 +1,12 @@
 use super::Mul;
 
+/// Unchecked multiplication
 pub trait MulUnchecked: Mul {
+	/// Performs unchecked multiplication
+	///
+	/// # Examples
+	///
+	/// TODO
 	unsafe fn mul_unchecked(self, rhs: Self) -> Self;
 }
 

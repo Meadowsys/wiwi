@@ -15,17 +15,45 @@ use super::Base;
 /// ```
 pub trait ArrayConversions<const BYTES: usize>: Base {
 	/// Converts this number into a byte array in little endian order
+	///
+	/// # Examples
+	///
+	/// TODO
 	fn into_le_bytes(self) -> [u8; BYTES];
+
 	/// Converts this number into a byte array in big endian order
+	///
+	/// # Examples
+	///
+	/// TODO
 	fn into_be_bytes(self) -> [u8; BYTES];
+
 	/// Converts this number into a byte array in native endian order
+	///
+	/// # Examples
+	///
+	/// TODO
 	fn into_ne_bytes(self) -> [u8; BYTES];
 
 	/// Converts an array of bytes in little endian order to a number
+	///
+	/// # Examples
+	///
+	/// TODO
 	fn from_le_bytes(bytes: [u8; BYTES]) -> Self;
+
 	/// Converts an array of bytes in big endian order to a number
+	///
+	/// # Examples
+	///
+	/// TODO
 	fn from_be_bytes(bytes: [u8; BYTES]) -> Self;
+
 	/// Converts an array of bytes in native endian order to a number
+	///
+	/// # Examples
+	///
+	/// TODO
 	fn from_ne_bytes(bytes: [u8; BYTES]) -> Self;
 }
 

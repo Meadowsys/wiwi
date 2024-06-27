@@ -2,6 +2,11 @@ use super::Base;
 
 /// Overflowing addition
 pub trait AddOverflowing: Base {
+	/// Performs overflowing add
+	///
+	/// # Examples
+	///
+	/// TODO
 	fn add_overflowing(self, rhs: Self) -> (Self, bool);
 }
 

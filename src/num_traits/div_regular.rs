@@ -2,6 +2,13 @@ use super::Base;
 
 /// Plain division
 pub trait Div: Base + std::ops::Div<Self, Output = Self> {
+	/// Performs regular division
+	///
+	/// It does the same as what the `/` operator does
+	///
+	/// # Examples
+	///
+	/// TODO
 	#[inline]
 	fn div_regular(self, rhs: Self) -> Self {
 		self / rhs

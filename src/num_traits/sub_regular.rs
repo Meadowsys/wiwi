@@ -2,6 +2,13 @@ use super::Base;
 
 /// Plain subtraction
 pub trait Sub: Base + std::ops::Sub<Self, Output = Self> {
+	/// Performs plain subtraction
+	///
+	/// It does the same as what the `-` operator does
+	///
+	/// # Examples
+	///
+	/// TODO
 	#[inline]
 	fn sub_regular(self, rhs: Self) -> Self {
 		self - rhs

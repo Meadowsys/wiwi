@@ -2,6 +2,13 @@ use super::Base;
 
 /// Plain multiplication
 pub trait Mul: Base + std::ops::Mul<Self, Output = Self> {
+	/// Performs plain multiplication
+	///
+	/// It does the same as what the `*` operator does
+	///
+	/// # Examples
+	///
+	/// TODO
 	#[inline]
 	fn mul_regular(self, rhs: Self) -> Self {
 		self * rhs

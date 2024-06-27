@@ -2,6 +2,10 @@ use super::Div;
 
 /// Integer division
 pub trait DivInt: Div {
+	/// Performs integer division
+	///
+	/// This means the division operation will perform division and truncate (not
+	/// round) any fractional component, as you would expect with integers
 	#[inline]
 	fn div_int(self, rhs: Self) -> Self {
 		self / rhs

@@ -2,6 +2,11 @@ use super::Mul;
 
 /// Overflowing multiplication
 pub trait MulOverflowing: Mul {
+	/// Performs overflowing multiplication
+	///
+	/// # Examples
+	///
+	/// TODO
 	fn mul_overflowing(self, rhs: Self) -> (Self, bool);
 }
 

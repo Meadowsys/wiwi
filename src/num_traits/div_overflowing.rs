@@ -2,6 +2,11 @@ use super::Div;
 
 /// Overflowing division
 pub trait DivOverflowing: Div {
+	/// Performs overflowing division
+	///
+	/// # Examples
+	///
+	/// TODO
 	fn div_overflowing(self, rhs: Self) -> (Self, bool);
 }
 

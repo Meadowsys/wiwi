@@ -1,11 +1,28 @@
 use super::{ MulUnchecked, Widening };
 
+/// Widening multiplication
 pub trait MulWidening: MulUnchecked + Widening {
+	/// Performs widening multiplication, returning the result in two parts:
+	/// `(low, high)`
+	///
+	/// This will never overflow
+	///
+	/// # Examples
+	///
+	/// TODO
 	#[inline]
 	fn mul_widening(self, rhs: Self) -> (Self, Self) {
 		let res = Self::mul_widening_no_split(self, rhs);
 		Self::split(res)
 	}
+
+	/// Performs widening multiplication, returning the result as the widened part
+	///
+	/// This will never overflow
+	///
+	/// # Examples
+	///
+	/// TODO
 	fn mul_widening_no_split(self, rhs: Self) -> Self::Wide;
 }
 

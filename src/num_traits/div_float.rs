@@ -1,7 +1,11 @@
 use super::Div;
 
-/// Floating-point division
+/// Floating point division
 pub trait DivFloat: Div {
+	/// Performs floating point division
+	///
+	/// This means the division operation will perform division and keep fractional
+	/// component, as you would expect with computer floating point numbers
 	#[inline]
 	fn div_float(self, rhs: Self) -> Self {
 		self / rhs

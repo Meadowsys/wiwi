@@ -2,6 +2,11 @@ use super::Sub;
 
 /// Overflowing subtraction
 pub trait SubOverflowing: Sub {
+	/// Performs overflowing subtraction
+	///
+	/// # Examples
+	///
+	/// TODO
 	fn sub_overflowing(self, rhs: Self) -> (Self, bool);
 }
 
