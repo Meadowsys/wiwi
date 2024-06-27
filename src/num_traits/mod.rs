@@ -4,6 +4,7 @@ use std::cmp::{ Eq, Ord, PartialEq, PartialOrd };
 use std::fmt::{ Debug, Display };
 use std::hash::Hash;
 use std::iter::{ Sum, Product };
+use std::mem::size_of;
 use std::ops;
 
 pub trait UnsignedInt<const BYTES: usize>: Sized + sealed::UnsignedInt
@@ -227,3 +228,108 @@ mod sealed {
 	/// notouch
 	pub trait WideningUnsignedInt {}
 }
+
+pub trait Base: Sized {
+	const BITS: usize = size_of::<Self>();
+	const BYTES: usize = size_of::<Self>();
+}
+
+/// Trait for number types that support addition
+pub trait AddRegular: Sized + Base + ops::Add<Self, Output = Self> {
+	#[inline]
+	fn add_regular(self, rhs: Self) -> Self {
+		self + rhs
+	}
+}
+
+/// Trait for number types that support subtraction
+pub trait SubRegular: Sized + Base + ops::Sub<Self, Output = Self> {
+	#[inline]
+	fn sub_regular(self, rhs: Self) -> Self {
+		self - rhs
+	}
+}
+
+/// Trait for number types that support multiplication
+pub trait MulRegular: Sized + Base + ops::Mul<Self, Output = Self> {
+	#[inline]
+	fn mul_regular(self, rhs: Self) -> Self {
+		self * rhs
+	}
+}
+
+/// Trait for number types that support division
+pub trait DivRegular: Sized + Base + ops::Div<Self, Output = Self> {
+	#[inline]
+	fn div_regular(self, rhs: Self) -> Self {
+		self / rhs
+	}
+}
+
+/// Trait for number types that support modulo, or the remainder operator
+pub trait RemRegular: Sized + Base + ops::Rem<Self, Output = Self> {
+	#[inline]
+	fn rem_regular(self, rhs: Self) -> Self {
+		self % rhs
+	}
+}
+
+/// Trait for number types that support left shift
+pub trait ShlRegular: Sized + Base + ops::Shl<Self, Output = Self> {
+	#[inline]
+	fn shl_regular(self, rhs: Self) -> Self {
+		self << rhs
+	}
+}
+
+/// Trait for number types that support right shift
+pub trait ShrRegular: Sized + Base + ops::Shr<Self, Output = Self> {
+	#[inline]
+	fn shr_regular(self, rhs: Self) -> Self {
+		self >> rhs
+	}
+}
+
+/// Trait for number types that support exponent
+pub trait PowRegular: Sized + Base {
+	fn pow_regular(self, exp: Self) -> Self;
+}
+
+/// Trait for number types that support negating
+pub trait NegRegular: Sized + Base {
+	fn neg_regular(self) -> Self;
+}
+
+/// Trait for number types that support the bitwise NOT operator
+pub trait NotRegular: Sized + Base + ops::Not<Output = Self> {
+	#[inline]
+	fn not_regular(self) -> Self {
+		!self
+	}
+}
+
+/// Trait for number types that support the bitwise AND operator
+pub trait AndRegular: Sized + Base + ops::BitAnd<Self, Output = Self> {
+	#[inline]
+	fn and_regular(self, rhs: Self) -> Self {
+		self & rhs
+	}
+}
+
+/// Trait for number types that support the bitwise OR operator
+pub trait OrRegular: Sized + Base + ops::BitOr<Self, Output = Self> {
+	#[inline]
+	fn or_regular(self, rhs: Self) -> Self {
+		self | rhs
+	}
+}
+
+/// Trait for number types that support the bitwise XOR operator
+pub trait XorRegular: Sized + Base + ops::BitXor<Self, Output = Self> {
+	#[inline]
+	fn xor_regular(self, rhs: Self) -> Self {
+		self ^ rhs
+	}
+}
+
+// TODO: ilog/2/10 sum(?) product(?)
