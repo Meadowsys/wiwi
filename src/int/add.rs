@@ -1,4 +1,4 @@
-use crate::num_traits::UnsignedInt;
+use crate::num_traits::AddCarrying;
 use std::mem::MaybeUninit;
 
 // /// Performs standard addition, with overflow checking depending on overflow
@@ -61,11 +61,7 @@ use std::mem::MaybeUninit;
 // 	res
 // }
 
-pub fn overflowing_add<
-	const BYTES_PER_INT: usize,
-	const BYTES: usize,
-	I: UnsignedInt<BYTES_PER_INT>
->(
+pub fn overflowing_add<const BYTES: usize, I: AddCarrying + Copy>(
 	int1: [I; BYTES],
 	int2: [I; BYTES]
 ) -> ([I; BYTES], bool) {

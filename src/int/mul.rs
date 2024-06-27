@@ -1,17 +1,15 @@
-use crate::num_traits::WideningUnsignedInt;
+use crate::num_traits::{ AddCarrying, AddOverflowing, MulWidening };
 use std::mem::MaybeUninit;
 
 // TODO: generic params can't be used in const exprs because I dunno why
 // so we just return 2 arrays, in le order (so it can be transmuted to [I; BYTES * 2])
-pub fn widening_mul<
-	const BYTES_PER_INT: usize,
-	const BYTES: usize,
-	const BYTES_PER_INT_WIDENED: usize,
-	I: WideningUnsignedInt<BYTES_PER_INT, BYTES_PER_INT_WIDENED>
->(
+pub fn widening_mul<const BYTES: usize, I>(
 	int1: [I; BYTES],
 	int2: [I; BYTES]
-) -> [[I; BYTES]; 2] {
+) -> [[I; BYTES]; 2]
+where
+	I: AddCarrying + AddOverflowing + MulWidening + Copy
+{
 	// it is not possible to overflow the double sized array
 
 	unsafe {
@@ -26,8 +24,7 @@ pub fn widening_mul<
 			for i_inner in 0..BYTES {
 				let i2 = *int2_ptr.add(i_inner);
 
-				let wide = I::mul_widening_nosplit(i1, i2);
-				let (l, h) = I::split_wide(wide);
+				let (l, h) = I::mul_widening(i1, i2);
 
 				let base = i_outer + i_inner;
 				let mut base_ptr = result_ptr.add(base);
