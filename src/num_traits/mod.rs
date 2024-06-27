@@ -25,13 +25,15 @@ pub use add_overflowing::AddOverflowing;
 // pub use add_saturating::AddSaturating;
 // mod add_wrapping;
 // pub use add_wrapping::AddWrapping;
-// mod add_carrying;
-// pub use add_carrying::AddCarrying;
+mod add_carrying;
+pub use add_carrying::AddCarrying;
 
 mod sub_regular;
 pub use sub_regular::Sub;
 mod sub_overflowing;
 pub use sub_overflowing::SubOverflowing;
+mod sub_borrowing;
+pub use sub_borrowing::SubBorrowing;
 
 mod mul_regular;
 pub use mul_regular::Mul;

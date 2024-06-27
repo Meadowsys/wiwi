@@ -16,9 +16,32 @@ pub trait Base: Sized {
 	const BYTES: usize;
 	/// Align of this number type in bytes
 	const ALIGN: usize;
+
+	fn from_bool(b: bool) -> Self;
 }
 
 macro_rules! impl_num_trait_base {
+	{ @floats $($num:ident)* } => {
+		$(
+			impl Base for $num {
+				const MIN: $num = $num::MIN;
+				const MAX: $num = $num::MAX;
+				const ZERO: $num = 0 as _;
+				const ONE: $num = 1 as _;
+				// shut up I can't
+				// floats don't have ::BITS
+				#[allow(clippy::manual_bits)]
+				const BITS: usize = size_of::<$num>() * 8;
+				const BYTES: usize = size_of::<$num>();
+				const ALIGN: usize = align_of::<$num>();
+
+				#[inline(always)]
+				fn from_bool(b: bool) -> $num {
+					if b { Self::ONE } else { Self::ZERO }
+				}
+			}
+		)*
+	};
 	{ $($num:ident)* } => {
 		$(
 			impl Base for $num {
@@ -32,13 +55,19 @@ macro_rules! impl_num_trait_base {
 				const BITS: usize = size_of::<$num>() * 8;
 				const BYTES: usize = size_of::<$num>();
 				const ALIGN: usize = align_of::<$num>();
+
+				#[inline(always)]
+				fn from_bool(b: bool) -> $num { b as _ }
 			}
 		)*
-	}
+	};
 }
 
 impl_num_trait_base! {
 	u8 u16 u32 u64 u128 usize
 	i8 i16 i32 i64 i128 isize
-	f32 f64
+}
+
+impl_num_trait_base! {
+	@floats f32 f64
 }
