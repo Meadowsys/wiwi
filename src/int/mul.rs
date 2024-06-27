@@ -3,7 +3,7 @@ use std::mem::MaybeUninit;
 
 // TODO: generic params can't be used in const exprs because I dunno why
 // so we just return 2 arrays, in le order (so it can be transmuted to [I; BYTES * 2])
-pub fn overflowing_mul<
+pub fn widening_mul<
 	const BYTES_PER_INT: usize,
 	const BYTES: usize,
 	const BYTES_PER_INT_WIDENED: usize,
@@ -61,20 +61,23 @@ pub fn overflowing_mul<
 #[cfg(test)]
 mod tests {
 	use super::*;
+	use rand::{ RngCore, Rng, thread_rng };
 	use std::mem::transmute;
 
 	#[test]
-	fn basic() {
-		let orig_int1 = 238785764u32;
-		let orig_int2 = 2256886u32;
-		let expected = orig_int1 as u64 * orig_int2 as u64;
+	fn overflowing_random_u32_u64() {
+		for _ in 0..1000 {
+			let orig_int1 = thread_rng().next_u32();
+			let orig_int2 = thread_rng().next_u32();
+			let expected = orig_int1 as u64 * orig_int2 as u64;
 
-		let int1 = orig_int1.to_le_bytes();
-		let int2 = orig_int2.to_le_bytes();
+			let int1 = orig_int1.to_le_bytes();
+			let int2 = orig_int2.to_le_bytes();
 
-		let res = overflowing_mul(int1, int2);
-		let res = u64::from_le_bytes(unsafe { transmute(res) });
+			let res = widening_mul(int1, int2);
+			let res = u64::from_le_bytes(unsafe { transmute(res) });
 
-		assert_eq!(expected, res);
+			assert_eq!(expected, res);
+		}
 	}
 }

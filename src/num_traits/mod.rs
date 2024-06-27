@@ -775,7 +775,7 @@ macro_rules! unsigned_int_trait_impl {
 				(res, carry1 || carry2)
 			}
 
-			fn sub_overflowing(self, rhs: $int) -> ($int, bool) { <$int>::overflowing_add(self, rhs) }
+			fn sub_overflowing(self, rhs: $int) -> ($int, bool) { <$int>::overflowing_sub(self, rhs) }
 			// TODO: call std?
 			fn sub_borrowing(self, rhs: $int, borrow: bool) -> ($int, bool) {
 				let (res, borrow1) = self.sub_overflowing(rhs);

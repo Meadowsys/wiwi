@@ -91,3 +91,27 @@ pub fn overflowing_add<
 		(result.assume_init(), carry)
 	}
 }
+
+#[cfg(test)]
+mod tests {
+	use super::*;
+	use rand::{ RngCore, Rng, thread_rng };
+	use std::mem::transmute;
+
+	#[test]
+	fn overflowing_random_u32() {
+		for _ in 0..1000 {
+			let orig_int1 = thread_rng().next_u32();
+			let orig_int2 = thread_rng().next_u32();
+			let expected = orig_int1.overflowing_add(orig_int2);
+
+			let int1 = orig_int1.to_le_bytes();
+			let int2 = orig_int2.to_le_bytes();
+
+			let (res, overflow) = overflowing_add(int1, int2);
+			let res = u32::from_le_bytes(res);
+
+			assert_eq!(expected, (res, overflow));
+		}
+	}
+}
