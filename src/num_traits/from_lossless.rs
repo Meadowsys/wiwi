@@ -1,13 +1,13 @@
 use super::Base;
 
-macro_rules! decl_construction_infallible {
+macro_rules! decl_from_lossless {
 	{
 		trait_name: $trait_name:ident
 		fn_name: $fn_name:ident
 		from: $from:ident
 		$($(#[$meta:meta])* $to:ident)*
 	} => {
-		/// Infallible conversion from
+		/// Lossless conversion from
 		#[doc = concat!("`", stringify!($from), "`")]
 		///
 		/// That is, this trait is implemented for a number type, when you can
@@ -29,7 +29,7 @@ macro_rules! decl_construction_infallible {
 	}
 }
 
-decl_construction_infallible! {
+decl_from_lossless! {
 	trait_name: FromU8Lossless
 	fn_name: from_u8
 	from: u8
@@ -40,7 +40,7 @@ decl_construction_infallible! {
 	f32 f64
 }
 
-decl_construction_infallible! {
+decl_from_lossless! {
 	trait_name: FromU16Lossless
 	fn_name: from_u16
 	from: u16
@@ -51,7 +51,7 @@ decl_construction_infallible! {
 	f32 f64
 }
 
-decl_construction_infallible! {
+decl_from_lossless! {
 	trait_name: FromU32Lossless
 	fn_name: from_u32
 	from: u32
@@ -62,7 +62,7 @@ decl_construction_infallible! {
 	f64
 }
 
-decl_construction_infallible! {
+decl_from_lossless! {
 	trait_name: FromU64Lossless
 	fn_name: from_u64
 	from: u64
@@ -71,14 +71,14 @@ decl_construction_infallible! {
 	i128
 }
 
-decl_construction_infallible! {
+decl_from_lossless! {
 	trait_name: FromU128Lossless
 	fn_name: from_u128
 	from: u128
 	u128
 }
 
-decl_construction_infallible! {
+decl_from_lossless! {
 	trait_name: FromUsizeLossless
 	fn_name: from_usize
 	from: usize
@@ -92,7 +92,7 @@ decl_construction_infallible! {
 	#[cfg(not(target_pointer_width = "64"))] f64
 }
 
-decl_construction_infallible! {
+decl_from_lossless! {
 	trait_name: FromI8Lossless
 	fn_name: from_i8
 	from: i8
@@ -100,7 +100,7 @@ decl_construction_infallible! {
 	f32 f64
 }
 
-decl_construction_infallible! {
+decl_from_lossless! {
 	trait_name: FromI16Lossless
 	fn_name: from_i16
 	from: i16
@@ -108,7 +108,7 @@ decl_construction_infallible! {
 	f32 f64
 }
 
-decl_construction_infallible! {
+decl_from_lossless! {
 	trait_name: FromI32Lossless
 	fn_name: from_i32
 	from: i32
@@ -116,21 +116,21 @@ decl_construction_infallible! {
 	f64
 }
 
-decl_construction_infallible! {
+decl_from_lossless! {
 	trait_name: FromI64Lossless
 	fn_name: from_i64
 	from: i64
 	i64 i128 #[cfg(target_pointer_width = "64")] isize
 }
 
-decl_construction_infallible! {
+decl_from_lossless! {
 	trait_name: FromI128Lossless
 	fn_name: from_i128
 	from: i128
 	i128
 }
 
-decl_construction_infallible! {
+decl_from_lossless! {
 	trait_name: FromIsizeLossless
 	fn_name: from_isize
 	from: isize
@@ -141,14 +141,14 @@ decl_construction_infallible! {
 	#[cfg(not(target_pointer_width = "64"))] f64
 }
 
-decl_construction_infallible! {
+decl_from_lossless! {
 	trait_name: FromF32Lossless
 	fn_name: from_f32
 	from: f32
 	f32 f64
 }
 
-decl_construction_infallible! {
+decl_from_lossless! {
 	trait_name: FromF64Lossless
 	fn_name: from_f64
 	from: f64
