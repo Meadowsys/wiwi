@@ -54,11 +54,11 @@ impl<T> VecChain<T> {
 		Vec::from_raw_parts(ptr, length, capacity).into()
 	}
 
-	/// Creates a new vector, and preallocate some memory
+	/// Creates a new vector chain, and preallocate some memory
 	///
 	/// The amount of memory allocated will be _at least_ enough to hold `capacity`
 	/// elements without reallocating. No allocation will happen if the provided
-	/// capacity is zero.
+	/// capacity is zero, or if `T` is a ZST.
 	///
 	/// There is NO GUARANTEE that this function will allocate an exact amount
 	/// of memory, so do not rely on this for soundness. If knowing the actual

@@ -294,7 +294,7 @@ impl<T, M> Nominal<T, M> {
 	}
 
 	/// Consumes and asyncronously "map"s the wrapped value into another value,
-	/// wrapping it in a nominal type with the same marker.=
+	/// wrapping it in a nominal type with the same marker
 	#[inline]
 	pub async fn async_map_value<T2, F, Fu>(self, f: F) -> Nominal<T2, M>
 	where
