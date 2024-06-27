@@ -1,6 +1,6 @@
 use super::Base;
 
-/// Trait for number types that support unchecked addition
+/// Unchecked addition
 pub trait AddUnchecked: Sized + Base {
 	unsafe fn add_unchecked(self, rhs: Self) -> Self;
 }

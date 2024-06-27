@@ -1,5 +1,6 @@
 use super::Base;
 
+/// Array conversions
 pub trait ArrayConversions<const BYTES: usize>: Sized + Base {
 	fn into_le_bytes(self) -> [u8; BYTES];
 	fn into_be_bytes(self) -> [u8; BYTES];

@@ -1,5 +1,6 @@
 use std::mem::size_of;
 
+/// Common base for all integers
 pub trait Base: Sized {
 	const MIN: Self;
 	const MAX: Self;
