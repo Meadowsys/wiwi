@@ -238,7 +238,11 @@
 <a href="#238" id="238">238</a>
 <a href="#239" id="239">239</a>
 <a href="#240" id="240">240</a>
-</pre></div><pre class="rust"><code><span class="attr">#![cfg_attr(feature = <span class="string">"omega-tuples-of-doom"</span>, recursion_limit = <span class="string">"256"</span>)]
+<a href="#241" id="241">241</a>
+<a href="#242" id="242">242</a>
+</pre></div><pre class="rust"><code><span class="attr">#![cfg_attr(feature = <span class="string">"nightly"</span>, feature(cfg_overflow_checks))]
+
+#![cfg_attr(feature = <span class="string">"omega-tuples-of-doom"</span>, recursion_limit = <span class="string">"256"</span>)]
 
 </span><span class="comment">// TODO: review these
 </span><span class="attr">#![allow(

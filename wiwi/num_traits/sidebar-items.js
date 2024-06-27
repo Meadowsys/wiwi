@@ -1,1 +1,1 @@
-window.SIDEBAR_ITEMS = {"trait":["BigInt","Int"]};
+window.SIDEBAR_ITEMS = {"trait":["AddCarrying","AddChecked","AddOverflowing","AddRegular","AddSaturating","AddStrict","AddUnchecked","AddWrapping","AndRegular","ArrayConversions","Base","DivRegular","MulRegular","NegRegular","NotRegular","OrRegular","PowRegular","RemRegular","ShlRegular","ShrRegular","SubRegular","UnsignedInt","WideningUnsignedInt","XorRegular"]};

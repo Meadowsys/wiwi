@@ -726,7 +726,7 @@
 
 <span class="kw">impl</span>&lt;T, M&gt; Nominal&lt;T, M&gt; {
 	<span class="doccomment">/// Creates a nominal struct with the given value
-	</span><span class="attr">#[inline]
+	</span><span class="attr">#[inline(always)]
 	</span><span class="kw">pub fn </span>new(item: T) -&gt; <span class="self">Self </span>{
 		<span class="self">Self </span>{ item, marker: PhantomData }
 	}
@@ -737,7 +737,7 @@
 	/// same method as on [`Option`] and [`Result`], which implies panicking, but
 	/// this method will not panick.
 	</span><span class="comment">// TODO: was into_inner better?
-	</span><span class="attr">#[inline]
+	</span><span class="attr">#[inline(always)]
 	</span><span class="kw">pub fn </span>unwrap_value(<span class="self">self</span>) -&gt; T {
 		<span class="self">self</span>.item
 	}
@@ -747,7 +747,7 @@
 	/// Note: [`Deref`](std::ops::Deref) is not implemented on purpose,
 	/// to prevent unintentional auto-derefs
 	</span><span class="comment">// TODO: should we reconsider the above?
-	</span><span class="attr">#[inline]
+	</span><span class="attr">#[inline(always)]
 	</span><span class="kw">pub fn </span>wrapped_ref(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; <span class="kw-2">&amp;</span>T {
 		<span class="kw-2">&amp;</span><span class="self">self</span>.item
 	}
@@ -757,7 +757,7 @@
 	/// Note: [`DerefMut`](std::ops::DerefMut) is not implemented on purpose,
 	/// to prevent unintentional auto-derefs
 	</span><span class="comment">// TODO: should we reconsider the above?
-	</span><span class="attr">#[inline]
+	</span><span class="attr">#[inline(always)]
 	</span><span class="kw">pub fn </span>wrapped_mut(<span class="kw-2">&amp;mut </span><span class="self">self</span>) -&gt; <span class="kw-2">&amp;mut </span>T {
 		<span class="kw-2">&amp;mut </span><span class="self">self</span>.item
 	}
@@ -768,14 +768,14 @@
 	/// If you're using this function, make sure you know why you're using it!
 	/// after all, the whole point of this is to seperate otherwise identical
 	/// types into newtypes based on semantic meaning.
-	</span><span class="attr">#[inline]
+	</span><span class="attr">#[inline(always)]
 	</span><span class="kw">pub fn </span>transmute_wrapper&lt;M2&gt;(<span class="self">self</span>) -&gt; Nominal&lt;T, M2&gt; {
 		Nominal::new(<span class="self">self</span>.unwrap_value())
 	}
 
 	<span class="doccomment">/// Consumes and "map"s the wrapped value into another value, wrapping it in
 	/// a nominal type with the same marker
-	</span><span class="attr">#[inline]
+	</span><span class="attr">#[inline(always)]
 	</span><span class="kw">pub fn </span>map_value&lt;T2, F&gt;(<span class="self">self</span>, f: F) -&gt; Nominal&lt;T2, M&gt;
 	<span class="kw">where
 		</span>F: FnOnce(T) -&gt; T2
@@ -789,7 +789,7 @@
 	///
 	/// [`map_value`]: Self::map_value
 	/// [`transmute_wrapper`]: Self::transmute_wrapper
-	</span><span class="attr">#[inline]
+	</span><span class="attr">#[inline(always)]
 	</span><span class="kw">pub fn </span>map_transmute&lt;T2, M2, F&gt;(<span class="self">self</span>, f: F) -&gt; Nominal&lt;T2, M2&gt;
 	<span class="kw">where
 		</span>F: FnOnce(T) -&gt; T2
@@ -798,8 +798,8 @@
 	}
 
 	<span class="doccomment">/// Consumes and asyncronously "map"s the wrapped value into another value,
-	/// wrapping it in a nominal type with the same marker.=
-	</span><span class="attr">#[inline]
+	/// wrapping it in a nominal type with the same marker
+	</span><span class="attr">#[inline(always)]
 	</span><span class="kw">pub async fn </span>async_map_value&lt;T2, F, Fu&gt;(<span class="self">self</span>, f: F) -&gt; Nominal&lt;T2, M&gt;
 	<span class="kw">where
 		</span>F: FnOnce(T) -&gt; Fu,
@@ -814,7 +814,7 @@
 	///
 	/// [`async_map_value`]: Self::async_map_value
 	/// [`transmute_wrapper`]: Self::transmute_wrapper
-	</span><span class="attr">#[inline]
+	</span><span class="attr">#[inline(always)]
 	</span><span class="kw">pub async fn </span>async_map_transmute&lt;T2, M2, F, Fu&gt;(<span class="self">self</span>, f: F) -&gt; Nominal&lt;T2, M&gt;
 	<span class="kw">where
 		</span>F: FnOnce(T) -&gt; Fu,
@@ -830,14 +830,14 @@
 	///
 	/// The value gets wrapped, but the error does not. Both are not otherwise
 	/// modified in any way.
-	</span><span class="attr">#[inline]
+	</span><span class="attr">#[inline(always)]
 	</span><span class="kw">pub fn </span>transpose(<span class="self">self</span>) -&gt; <span class="prelude-ty">Result</span>&lt;Nominal&lt;T, M&gt;, E&gt; {
 		<span class="self">self</span>.unwrap_value().map(Nominal::new)
 	}
 
 	<span class="doccomment">/// Maps the [`Ok`] value of a [`Result`], wrapping the resulting [`Result`]
 	/// in a nominal type with the same marker
-	</span><span class="attr">#[inline]
+	</span><span class="attr">#[inline(always)]
 	</span><span class="kw">pub fn </span>map_result_ok&lt;T2, F&gt;(<span class="self">self</span>, f: F) -&gt; Nominal&lt;<span class="prelude-ty">Result</span>&lt;T2, E&gt;, M&gt;
 	<span class="kw">where
 		</span>F: FnOnce(T) -&gt; T2
@@ -847,7 +847,7 @@
 
 	<span class="doccomment">/// Maps the [`Err`] value of a [`Result`], wrapping the resulting [`Result`]
 	/// in a nominal type with the same marker
-	</span><span class="attr">#[inline]
+	</span><span class="attr">#[inline(always)]
 	</span><span class="kw">pub fn </span>map_result_err&lt;E2, F&gt;(<span class="self">self</span>, f: F) -&gt; Nominal&lt;<span class="prelude-ty">Result</span>&lt;T, E2&gt;, M&gt;
 	<span class="kw">where
 		</span>F: FnOnce(E) -&gt; E2
@@ -861,14 +861,14 @@
 	/// wrapped value
 	///
 	/// The value is not otherwise modified in any way.
-	</span><span class="attr">#[inline]
+	</span><span class="attr">#[inline(always)]
 	</span><span class="kw">pub fn </span>transpose(<span class="self">self</span>) -&gt; <span class="prelude-ty">Option</span>&lt;Nominal&lt;T, M&gt;&gt; {
 		<span class="self">self</span>.unwrap_value().map(Nominal::new)
 	}
 
 	<span class="doccomment">/// Maps the [`Some`] value of an [`Option`], wrapping the resulting [`Option`]
 	/// in a nominal type with the same marker
-	</span><span class="attr">#[inline]
+	</span><span class="attr">#[inline(always)]
 	</span><span class="kw">pub fn </span>map_option_some&lt;T2, F&gt;(<span class="self">self</span>, f: F) -&gt; Nominal&lt;<span class="prelude-ty">Option</span>&lt;T2&gt;, M&gt;
 	<span class="kw">where
 		</span>F: FnOnce(T) -&gt; T2
@@ -878,7 +878,7 @@
 }
 
 <span class="kw">impl</span>&lt;T, M&gt; From&lt;T&gt; <span class="kw">for </span>Nominal&lt;T, M&gt; {
-	<span class="attr">#[inline]
+	<span class="attr">#[inline(always)]
 	</span><span class="kw">fn </span>from(value: T) -&gt; <span class="self">Self </span>{
 		<span class="self">Self</span>::new(value)
 	}
@@ -887,12 +887,12 @@
 <span class="comment">// delegate trait impls by just calling T's impl
 
 </span><span class="kw">impl</span>&lt;T: Clone, M&gt; Clone <span class="kw">for </span>Nominal&lt;T, M&gt; {
-	<span class="attr">#[inline]
+	<span class="attr">#[inline(always)]
 	</span><span class="kw">fn </span>clone(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; <span class="self">Self </span>{
 		<span class="self">self</span>.wrapped_ref().clone().into()
 	}
 
-	<span class="attr">#[inline]
+	<span class="attr">#[inline(always)]
 	</span><span class="kw">fn </span>clone_from(<span class="kw-2">&amp;mut </span><span class="self">self</span>, source: <span class="kw-2">&amp;</span><span class="self">Self</span>) {
 		<span class="self">self</span>.wrapped_mut().clone_from(source.wrapped_ref())
 	}
@@ -901,7 +901,7 @@
 <span class="kw">impl</span>&lt;T: Copy, M&gt; Copy <span class="kw">for </span>Nominal&lt;T, M&gt; {}
 
 <span class="kw">impl</span>&lt;T: Debug, M&gt; Debug <span class="kw">for </span>Nominal&lt;T, M&gt; {
-	<span class="attr">#[inline]
+	<span class="attr">#[inline(always)]
 	</span><span class="kw">fn </span>fmt(<span class="kw-2">&amp;</span><span class="self">self</span>, f: <span class="kw-2">&amp;mut </span>Formatter&lt;<span class="lifetime">'_</span>&gt;) -&gt; fmt::Result {
 		f.debug_struct(<span class="string">"Nominal"</span>)
 			.field(<span class="string">"value"</span>, <span class="self">self</span>.wrapped_ref())
@@ -910,26 +910,26 @@
 }
 
 <span class="kw">impl</span>&lt;T: Display, M&gt; Display <span class="kw">for </span>Nominal&lt;T, M&gt; {
-	<span class="attr">#[inline]
+	<span class="attr">#[inline(always)]
 	</span><span class="kw">fn </span>fmt(<span class="kw-2">&amp;</span><span class="self">self</span>, f: <span class="kw-2">&amp;mut </span>Formatter&lt;<span class="lifetime">'_</span>&gt;) -&gt; fmt::Result {
 		<span class="self">self</span>.wrapped_ref().fmt(f)
 	}
 }
 
 <span class="kw">impl</span>&lt;T: Default, M&gt; Default <span class="kw">for </span>Nominal&lt;T, M&gt; {
-	<span class="attr">#[inline]
+	<span class="attr">#[inline(always)]
 	</span><span class="kw">fn </span>default() -&gt; <span class="self">Self </span>{
 		T::default().into()
 	}
 }
 
 <span class="kw">impl</span>&lt;T: Hash, M&gt; Hash <span class="kw">for </span>Nominal&lt;T, M&gt; {
-	<span class="attr">#[inline]
+	<span class="attr">#[inline(always)]
 	</span><span class="kw">fn </span>hash&lt;H: Hasher&gt;(<span class="kw-2">&amp;</span><span class="self">self</span>, state: <span class="kw-2">&amp;mut </span>H) {
 		<span class="self">self</span>.wrapped_ref().hash(state)
 	}
 
-	<span class="attr">#[inline]
+	<span class="attr">#[inline(always)]
 	</span><span class="kw">fn </span>hash_slice&lt;H: Hasher&gt;(data: <span class="kw-2">&amp;</span>[<span class="self">Self</span>], state: <span class="kw-2">&amp;mut </span>H)
 	<span class="kw">where
 		</span><span class="self">Self</span>: Sized
@@ -941,7 +941,7 @@
 }
 
 <span class="kw">impl</span>&lt;T: PartialEq&lt;TR&gt;, M, TR, MR&gt; PartialEq&lt;Nominal&lt;TR, MR&gt;&gt; <span class="kw">for </span>Nominal&lt;T, M&gt; {
-	<span class="attr">#[inline]
+	<span class="attr">#[inline(always)]
 	</span><span class="kw">fn </span>eq(<span class="kw-2">&amp;</span><span class="self">self</span>, other: <span class="kw-2">&amp;</span>Nominal&lt;TR, MR&gt;) -&gt; bool {
 		<span class="self">self</span>.wrapped_ref().eq(other.wrapped_ref())
 		<span class="comment">// &lt;T as PartialEq&gt;::eq(self.ref_inner(), other.ref_inner())
@@ -950,7 +950,7 @@
 	<span class="comment">// we override ne here since T might have overridden ne, in which case this
 	// impl will correctly call it
 	</span><span class="attr">#[allow(clippy::partialeq_ne_impl)]
-	#[inline]
+	#[inline(always)]
 	</span><span class="kw">fn </span>ne(<span class="kw-2">&amp;</span><span class="self">self</span>, other: <span class="kw-2">&amp;</span>Nominal&lt;TR, MR&gt;) -&gt; bool {
 		<span class="self">self</span>.wrapped_ref().ne(other.wrapped_ref())
 	}
@@ -959,49 +959,49 @@
 <span class="kw">impl</span>&lt;T: Eq, M&gt; Eq <span class="kw">for </span>Nominal&lt;T, M&gt; {}
 
 <span class="kw">impl</span>&lt;T: PartialOrd&lt;TR&gt;, M, TR, MR&gt; PartialOrd&lt;Nominal&lt;TR, MR&gt;&gt; <span class="kw">for </span>Nominal&lt;T, M&gt; {
-	<span class="attr">#[inline]
+	<span class="attr">#[inline(always)]
 	</span><span class="kw">fn </span>partial_cmp(<span class="kw-2">&amp;</span><span class="self">self</span>, other: <span class="kw-2">&amp;</span>Nominal&lt;TR, MR&gt;) -&gt; <span class="prelude-ty">Option</span>&lt;Ordering&gt; {
 		<span class="self">self</span>.wrapped_ref().partial_cmp(other.wrapped_ref())
 	}
 
-	<span class="attr">#[inline]
+	<span class="attr">#[inline(always)]
 	</span><span class="kw">fn </span>lt(<span class="kw-2">&amp;</span><span class="self">self</span>, other: <span class="kw-2">&amp;</span>Nominal&lt;TR, MR&gt;) -&gt; bool {
 		<span class="self">self</span>.wrapped_ref().lt(other.wrapped_ref())
 	}
 
-	<span class="attr">#[inline]
+	<span class="attr">#[inline(always)]
 	</span><span class="kw">fn </span>le(<span class="kw-2">&amp;</span><span class="self">self</span>, other: <span class="kw-2">&amp;</span>Nominal&lt;TR, MR&gt;) -&gt; bool {
 		<span class="self">self</span>.wrapped_ref().le(other.wrapped_ref())
 	}
 
-	<span class="attr">#[inline]
+	<span class="attr">#[inline(always)]
 	</span><span class="kw">fn </span>gt(<span class="kw-2">&amp;</span><span class="self">self</span>, other: <span class="kw-2">&amp;</span>Nominal&lt;TR, MR&gt;) -&gt; bool {
 		<span class="self">self</span>.wrapped_ref().gt(other.wrapped_ref())
 	}
 
-	<span class="attr">#[inline]
+	<span class="attr">#[inline(always)]
 	</span><span class="kw">fn </span>ge(<span class="kw-2">&amp;</span><span class="self">self</span>, other: <span class="kw-2">&amp;</span>Nominal&lt;TR, MR&gt;) -&gt; bool {
 		<span class="self">self</span>.wrapped_ref().ge(other.wrapped_ref())
 	}
 }
 
 <span class="kw">impl</span>&lt;T: Ord, M&gt; Ord <span class="kw">for </span>Nominal&lt;T, M&gt; {
-	<span class="attr">#[inline]
+	<span class="attr">#[inline(always)]
 	</span><span class="kw">fn </span>cmp(<span class="kw-2">&amp;</span><span class="self">self</span>, other: <span class="kw-2">&amp;</span><span class="self">Self</span>) -&gt; Ordering {
 		<span class="self">self</span>.wrapped_ref().cmp(other.wrapped_ref())
 	}
 
-	<span class="attr">#[inline]
+	<span class="attr">#[inline(always)]
 	</span><span class="kw">fn </span>max(<span class="self">self</span>, other: <span class="self">Self</span>) -&gt; <span class="self">Self </span>{
 		<span class="self">self</span>.unwrap_value().max(other.unwrap_value()).into()
 	}
 
-	<span class="attr">#[inline]
+	<span class="attr">#[inline(always)]
 	</span><span class="kw">fn </span>min(<span class="self">self</span>, other: <span class="self">Self</span>) -&gt; <span class="self">Self </span>{
 		<span class="self">self</span>.unwrap_value().min(other.unwrap_value()).into()
 	}
 
-	<span class="attr">#[inline]
+	<span class="attr">#[inline(always)]
 	</span><span class="kw">fn </span>clamp(<span class="self">self</span>, min: <span class="self">Self</span>, max: <span class="self">Self</span>) -&gt; <span class="self">Self </span>{
 		<span class="self">self</span>.unwrap_value().clamp(min.unwrap_value(), max.unwrap_value()).into()
 	}
