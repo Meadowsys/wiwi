@@ -230,6 +230,8 @@ mod sealed {
 
 mod base;
 pub use base::Base;
+mod array_conversions;
+pub use array_conversions::ArrayConversions;
 mod add_regular;
 pub use add_regular::Add;
 mod add_checked;
@@ -270,7 +272,5 @@ mod or_regular;
 pub use or_regular::Or;
 mod xor_regular;
 pub use xor_regular::Xor;
-mod array_conversions;
-pub use array_conversions::ArrayConversions;
 
 // // TODO: ilog/2/10 sum(?) product(?)
