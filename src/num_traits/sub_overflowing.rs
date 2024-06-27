@@ -1,7 +1,7 @@
-use super::Base;
+use super::Sub;
 
 /// Overflowing subtraction
-pub trait SubOverflowing: Base {
+pub trait SubOverflowing: Sub {
 	fn sub_overflowing(self, rhs: Self) -> (Self, bool);
 }
 

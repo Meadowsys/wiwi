@@ -1,7 +1,7 @@
-use super::Base;
+use super::Mul;
 
 /// Overflowing multiplication
-pub trait MulOverflowing: Base {
+pub trait MulOverflowing: Mul {
 	fn mul_overflowing(self, rhs: Self) -> (Self, bool);
 }
 

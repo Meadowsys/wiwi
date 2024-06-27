@@ -1,7 +1,7 @@
-use super::Base;
+use super::Div;
 
 /// Overflowing division
-pub trait DivOverflowing: Base {
+pub trait DivOverflowing: Div {
 	fn div_overflowing(self, rhs: Self) -> (Self, bool);
 }
 
