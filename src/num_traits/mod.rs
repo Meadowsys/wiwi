@@ -10,6 +10,8 @@ mod base;
 pub use base::Base;
 mod array_conversions;
 pub use array_conversions::ArrayConversions;
+mod widening;
+pub use widening::Widening;
 
 mod add_regular;
 pub use add_regular::Add;
@@ -37,8 +39,12 @@ pub use sub_borrowing::SubBorrowing;
 
 mod mul_regular;
 pub use mul_regular::Mul;
+mod mul_unchecked;
+pub use mul_unchecked::MulUnchecked;
 mod mul_overflowing;
 pub use mul_overflowing::MulOverflowing;
+mod mul_widening;
+pub use mul_widening::MulWidening;
 
 mod div_regular;
 pub use div_regular::Div;
