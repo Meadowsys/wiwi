@@ -19,19 +19,19 @@ pub trait Base: Sized {
 }
 
 macro_rules! impl_num_trait_base {
-	{ $($int:ident)* } => {
+	{ $($num:ident)* } => {
 		$(
-			impl Base for $int {
-				const MIN: $int = $int::MIN;
-				const MAX: $int = $int::MAX;
-				const ZERO: $int = 0 as _;
-				const ONE: $int = 1 as _;
+			impl Base for $num {
+				const MIN: $num = $num::MIN;
+				const MAX: $num = $num::MAX;
+				const ZERO: $num = 0 as _;
+				const ONE: $num = 1 as _;
 				// shut up I can't
 				// floats don't have ::BITS
 				#[allow(clippy::manual_bits)]
-				const BITS: usize = size_of::<$int>() * 8;
-				const BYTES: usize = size_of::<$int>();
-				const ALIGN: usize = align_of::<$int>();
+				const BITS: usize = size_of::<$num>() * 8;
+				const BYTES: usize = size_of::<$num>();
+				const ALIGN: usize = align_of::<$num>();
 			}
 		)*
 	}
