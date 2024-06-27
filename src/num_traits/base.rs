@@ -1,7 +1,7 @@
 use std::mem::{ size_of, align_of };
 
 /// Common base for all numbers
-pub trait Base: Sized {
+pub trait Base: Sized + private::Sealed {
 	/// Min (finite) value of this number type
 	const MIN: Self;
 	/// Max (finite) value of this number type
@@ -23,6 +23,7 @@ pub trait Base: Sized {
 macro_rules! impl_num_trait_base {
 	{ @floats $($num:ident)* } => {
 		$(
+			impl private::Sealed for $num {}
 			impl Base for $num {
 				const MIN: $num = $num::MIN;
 				const MAX: $num = $num::MAX;
@@ -44,6 +45,7 @@ macro_rules! impl_num_trait_base {
 	};
 	{ $($num:ident)* } => {
 		$(
+			impl private::Sealed for $num {}
 			impl Base for $num {
 				const MIN: $num = $num::MIN;
 				const MAX: $num = $num::MAX;
@@ -70,4 +72,8 @@ impl_num_trait_base! {
 
 impl_num_trait_base! {
 	@floats f32 f64
+}
+
+mod private {
+	pub trait Sealed {}
 }
