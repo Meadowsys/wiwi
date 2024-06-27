@@ -273,4 +273,5 @@ pub use or_regular::Or;
 mod xor_regular;
 pub use xor_regular::Xor;
 
-// // TODO: ilog/2/10 sum(?) product(?)
+// TODO: ilog/2/10 sum(?) product(?)
+// TODO: f16 f128
