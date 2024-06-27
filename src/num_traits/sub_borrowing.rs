@@ -1,7 +1,7 @@
-use super::{ Base, SubOverflowing };
+use super::SubOverflowing;
 
 /// Borrowing subtraction
-pub trait SubBorrowing: Base + SubOverflowing {
+pub trait SubBorrowing: SubOverflowing {
 	#[inline]
 	fn sub_borrowing(self, rhs: Self, borrow: bool) -> (Self, bool) {
 		let (res, borrow1) = self.sub_overflowing(rhs);
