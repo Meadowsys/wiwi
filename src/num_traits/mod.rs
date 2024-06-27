@@ -631,7 +631,6 @@ where
 
 pub trait WideningUnsignedInt<const BYTES: usize, const WIDENED: usize>: UnsignedInt<BYTES> {
 	type Widening: UnsignedInt<WIDENED>;
-	const _ASSERT_WIDENED_IS_DOUBLE: () = assert!(BYTES * 2 == WIDENED);
 }
 
 macro_rules! unsigned_int_trait_impl {
@@ -650,14 +649,11 @@ macro_rules! unsigned_int_trait_impl {
 		}
 
 		$(
+			const _: () = assert!($int::BITS as usize * 2 == $widening::BITS as usize);
+
 			impl WideningUnsignedInt<{ $int::BITS as usize / 8 }, { $widening::BITS as usize / 8 }> for $int {
 				type Widening = $widening;
 			}
-
-			const _: () = <$int as WideningUnsignedInt<
-				{ $int::BITS as usize / 8 },
-				{ $widening::BITS as usize / 8 }
-			>>::_ASSERT_WIDENED_IS_DOUBLE;
 
 			unsigned_int_trait_impl! { $widening $($rest)* }
 		)?
