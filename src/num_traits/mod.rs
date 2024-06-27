@@ -627,6 +627,119 @@ where
 	///
 	/// This returns `0` if `b` is `false`, and `1` if `b` is `true`
 	fn from_bool(b: bool) -> Self;
+
+	// reg checked unchecked strict overflowing saturating wrapping carrying
+	// add sub mul div
+	// rem shl shr pow
+	// neg ilog ilog2 ilog10
+
+	// fn add_regular(self, rhs: Self);
+	// fn add_checked(self, rhs: Self);
+	// fn add_unchecked(self, rhs: Self);
+	// fn add_strict(self, rhs: Self);
+	// fn add_overflowing(self, rhs: Self);
+	// fn add_saturating(self, rhs: Self);
+	// fn add_wrapping(self, rhs: Self);
+	// fn add_carrying(self, rhs: Self);
+
+	// fn sub_regular(self, rhs: Self);
+	// fn sub_checked(self, rhs: Self);
+	// fn sub_unchecked(self, rhs: Self);
+	// fn sub_strict(self, rhs: Self);
+	// fn sub_overflowing(self, rhs: Self);
+	// fn sub_saturating(self, rhs: Self);
+	// fn sub_wrapping(self, rhs: Self);
+	// fn sub_carrying(self, rhs: Self);
+
+	// fn mul_regular(self, rhs: Self);
+	// fn mul_checked(self, rhs: Self);
+	// fn mul_unchecked(self, rhs: Self);
+	// fn mul_strict(self, rhs: Self);
+	// fn mul_overflowing(self, rhs: Self);
+	// fn mul_saturating(self, rhs: Self);
+	// fn mul_wrapping(self, rhs: Self);
+	// fn mul_carrying(self, rhs: Self);
+
+	// fn div_regular(self, rhs: Self);
+	// fn div_checked(self, rhs: Self);
+	// fn div_unchecked(self, rhs: Self);
+	// fn div_strict(self, rhs: Self);
+	// fn div_overflowing(self, rhs: Self);
+	// fn div_saturating(self, rhs: Self);
+	// fn div_wrapping(self, rhs: Self);
+	// fn div_carrying(self, rhs: Self);
+
+	// fn rem_regular(self, rhs: Self);
+	// fn rem_checked(self, rhs: Self);
+	// fn rem_unchecked(self, rhs: Self);
+	// fn rem_strict(self, rhs: Self);
+	// fn rem_overflowing(self, rhs: Self);
+	// fn rem_saturating(self, rhs: Self);
+	// fn rem_wrapping(self, rhs: Self);
+	// fn rem_carrying(self, rhs: Self);
+
+	// fn shl_regular(self, rhs: Self);
+	// fn shl_checked(self, rhs: Self);
+	// fn shl_unchecked(self, rhs: Self);
+	// fn shl_strict(self, rhs: Self);
+	// fn shl_overflowing(self, rhs: Self);
+	// fn shl_saturating(self, rhs: Self);
+	// fn shl_wrapping(self, rhs: Self);
+	// fn shl_carrying(self, rhs: Self);
+
+	// fn shr_regular(self, rhs: Self);
+	// fn shr_checked(self, rhs: Self);
+	// fn shr_unchecked(self, rhs: Self);
+	// fn shr_strict(self, rhs: Self);
+	// fn shr_overflowing(self, rhs: Self);
+	// fn shr_saturating(self, rhs: Self);
+	// fn shr_wrapping(self, rhs: Self);
+	// fn shr_carrying(self, rhs: Self);
+
+	// fn pow_regular(self, rhs: Self);
+	// fn pow_checked(self, rhs: Self);
+	// fn pow_unchecked(self, rhs: Self);
+	// fn pow_strict(self, rhs: Self);
+	// fn pow_overflowing(self, rhs: Self);
+	// fn pow_saturating(self, rhs: Self);
+	// fn pow_wrapping(self, rhs: Self);
+	// fn pow_carrying(self, rhs: Self);
+
+	// fn neg_regular(self, rhs: Self);
+	// fn neg_checked(self, rhs: Self);
+	// fn neg_unchecked(self, rhs: Self);
+	// fn neg_strict(self, rhs: Self);
+	// fn neg_overflowing(self, rhs: Self);
+	// fn neg_saturating(self, rhs: Self);
+	// fn neg_wrapping(self, rhs: Self);
+	// fn neg_carrying(self, rhs: Self);
+
+	// fn ilog_regular(self, rhs: Self);
+	// fn ilog_checked(self, rhs: Self);
+	// fn ilog_unchecked(self, rhs: Self);
+	// fn ilog_strict(self, rhs: Self);
+	// fn ilog_overflowing(self, rhs: Self);
+	// fn ilog_saturating(self, rhs: Self);
+	// fn ilog_wrapping(self, rhs: Self);
+	// fn ilog_carrying(self, rhs: Self);
+
+	// fn ilog2_regular(self, rhs: Self);
+	// fn ilog2_checked(self, rhs: Self);
+	// fn ilog2_unchecked(self, rhs: Self);
+	// fn ilog2_strict(self, rhs: Self);
+	// fn ilog2_overflowing(self, rhs: Self);
+	// fn ilog2_saturating(self, rhs: Self);
+	// fn ilog2_wrapping(self, rhs: Self);
+	// fn ilog2_carrying(self, rhs: Self);
+
+	// fn ilog10_regular(self, rhs: Self);
+	// fn ilog10_checked(self, rhs: Self);
+	// fn ilog10_unchecked(self, rhs: Self);
+	// fn ilog10_strict(self, rhs: Self);
+	// fn ilog10_overflowing(self, rhs: Self);
+	// fn ilog10_saturating(self, rhs: Self);
+	// fn ilog10_wrapping(self, rhs: Self);
+	// fn ilog10_carrying(self, rhs: Self);
 }
 
 pub trait WideningUnsignedInt<const BYTES: usize, const WIDENED: usize>: UnsignedInt<BYTES> {
