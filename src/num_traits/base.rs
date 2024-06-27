@@ -21,20 +21,24 @@ pub trait Base: Sized + private::Sealed {
 }
 
 macro_rules! impl_num_trait_base {
+	{ @base $zero:literal $one:literal $num:ident } => {
+		const MIN: $num = $num::MIN;
+		const MAX: $num = $num::MAX;
+		const ZERO: $num = $zero;
+		const ONE: $num = $one;
+		// shut up I can't
+		// floats don't have ::BITS
+		#[allow(clippy::manual_bits)]
+		const BITS: usize = size_of::<$num>() * 8;
+		const BYTES: usize = size_of::<$num>();
+		const ALIGN: usize = align_of::<$num>();
+	};
+
 	{ @floats $($num:ident)* } => {
 		$(
 			impl private::Sealed for $num {}
 			impl Base for $num {
-				const MIN: $num = $num::MIN;
-				const MAX: $num = $num::MAX;
-				const ZERO: $num = 0 as _;
-				const ONE: $num = 1 as _;
-				// shut up I can't
-				// floats don't have ::BITS
-				#[allow(clippy::manual_bits)]
-				const BITS: usize = size_of::<$num>() * 8;
-				const BYTES: usize = size_of::<$num>();
-				const ALIGN: usize = align_of::<$num>();
+				impl_num_trait_base! { @base 0.0 1.0 $num }
 
 				#[inline(always)]
 				fn from_bool(b: bool) -> $num {
@@ -43,20 +47,12 @@ macro_rules! impl_num_trait_base {
 			}
 		)*
 	};
+
 	{ $($num:ident)* } => {
 		$(
 			impl private::Sealed for $num {}
 			impl Base for $num {
-				const MIN: $num = $num::MIN;
-				const MAX: $num = $num::MAX;
-				const ZERO: $num = 0 as _;
-				const ONE: $num = 1 as _;
-				// shut up I can't
-				// floats don't have ::BITS
-				#[allow(clippy::manual_bits)]
-				const BITS: usize = size_of::<$num>() * 8;
-				const BYTES: usize = size_of::<$num>();
-				const ALIGN: usize = align_of::<$num>();
+				impl_num_trait_base! { @base 0 1 $num }
 
 				#[inline(always)]
 				fn from_bool(b: bool) -> $num { b as _ }
