@@ -1,6 +1,6 @@
 use super::Base;
 
 /// Checked addition
-pub trait AddChecked: Sized + Base {
+pub trait AddChecked: Base {
 	fn add_checked(self, rhs: Self) -> Option<Self>;
 }

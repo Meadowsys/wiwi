@@ -13,7 +13,7 @@ use super::Base;
 ///    let array: [u8; BYTES] = num.into_le_bytes();
 /// }
 /// ```
-pub trait ArrayConversions<const BYTES: usize>: Sized + Base {
+pub trait ArrayConversions<const BYTES: usize>: Base {
 	/// Converts this number into a byte array in little endian order
 	fn into_le_bytes(self) -> [u8; BYTES];
 	/// Converts this number into a byte array in big endian order
