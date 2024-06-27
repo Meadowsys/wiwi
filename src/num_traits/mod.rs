@@ -242,6 +242,41 @@ pub trait AddRegular: Sized + Base + ops::Add<Self, Output = Self> {
 	}
 }
 
+/// Trait for number types that support checked addition
+pub trait AddChecked: Sized {
+	fn add_checked(self, rhs: Self) -> Option<Self>;
+}
+
+/// Trait for number types that support unchecked addition
+pub trait AddUnchecked: Sized {
+	unsafe fn add_unchecked(self, rhs: Self) -> Self;
+}
+
+/// Trait for number types that support strict addition
+pub trait AddStrict: Sized {
+	fn add_strict(self, rhs: Self) -> Self;
+}
+
+/// Trait for number types that support overflowing addition
+pub trait AddOverflowing: Sized {
+	fn add_overflowing(self, rhs: Self) -> (Self, bool);
+}
+
+/// Trait for number types that support saturating addition
+pub trait AddSaturating: Sized {
+	fn add_saturating(self, rhs: Self) -> Self;
+}
+
+/// Trait for number types that support wrapping addition
+pub trait AddWrapping: Sized {
+	fn add_wrapping(self, rhs: Self) -> Self;
+}
+
+/// Trait for number types that support carrying addition
+pub trait AddCarrying: Sized {
+	fn add_carrying(self, rhs: Self, carry: bool) -> (Self, bool);
+}
+
 /// Trait for number types that support subtraction
 pub trait SubRegular: Sized + Base + ops::Sub<Self, Output = Self> {
 	#[inline]
