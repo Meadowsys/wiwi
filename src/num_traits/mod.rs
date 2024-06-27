@@ -5,7 +5,7 @@ use std::fmt::{ Debug, Display };
 use std::hash::Hash;
 use std::iter::{ Sum, Product };
 use std::ops;
-
+/*
 pub trait Int<const BYTES: usize>: Sized
 where
 	Self: Copy + Debug + Display + Default + Hash,
@@ -590,3 +590,78 @@ int_trait_impl! {
 	i64 true
 	i128 true
 }
+*/
+
+pub trait UnsignedInt<const BYTES: usize>: Sized
+where
+	Self: Copy + Debug + Display + Default + Hash,
+	Self: PartialEq<Self> + Eq + PartialOrd<Self> + Ord,
+	Self: ops::Add<Self, Output = Self> + ops::AddAssign<Self>,
+	Self: ops::Sub<Self, Output = Self> + ops::SubAssign<Self>,
+	Self: ops::Mul<Self, Output = Self> + ops::MulAssign<Self>,
+	Self: ops::Div<Self, Output = Self> + ops::DivAssign<Self>,
+	Self: ops::Rem<Self, Output = Self> + ops::RemAssign<Self>,
+	Self: ops::Shl<Self, Output = Self> + ops::ShlAssign<Self>,
+	Self: ops::Shr<Self, Output = Self> + ops::ShrAssign<Self>,
+	Self: ops::Not<Output = Self>,
+	Self: ops::BitAnd<Self, Output = Self> + ops::BitAndAssign<Self>,
+	Self: ops::BitOr<Self, Output = Self> + ops::BitOrAssign<Self>,
+	Self: ops::BitXor<Self, Output = Self> + ops::BitXorAssign<Self>,
+	Self: Sum<Self> + Product<Self>
+{
+	/// The smallest value that can be represented by this int type
+	const MIN: Self;
+	/// The largest value that can be represented by this int type
+	const MAX: Self;
+	/// The size of this integer type in bits
+	const BITS: Self;
+	/// The size of this integer type in bytes
+	// TODO: this / generic param ehh weird funny
+	const BYTES: Self;
+	/// Zero
+	const ZERO: Self;
+	/// One
+	const ONE: Self;
+
+	/// Cast a boolean into `Self`
+	///
+	/// This returns `0` if `b` is `false`, and `1` if `b` is `true`
+	fn from_bool(b: bool) -> Self;
+}
+
+pub trait WideningUnsignedInt<const BYTES: usize, const WIDENED: usize>: UnsignedInt<BYTES> {
+	type Widening: UnsignedInt<WIDENED>;
+	const _ASSERT_WIDENED_IS_DOUBLE: () = assert!(BYTES * 2 == WIDENED);
+}
+
+macro_rules! unsigned_int_trait_impl {
+	{ $int:ident $($widening:ident $($rest:ident)*)? } => {
+		const _: () = assert!($int::BITS % 8 == 0);
+
+		impl UnsignedInt<{ $int::BITS as usize / 8 }> for $int {
+			const MIN: $int = $int::MIN;
+			const MAX: $int = $int::MAX;
+			const BITS: $int = $int::BITS as $int;
+			const BYTES: $int = $int::BITS as $int / 8;
+			const ZERO: $int = 0;
+			const ONE: $int = 1;
+
+			fn from_bool(b: bool) -> Self { b as _ }
+		}
+
+		$(
+			impl WideningUnsignedInt<{ $int::BITS as usize / 8 }, { $widening::BITS as usize / 8 }> for $int {
+				type Widening = $widening;
+			}
+
+			const _: () = <$int as WideningUnsignedInt<
+				{ $int::BITS as usize / 8 },
+				{ $widening::BITS as usize / 8 }
+			>>::_ASSERT_WIDENED_IS_DOUBLE;
+
+			unsigned_int_trait_impl! { $widening $($rest)* }
+		)?
+	};
+}
+
+unsigned_int_trait_impl! { u8 u16 u32 u64 u128 }
