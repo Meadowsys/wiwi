@@ -1,7 +1,11 @@
 use crate::num_traits::UnsignedInt;
 use std::mem::MaybeUninit;
 
-fn overflowing_sub<I: UnsignedInt<BYTES_PER_INT>, const BYTES_PER_INT: usize, const BYTES: usize>(
+fn overflowing_sub<
+	const BYTES_PER_INT: usize,
+	const BYTES: usize,
+	I: UnsignedInt<BYTES_PER_INT>
+>(
 	int1: [I; BYTES],
 	int2: [I; BYTES]
 ) -> ([I; BYTES], bool) {

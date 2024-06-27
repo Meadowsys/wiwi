@@ -61,7 +61,11 @@ use std::mem::MaybeUninit;
 // 	res
 // }
 
-pub fn overflowing_add<I: UnsignedInt<BYTES_PER_INT>, const BYTES_PER_INT: usize, const BYTES: usize>(
+pub fn overflowing_add<
+	const BYTES_PER_INT: usize,
+	const BYTES: usize,
+	I: UnsignedInt<BYTES_PER_INT>
+>(
 	int1: [I; BYTES],
 	int2: [I; BYTES]
 ) -> ([I; BYTES], bool) {
