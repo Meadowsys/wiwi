@@ -232,6 +232,7 @@ mod base;
 pub use base::Base;
 mod array_conversions;
 pub use array_conversions::ArrayConversions;
+
 mod add_regular;
 pub use add_regular::Add;
 mod add_checked;
@@ -248,12 +249,16 @@ mod add_wrapping;
 pub use add_wrapping::AddWrapping;
 mod add_carrying;
 pub use add_carrying::AddCarrying;
+
 mod sub_regular;
 pub use sub_regular::Sub;
+
 mod mul_regular;
 pub use mul_regular::Mul;
+
 mod div_regular;
 pub use div_regular::Div;
+
 mod rem_regular;
 pub use rem_regular::Rem;
 mod shl_regular;
