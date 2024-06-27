@@ -8,10 +8,14 @@ use std::ops;
 
 mod base;
 pub use base::Base;
-mod array_conversions;
-pub use array_conversions::ArrayConversions;
+
 mod widening;
 pub use widening::Widening;
+
+mod array_conversions;
+pub use array_conversions::ArrayConversions;
+mod from_lossless;
+pub use from_lossless::*;
 
 mod add_regular;
 pub use add_regular::Add;
