@@ -20,56 +20,118 @@ pub trait Base: Sized + private::Sealed {
 	fn from_bool(b: bool) -> Self;
 }
 
-macro_rules! impl_num_trait_base {
-	{ @base $zero:literal $one:literal $num:ident } => {
-		const MIN: $num = $num::MIN;
-		const MAX: $num = $num::MAX;
-		const ZERO: $num = $zero;
-		const ONE: $num = $one;
-		// shut up I can't
-		// floats don't have ::BITS
-		#[allow(clippy::manual_bits)]
-		const BITS: usize = size_of::<$num>() * 8;
-		const BYTES: usize = size_of::<$num>();
-		const ALIGN: usize = align_of::<$num>();
-	};
-
-	{ @floats $($num:ident)* } => {
-		$(
-			impl private::Sealed for $num {}
-			impl Base for $num {
-				impl_num_trait_base! { @base 0.0 1.0 $num }
-
-				#[inline(always)]
-				fn from_bool(b: bool) -> $num {
-					if b { Self::ONE } else { Self::ZERO }
-				}
-			}
-		)*
-	};
-
-	{ $($num:ident)* } => {
-		$(
-			impl private::Sealed for $num {}
-			impl Base for $num {
-				impl_num_trait_base! { @base 0 1 $num }
-
-				#[inline(always)]
-				fn from_bool(b: bool) -> $num { b as _ }
-			}
-		)*
-	};
-}
-
-impl_num_trait_base! {
-	u8 u16 u32 u64 u128 usize
-	i8 i16 i32 i64 i128 isize
-}
-
-impl_num_trait_base! {
-	@floats f32 f64
-}
-
 mod private {
 	pub trait Sealed {}
+}
+
+macro_rules! impl_num_trait_base {
+	{
+		int: unsigned $num:ident
+	} => {
+		impl_num_trait_base! {
+			base: $num;
+			zero: 0;
+			one: 1;
+			from_bool: b => b as _;
+		}
+	};
+
+	{
+		int: signed $num:ident
+	} => {
+		impl_num_trait_base! {
+			base: $num;
+			zero: 0;
+			one: 1;
+			from_bool: b => b as _;
+		}
+	};
+
+	{
+		float: $num:ident
+	} => {
+		impl_num_trait_base! {
+			base: $num;
+			zero: 0.0;
+			one: 1.0;
+			from_bool: b => if b { 1.0 } else { 0.0 };
+		}
+	};
+
+	{
+		base: $num:ident;
+		zero: $zero:literal;
+		one: $one:literal;
+		from_bool: $b:ident => $from_bool:expr;
+	} => {
+		impl private::Sealed for $num {}
+		impl Base for $num {
+			const MIN: $num = $num::MIN;
+			const MAX: $num = $num::MAX;
+			const ZERO: $num = $zero;
+			const ONE: $num = $one;
+			#[allow(clippy::manual_bits)] // shut
+			const BITS: usize = size_of::<$num>() * 8;
+			const BYTES: usize = size_of::<$num>();
+			const ALIGN: usize = align_of::<$num>();
+
+			fn from_bool($b: bool) -> $num { $from_bool }
+		}
+	};
+}
+
+impl_num_trait_base! {
+	int: unsigned u8
+}
+
+impl_num_trait_base! {
+	int: unsigned u16
+}
+
+impl_num_trait_base! {
+	int: unsigned u32
+}
+
+impl_num_trait_base! {
+	int: unsigned u64
+}
+
+impl_num_trait_base! {
+	int: unsigned u128
+}
+
+impl_num_trait_base! {
+	int: unsigned usize
+}
+
+impl_num_trait_base! {
+	int: signed i8
+}
+
+impl_num_trait_base! {
+	int: signed i16
+}
+
+impl_num_trait_base! {
+	int: signed i32
+}
+
+impl_num_trait_base! {
+	int: signed i64
+}
+
+impl_num_trait_base! {
+	int: signed i128
+}
+
+impl_num_trait_base! {
+	int: signed isize
+}
+
+impl_num_trait_base! {
+	float: f32
+}
+
+impl_num_trait_base! {
+	float: f64
 }
