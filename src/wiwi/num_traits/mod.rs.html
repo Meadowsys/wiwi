@@ -87,6 +87,8 @@
 <a href="#87" id="87">87</a>
 <a href="#88" id="88">88</a>
 <a href="#89" id="89">89</a>
+<a href="#90" id="90">90</a>
+<a href="#91" id="91">91</a>
 </pre></div><pre class="rust"><code><span class="attr">#![deny(unconditional_recursion)]
 
 </span><span class="doccomment">//! Number operations exposed as traits, enabling code to be written genericly
@@ -114,12 +116,14 @@
 	base
 	<span class="comment">// this doesn't need to be a "base"
 	// float_base
-
-	</span>widening
+	</span>signedness
 	array_conversions
+
 	from_lossless
 	into_lossless
-	signedness
+
+	widening
+	narrowing
 
 	count_bits
 
