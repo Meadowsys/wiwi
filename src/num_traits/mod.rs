@@ -64,6 +64,7 @@ decl_mod! {
 	shl_checked
 
 	shr_regular
+	shr_checked
 
 	// pow_regular
 	// pow_int
