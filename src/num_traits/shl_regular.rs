@@ -8,7 +8,7 @@ pub trait Shl: Base + std::ops::Shl<Self, Output = Self> {
 	}
 }
 
-macro_rules! impl_num_trait_shl_checked {
+macro_rules! impl_num_trait_shl {
 	{ $($num:ident)* } => {
 		$(
 			impl Shl for $num {}
@@ -16,7 +16,7 @@ macro_rules! impl_num_trait_shl_checked {
 	}
 }
 
-impl_num_trait_shl_checked! {
+impl_num_trait_shl! {
 	u8 u16 u32 u64 u128 usize
 	i8 i16 i32 i64 i128 isize
 }
