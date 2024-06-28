@@ -1,6 +1,6 @@
-use super::Base;
+use super::Add;
 
 /// Unchecked addition
-pub trait AddUnchecked: Base {
+pub trait AddUnchecked: Add {
 	unsafe fn add_unchecked(self, rhs: Self) -> Self;
 }

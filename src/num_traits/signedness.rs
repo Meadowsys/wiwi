@@ -1,12 +1,14 @@
+use super::Base;
+
 /// Signed integers with an unsigned variant
-pub trait IntSigned {
+pub trait IntSigned: Base {
 	type Unsigned: IntUnsigned<Signed = Self>;
 
 	fn cast_unsigned(self) -> Self::Unsigned;
 }
 
 /// Unsigned integers with a signed variant
-pub trait IntUnsigned {
+pub trait IntUnsigned: Base {
 	type Signed: IntSigned<Unsigned = Self>;
 
 	fn cast_signed(self) -> Self::Signed;

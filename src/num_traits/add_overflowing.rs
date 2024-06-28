@@ -1,7 +1,7 @@
-use super::Base;
+use super::Add;
 
 /// Overflowing addition
-pub trait AddOverflowing: Base {
+pub trait AddOverflowing: Add {
 	/// Performs overflowing add
 	///
 	/// # Examples

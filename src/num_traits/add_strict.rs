@@ -1,6 +1,6 @@
-use super::Base;
+use super::Add;
 
 /// Strict addition
-pub trait AddStrict: Base {
+pub trait AddStrict: Add {
 	fn add_strict(self, rhs: Self) -> Self;
 }
