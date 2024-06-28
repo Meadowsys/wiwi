@@ -74,7 +74,7 @@ decl_mod! {
 
 	or_regular
 
-	// xor_regular
+	xor_regular
 }
 
 // TODO: ilog/2/10 sum(?) product(?)
