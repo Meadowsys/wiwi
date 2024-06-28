@@ -23,13 +23,15 @@ macro_rules! decl_mod {
 
 decl_mod! {
 	base
-	float_base
+	// this doesn't need to be a "base"
+	// float_base
 
 	widening
 	array_conversions
 	from_lossless
 	into_lossless
-	signedness_base
+	signedness
+
 	count_bits
 
 	add_regular

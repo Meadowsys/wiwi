@@ -1,29 +1,29 @@
 use super::Base;
 
-/// Additional base for signed integers with an unsigned variant
-pub trait IntSignedBase: Base {
-	type Unsigned: IntUnsignedBase<Signed = Self>;
+/// Signed integers with an unsigned variant
+pub trait IntSigned: Base {
+	type Unsigned: IntUnsigned<Signed = Self>;
 
 	fn cast_unsigned(self) -> Self::Unsigned;
 }
 
-/// Additional base for unsigned integers with a signed variant
-pub trait IntUnsignedBase: Base {
-	type Signed: IntSignedBase<Unsigned = Self>;
+/// Unsigned integers with a signed variant
+pub trait IntUnsigned: Base {
+	type Signed: IntSigned<Unsigned = Self>;
 
 	fn cast_signed(self) -> Self::Signed;
 }
 
 macro_rules! impl_signed {
 	{ $signed:ident $unsigned:ident } => {
-		impl IntSignedBase for $signed {
+		impl IntSigned for $signed {
 			type Unsigned = $unsigned;
 
 			#[inline(always)]
 			fn cast_unsigned(self) -> $unsigned { self as _ }
 		}
 
-		impl IntUnsignedBase for $unsigned {
+		impl IntUnsigned for $unsigned {
 			type Signed = $signed;
 
 			#[inline(always)]
