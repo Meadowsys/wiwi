@@ -69,6 +69,7 @@
 <a href="#69" id="69">69</a>
 <a href="#70" id="70">70</a>
 <a href="#71" id="71">71</a>
+<a href="#72" id="72">72</a>
 </pre></div><pre class="rust"><code><span class="kw">use super</span>::{ MulUnchecked, Narrowing, Widening };
 
 <span class="doccomment">/// Widening multiplication
@@ -117,7 +118,8 @@
 </span><span class="macro">impl_num_trait_mul_widening!</span> { usize u32 }
 
 <span class="doccomment">/// Widening mul is done by splitting the u128 values into two u64's each, then
-/// multiplying those together using widening multiplication.
+/// multiplying those together using wiwi's `int` feature widening multiplication
+/// implementation
 </span><span class="kw">impl </span>MulWidening <span class="kw">for </span>u128 {
 	<span class="attr">#[inline]
 	</span><span class="kw">fn </span>mul_widening(<span class="self">self</span>, rhs: u128) -&gt; (u128, u128) {

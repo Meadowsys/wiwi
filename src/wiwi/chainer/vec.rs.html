@@ -1587,7 +1587,6 @@
 <a href="#1587" id="1587">1587</a>
 <a href="#1588" id="1588">1588</a>
 <a href="#1589" id="1589">1589</a>
-<a href="#1590" id="1590">1590</a>
 </pre></div><pre class="rust"><code><span class="kw">use super</span>::{ chainer, chain_fn, ChainHalf, NonChainHalf, SliceMutChain, SliceRefChain };
 <span class="kw">use </span>std::{ ptr, str, vec };
 <span class="kw">use </span>std::cmp::Ordering;
@@ -2697,23 +2696,20 @@
 		<span class="doccomment">/// Trims off the leading and trailing ASCII whitespace in place
 		</span>trim_ascii(nc) =&gt; <span class="kw">unsafe </span>{
 			<span class="kw">let </span>trimmed_start = _tmp_trim_ascii_start_amount(nc);
-			<span class="kw">let </span>trimmed_end = _tmp_trim_ascii_end_amount(nc);
+			<span class="kw">if </span>trimmed_start == nc.len() {
+				<span class="comment">// the fn ate everything, everything is whitespace
+				</span>nc.set_len(<span class="number">0</span>);
+				<span class="comment">// TODO: cannot early return. But I wanna make it possible somehow in chain_fn!
+			</span>} <span class="kw">else </span>{
+				<span class="kw">let </span>trimmed_end = _tmp_trim_ascii_end_amount(nc);
+				<span class="kw">let </span>total_trimmed = trimmed_start + trimmed_end;
 
-			<span class="kw">let </span>total_trimmed = trimmed_start + trimmed_end;
-			<span class="kw">if </span>total_trimmed &gt; nc.len() {
-				<span class="comment">// this means the trimmed area had overlap, and that's
-				// only possible if everything is whitespace. if there's one
-				// singular non whitespace in there, total_trimmed will be one
-				// less than nc.len()
-				</span>nc.set_len(<span class="number">0</span>)
-			} <span class="kw">else </span>{
 				<span class="kw">let </span>ptr = nc.as_mut_ptr();
 				<span class="kw">let </span>new_len = nc.len() - total_trimmed;
 
 				ptr::copy(nc.as_ptr().add(trimmed_start), ptr, new_len);
 				nc.set_len(new_len);
 			}
-
 		}
 	}
 
@@ -3117,7 +3113,9 @@
 				<span class="string">"you're cute \x0c\n\r \t"</span>,
 				<span class="string">"\t\n\x0c\r you're cute"</span>,
 				<span class="string">"you're cute"</span>,
-			)
+			),
+			<span class="comment">// all whitespace
+			</span>(<span class="string">"\t\n\x0c\r   \t\t\n\n\t     "</span>, <span class="string">""</span>, <span class="string">""</span>, <span class="string">""</span>)
 		];
 
 		<span class="kw">for </span>(original, trimmed_start, trimmed_end, trimmed_both) <span class="kw">in </span>strs {
