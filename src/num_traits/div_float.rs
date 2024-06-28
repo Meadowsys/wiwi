@@ -1,7 +1,7 @@
-use super::Div;
+use super::{ Div, FloatBase };
 
 /// Floating point division
-pub trait DivFloat: Div {
+pub trait DivFloat: Div + FloatBase {
 	/// Performs floating point division
 	///
 	/// This means the division operation will perform division and keep fractional

@@ -23,6 +23,7 @@ macro_rules! decl_mod {
 
 decl_mod! {
 	base
+	float_base
 
 	widening
 	array_conversions
