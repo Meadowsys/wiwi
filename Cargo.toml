@@ -125,7 +125,9 @@ minesweeper-unstable = [
 	"z85"
 ]
 nominal = []
-num-traits-unstable = []
+num-traits-unstable = [
+	"int-unstable"
+]
 path-unstable = []
 serialiser-binary-unstable = [
 	"dep:ordered-float"
