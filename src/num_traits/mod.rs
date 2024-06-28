@@ -30,6 +30,7 @@ decl_mod! {
 	from_lossless
 	into_lossless
 	signedness_base
+	count_bits
 
 	add_regular
 	add_checked
