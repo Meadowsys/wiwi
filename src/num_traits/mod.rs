@@ -60,7 +60,7 @@ decl_mod! {
 
 	shl_regular
 
-	// shr_regular
+	shr_regular
 
 	// pow_regular
 	// pow_int
