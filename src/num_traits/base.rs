@@ -148,3 +148,28 @@ impl_num_trait_base! {
 impl_num_trait_base! {
 	float: f64
 }
+
+#[cfg(test)]
+mod tests {
+	use super::*;
+	use std::fmt::Debug;
+
+	#[test]
+	fn bits_and_bytes() {
+		fn check<I: Base + Debug + Eq>(expected_bits: I, expected_bytes: I) {
+			assert_eq!(I::BITS, expected_bits);
+			assert_eq!(I::BYTES, expected_bytes);
+		}
+
+		check(8u8, 1);
+		check(16u16, 2);
+		check(32u32, 4);
+		check(64u64, 8);
+		check(128u128, 16);
+		check(8i8, 1);
+		check(16i16, 2);
+		check(32i32, 4);
+		check(64i64, 8);
+		check(128i128, 16);
+	}
+}
