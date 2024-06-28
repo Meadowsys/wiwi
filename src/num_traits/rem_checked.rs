@@ -8,6 +8,7 @@ macro_rules! impl_num_trait_rem_checked {
 	{ $($num:ident)* } => {
 		$(
 			impl RemChecked for $num {
+				#[inline]
 				fn rem_checked(self, rhs: $num) -> Option<$num> {
 					$num::checked_rem(self, rhs)
 				}
