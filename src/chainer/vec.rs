@@ -1107,23 +1107,20 @@ impl VecChain<u8> {
 		/// Trims off the leading and trailing ASCII whitespace in place
 		trim_ascii(nc) => unsafe {
 			let trimmed_start = _tmp_trim_ascii_start_amount(nc);
-			let trimmed_end = _tmp_trim_ascii_end_amount(nc);
-
-			let total_trimmed = trimmed_start + trimmed_end;
-			if total_trimmed > nc.len() {
-				// this means the trimmed area had overlap, and that's
-				// only possible if everything is whitespace. if there's one
-				// singular non whitespace in there, total_trimmed will be one
-				// less than nc.len()
-				nc.set_len(0)
+			if trimmed_start == nc.len() {
+				// the fn ate everything, everything is whitespace
+				nc.set_len(0);
+				// TODO: cannot early return. But I wanna make it possible somehow in chain_fn!
 			} else {
+				let trimmed_end = _tmp_trim_ascii_end_amount(nc);
+				let total_trimmed = trimmed_start + trimmed_end;
+
 				let ptr = nc.as_mut_ptr();
 				let new_len = nc.len() - total_trimmed;
 
 				ptr::copy(nc.as_ptr().add(trimmed_start), ptr, new_len);
 				nc.set_len(new_len);
 			}
-
 		}
 	}
 
