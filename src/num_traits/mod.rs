@@ -12,93 +12,64 @@ use std::hash::Hash;
 use std::iter::{ Sum, Product };
 use std::ops;
 
-mod base;
-pub use base::Base;
+macro_rules! decl_mod {
+	{ $($mod_name:ident)* } => {
+		$(
+			mod $mod_name;
+			pub use $mod_name::*;
+		)*
+	}
+}
 
-mod widening;
-pub use widening::Widening;
+decl_mod! {
+	base
 
-mod array_conversions;
-pub use array_conversions::ArrayConversions;
-mod from_lossless;
-pub use from_lossless::*;
-mod into_lossless;
-pub use into_lossless::*;
-mod signedness;
-pub use signedness::{ IntSigned, IntUnsigned };
+	widening
+	array_conversions
+	from_lossless
+	into_lossless
+	signedness
 
-mod add_regular;
-pub use add_regular::Add;
-mod add_checked;
-pub use add_checked::AddChecked;
-// mod add_unchecked;
-// pub use add_unchecked::AddUnchecked;
-// mod add_strict;
-// pub use add_strict::AddStrict;
-mod add_overflowing;
-pub use add_overflowing::AddOverflowing;
-// mod add_saturating;
-// pub use add_saturating::AddSaturating;
-// mod add_wrapping;
-// pub use add_wrapping::AddWrapping;
-mod add_carrying;
-pub use add_carrying::AddCarrying;
+	add_regular
+	add_checked
+	// add_unchecked
+	// add_strict
+	add_overflowing
+	// add_saturating
+	// add_wrapping
+	add_carrying
 
-mod sub_regular;
-pub use sub_regular::Sub;
-mod sub_checked;
-pub use sub_checked::SubChecked;
-mod sub_overflowing;
-pub use sub_overflowing::SubOverflowing;
-mod sub_borrowing;
-pub use sub_borrowing::SubBorrowing;
+	sub_regular
+	sub_checked
+	sub_overflowing
+	sub_borrowing
 
-mod mul_regular;
-pub use mul_regular::Mul;
-mod mul_checked;
-pub use mul_checked::MulChecked;
-mod mul_unchecked;
-pub use mul_unchecked::MulUnchecked;
-mod mul_overflowing;
-pub use mul_overflowing::MulOverflowing;
-mod mul_widening;
-pub use mul_widening::MulWidening;
+	mul_regular
+	mul_checked
+	mul_unchecked
+	mul_overflowing
+	mul_widening
 
-mod div_regular;
-pub use div_regular::Div;
-mod div_checked;
-pub use div_checked::DivChecked;
-mod div_int;
-pub use div_int::DivInt;
-mod div_float;
-pub use div_float::DivFloat;
-mod div_overflowing;
-pub use div_overflowing::DivOverflowing;
+	div_regular
+	div_checked
+	div_int
+	div_float
+	div_overflowing
 
-// mod rem_regular;
-// pub use rem_regular::Rem;
-// mod shl_regular;
-// pub use shl_regular::Shl;
-// mod shr_regular;
-// pub use shr_regular::Shr;
+	// rem_regular
+	// shl_regular
+	// shr_regular
 
-// mod pow_regular;
-// pub use pow_regular::Pow;
-// mod pow_int;
-// pub use pow_int::PowI;
-// mod pow_float;
-// pub use pow_float::PowFloat;
+	// pow_regular
+	// pow_int
+	// pow_float
 
-// mod neg_regular;
-// pub use neg_regular::Neg;
-// mod not_regular;
-// pub use not_regular::Not;
-// mod and_regular;
-// pub use and_regular::And;
-// mod or_regular;
-// pub use or_regular::Or;
-// mod xor_regular;
-// pub use xor_regular::Xor;
+	// neg_regular
+	// not_regular
+	// and_regular
+	// or_regular
+	// xor_regular
+}
 
 // TODO: ilog/2/10 sum(?) product(?)
 // TODO: f16 f128
