@@ -122,6 +122,9 @@
 	)
 )]
 
+#[cfg(target_pointer_width = "16")]
+compile_error!("16-bit is not supported, but please do file an issue if for whatever reason you do need it!");
+
 mod _internal;
 pub mod prelude;
 
