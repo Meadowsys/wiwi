@@ -57,6 +57,7 @@ decl_mod! {
 	div_overflowing
 
 	rem_regular
+	rem_checked
 
 	shl_regular
 
