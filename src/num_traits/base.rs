@@ -11,11 +11,11 @@ pub trait Base: Sized + Clone + private::Sealed {
 	/// `1`
 	const ONE: Self;
 	/// Size of this number in bits
-	const BITS: usize;
+	const BITS: Self;
 	/// Size of this number type in bytes
-	const BYTES: usize;
+	const BYTES: Self;
 	/// Align of this number type in bytes
-	const ALIGN: usize;
+	const ALIGN: Self;
 
 	fn from_bool(b: bool) -> Self;
 }
@@ -71,9 +71,9 @@ macro_rules! impl_num_trait_base {
 			const ZERO: $num = $zero;
 			const ONE: $num = $one;
 			#[allow(clippy::manual_bits)] // shut
-			const BITS: usize = size_of::<$num>() * 8;
-			const BYTES: usize = size_of::<$num>();
-			const ALIGN: usize = align_of::<$num>();
+			const BITS: $num = (size_of::<$num>() * 8) as _;
+			const BYTES: $num = size_of::<$num>() as _;
+			const ALIGN: $num = align_of::<$num>() as _;
 
 			#[inline(always)]
 			fn from_bool($b: bool) -> $num { $from_bool }
