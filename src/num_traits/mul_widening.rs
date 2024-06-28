@@ -46,7 +46,8 @@ impl_num_trait_mul_widening! { usize u64 }
 impl_num_trait_mul_widening! { usize u32 }
 
 /// Widening mul is done by splitting the u128 values into two u64's each, then
-/// multiplying those together using widening multiplication.
+/// multiplying those together using wiwi's `int` feature widening multiplication
+/// implementation
 impl MulWidening for u128 {
 	#[inline]
 	fn mul_widening(self, rhs: u128) -> (u128, u128) {
