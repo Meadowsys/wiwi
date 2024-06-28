@@ -10,8 +10,16 @@ pub fn widening_mul<const BYTES: usize, I>(
 where
 	I: AddCarrying + AddOverflowing + MulWidening + Copy
 {
-	// it is not possible to overflow the double sized array
-
+	// SAFETY: it is not possible to overflow `result`:
+	// - `result` is double the size of one input array of length `BYTES`
+	// - the two loops will iterate to max `BYTES - 1` each
+	// - `i_outer + i_inner` will be no larger than `(2 * BYTES) - 2`, which is
+	//   less than `2 * BYTES`
+	// - we only loop until (BYTES * 2), which will stay in bounds of the array
+	// - squaring a number `n` is the same as 2.pow(2 * log2(n)), which is saying,
+	//   for any number, it's bit width will not more than double when squaring it
+	// so, [[I; BYTES]; 2] is enough length, and it's not possible to overflow it,
+	// both in the code and in the arithmetic result
 	unsafe {
 		let int1_ptr = int1.as_ptr();
 		let int2_ptr = int2.as_ptr();
