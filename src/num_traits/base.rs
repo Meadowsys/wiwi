@@ -38,6 +38,7 @@ macro_rules! impl_num_trait_base {
 			base: $num;
 			zero: 0;
 			one: 1;
+			bits: $num::BITS as _;
 			from_bool: b => b as _;
 		}
 	};
@@ -49,6 +50,7 @@ macro_rules! impl_num_trait_base {
 			base: $num;
 			zero: 0;
 			one: 1;
+			bits: $num::BITS as _;
 			from_bool: b => b as _;
 		}
 	};
@@ -60,6 +62,7 @@ macro_rules! impl_num_trait_base {
 			base: $num;
 			zero: 0.0;
 			one: 1.0;
+			bits: (size_of::<$num>() * 8) as _;
 			from_bool: b => if b { 1.0 } else { 0.0 };
 		}
 	};
@@ -68,6 +71,7 @@ macro_rules! impl_num_trait_base {
 		base: $num:ident;
 		zero: $zero:literal;
 		one: $one:literal;
+		bits: $bits:expr;
 		from_bool: $b:ident => $from_bool:expr;
 	} => {
 		impl private::Sealed for $num {}
@@ -76,8 +80,7 @@ macro_rules! impl_num_trait_base {
 			const MAX: $num = $num::MAX;
 			const ZERO: $num = $zero;
 			const ONE: $num = $one;
-			#[allow(clippy::manual_bits)] // shut
-			const BITS: $num = (size_of::<$num>() * 8) as _;
+			const BITS: $num = $bits;
 			const BYTES: $num = size_of::<$num>() as _;
 			const ALIGN: $num = align_of::<$num>() as _;
 			const BITS_USIZE: usize = Self::BITS as _;
