@@ -75,8 +75,14 @@ pub use div_overflowing::DivOverflowing;
 // pub use shl_regular::Shl;
 // mod shr_regular;
 // pub use shr_regular::Shr;
+
 // mod pow_regular;
 // pub use pow_regular::Pow;
+// mod pow_int;
+// pub use pow_int::PowI;
+// mod pow_float;
+// pub use pow_float::PowFloat;
+
 // mod neg_regular;
 // pub use neg_regular::Neg;
 // mod not_regular;
