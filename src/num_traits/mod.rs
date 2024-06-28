@@ -60,6 +60,7 @@ decl_mod! {
 	rem_checked
 
 	shl_regular
+	shl_checked
 
 	shr_regular
 
