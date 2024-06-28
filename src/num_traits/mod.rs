@@ -29,8 +29,8 @@ pub use signedness::{ IntSigned, IntUnsigned };
 
 mod add_regular;
 pub use add_regular::Add;
-// mod add_checked;
-// pub use add_checked::AddChecked;
+mod add_checked;
+pub use add_checked::AddChecked;
 // mod add_unchecked;
 // pub use add_unchecked::AddUnchecked;
 // mod add_strict;
@@ -46,6 +46,8 @@ pub use add_carrying::AddCarrying;
 
 mod sub_regular;
 pub use sub_regular::Sub;
+mod sub_checked;
+pub use sub_checked::SubChecked;
 mod sub_overflowing;
 pub use sub_overflowing::SubOverflowing;
 mod sub_borrowing;
@@ -53,6 +55,8 @@ pub use sub_borrowing::SubBorrowing;
 
 mod mul_regular;
 pub use mul_regular::Mul;
+mod mul_checked;
+pub use mul_checked::MulChecked;
 mod mul_unchecked;
 pub use mul_unchecked::MulUnchecked;
 mod mul_overflowing;
@@ -62,6 +66,8 @@ pub use mul_widening::MulWidening;
 
 mod div_regular;
 pub use div_regular::Div;
+mod div_checked;
+pub use div_checked::DivChecked;
 mod div_int;
 pub use div_int::DivInt;
 mod div_float;
