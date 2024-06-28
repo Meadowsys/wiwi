@@ -1,6 +1,6 @@
 use super::Base;
 
-/// Plain addition
+/// Addition
 pub trait Add: Base + std::ops::Add<Self, Output = Self> {
 	/// Performs plain addition
 	///

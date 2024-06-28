@@ -1,6 +1,6 @@
 use super::Base;
 
-/// Plain multiplication
+/// Multiplication
 pub trait Mul: Base + std::ops::Mul<Self, Output = Self> {
 	/// Performs plain multiplication
 	///

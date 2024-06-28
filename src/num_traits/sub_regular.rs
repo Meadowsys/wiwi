@@ -1,6 +1,6 @@
 use super::Base;
 
-/// Plain subtraction
+/// Subtraction
 pub trait Sub: Base + std::ops::Sub<Self, Output = Self> {
 	/// Performs plain subtraction
 	///

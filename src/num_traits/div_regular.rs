@@ -1,6 +1,6 @@
 use super::Base;
 
-/// Plain division
+/// Division
 pub trait Div: Base + std::ops::Div<Self, Output = Self> {
 	/// Performs regular division
 	///
