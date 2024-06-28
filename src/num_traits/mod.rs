@@ -56,7 +56,8 @@ decl_mod! {
 	div_float
 	div_overflowing
 
-	// rem_regular
+	rem_regular
+
 	// shl_regular
 	// shr_regular
 
