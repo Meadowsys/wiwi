@@ -72,7 +72,8 @@ decl_mod! {
 
 	and_regular
 
-	// or_regular
+	or_regular
+
 	// xor_regular
 }
 
