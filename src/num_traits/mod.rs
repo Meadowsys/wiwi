@@ -1,6 +1,7 @@
 #![deny(unconditional_recursion)]
 
-//! Number operations exposed as traits
+//! Number operations exposed as traits, enabling code to be written genericly
+//! over number types
 //!
 //! Think the [`Add`](std::ops::Add) trait, except for things like
 //! [overflowing addition](AddOverflowing) as well
