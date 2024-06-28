@@ -29,7 +29,7 @@ decl_mod! {
 	array_conversions
 	from_lossless
 	into_lossless
-	signedness
+	signedness_base
 
 	add_regular
 	add_checked
