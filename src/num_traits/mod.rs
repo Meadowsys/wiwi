@@ -25,12 +25,14 @@ decl_mod! {
 	base
 	// this doesn't need to be a "base"
 	// float_base
-
-	widening
+	signedness
 	array_conversions
+
 	from_lossless
 	into_lossless
-	signedness
+
+	widening
+	narrowing
 
 	count_bits
 
