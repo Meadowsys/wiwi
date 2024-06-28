@@ -66,7 +66,8 @@ decl_mod! {
 	// pow_int
 	// pow_float
 
-	// neg_regular
+	neg_regular
+
 	// not_regular
 	// and_regular
 	// or_regular

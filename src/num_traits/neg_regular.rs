@@ -7,3 +7,16 @@ pub trait Neg: Base + std::ops::Neg<Output = Self> {
 		-self
 	}
 }
+
+macro_rules! impl_num_trait_neg_checked {
+	{ $($num:ident)* } => {
+		$(
+			impl Neg for $num {}
+		)*
+	}
+}
+
+impl_num_trait_neg_checked! {
+	i8 i16 i32 i64 i128 isize
+	f32 f64
+}
