@@ -136,6 +136,18 @@
 <a href="#136" id="136">136</a>
 <a href="#137" id="137">137</a>
 <a href="#138" id="138">138</a>
+<a href="#139" id="139">139</a>
+<a href="#140" id="140">140</a>
+<a href="#141" id="141">141</a>
+<a href="#142" id="142">142</a>
+<a href="#143" id="143">143</a>
+<a href="#144" id="144">144</a>
+<a href="#145" id="145">145</a>
+<a href="#146" id="146">146</a>
+<a href="#147" id="147">147</a>
+<a href="#148" id="148">148</a>
+<a href="#149" id="149">149</a>
+<a href="#150" id="150">150</a>
 </pre></div><pre class="rust"><code><span class="kw">use </span>std::mem::{ size_of, align_of };
 
 <span class="doccomment">/// Common base for all numbers
@@ -149,11 +161,17 @@
 	<span class="doccomment">/// `1`
 	</span><span class="kw">const </span>ONE: <span class="self">Self</span>;
 	<span class="doccomment">/// Size of this number in bits
-	</span><span class="kw">const </span>BITS: usize;
+	</span><span class="kw">const </span>BITS: <span class="self">Self</span>;
 	<span class="doccomment">/// Size of this number type in bytes
-	</span><span class="kw">const </span>BYTES: usize;
+	</span><span class="kw">const </span>BYTES: <span class="self">Self</span>;
 	<span class="doccomment">/// Align of this number type in bytes
-	</span><span class="kw">const </span>ALIGN: usize;
+	</span><span class="kw">const </span>ALIGN: <span class="self">Self</span>;
+	<span class="doccomment">/// Size of this number in bits, type `usize`
+	</span><span class="kw">const </span>BITS_USIZE: usize;
+	<span class="doccomment">/// Size of this number type in bytes, type `usize`
+	</span><span class="kw">const </span>BYTES_USIZE: usize;
+	<span class="doccomment">/// Align of this number type in bytes, type `usize`
+	</span><span class="kw">const </span>ALIGN_USIZE: usize;
 
 	<span class="kw">fn </span>from_bool(b: bool) -&gt; <span class="self">Self</span>;
 }
@@ -170,6 +188,7 @@
 			base: <span class="macro-nonterminal">$num</span>;
 			zero: <span class="number">0</span>;
 			one: <span class="number">1</span>;
+			bits: <span class="macro-nonterminal">$num::BITS </span><span class="kw">as _</span>;
 			from_bool: b =&gt; b <span class="kw">as _</span>;
 		}
 	};
@@ -181,6 +200,7 @@
 			base: <span class="macro-nonterminal">$num</span>;
 			zero: <span class="number">0</span>;
 			one: <span class="number">1</span>;
+			bits: <span class="macro-nonterminal">$num::BITS </span><span class="kw">as _</span>;
 			from_bool: b =&gt; b <span class="kw">as _</span>;
 		}
 	};
@@ -192,6 +212,7 @@
 			base: <span class="macro-nonterminal">$num</span>;
 			zero: <span class="number">0.0</span>;
 			one: <span class="number">1.0</span>;
+			bits: (size_of::&lt;<span class="macro-nonterminal">$num</span>&gt;() * <span class="number">8</span>) <span class="kw">as _</span>;
 			from_bool: b =&gt; <span class="kw">if </span>b { <span class="number">1.0 </span>} <span class="kw">else </span>{ <span class="number">0.0 </span>};
 		}
 	};
@@ -200,6 +221,7 @@
 		base: <span class="macro-nonterminal">$num</span>:ident;
 		zero: <span class="macro-nonterminal">$zero</span>:literal;
 		one: <span class="macro-nonterminal">$one</span>:literal;
+		bits: <span class="macro-nonterminal">$bits</span>:expr;
 		from_bool: <span class="macro-nonterminal">$b</span>:ident =&gt; <span class="macro-nonterminal">$from_bool</span>:expr;
 	} =&gt; {
 		<span class="kw">impl </span>private::Sealed <span class="kw">for </span><span class="macro-nonterminal">$num </span>{}
@@ -208,10 +230,12 @@
 			<span class="kw">const </span>MAX: <span class="macro-nonterminal">$num </span>= <span class="macro-nonterminal">$num::MAX</span>;
 			<span class="kw">const </span>ZERO: <span class="macro-nonterminal">$num </span>= <span class="macro-nonterminal">$zero</span>;
 			<span class="kw">const </span>ONE: <span class="macro-nonterminal">$num </span>= <span class="macro-nonterminal">$one</span>;
-			<span class="attr">#[allow(clippy::manual_bits)] </span><span class="comment">// shut
-			</span><span class="kw">const </span>BITS: usize = size_of::&lt;<span class="macro-nonterminal">$num</span>&gt;() * <span class="number">8</span>;
-			<span class="kw">const </span>BYTES: usize = size_of::&lt;<span class="macro-nonterminal">$num</span>&gt;();
-			<span class="kw">const </span>ALIGN: usize = align_of::&lt;<span class="macro-nonterminal">$num</span>&gt;();
+			<span class="kw">const </span>BITS: <span class="macro-nonterminal">$num </span>= <span class="macro-nonterminal">$bits</span>;
+			<span class="kw">const </span>BYTES: <span class="macro-nonterminal">$num </span>= size_of::&lt;<span class="macro-nonterminal">$num</span>&gt;() <span class="kw">as _</span>;
+			<span class="kw">const </span>ALIGN: <span class="macro-nonterminal">$num </span>= align_of::&lt;<span class="macro-nonterminal">$num</span>&gt;() <span class="kw">as _</span>;
+			<span class="kw">const </span>BITS_USIZE: usize = <span class="self">Self</span>::BITS <span class="kw">as _</span>;
+			<span class="kw">const </span>BYTES_USIZE: usize = <span class="self">Self</span>::BYTES <span class="kw">as _</span>;
+			<span class="kw">const </span>ALIGN_USIZE: usize = <span class="self">Self</span>::ALIGN <span class="kw">as _</span>;
 
 			<span class="attr">#[inline(always)]
 			</span><span class="kw">fn </span>from_bool(<span class="macro-nonterminal">$b</span>: bool) -&gt; <span class="macro-nonterminal">$num </span>{ <span class="macro-nonterminal">$from_bool </span>}

@@ -87,15 +87,6 @@
 <a href="#87" id="87">87</a>
 <a href="#88" id="88">88</a>
 <a href="#89" id="89">89</a>
-<a href="#90" id="90">90</a>
-<a href="#91" id="91">91</a>
-<a href="#92" id="92">92</a>
-<a href="#93" id="93">93</a>
-<a href="#94" id="94">94</a>
-<a href="#95" id="95">95</a>
-<a href="#96" id="96">96</a>
-<a href="#97" id="97">97</a>
-<a href="#98" id="98">98</a>
 </pre></div><pre class="rust"><code><span class="attr">#![deny(unconditional_recursion)]
 
 </span><span class="doccomment">//! Number operations exposed as traits, enabling code to be written genericly
@@ -110,88 +101,79 @@
 <span class="kw">use </span>std::iter::{ Sum, Product };
 <span class="kw">use </span>std::ops;
 
-<span class="kw">mod </span>base;
-<span class="kw">pub use </span>base::Base;
+<span class="macro">macro_rules!</span> decl_mod {
+	{ $(<span class="macro-nonterminal">$mod_name</span>:ident)* } =&gt; {
+		$(
+			<span class="kw">mod </span><span class="macro-nonterminal">$mod_name</span>;
+			<span class="kw">pub use </span><span class="macro-nonterminal">$mod_name</span>::<span class="kw-2">*</span>;
+		)*
+	}
+}
 
-<span class="kw">mod </span>widening;
-<span class="kw">pub use </span>widening::Widening;
+<span class="macro">decl_mod!</span> {
+	base
+	<span class="comment">// this doesn't need to be a "base"
+	// float_base
 
-<span class="kw">mod </span>array_conversions;
-<span class="kw">pub use </span>array_conversions::ArrayConversions;
-<span class="kw">mod </span>from_lossless;
-<span class="kw">pub use </span>from_lossless::<span class="kw-2">*</span>;
-<span class="kw">mod </span>into_lossless;
-<span class="kw">pub use </span>into_lossless::<span class="kw-2">*</span>;
-<span class="kw">mod </span>signedness;
-<span class="kw">pub use </span>signedness::{ IntSigned, IntUnsigned };
+	</span>widening
+	array_conversions
+	from_lossless
+	into_lossless
+	signedness
 
-<span class="kw">mod </span>add_regular;
-<span class="kw">pub use </span>add_regular::Add;
-<span class="comment">// mod add_checked;
-// pub use add_checked::AddChecked;
-// mod add_unchecked;
-// pub use add_unchecked::AddUnchecked;
-// mod add_strict;
-// pub use add_strict::AddStrict;
-</span><span class="kw">mod </span>add_overflowing;
-<span class="kw">pub use </span>add_overflowing::AddOverflowing;
-<span class="comment">// mod add_saturating;
-// pub use add_saturating::AddSaturating;
-// mod add_wrapping;
-// pub use add_wrapping::AddWrapping;
-</span><span class="kw">mod </span>add_carrying;
-<span class="kw">pub use </span>add_carrying::AddCarrying;
+	count_bits
 
-<span class="kw">mod </span>sub_regular;
-<span class="kw">pub use </span>sub_regular::Sub;
-<span class="kw">mod </span>sub_overflowing;
-<span class="kw">pub use </span>sub_overflowing::SubOverflowing;
-<span class="kw">mod </span>sub_borrowing;
-<span class="kw">pub use </span>sub_borrowing::SubBorrowing;
+	add_regular
+	add_checked
+	<span class="comment">// add_unchecked
+	// add_strict
+	</span>add_overflowing
+	<span class="comment">// add_saturating
+	// add_wrapping
+	</span>add_carrying
 
-<span class="kw">mod </span>mul_regular;
-<span class="kw">pub use </span>mul_regular::Mul;
-<span class="kw">mod </span>mul_unchecked;
-<span class="kw">pub use </span>mul_unchecked::MulUnchecked;
-<span class="kw">mod </span>mul_overflowing;
-<span class="kw">pub use </span>mul_overflowing::MulOverflowing;
-<span class="kw">mod </span>mul_widening;
-<span class="kw">pub use </span>mul_widening::MulWidening;
+	sub_regular
+	sub_checked
+	sub_overflowing
+	sub_borrowing
 
-<span class="kw">mod </span>div_regular;
-<span class="kw">pub use </span>div_regular::Div;
-<span class="kw">mod </span>div_int;
-<span class="kw">pub use </span>div_int::DivInt;
-<span class="kw">mod </span>div_float;
-<span class="kw">pub use </span>div_float::DivFloat;
-<span class="kw">mod </span>div_overflowing;
-<span class="kw">pub use </span>div_overflowing::DivOverflowing;
+	mul_regular
+	mul_checked
+	mul_unchecked
+	mul_overflowing
+	mul_widening
 
-<span class="comment">// mod rem_regular;
-// pub use rem_regular::Rem;
-// mod shl_regular;
-// pub use shl_regular::Shl;
-// mod shr_regular;
-// pub use shr_regular::Shr;
+	div_regular
+	div_checked
+	div_int
+	div_float
+	div_overflowing
 
-// mod pow_regular;
-// pub use pow_regular::Pow;
-// mod pow_int;
-// pub use pow_int::PowI;
-// mod pow_float;
-// pub use pow_float::PowFloat;
+	rem_regular
+	rem_checked
 
-// mod neg_regular;
-// pub use neg_regular::Neg;
-// mod not_regular;
-// pub use not_regular::Not;
-// mod and_regular;
-// pub use and_regular::And;
-// mod or_regular;
-// pub use or_regular::Or;
-// mod xor_regular;
-// pub use xor_regular::Xor;
+	shl_regular
+	shl_checked
 
-// TODO: ilog/2/10 sum(?) product(?)
+	shr_regular
+	shr_checked
+
+	<span class="comment">// pow_regular
+	// pow_int
+	// pow_float
+
+	</span>neg_regular
+	neg_checked
+
+	not_regular
+
+	and_regular
+
+	or_regular
+
+	xor_regular
+}
+
+<span class="comment">// TODO: ilog/2/10 sum(?) product(?)
 // TODO: f16 f128
 </span></code></pre></div></section></main></body></html>
