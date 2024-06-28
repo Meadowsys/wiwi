@@ -58,7 +58,8 @@ decl_mod! {
 
 	rem_regular
 
-	// shl_regular
+	shl_regular
+
 	// shr_regular
 
 	// pow_regular
