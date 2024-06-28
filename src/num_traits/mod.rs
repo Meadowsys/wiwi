@@ -23,6 +23,8 @@ mod from_lossless;
 pub use from_lossless::*;
 mod into_lossless;
 pub use into_lossless::*;
+mod signedness;
+pub use signedness::{ IntSigned, IntUnsigned };
 
 mod add_regular;
 pub use add_regular::Add;
