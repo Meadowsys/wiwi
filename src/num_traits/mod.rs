@@ -68,7 +68,8 @@ decl_mod! {
 
 	neg_regular
 
-	// not_regular
+	not_regular
+
 	// and_regular
 	// or_regular
 	// xor_regular
