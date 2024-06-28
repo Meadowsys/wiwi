@@ -1524,7 +1524,9 @@ mod tests {
 				"you're cute \x0c\n\r \t",
 				"\t\n\x0c\r you're cute",
 				"you're cute",
-			)
+			),
+			// all whitespace
+			("\t\n\x0c\r   \t\t\n\n\t     ", "", "", "")
 		];
 
 		for (original, trimmed_start, trimmed_end, trimmed_both) in strs {
