@@ -74,6 +74,7 @@ decl_mod! {
 	// pow_float
 
 	neg_regular
+	neg_checked
 
 	not_regular
 
