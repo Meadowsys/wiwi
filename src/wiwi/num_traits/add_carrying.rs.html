@@ -26,6 +26,8 @@
 <a href="#26" id="26">26</a>
 <a href="#27" id="27">27</a>
 <a href="#28" id="28">28</a>
+<a href="#29" id="29">29</a>
+<a href="#30" id="30">30</a>
 </pre></div><pre class="rust"><code><span class="kw">use </span><span class="kw">super</span>::AddOverflowing;
 
 <span class="doccomment">/// Carrying addition
@@ -35,6 +37,7 @@
 	/// # Examples
 	///
 	/// TODO
+	</span><span class="attr">#[inline]
 	</span><span class="kw">fn </span>add_carrying(<span class="self">self</span>, rhs: <span class="self">Self</span>, carry: bool) -&gt; (<span class="self">Self</span>, bool) {
 		<span class="kw">let </span>(res, carry1) = <span class="self">self</span>.add_overflowing(rhs);
 		<span class="kw">let </span>(res, carry2) = res.add_overflowing(<span class="self">Self</span>::from_bool(carry));
@@ -52,6 +55,7 @@
 
 <span class="macro">impl_num_trait_add_carrying!</span> {
 	u8 u16 u32 u64 u128 usize
-	i8 i16 i32 i64 i128 isize
-}
+	<span class="comment">// TODO: look in std, it's carrying impl is different for signed ints
+	// i8 i16 i32 i64 i128 isize
+</span>}
 </code></pre></div></section></main></body></html>

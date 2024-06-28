@@ -76,7 +76,33 @@
 <a href="#76" id="76">76</a>
 <a href="#77" id="77">77</a>
 <a href="#78" id="78">78</a>
+<a href="#79" id="79">79</a>
+<a href="#80" id="80">80</a>
+<a href="#81" id="81">81</a>
+<a href="#82" id="82">82</a>
+<a href="#83" id="83">83</a>
+<a href="#84" id="84">84</a>
+<a href="#85" id="85">85</a>
+<a href="#86" id="86">86</a>
+<a href="#87" id="87">87</a>
+<a href="#88" id="88">88</a>
+<a href="#89" id="89">89</a>
+<a href="#90" id="90">90</a>
+<a href="#91" id="91">91</a>
+<a href="#92" id="92">92</a>
+<a href="#93" id="93">93</a>
+<a href="#94" id="94">94</a>
+<a href="#95" id="95">95</a>
+<a href="#96" id="96">96</a>
+<a href="#97" id="97">97</a>
+<a href="#98" id="98">98</a>
 </pre></div><pre class="rust"><code><span class="attr">#![deny(unconditional_recursion)]
+
+</span><span class="doccomment">//! Number operations exposed as traits, enabling code to be written genericly
+//! over number types
+//!
+//! Think the [`Add`](std::ops::Add) trait, except for things like
+//! [overflowing addition](AddOverflowing) as well
 
 </span><span class="kw">use </span>std::cmp::{ Eq, Ord, PartialEq, PartialOrd };
 <span class="kw">use </span>std::fmt::{ Debug, Display };
@@ -86,10 +112,18 @@
 
 <span class="kw">mod </span>base;
 <span class="kw">pub use </span>base::Base;
-<span class="kw">mod </span>array_conversions;
-<span class="kw">pub use </span>array_conversions::ArrayConversions;
+
 <span class="kw">mod </span>widening;
 <span class="kw">pub use </span>widening::Widening;
+
+<span class="kw">mod </span>array_conversions;
+<span class="kw">pub use </span>array_conversions::ArrayConversions;
+<span class="kw">mod </span>from_lossless;
+<span class="kw">pub use </span>from_lossless::<span class="kw-2">*</span>;
+<span class="kw">mod </span>into_lossless;
+<span class="kw">pub use </span>into_lossless::<span class="kw-2">*</span>;
+<span class="kw">mod </span>signedness;
+<span class="kw">pub use </span>signedness::{ IntSigned, IntUnsigned };
 
 <span class="kw">mod </span>add_regular;
 <span class="kw">pub use </span>add_regular::Add;
@@ -139,8 +173,14 @@
 // pub use shl_regular::Shl;
 // mod shr_regular;
 // pub use shr_regular::Shr;
+
 // mod pow_regular;
 // pub use pow_regular::Pow;
+// mod pow_int;
+// pub use pow_int::PowI;
+// mod pow_float;
+// pub use pow_float::PowFloat;
+
 // mod neg_regular;
 // pub use neg_regular::Neg;
 // mod not_regular;

@@ -27,6 +27,7 @@
 <a href="#27" id="27">27</a>
 <a href="#28" id="28">28</a>
 <a href="#29" id="29">29</a>
+<a href="#30" id="30">30</a>
 </pre></div><pre class="rust"><code><span class="kw">use </span><span class="kw">super</span>::SubOverflowing;
 
 <span class="doccomment">/// Borrowing subtraction
@@ -54,6 +55,7 @@
 
 <span class="macro">impl_num_trait_sub_borrowing!</span> {
 	u8 u16 u32 u64 u128 usize
-	i8 i16 i32 i64 i128 isize
-}
+	<span class="comment">// TODO: look in std, it's borrowing impl is different for signed ints
+	// i8 i16 i32 i64 i128 isize
+</span>}
 </code></pre></div></section></main></body></html>
