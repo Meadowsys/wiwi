@@ -41,5 +41,4 @@ macro_rules! impl_num_trait_mul_widening {
 
 impl_num_trait_mul_widening! {
 	u8 u16 u32 u64 usize
-	i8 i16 i32 i64 isize
 }

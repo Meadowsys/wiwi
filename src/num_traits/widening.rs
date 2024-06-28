@@ -29,19 +29,12 @@ macro_rules! impl_num_trait_widening {
 }
 
 impl_num_trait_widening! { u8 u16 u32 u64 u128 }
-impl_num_trait_widening! { i8 i16 i32 i64 i128 }
 
 #[cfg(target_pointer_width = "64")]
 impl_num_trait_widening! { usize u128 }
-#[cfg(target_pointer_width = "64")]
-impl_num_trait_widening! { isize i128 }
 
 #[cfg(target_pointer_width = "32")]
 impl_num_trait_widening! { usize u64 }
-#[cfg(target_pointer_width = "32")]
-impl_num_trait_widening! { isize i64 }
 
 #[cfg(target_pointer_width = "16")]
 impl_num_trait_widening! { usize u32 }
-#[cfg(target_pointer_width = "16")]
-impl_num_trait_widening! { isize i32 }

@@ -25,5 +25,6 @@ macro_rules! impl_num_trait_add_carrying {
 
 impl_num_trait_add_carrying! {
 	u8 u16 u32 u64 u128 usize
-	i8 i16 i32 i64 i128 isize
+	// TODO: look in std, it's carrying impl is different for signed ints
+	// i8 i16 i32 i64 i128 isize
 }
