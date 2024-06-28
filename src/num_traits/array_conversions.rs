@@ -60,20 +60,20 @@ pub trait ArrayConversions<const BYTES: usize>: Base {
 macro_rules! impl_num_trait_array_conversions {
 	{ $($num:ident)* } => {
 		$(
-			impl ArrayConversions<{ $num::BYTES as _ }> for $num {
+			impl ArrayConversions<{ $num::BYTES_USIZE }> for $num {
 				#[inline]
-				fn into_le_bytes(self) -> [u8; $num::BYTES as _] { $num::to_le_bytes(self) }
+				fn into_le_bytes(self) -> [u8; $num::BYTES_USIZE] { $num::to_le_bytes(self) }
 				#[inline]
-				fn into_be_bytes(self) -> [u8; $num::BYTES as _] { $num::to_be_bytes(self) }
+				fn into_be_bytes(self) -> [u8; $num::BYTES_USIZE] { $num::to_be_bytes(self) }
 				#[inline]
-				fn into_ne_bytes(self) -> [u8; $num::BYTES as _] { $num::to_ne_bytes(self) }
+				fn into_ne_bytes(self) -> [u8; $num::BYTES_USIZE] { $num::to_ne_bytes(self) }
 
 				#[inline]
-				fn from_le_bytes(bytes: [u8; $num::BYTES as _]) -> $num { $num::from_le_bytes(bytes) }
+				fn from_le_bytes(bytes: [u8; $num::BYTES_USIZE]) -> $num { $num::from_le_bytes(bytes) }
 				#[inline]
-				fn from_be_bytes(bytes: [u8; $num::BYTES as _]) -> $num { $num::from_be_bytes(bytes) }
+				fn from_be_bytes(bytes: [u8; $num::BYTES_USIZE]) -> $num { $num::from_be_bytes(bytes) }
 				#[inline]
-				fn from_ne_bytes(bytes: [u8; $num::BYTES as _]) -> $num { $num::from_ne_bytes(bytes) }
+				fn from_ne_bytes(bytes: [u8; $num::BYTES_USIZE]) -> $num { $num::from_ne_bytes(bytes) }
 			}
 		)*
 	}

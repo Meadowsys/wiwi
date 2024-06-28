@@ -16,6 +16,12 @@ pub trait Base: Sized + Clone + private::Sealed {
 	const BYTES: Self;
 	/// Align of this number type in bytes
 	const ALIGN: Self;
+	/// Size of this number in bits, type `usize`
+	const BITS_USIZE: usize;
+	/// Size of this number type in bytes, type `usize`
+	const BYTES_USIZE: usize;
+	/// Align of this number type in bytes, type `usize`
+	const ALIGN_USIZE: usize;
 
 	fn from_bool(b: bool) -> Self;
 }
@@ -74,6 +80,9 @@ macro_rules! impl_num_trait_base {
 			const BITS: $num = (size_of::<$num>() * 8) as _;
 			const BYTES: $num = size_of::<$num>() as _;
 			const ALIGN: $num = align_of::<$num>() as _;
+			const BITS_USIZE: usize = Self::BITS as _;
+			const BYTES_USIZE: usize = Self::BYTES as _;
+			const ALIGN_USIZE: usize = Self::ALIGN as _;
 
 			#[inline(always)]
 			fn from_bool($b: bool) -> $num { $from_bool }
