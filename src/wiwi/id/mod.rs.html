@@ -1,4 +1,4 @@
-<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><meta name="generator" content="rustdoc"><meta name="description" content="Source of the Rust file `src/id/mod.rs`."><title>mod.rs - source</title><script>if(window.location.protocol!=="file:")document.head.insertAdjacentHTML("beforeend","SourceSerif4-Regular-46f98efaafac5295.ttf.woff2,FiraSans-Regular-018c141bf0843ffd.woff2,FiraSans-Medium-8f9a781e4970d388.woff2,SourceCodePro-Regular-562dcc5011b6de7d.ttf.woff2,SourceCodePro-Semibold-d899c5a5c4aeb14a.ttf.woff2".split(",").map(f=>`<link rel="preload" as="font" type="font/woff2" crossorigin href="../../../static.files/${f}">`).join(""))</script><link rel="stylesheet" href="../../../static.files/normalize-76eba96aa4d2e634.css"><link rel="stylesheet" href="../../../static.files/rustdoc-dd39b87e5fcfba68.css"><meta name="rustdoc-vars" data-root-path="../../../" data-static-root-path="../../../static.files/" data-current-crate="wiwi" data-themes="meadow" data-resource-suffix="" data-rustdoc-version="1.80.0-nightly (ab14f944a 2024-05-13)" data-channel="nightly" data-search-js="search-d52510db62a78183.js" data-settings-js="settings-4313503d2e1961c2.js" ><script src="../../../static.files/storage-118b08c4c78b968e.js"></script><script defer src="../../../static.files/src-script-e66d777a5a92e9b2.js"></script><script defer src="../../../src-files.js"></script><script defer src="../../../static.files/main-20a3ad099b048cf2.js"></script><noscript><link rel="stylesheet" href="../../../static.files/noscript-df360f571f6edeae.css"></noscript><link rel="alternate icon" type="image/png" href="../../../static.files/favicon-32x32-422f7d1d52889060.png"><link rel="icon" type="image/svg+xml" href="../../../static.files/favicon-2c020d218678b618.svg"></head><body class="rustdoc src"><!--[if lte IE 11]><div class="warning">This old browser is unsupported and will most likely display funky things.</div><![endif]--><nav class="sidebar"><div class="src-sidebar-title"><h2>Files</h2></div></nav><div class="sidebar-resizer"></div><main><rustdoc-search></rustdoc-search><section id="main-content" class="content"><div class="example-wrap"><div data-nosnippet><pre class="src-line-numbers"><a href="#1" id="1">1</a>
+<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><meta name="generator" content="rustdoc"><meta name="description" content="Source of the Rust file `src/id/mod.rs`."><title>mod.rs - source</title><script>if(window.location.protocol!=="file:")document.head.insertAdjacentHTML("beforeend","SourceSerif4-Regular-46f98efaafac5295.ttf.woff2,FiraSans-Regular-018c141bf0843ffd.woff2,FiraSans-Medium-8f9a781e4970d388.woff2,SourceCodePro-Regular-562dcc5011b6de7d.ttf.woff2,SourceCodePro-Semibold-d899c5a5c4aeb14a.ttf.woff2".split(",").map(f=>`<link rel="preload" as="font" type="font/woff2" crossorigin href="../../../static.files/${f}">`).join(""))</script><link rel="stylesheet" href="../../../static.files/normalize-76eba96aa4d2e634.css"><link rel="stylesheet" href="../../../static.files/rustdoc-dd39b87e5fcfba68.css"><meta name="rustdoc-vars" data-root-path="../../../" data-static-root-path="../../../static.files/" data-current-crate="wiwi" data-themes="meadow" data-resource-suffix="" data-rustdoc-version="1.81.0-nightly (e9e6e2e44 2024-06-28)" data-channel="nightly" data-search-js="search-0fe7219eb170c82e.js" data-settings-js="settings-4313503d2e1961c2.js" ><script src="../../../static.files/storage-118b08c4c78b968e.js"></script><script defer src="../../../static.files/src-script-e66d777a5a92e9b2.js"></script><script defer src="../../../src-files.js"></script><script defer src="../../../static.files/main-20a3ad099b048cf2.js"></script><noscript><link rel="stylesheet" href="../../../static.files/noscript-df360f571f6edeae.css"></noscript><link rel="alternate icon" type="image/png" href="../../../static.files/favicon-32x32-422f7d1d52889060.png"><link rel="icon" type="image/svg+xml" href="../../../static.files/favicon-2c020d218678b618.svg"></head><body class="rustdoc src"><!--[if lte IE 11]><div class="warning">This old browser is unsupported and will most likely display funky things.</div><![endif]--><nav class="sidebar"><div class="src-sidebar-title"><h2>Files</h2></div></nav><div class="sidebar-resizer"></div><main><rustdoc-search></rustdoc-search><section id="main-content" class="content"><div class="example-wrap"><div data-nosnippet><pre class="src-line-numbers"><a href="#1" id="1">1</a>
 <a href="#2" id="2">2</a>
 <a href="#3" id="3">3</a>
 <a href="#4" id="4">4</a>
@@ -254,7 +254,10 @@
 <a href="#254" id="254">254</a>
 <a href="#255" id="255">255</a>
 <a href="#256" id="256">256</a>
-</pre></div><pre class="rust"><code><span class="kw">use </span>rand::{ Rng, rngs::ThreadRng, thread_rng };
+<a href="#257" id="257">257</a>
+<a href="#258" id="258">258</a>
+</pre></div><pre class="rust"><code><span class="kw">use </span><span class="kw">crate</span>::num_traits::<span class="kw-2">*</span>;
+<span class="kw">use </span>rand::{ Rng, rngs::ThreadRng, thread_rng };
 <span class="kw">use </span>std::time::{ SystemTime, UNIX_EPOCH };
 <span class="kw">use </span>std::num::NonZeroU64;
 
@@ -317,7 +320,8 @@
 		<span class="kw">let </span>now = SystemTime::now()
 			.duration_since(UNIX_EPOCH)
 			.expect(<span class="string">"we are before 01 jan 1970 lol?"</span>)
-			.as_millis() <span class="kw">as </span>u64;
+			.as_millis()
+			.into_u64_lossy();
 
 		<span class="kw">if </span>now &gt; <span class="self">self</span>.last_generated_time {
 			<span class="self">self</span>.last_generated_time = now;
@@ -326,11 +330,11 @@
 
 		(<span class="self">self</span>.count &lt; MAX_COUNT).then(|| {
 			<span class="kw">let </span>now = <span class="self">self</span>.last_generated_time &lt;&lt; TIMESTAMP_SHIFT;
-			<span class="kw">let </span>random = (thread_rng().gen::&lt;u8&gt;() &amp; RANDOM_COMPONENT_MASK) <span class="kw">as </span>u64;
+			<span class="kw">let </span>random = (thread_rng().gen::&lt;u8&gt;() &amp; RANDOM_COMPONENT_MASK).into_u64();
 
 			<span class="comment">// guaranteed to fit within 14 bits, as checked by
 			// bool statement before this closure
-			</span><span class="kw">let </span>increment = (<span class="self">self</span>.count &lt;&lt; COUNT_SHIFT) <span class="kw">as </span>u64;
+			</span><span class="kw">let </span>increment = (<span class="self">self</span>.count &lt;&lt; COUNT_SHIFT).into_u64();
 			<span class="self">self</span>.count += <span class="number">1</span>;
 
 			<span class="comment">// SAFETY: generated ID is always not zero, see comment in
@@ -407,7 +411,7 @@
 
 		<span class="kw">while </span>val &gt; <span class="number">0 </span>{
 			<span class="comment">// SAFETY: table only contains ASCII characters
-			</span>string_vec.push(<span class="self">Self</span>::ALPHANUMERIC_ALPHABET[(val % <span class="number">62</span>) <span class="kw">as </span>usize]);
+			</span>string_vec.push(<span class="self">Self</span>::ALPHANUMERIC_ALPHABET[(val % <span class="number">62</span>).into_usize()]);
 			val /= <span class="number">62</span>;
 		}
 
@@ -436,24 +440,24 @@
 			};
 
 			result <span class="kw-2">*</span>= <span class="number">62</span>;
-			result += byte <span class="kw">as </span>u128;
+			result += byte.into_u128();
 		}
 
-		<span class="kw">if </span>result &gt; u64::MAX <span class="kw">as </span>u128 { <span class="kw">return </span><span class="prelude-val">None </span>}
-		<span class="kw">let </span>result = NonZeroU64::new(result <span class="kw">as </span>u64)<span class="question-mark">?</span>;
+		<span class="kw">if </span>result &gt; u64::MAX.into_u128() { <span class="kw">return </span><span class="prelude-val">None </span>}
+		<span class="kw">let </span>result = NonZeroU64::new(result.into_u64_lossy())<span class="question-mark">?</span>;
 
 		<span class="prelude-val">Some</span>(<span class="self">Self </span>{ unsigned: result })
 	}
 }
 
 <span class="attr">#[inline]
-</span><span class="kw">const fn </span>unsigned_to_signed(unsigned: u64) -&gt; i64 {
-	(unsigned ^ TOP_BIT) <span class="kw">as </span>i64
+</span><span class="kw">fn </span>unsigned_to_signed(unsigned: u64) -&gt; i64 {
+	(unsigned ^ TOP_BIT).into_i64_lossy()
 }
 
 <span class="attr">#[inline]
-</span><span class="kw">const fn </span>signed_to_unsigned(signed: i64) -&gt; u64 {
-	(signed <span class="kw">as </span>u64) ^ TOP_BIT
+</span><span class="kw">fn </span>signed_to_unsigned(signed: i64) -&gt; u64 {
+	(signed.into_u64_lossy()) ^ TOP_BIT
 }
 
 <span class="attr">#[cfg(test)]

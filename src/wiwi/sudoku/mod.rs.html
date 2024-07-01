@@ -1,4 +1,4 @@
-<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><meta name="generator" content="rustdoc"><meta name="description" content="Source of the Rust file `src/sudoku/mod.rs`."><title>mod.rs - source</title><script>if(window.location.protocol!=="file:")document.head.insertAdjacentHTML("beforeend","SourceSerif4-Regular-46f98efaafac5295.ttf.woff2,FiraSans-Regular-018c141bf0843ffd.woff2,FiraSans-Medium-8f9a781e4970d388.woff2,SourceCodePro-Regular-562dcc5011b6de7d.ttf.woff2,SourceCodePro-Semibold-d899c5a5c4aeb14a.ttf.woff2".split(",").map(f=>`<link rel="preload" as="font" type="font/woff2" crossorigin href="../../../static.files/${f}">`).join(""))</script><link rel="stylesheet" href="../../../static.files/normalize-76eba96aa4d2e634.css"><link rel="stylesheet" href="../../../static.files/rustdoc-dd39b87e5fcfba68.css"><meta name="rustdoc-vars" data-root-path="../../../" data-static-root-path="../../../static.files/" data-current-crate="wiwi" data-themes="meadow" data-resource-suffix="" data-rustdoc-version="1.80.0-nightly (ab14f944a 2024-05-13)" data-channel="nightly" data-search-js="search-d52510db62a78183.js" data-settings-js="settings-4313503d2e1961c2.js" ><script src="../../../static.files/storage-118b08c4c78b968e.js"></script><script defer src="../../../static.files/src-script-e66d777a5a92e9b2.js"></script><script defer src="../../../src-files.js"></script><script defer src="../../../static.files/main-20a3ad099b048cf2.js"></script><noscript><link rel="stylesheet" href="../../../static.files/noscript-df360f571f6edeae.css"></noscript><link rel="alternate icon" type="image/png" href="../../../static.files/favicon-32x32-422f7d1d52889060.png"><link rel="icon" type="image/svg+xml" href="../../../static.files/favicon-2c020d218678b618.svg"></head><body class="rustdoc src"><!--[if lte IE 11]><div class="warning">This old browser is unsupported and will most likely display funky things.</div><![endif]--><nav class="sidebar"><div class="src-sidebar-title"><h2>Files</h2></div></nav><div class="sidebar-resizer"></div><main><rustdoc-search></rustdoc-search><section id="main-content" class="content"><div class="example-wrap"><div data-nosnippet><pre class="src-line-numbers"><a href="#1" id="1">1</a>
+<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><meta name="generator" content="rustdoc"><meta name="description" content="Source of the Rust file `src/sudoku/mod.rs`."><title>mod.rs - source</title><script>if(window.location.protocol!=="file:")document.head.insertAdjacentHTML("beforeend","SourceSerif4-Regular-46f98efaafac5295.ttf.woff2,FiraSans-Regular-018c141bf0843ffd.woff2,FiraSans-Medium-8f9a781e4970d388.woff2,SourceCodePro-Regular-562dcc5011b6de7d.ttf.woff2,SourceCodePro-Semibold-d899c5a5c4aeb14a.ttf.woff2".split(",").map(f=>`<link rel="preload" as="font" type="font/woff2" crossorigin href="../../../static.files/${f}">`).join(""))</script><link rel="stylesheet" href="../../../static.files/normalize-76eba96aa4d2e634.css"><link rel="stylesheet" href="../../../static.files/rustdoc-dd39b87e5fcfba68.css"><meta name="rustdoc-vars" data-root-path="../../../" data-static-root-path="../../../static.files/" data-current-crate="wiwi" data-themes="meadow" data-resource-suffix="" data-rustdoc-version="1.81.0-nightly (e9e6e2e44 2024-06-28)" data-channel="nightly" data-search-js="search-0fe7219eb170c82e.js" data-settings-js="settings-4313503d2e1961c2.js" ><script src="../../../static.files/storage-118b08c4c78b968e.js"></script><script defer src="../../../static.files/src-script-e66d777a5a92e9b2.js"></script><script defer src="../../../src-files.js"></script><script defer src="../../../static.files/main-20a3ad099b048cf2.js"></script><noscript><link rel="stylesheet" href="../../../static.files/noscript-df360f571f6edeae.css"></noscript><link rel="alternate icon" type="image/png" href="../../../static.files/favicon-32x32-422f7d1d52889060.png"><link rel="icon" type="image/svg+xml" href="../../../static.files/favicon-2c020d218678b618.svg"></head><body class="rustdoc src"><!--[if lte IE 11]><div class="warning">This old browser is unsupported and will most likely display funky things.</div><![endif]--><nav class="sidebar"><div class="src-sidebar-title"><h2>Files</h2></div></nav><div class="sidebar-resizer"></div><main><rustdoc-search></rustdoc-search><section id="main-content" class="content"><div class="example-wrap"><div data-nosnippet><pre class="src-line-numbers"><a href="#1" id="1">1</a>
 <a href="#2" id="2">2</a>
 <a href="#3" id="3">3</a>
 <a href="#4" id="4">4</a>
@@ -479,8 +479,10 @@
 <a href="#479" id="479">479</a>
 <a href="#480" id="480">480</a>
 <a href="#481" id="481">481</a>
+<a href="#482" id="482">482</a>
 </pre></div><pre class="rust"><code><span class="kw">use </span><span class="kw">crate</span>::chainer::{ ArrayChain, ChainHalf, NonChainHalf, SliceRefChain };
 <span class="kw">use </span><span class="kw">crate</span>::iter::<span class="kw-2">*</span>;
+<span class="kw">use </span><span class="kw">crate</span>::num_traits::<span class="kw-2">*</span>;
 <span class="kw">use </span>std::mem::MaybeUninit;
 
 <span class="kw">pub struct </span>Board {
@@ -508,7 +510,7 @@
 		}, <span class="number">81</span>);
 
 		<span class="kw">let </span><span class="kw-2">mut </span>board = MaybeUninit::&lt;[CellValue; <span class="number">81</span>]&gt;::uninit();
-		<span class="kw">let </span>board_ptr = board.as_mut_ptr() <span class="kw">as </span><span class="kw-2">*mut </span>CellValue;
+		<span class="kw">let </span>board_ptr = board.as_mut_ptr().cast::&lt;CellValue&gt;();
 
 		<span class="kw">for </span>(r, arr) <span class="kw">in </span>game.into_iter().enumerate() {
 			<span class="kw">for </span>(c, cell) <span class="kw">in </span>arr.into_iter().enumerate() {
@@ -808,7 +810,7 @@
 	</span><span class="kw">pub unsafe fn </span>encode_byte_array_unchecked(bytes: <span class="kw-2">&amp;</span>[u8; <span class="number">81</span>]) -&gt; Encoded {
 		<span class="kw">let </span><span class="kw-2">mut </span>out = ArrayChain::new_uninit();
 
-		<span class="kw">let </span><span class="kw-2">mut </span>out_ptr = out.as_nonchain_mut().as_mut_ptr() <span class="kw">as </span><span class="kw-2">*mut </span>u8;
+		<span class="kw">let </span><span class="kw-2">mut </span>out_ptr = out.as_nonchain_mut().as_mut_ptr().cast::&lt;u8&gt;();
 		<span class="kw">let </span><span class="kw-2">mut </span>bytes_ptr = bytes.as_ptr();
 
 		<span class="kw">for _ in </span><span class="number">0usize</span>..<span class="number">16 </span>{
@@ -817,7 +819,7 @@
 			<span class="kw">for _ in </span><span class="number">0</span>..<span class="number">5usize </span>{
 				<span class="comment">// TODO: unchecked math?
 				</span>current <span class="kw-2">*</span>= <span class="number">9</span>;
-				current += (<span class="kw-2">*</span>bytes_ptr - <span class="number">1</span>) <span class="kw">as </span>u16;
+				current += (<span class="kw-2">*</span>bytes_ptr - <span class="number">1</span>).into_u16();
 
 				bytes_ptr = bytes_ptr.add(<span class="number">1</span>);
 			}
@@ -839,19 +841,19 @@
 	<span class="kw">pub unsafe fn </span>decode_board_unchecked(board: <span class="kw-2">&amp;</span>Encoded) -&gt; [u8; <span class="number">81</span>] {
 		<span class="kw">let </span><span class="kw-2">mut </span>out = ArrayChain::new_uninit();
 
-		<span class="kw">let </span><span class="kw-2">mut </span>out_ptr = out.as_nonchain_mut().as_mut_ptr() <span class="kw">as </span><span class="kw-2">*mut </span>u8;
+		<span class="kw">let </span><span class="kw-2">mut </span>out_ptr = out.as_nonchain_mut().as_mut_ptr().cast::&lt;u8&gt;();
 		<span class="kw">let </span><span class="kw-2">mut </span>board_ptr = board.inner.as_ptr();
 
 		<span class="kw">for _ in </span><span class="number">0usize</span>..<span class="number">16 </span>{
 			<span class="kw">let </span><span class="kw-2">mut </span>current = ArrayChain::new_uninit();
-			board_ptr.copy_to_nonoverlapping(current.as_nonchain_mut().as_mut_ptr() <span class="kw">as _</span>, <span class="number">2</span>);
+			board_ptr.copy_to_nonoverlapping(current.as_nonchain_mut().as_mut_ptr().cast::&lt;u8&gt;(), <span class="number">2</span>);
 			<span class="kw">let </span><span class="kw-2">mut </span>current = u16::from_le_bytes(current.assume_init().into_nonchain());
 			board_ptr = board_ptr.add(<span class="number">2</span>);
 
 			out_ptr = out_ptr.add(<span class="number">5</span>);
 			<span class="kw">for _ in </span><span class="number">0</span>..<span class="number">5usize </span>{
 				out_ptr = out_ptr.sub(<span class="number">1</span>);
-				out_ptr.write(((current % <span class="number">9</span>) + <span class="number">1</span>) <span class="kw">as _</span>);
+				out_ptr.write(((current % <span class="number">9</span>) + <span class="number">1</span>).into_u8_lossy());
 
 				current /= <span class="number">9</span>;
 			}
@@ -886,7 +888,7 @@
 			<span class="kw">let </span><span class="kw-2">mut </span>accumulator = CellValue::new_empty_nongiven();
 
 			<span class="kw">for </span>offset <span class="kw">in </span>group {
-				<span class="kw">let </span>val = <span class="kw">unsafe </span>{ <span class="kw-2">*</span>board_ptr.add(offset <span class="kw">as </span>usize) };
+				<span class="kw">let </span>val = <span class="kw">unsafe </span>{ <span class="kw-2">*</span>board_ptr.add(offset.into_usize()) };
 				<span class="kw">if </span>accumulator.contains_value(val) { <span class="kw">return </span><span class="bool-val">false </span>}
 				accumulator.mark_possible_unchecked(val);
 			}

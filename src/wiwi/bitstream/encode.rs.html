@@ -1,4 +1,4 @@
-<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><meta name="generator" content="rustdoc"><meta name="description" content="Source of the Rust file `src/bitstream/encode.rs`."><title>encode.rs - source</title><script>if(window.location.protocol!=="file:")document.head.insertAdjacentHTML("beforeend","SourceSerif4-Regular-46f98efaafac5295.ttf.woff2,FiraSans-Regular-018c141bf0843ffd.woff2,FiraSans-Medium-8f9a781e4970d388.woff2,SourceCodePro-Regular-562dcc5011b6de7d.ttf.woff2,SourceCodePro-Semibold-d899c5a5c4aeb14a.ttf.woff2".split(",").map(f=>`<link rel="preload" as="font" type="font/woff2" crossorigin href="../../../static.files/${f}">`).join(""))</script><link rel="stylesheet" href="../../../static.files/normalize-76eba96aa4d2e634.css"><link rel="stylesheet" href="../../../static.files/rustdoc-dd39b87e5fcfba68.css"><meta name="rustdoc-vars" data-root-path="../../../" data-static-root-path="../../../static.files/" data-current-crate="wiwi" data-themes="meadow" data-resource-suffix="" data-rustdoc-version="1.80.0-nightly (ab14f944a 2024-05-13)" data-channel="nightly" data-search-js="search-d52510db62a78183.js" data-settings-js="settings-4313503d2e1961c2.js" ><script src="../../../static.files/storage-118b08c4c78b968e.js"></script><script defer src="../../../static.files/src-script-e66d777a5a92e9b2.js"></script><script defer src="../../../src-files.js"></script><script defer src="../../../static.files/main-20a3ad099b048cf2.js"></script><noscript><link rel="stylesheet" href="../../../static.files/noscript-df360f571f6edeae.css"></noscript><link rel="alternate icon" type="image/png" href="../../../static.files/favicon-32x32-422f7d1d52889060.png"><link rel="icon" type="image/svg+xml" href="../../../static.files/favicon-2c020d218678b618.svg"></head><body class="rustdoc src"><!--[if lte IE 11]><div class="warning">This old browser is unsupported and will most likely display funky things.</div><![endif]--><nav class="sidebar"><div class="src-sidebar-title"><h2>Files</h2></div></nav><div class="sidebar-resizer"></div><main><rustdoc-search></rustdoc-search><section id="main-content" class="content"><div class="example-wrap"><div data-nosnippet><pre class="src-line-numbers"><a href="#1" id="1">1</a>
+<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><meta name="generator" content="rustdoc"><meta name="description" content="Source of the Rust file `src/bitstream/encode.rs`."><title>encode.rs - source</title><script>if(window.location.protocol!=="file:")document.head.insertAdjacentHTML("beforeend","SourceSerif4-Regular-46f98efaafac5295.ttf.woff2,FiraSans-Regular-018c141bf0843ffd.woff2,FiraSans-Medium-8f9a781e4970d388.woff2,SourceCodePro-Regular-562dcc5011b6de7d.ttf.woff2,SourceCodePro-Semibold-d899c5a5c4aeb14a.ttf.woff2".split(",").map(f=>`<link rel="preload" as="font" type="font/woff2" crossorigin href="../../../static.files/${f}">`).join(""))</script><link rel="stylesheet" href="../../../static.files/normalize-76eba96aa4d2e634.css"><link rel="stylesheet" href="../../../static.files/rustdoc-dd39b87e5fcfba68.css"><meta name="rustdoc-vars" data-root-path="../../../" data-static-root-path="../../../static.files/" data-current-crate="wiwi" data-themes="meadow" data-resource-suffix="" data-rustdoc-version="1.81.0-nightly (e9e6e2e44 2024-06-28)" data-channel="nightly" data-search-js="search-0fe7219eb170c82e.js" data-settings-js="settings-4313503d2e1961c2.js" ><script src="../../../static.files/storage-118b08c4c78b968e.js"></script><script defer src="../../../static.files/src-script-e66d777a5a92e9b2.js"></script><script defer src="../../../src-files.js"></script><script defer src="../../../static.files/main-20a3ad099b048cf2.js"></script><noscript><link rel="stylesheet" href="../../../static.files/noscript-df360f571f6edeae.css"></noscript><link rel="alternate icon" type="image/png" href="../../../static.files/favicon-32x32-422f7d1d52889060.png"><link rel="icon" type="image/svg+xml" href="../../../static.files/favicon-2c020d218678b618.svg"></head><body class="rustdoc src"><!--[if lte IE 11]><div class="warning">This old browser is unsupported and will most likely display funky things.</div><![endif]--><nav class="sidebar"><div class="src-sidebar-title"><h2>Files</h2></div></nav><div class="sidebar-resizer"></div><main><rustdoc-search></rustdoc-search><section id="main-content" class="content"><div class="example-wrap"><div data-nosnippet><pre class="src-line-numbers"><a href="#1" id="1">1</a>
 <a href="#2" id="2">2</a>
 <a href="#3" id="3">3</a>
 <a href="#4" id="4">4</a>
@@ -419,7 +419,9 @@
 <a href="#419" id="419">419</a>
 <a href="#420" id="420">420</a>
 <a href="#421" id="421">421</a>
-</pre></div><pre class="rust"><code><span class="kw">use </span>std::hint::unreachable_unchecked;
+<a href="#422" id="422">422</a>
+</pre></div><pre class="rust"><code><span class="kw">use </span><span class="kw">crate</span>::num_traits::<span class="kw-2">*</span>;
+<span class="kw">use </span>std::hint::unreachable_unchecked;
 
 <span class="kw">pub struct </span>Encoder {
 	output: Vec&lt;u8&gt;,
@@ -505,35 +507,35 @@
 	<span class="doccomment">/// Writes the specified amount of bits from the provided u8, checking that
 	/// the amount of bits to write is 8 or less
 	</span><span class="kw">pub fn </span>write_bits_u8_checked(<span class="kw-2">&amp;mut </span><span class="self">self</span>, num_bits: usize, bits: u8) -&gt; <span class="prelude-ty">Option</span>&lt;()&gt; {
-		(num_bits &lt;= u8::BITS <span class="kw">as </span>usize)
+		(num_bits &lt;= u8::BITS.into_usize())
 			.then(|| <span class="kw">unsafe </span>{ <span class="self">self</span>.write_bits_u8_unchecked(num_bits, bits) })
 	}
 
 	<span class="doccomment">/// Writes the specified amount of bits from the provided u16, checking that
 	/// the amount of bits to write is 16 or less
 	</span><span class="kw">pub fn </span>write_bits_u16_checked(<span class="kw-2">&amp;mut </span><span class="self">self</span>, num_bits: usize, bits: u16) -&gt; <span class="prelude-ty">Option</span>&lt;()&gt; {
-		(num_bits &lt;= u16::BITS <span class="kw">as </span>usize)
+		(num_bits &lt;= u16::BITS.into_usize())
 			.then(|| <span class="kw">unsafe </span>{ <span class="self">self</span>.write_bits_u16_unchecked(num_bits, bits) })
 	}
 
 	<span class="doccomment">/// Writes the specified amount of bits from the provided u32, checking that
 	/// the amount of bits to write is 32 or less
 	</span><span class="kw">pub fn </span>write_bits_u32_checked(<span class="kw-2">&amp;mut </span><span class="self">self</span>, num_bits: usize, bits: u32) -&gt; <span class="prelude-ty">Option</span>&lt;()&gt; {
-		(num_bits &lt;= u32::BITS <span class="kw">as </span>usize)
+		(num_bits &lt;= u32::BITS.into_usize())
 			.then(|| <span class="kw">unsafe </span>{ <span class="self">self</span>.write_bits_u32_unchecked(num_bits, bits) })
 	}
 
 	<span class="doccomment">/// Writes the specified amount of bits from the provided u64, checking that
 	/// the amount of bits to write is 64 or less
 	</span><span class="kw">pub fn </span>write_bits_u64_checked(<span class="kw-2">&amp;mut </span><span class="self">self</span>, num_bits: usize, bits: u64) -&gt; <span class="prelude-ty">Option</span>&lt;()&gt; {
-		(num_bits &lt;= u64::BITS <span class="kw">as </span>usize)
+		(num_bits &lt;= u64::BITS.into_usize())
 			.then(|| <span class="kw">unsafe </span>{ <span class="self">self</span>.write_bits_u64_unchecked(num_bits, bits) })
 	}
 
 	<span class="doccomment">/// Writes the specified amount of bits from the provided u128, checking that
 	/// the amount of bits to write is 128 or less
 	</span><span class="kw">pub fn </span>write_bits_u128_checked(<span class="kw-2">&amp;mut </span><span class="self">self</span>, num_bits: usize, bits: u128) -&gt; <span class="prelude-ty">Option</span>&lt;()&gt; {
-		(num_bits &lt;= u128::BITS <span class="kw">as </span>usize)
+		(num_bits &lt;= u128::BITS.into_usize())
 			.then(|| <span class="kw">unsafe </span>{ <span class="self">self</span>.write_bits_u128_unchecked(num_bits, bits) })
 	}
 
@@ -553,8 +555,8 @@
 	///
 	/// [`write_bits_u128_unchecked`]: Self::write_bits_u128_unchecked
 	</span><span class="kw">pub unsafe fn </span>write_bits_u8_unchecked(<span class="kw-2">&amp;mut </span><span class="self">self</span>, num_bits: usize, bits: u8) {
-		<span class="kw">if </span>num_bits &gt; u8::BITS <span class="kw">as </span>usize { unreachable_unchecked() }
-		<span class="self">self</span>.write_bits_u128_unchecked(num_bits, bits <span class="kw">as _</span>);
+		<span class="kw">if </span>num_bits &gt; u8::BITS.into_usize() { unreachable_unchecked() }
+		<span class="self">self</span>.write_bits_u128_unchecked(num_bits, bits.into_u128());
 	}
 
 	<span class="doccomment">/// Writes the specified amount of bits from the provided u16
@@ -573,8 +575,8 @@
 	///
 	/// [`write_bits_u128_unchecked`]: Self::write_bits_u128_unchecked
 	</span><span class="kw">pub unsafe fn </span>write_bits_u16_unchecked(<span class="kw-2">&amp;mut </span><span class="self">self</span>, num_bits: usize, bits: u16) {
-		<span class="kw">if </span>num_bits &gt; u16::BITS <span class="kw">as </span>usize { unreachable_unchecked() }
-		<span class="self">self</span>.write_bits_u128_unchecked(num_bits, bits <span class="kw">as _</span>);
+		<span class="kw">if </span>num_bits &gt; u16::BITS.into_usize() { unreachable_unchecked() }
+		<span class="self">self</span>.write_bits_u128_unchecked(num_bits, bits.into_u128());
 	}
 
 	<span class="doccomment">/// Writes the specified amount of bits from the provided u32
@@ -593,8 +595,8 @@
 	///
 	/// [`write_bits_u128_unchecked`]: Self::write_bits_u128_unchecked
 	</span><span class="kw">pub unsafe fn </span>write_bits_u32_unchecked(<span class="kw-2">&amp;mut </span><span class="self">self</span>, num_bits: usize, bits: u32) {
-		<span class="kw">if </span>num_bits &gt; u32::BITS <span class="kw">as </span>usize { unreachable_unchecked() }
-		<span class="self">self</span>.write_bits_u128_unchecked(num_bits, bits <span class="kw">as _</span>);
+		<span class="kw">if </span>num_bits &gt; u32::BITS.into_usize() { unreachable_unchecked() }
+		<span class="self">self</span>.write_bits_u128_unchecked(num_bits, bits.into_u128());
 	}
 
 	<span class="doccomment">/// Writes the specified amount of bits from the provided u64
@@ -613,8 +615,8 @@
 	///
 	/// [`write_bits_u128_unchecked`]: Self::write_bits_u128_unchecked
 	</span><span class="kw">pub unsafe fn </span>write_bits_u64_unchecked(<span class="kw-2">&amp;mut </span><span class="self">self</span>, num_bits: usize, bits: u64) {
-		<span class="kw">if </span>num_bits &gt; u64::BITS <span class="kw">as </span>usize { unreachable_unchecked() }
-		<span class="self">self</span>.write_bits_u128_unchecked(num_bits, bits <span class="kw">as _</span>);
+		<span class="kw">if </span>num_bits &gt; u64::BITS.into_usize() { unreachable_unchecked() }
+		<span class="self">self</span>.write_bits_u128_unchecked(num_bits, bits.into_u128());
 	}
 
 	<span class="doccomment">/// Writes the specified amount of bits from the provided u128
@@ -633,22 +635,22 @@
 	///
 	/// TODO
 	</span><span class="kw">pub unsafe fn </span>write_bits_u128_unchecked(<span class="kw-2">&amp;mut </span><span class="self">self</span>, <span class="kw-2">mut </span>num_bits: usize, <span class="kw-2">mut </span>bits: u128) {
-		<span class="kw">if </span>num_bits &gt; u128::BITS <span class="kw">as </span>usize { unreachable_unchecked() }
+		<span class="kw">if </span>num_bits &gt; u128::BITS.into_usize() { unreachable_unchecked() }
 		<span class="kw">if </span><span class="self">self</span>.num_partial_bits &gt;= <span class="number">8 </span>{ unreachable_unchecked() }
 
 		<span class="comment">// fill existing partial byte, if there's already stuff there
 		</span><span class="kw">if </span><span class="self">self</span>.num_partial_bits &gt; <span class="number">0 </span>{
 			<span class="comment">// shift our bits up to fill above existing bits, and merge
-			</span><span class="self">self</span>.partial_bits |= (bits &lt;&lt; <span class="self">self</span>.num_partial_bits) <span class="kw">as </span>u8;
+			</span><span class="self">self</span>.partial_bits |= (bits &lt;&lt; <span class="self">self</span>.num_partial_bits).into_u8_lossy();
 
 			<span class="comment">// check if we filled it
-			</span><span class="kw">let </span>num_partial_bits = <span class="self">self</span>.num_partial_bits + num_bits <span class="kw">as </span>u8;
+			</span><span class="kw">let </span>num_partial_bits = <span class="self">self</span>.num_partial_bits + num_bits.into_u8_lossy();
 			<span class="kw">if </span>num_partial_bits &gt;= <span class="number">8 </span>{
 				<span class="comment">// we haven't overwritten `self.num_partial_bits` before this
 				</span><span class="kw">let </span>prev_empty = <span class="number">8 </span>- <span class="self">self</span>.num_partial_bits;
 
 				<span class="comment">// remove what got stored in that byte
-				</span>num_bits -= prev_empty <span class="kw">as </span>usize;
+				</span>num_bits -= prev_empty.into_usize();
 				bits &gt;&gt;= prev_empty;
 
 				<span class="self">self</span>.output.push(<span class="self">self</span>.partial_bits);
@@ -701,11 +703,11 @@
 
 			<span class="comment">// shift down to get the upper remainder
 			// mul 8 is amount we've covered in full bytes (might be zero but that's fine)
-			</span><span class="self">self</span>.partial_bits = (bits &gt;&gt; (full_bytes &lt;&lt; <span class="number">3</span>)) <span class="kw">as </span>u8;
+			</span><span class="self">self</span>.partial_bits = (bits &gt;&gt; (full_bytes &lt;&lt; <span class="number">3</span>)).into_u8_lossy();
 			<span class="self">self</span>.partial_bits &lt;&lt;= clearing_shift;
 			<span class="self">self</span>.partial_bits &gt;&gt;= clearing_shift;
 
-			<span class="self">self</span>.num_partial_bits = partial_bits <span class="kw">as </span>u8;
+			<span class="self">self</span>.num_partial_bits = partial_bits.into_u8_lossy();
 		}
 	}
 
@@ -731,8 +733,8 @@
 	///
 	/// TODO
 	</span><span class="kw">pub unsafe fn </span>write_bits_usize_unchecked(<span class="kw-2">&amp;mut </span><span class="self">self</span>, num_bits: usize, bits: usize) {
-		<span class="kw">if </span>num_bits &gt; usize::BITS <span class="kw">as </span>usize { unreachable_unchecked() }
-		<span class="self">self</span>.write_bits_u128_unchecked(num_bits, bits <span class="kw">as _</span>);
+		<span class="kw">if </span>num_bits &gt; usize::BITS.into_usize() { unreachable_unchecked() }
+		<span class="self">self</span>.write_bits_u128_unchecked(num_bits, bits.into_u128());
 	}
 }
 
@@ -803,7 +805,7 @@
 			</span>]);
 
 			<span class="comment">// write max amount of bits (top half 0s, bottom half 1s)
-			</span>encoder.write_bits_u128_unchecked(<span class="number">128</span>, u64::MAX <span class="kw">as _</span>);
+			</span>encoder.write_bits_u128_unchecked(<span class="number">128</span>, u64::MAX.into_u128());
 			<span class="macro">assert_eq!</span>(encoder.num_partial_bits, <span class="number">6</span>);
 			<span class="macro">assert_eq!</span>(encoder.partial_bits, <span class="number">0b000000</span>);
 			<span class="macro">assert_eq!</span>(<span class="kw-2">&amp;*</span>encoder.output, <span class="kw-2">&amp;</span>[

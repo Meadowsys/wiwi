@@ -1,4 +1,4 @@
-<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><meta name="generator" content="rustdoc"><meta name="description" content="Source of the Rust file `src/z85/mod.rs`."><title>mod.rs - source</title><script>if(window.location.protocol!=="file:")document.head.insertAdjacentHTML("beforeend","SourceSerif4-Regular-46f98efaafac5295.ttf.woff2,FiraSans-Regular-018c141bf0843ffd.woff2,FiraSans-Medium-8f9a781e4970d388.woff2,SourceCodePro-Regular-562dcc5011b6de7d.ttf.woff2,SourceCodePro-Semibold-d899c5a5c4aeb14a.ttf.woff2".split(",").map(f=>`<link rel="preload" as="font" type="font/woff2" crossorigin href="../../../static.files/${f}">`).join(""))</script><link rel="stylesheet" href="../../../static.files/normalize-76eba96aa4d2e634.css"><link rel="stylesheet" href="../../../static.files/rustdoc-dd39b87e5fcfba68.css"><meta name="rustdoc-vars" data-root-path="../../../" data-static-root-path="../../../static.files/" data-current-crate="wiwi" data-themes="meadow" data-resource-suffix="" data-rustdoc-version="1.80.0-nightly (ab14f944a 2024-05-13)" data-channel="nightly" data-search-js="search-d52510db62a78183.js" data-settings-js="settings-4313503d2e1961c2.js" ><script src="../../../static.files/storage-118b08c4c78b968e.js"></script><script defer src="../../../static.files/src-script-e66d777a5a92e9b2.js"></script><script defer src="../../../src-files.js"></script><script defer src="../../../static.files/main-20a3ad099b048cf2.js"></script><noscript><link rel="stylesheet" href="../../../static.files/noscript-df360f571f6edeae.css"></noscript><link rel="alternate icon" type="image/png" href="../../../static.files/favicon-32x32-422f7d1d52889060.png"><link rel="icon" type="image/svg+xml" href="../../../static.files/favicon-2c020d218678b618.svg"></head><body class="rustdoc src"><!--[if lte IE 11]><div class="warning">This old browser is unsupported and will most likely display funky things.</div><![endif]--><nav class="sidebar"><div class="src-sidebar-title"><h2>Files</h2></div></nav><div class="sidebar-resizer"></div><main><rustdoc-search></rustdoc-search><section id="main-content" class="content"><div class="example-wrap"><div data-nosnippet><pre class="src-line-numbers"><a href="#1" id="1">1</a>
+<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><meta name="generator" content="rustdoc"><meta name="description" content="Source of the Rust file `src/z85/mod.rs`."><title>mod.rs - source</title><script>if(window.location.protocol!=="file:")document.head.insertAdjacentHTML("beforeend","SourceSerif4-Regular-46f98efaafac5295.ttf.woff2,FiraSans-Regular-018c141bf0843ffd.woff2,FiraSans-Medium-8f9a781e4970d388.woff2,SourceCodePro-Regular-562dcc5011b6de7d.ttf.woff2,SourceCodePro-Semibold-d899c5a5c4aeb14a.ttf.woff2".split(",").map(f=>`<link rel="preload" as="font" type="font/woff2" crossorigin href="../../../static.files/${f}">`).join(""))</script><link rel="stylesheet" href="../../../static.files/normalize-76eba96aa4d2e634.css"><link rel="stylesheet" href="../../../static.files/rustdoc-dd39b87e5fcfba68.css"><meta name="rustdoc-vars" data-root-path="../../../" data-static-root-path="../../../static.files/" data-current-crate="wiwi" data-themes="meadow" data-resource-suffix="" data-rustdoc-version="1.81.0-nightly (e9e6e2e44 2024-06-28)" data-channel="nightly" data-search-js="search-0fe7219eb170c82e.js" data-settings-js="settings-4313503d2e1961c2.js" ><script src="../../../static.files/storage-118b08c4c78b968e.js"></script><script defer src="../../../static.files/src-script-e66d777a5a92e9b2.js"></script><script defer src="../../../src-files.js"></script><script defer src="../../../static.files/main-20a3ad099b048cf2.js"></script><noscript><link rel="stylesheet" href="../../../static.files/noscript-df360f571f6edeae.css"></noscript><link rel="alternate icon" type="image/png" href="../../../static.files/favicon-32x32-422f7d1d52889060.png"><link rel="icon" type="image/svg+xml" href="../../../static.files/favicon-2c020d218678b618.svg"></head><body class="rustdoc src"><!--[if lte IE 11]><div class="warning">This old browser is unsupported and will most likely display funky things.</div><![endif]--><nav class="sidebar"><div class="src-sidebar-title"><h2>Files</h2></div></nav><div class="sidebar-resizer"></div><main><rustdoc-search></rustdoc-search><section id="main-content" class="content"><div class="example-wrap"><div data-nosnippet><pre class="src-line-numbers"><a href="#1" id="1">1</a>
 <a href="#2" id="2">2</a>
 <a href="#3" id="3">3</a>
 <a href="#4" id="4">4</a>
@@ -506,6 +506,7 @@
 <a href="#506" id="506">506</a>
 <a href="#507" id="507">507</a>
 <a href="#508" id="508">508</a>
+<a href="#509" id="509">509</a>
 </pre></div><pre class="rust"><code><span class="doccomment">//! Fast and efficient implementation of Z85
 //!
 //! Includes nonstandard padding. The Z85 spec explicitly says that the application
@@ -527,6 +528,7 @@
 //! Original Z85 spec: &lt;https://rfc.zeromq.org/spec/32&gt;
 
 </span><span class="kw">use </span><span class="kw">crate</span>::_internal::encoding_utils::{ ChunkedSlice, UnsafeBufWriteGuard};
+<span class="kw">use </span><span class="kw">crate</span>::num_traits::<span class="kw-2">*</span>;
 <span class="kw">use </span>std::slice;
 
 <span class="doccomment">/// Length of the encoding table (ie. number of different characters)
@@ -683,7 +685,7 @@
 				// bytes but at least 1 still holds). so this will not underflow
 				</span><span class="kw">let </span>one_shorter = bytes.len() - <span class="number">1</span>;
 
-				<span class="kw">let </span>ptr = bytes <span class="kw">as </span><span class="kw-2">*const </span>[u8] <span class="kw">as </span><span class="kw-2">*const </span>u8;
+				<span class="kw">let </span>ptr = bytes.as_ptr();
 				<span class="comment">// this will be last byte in slice
 				</span><span class="kw">let </span>byte = <span class="kw-2">*</span>(ptr.add(one_shorter));
 
@@ -693,16 +695,16 @@
 
 				<span class="comment">// SAFETY: 0 &lt;= n &lt; 256 is always true for a u8, and TABLE_DECODER is len 256,
 				// so this is safe
-				</span><span class="kw">let </span>decoded = <span class="kw-2">*</span>TABLE_DECODER.get_unchecked(byte <span class="kw">as </span>usize);
+				</span><span class="kw">let </span>decoded = <span class="kw-2">*</span>TABLE_DECODER.get_unchecked(byte.into_usize());
 
-				<span class="kw">match </span>decoded {
+				<span class="kw">match </span>decoded.map(IntoUsizeLossless::into_usize) {
 					<span class="comment">// having that last byte as a 0 is not something we generate,
 					// as its just a waste of a perfectly good byte, but it doesn't
 					// break this system (added a unit test for it to make sure).
-					</span><span class="prelude-val">Some</span>(val) <span class="kw">if </span>(val <span class="kw">as </span>usize) &lt; BINARY_FRAME_LEN =&gt; { val }
+					</span><span class="prelude-val">Some</span>(val) <span class="kw">if </span>val &lt; BINARY_FRAME_LEN =&gt; { val }
 					<span class="prelude-val">Some</span>(<span class="kw">_</span>) | <span class="prelude-val">None </span>=&gt; { <span class="kw">return </span><span class="prelude-val">Err</span>(DecodeError::InvalidChar) }
 				}
-			} <span class="kw">as </span>usize;
+			};
 
 			<span class="comment">// if added_padding is 0, this returns
 			// the same values as the above.
@@ -723,7 +725,7 @@
 			// every frame except the last. We've also preallocated enough capacity
 			// for the bytes we will write
 			</span><span class="kw">let </span>frame = frames_iter.next_frame_unchecked();
-			decode_frame(frame, |frame| dest.write_bytes_const::&lt;BINARY_FRAME_LEN&gt;(frame <span class="kw">as </span><span class="kw-2">*const </span>u8))<span class="question-mark">?</span>;
+			decode_frame(frame, |frame| dest.write_bytes_const::&lt;BINARY_FRAME_LEN&gt;(frame.as_ptr()))<span class="question-mark">?</span>;
 		}
 	}
 
@@ -748,7 +750,7 @@
 			<span class="comment">// SAFETY: this writes the amount of bytes that aren't padding bytes,
 			// into the buffer. We subtracted padding bytes from the number we write
 			// already, so we write the perfect amount left and never over or under.
-			</span>dest.write_bytes(frame <span class="kw">as </span><span class="kw-2">*const </span>u8, non_padding_bytes);
+			</span>dest.write_bytes(frame.as_ptr(), non_padding_bytes);
 		})<span class="question-mark">?</span>;
 	}
 
@@ -779,7 +781,7 @@
 /// Caller must guarantee dest is valid for at least `STRING_FRAME_LEN` bytes
 /// to be written.
 </span><span class="kw">unsafe fn </span>encode_frame(frame: <span class="kw-2">&amp;</span>[u8; BINARY_FRAME_LEN], dest: <span class="kw-2">&amp;mut </span>UnsafeBufWriteGuard) {
-	<span class="kw">let </span><span class="kw-2">mut </span>int = u32::from_be_bytes(<span class="kw-2">*</span>frame) <span class="kw">as </span>usize;
+	<span class="kw">let </span><span class="kw-2">mut </span>int = u32::from_be_bytes(<span class="kw-2">*</span>frame).into_usize();
 
 	<span class="kw">let </span>byte5 = int % TABLE_ENCODER_LEN;
 	int /= TABLE_ENCODER_LEN;
@@ -811,7 +813,7 @@
 
 	<span class="comment">// SAFETY: internal function. caller guarantees past dest has at least
 	// `STRING_FRAME_LEN` bytes left.
-	</span>dest.write_bytes_const::&lt;STRING_FRAME_LEN&gt;(<span class="kw-2">&amp;</span>encoded_frame <span class="kw">as </span><span class="kw-2">*const </span>u8);
+	</span>dest.write_bytes_const::&lt;STRING_FRAME_LEN&gt;(encoded_frame.as_ptr());
 }
 
 <span class="doccomment">/// # Safety
@@ -829,41 +831,41 @@
 	// so this is safe.
 	// Additionally, if this comes back as Some from TABLE_DECODER, it is guaranteed
 	// to be 0 &lt;= n &lt;= 84, since there are no Some(n) values outside this range.
-	</span><span class="kw">let </span><span class="prelude-val">Some</span>(byte1) = <span class="kw-2">*</span>TABLE_DECODER.get_unchecked(byte1 <span class="kw">as </span>usize) <span class="kw">else </span>{
+	</span><span class="kw">let </span><span class="prelude-val">Some</span>(byte1) = <span class="kw-2">*</span>TABLE_DECODER.get_unchecked(byte1.into_usize()) <span class="kw">else </span>{
 		<span class="kw">return </span><span class="prelude-val">Err</span>(DecodeError::InvalidChar)
 	};
-	<span class="kw">let </span><span class="prelude-val">Some</span>(byte2) = <span class="kw-2">*</span>TABLE_DECODER.get_unchecked(byte2 <span class="kw">as </span>usize) <span class="kw">else </span>{
+	<span class="kw">let </span><span class="prelude-val">Some</span>(byte2) = <span class="kw-2">*</span>TABLE_DECODER.get_unchecked(byte2.into_usize()) <span class="kw">else </span>{
 		<span class="kw">return </span><span class="prelude-val">Err</span>(DecodeError::InvalidChar)
 	};
-	<span class="kw">let </span><span class="prelude-val">Some</span>(byte3) = <span class="kw-2">*</span>TABLE_DECODER.get_unchecked(byte3 <span class="kw">as </span>usize) <span class="kw">else </span>{
+	<span class="kw">let </span><span class="prelude-val">Some</span>(byte3) = <span class="kw-2">*</span>TABLE_DECODER.get_unchecked(byte3.into_usize()) <span class="kw">else </span>{
 		<span class="kw">return </span><span class="prelude-val">Err</span>(DecodeError::InvalidChar)
 	};
-	<span class="kw">let </span><span class="prelude-val">Some</span>(byte4) = <span class="kw-2">*</span>TABLE_DECODER.get_unchecked(byte4 <span class="kw">as </span>usize) <span class="kw">else </span>{
+	<span class="kw">let </span><span class="prelude-val">Some</span>(byte4) = <span class="kw-2">*</span>TABLE_DECODER.get_unchecked(byte4.into_usize()) <span class="kw">else </span>{
 		<span class="kw">return </span><span class="prelude-val">Err</span>(DecodeError::InvalidChar)
 	};
-	<span class="kw">let </span><span class="prelude-val">Some</span>(byte5) = <span class="kw-2">*</span>TABLE_DECODER.get_unchecked(byte5 <span class="kw">as </span>usize) <span class="kw">else </span>{
+	<span class="kw">let </span><span class="prelude-val">Some</span>(byte5) = <span class="kw-2">*</span>TABLE_DECODER.get_unchecked(byte5.into_usize()) <span class="kw">else </span>{
 		<span class="kw">return </span><span class="prelude-val">Err</span>(DecodeError::InvalidChar)
 	};
 
 	<span class="comment">// reversal process of encode. Max value is 84^5, or 4.182.119.424, which
 	// is less than u32::MAX, or 4.294.967.296, so will not overflow.
-	</span><span class="kw">let </span><span class="kw-2">mut </span>int = byte1 <span class="kw">as </span>u64;
+	</span><span class="kw">let </span><span class="kw-2">mut </span>int = byte1.into_u64();
 
-	int <span class="kw-2">*</span>= TABLE_ENCODER_LEN <span class="kw">as </span>u64;
-	int += byte2 <span class="kw">as </span>u64;
+	int <span class="kw-2">*</span>= TABLE_ENCODER_LEN.into_u64();
+	int += byte2.into_u64();
 
-	int <span class="kw-2">*</span>= TABLE_ENCODER_LEN <span class="kw">as </span>u64;
-	int += byte3 <span class="kw">as </span>u64;
+	int <span class="kw-2">*</span>= TABLE_ENCODER_LEN.into_u64();
+	int += byte3.into_u64();
 
-	int <span class="kw-2">*</span>= TABLE_ENCODER_LEN <span class="kw">as </span>u64;
-	int += byte4 <span class="kw">as </span>u64;
+	int <span class="kw-2">*</span>= TABLE_ENCODER_LEN.into_u64();
+	int += byte4.into_u64();
 
-	int <span class="kw-2">*</span>= TABLE_ENCODER_LEN <span class="kw">as </span>u64;
-	int += byte5 <span class="kw">as </span>u64;
+	int <span class="kw-2">*</span>= TABLE_ENCODER_LEN.into_u64();
+	int += byte5.into_u64();
 
 	<span class="kw">if </span>int &gt;&gt; u32::BITS != <span class="number">0 </span>{ <span class="kw">return </span><span class="prelude-val">Err</span>(DecodeError::FrameOverflow) }
 
-	<span class="kw">let </span>decoded_frame = u32::to_be_bytes(int <span class="kw">as </span>u32);
+	<span class="kw">let </span>decoded_frame = u32::to_be_bytes(int.into_u32_lossy());
 	f(<span class="kw-2">&amp;</span>decoded_frame);
 
 	<span class="prelude-val">Ok</span>(())

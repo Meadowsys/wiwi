@@ -1,4 +1,4 @@
-<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><meta name="generator" content="rustdoc"><meta name="description" content="Source of the Rust file `src/chainer/mod.rs`."><title>mod.rs - source</title><script>if(window.location.protocol!=="file:")document.head.insertAdjacentHTML("beforeend","SourceSerif4-Regular-46f98efaafac5295.ttf.woff2,FiraSans-Regular-018c141bf0843ffd.woff2,FiraSans-Medium-8f9a781e4970d388.woff2,SourceCodePro-Regular-562dcc5011b6de7d.ttf.woff2,SourceCodePro-Semibold-d899c5a5c4aeb14a.ttf.woff2".split(",").map(f=>`<link rel="preload" as="font" type="font/woff2" crossorigin href="../../../static.files/${f}">`).join(""))</script><link rel="stylesheet" href="../../../static.files/normalize-76eba96aa4d2e634.css"><link rel="stylesheet" href="../../../static.files/rustdoc-dd39b87e5fcfba68.css"><meta name="rustdoc-vars" data-root-path="../../../" data-static-root-path="../../../static.files/" data-current-crate="wiwi" data-themes="meadow" data-resource-suffix="" data-rustdoc-version="1.80.0-nightly (ab14f944a 2024-05-13)" data-channel="nightly" data-search-js="search-d52510db62a78183.js" data-settings-js="settings-4313503d2e1961c2.js" ><script src="../../../static.files/storage-118b08c4c78b968e.js"></script><script defer src="../../../static.files/src-script-e66d777a5a92e9b2.js"></script><script defer src="../../../src-files.js"></script><script defer src="../../../static.files/main-20a3ad099b048cf2.js"></script><noscript><link rel="stylesheet" href="../../../static.files/noscript-df360f571f6edeae.css"></noscript><link rel="alternate icon" type="image/png" href="../../../static.files/favicon-32x32-422f7d1d52889060.png"><link rel="icon" type="image/svg+xml" href="../../../static.files/favicon-2c020d218678b618.svg"></head><body class="rustdoc src"><!--[if lte IE 11]><div class="warning">This old browser is unsupported and will most likely display funky things.</div><![endif]--><nav class="sidebar"><div class="src-sidebar-title"><h2>Files</h2></div></nav><div class="sidebar-resizer"></div><main><rustdoc-search></rustdoc-search><section id="main-content" class="content"><div class="example-wrap"><div data-nosnippet><pre class="src-line-numbers"><a href="#1" id="1">1</a>
+<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><meta name="generator" content="rustdoc"><meta name="description" content="Source of the Rust file `src/chainer/mod.rs`."><title>mod.rs - source</title><script>if(window.location.protocol!=="file:")document.head.insertAdjacentHTML("beforeend","SourceSerif4-Regular-46f98efaafac5295.ttf.woff2,FiraSans-Regular-018c141bf0843ffd.woff2,FiraSans-Medium-8f9a781e4970d388.woff2,SourceCodePro-Regular-562dcc5011b6de7d.ttf.woff2,SourceCodePro-Semibold-d899c5a5c4aeb14a.ttf.woff2".split(",").map(f=>`<link rel="preload" as="font" type="font/woff2" crossorigin href="../../../static.files/${f}">`).join(""))</script><link rel="stylesheet" href="../../../static.files/normalize-76eba96aa4d2e634.css"><link rel="stylesheet" href="../../../static.files/rustdoc-dd39b87e5fcfba68.css"><meta name="rustdoc-vars" data-root-path="../../../" data-static-root-path="../../../static.files/" data-current-crate="wiwi" data-themes="meadow" data-resource-suffix="" data-rustdoc-version="1.81.0-nightly (e9e6e2e44 2024-06-28)" data-channel="nightly" data-search-js="search-0fe7219eb170c82e.js" data-settings-js="settings-4313503d2e1961c2.js" ><script src="../../../static.files/storage-118b08c4c78b968e.js"></script><script defer src="../../../static.files/src-script-e66d777a5a92e9b2.js"></script><script defer src="../../../src-files.js"></script><script defer src="../../../static.files/main-20a3ad099b048cf2.js"></script><noscript><link rel="stylesheet" href="../../../static.files/noscript-df360f571f6edeae.css"></noscript><link rel="alternate icon" type="image/png" href="../../../static.files/favicon-32x32-422f7d1d52889060.png"><link rel="icon" type="image/svg+xml" href="../../../static.files/favicon-2c020d218678b618.svg"></head><body class="rustdoc src"><!--[if lte IE 11]><div class="warning">This old browser is unsupported and will most likely display funky things.</div><![endif]--><nav class="sidebar"><div class="src-sidebar-title"><h2>Files</h2></div></nav><div class="sidebar-resizer"></div><main><rustdoc-search></rustdoc-search><section id="main-content" class="content"><div class="example-wrap"><div data-nosnippet><pre class="src-line-numbers"><a href="#1" id="1">1</a>
 <a href="#2" id="2">2</a>
 <a href="#3" id="3">3</a>
 <a href="#4" id="4">4</a>
@@ -413,11 +413,6 @@
 <a href="#413" id="413">413</a>
 <a href="#414" id="414">414</a>
 <a href="#415" id="415">415</a>
-<a href="#416" id="416">416</a>
-<a href="#417" id="417">417</a>
-<a href="#418" id="418">418</a>
-<a href="#419" id="419">419</a>
-<a href="#420" id="420">420</a>
 </pre></div><pre class="rust"><code><span class="kw">mod </span>traits;
 <span class="kw">pub use </span>traits::{ ChainHalf, NonChainHalf };
 
@@ -535,39 +530,36 @@
 			<span class="kw">type </span>NonChain = $(<span class="macro-nonterminal">$nonchain</span>)+;
 		}
 
-		<span class="comment">// nonchain -&gt; chain conversion
-		</span><span class="kw">impl</span>$(&lt;$(<span class="macro-nonterminal">$generics_decl</span>)<span class="kw-2">*</span>&gt;)<span class="question-mark">? </span>::std::convert::From&lt;$(<span class="macro-nonterminal">$nonchain</span>)+&gt; <span class="kw">for </span><span class="macro-nonterminal">$chainer</span>$(&lt;$(<span class="macro-nonterminal">$generics</span>)<span class="kw-2">*</span>&gt;)<span class="question-mark">? </span>{
+		<span class="kw">impl</span>$(&lt;$(<span class="macro-nonterminal">$generics_decl</span>)<span class="kw-2">*</span>&gt;)<span class="question-mark">? </span>::std::convert::From&lt;$(<span class="macro-nonterminal">$nonchain</span>)+&gt; <span class="kw">for </span><span class="macro-nonterminal">$chainer</span>$(&lt;$(<span class="macro-nonterminal">$generics</span>)<span class="kw-2">*</span>&gt;)<span class="question-mark">? </span>{
 			<span class="attr">#[inline(always)]
 			</span><span class="kw">fn </span>from(nonchain: $(<span class="macro-nonterminal">$nonchain</span>)+) -&gt; <span class="self">Self </span>{
 				<span class="self">Self </span>{ _nc: nonchain }
 			}
 		}
 
-		<span class="comment">// chain -&gt; nonchain conversion
-		</span><span class="kw">impl</span>$(&lt;$(<span class="macro-nonterminal">$generics_decl</span>)<span class="kw-2">*</span>&gt;)<span class="question-mark">? </span>::std::convert::From&lt;<span class="macro-nonterminal">$chainer</span>$(&lt;$(<span class="macro-nonterminal">$generics</span>)<span class="kw-2">*</span>&gt;)<span class="question-mark">?</span>&gt; <span class="kw">for </span>$(<span class="macro-nonterminal">$nonchain</span>)+ {
+		<span class="kw">impl</span>$(&lt;$(<span class="macro-nonterminal">$generics_decl</span>)<span class="kw-2">*</span>&gt;)<span class="question-mark">? </span>::std::convert::From&lt;<span class="macro-nonterminal">$chainer</span>$(&lt;$(<span class="macro-nonterminal">$generics</span>)<span class="kw-2">*</span>&gt;)<span class="question-mark">?</span>&gt; <span class="kw">for </span>$(<span class="macro-nonterminal">$nonchain</span>)+ {
 			<span class="attr">#[inline(always)]
 			</span><span class="kw">fn </span>from(chainer: <span class="macro-nonterminal">$chainer</span>$(&lt;$(<span class="macro-nonterminal">$generics</span>)<span class="kw-2">*</span>&gt;)<span class="question-mark">?</span>) -&gt; <span class="self">Self </span>{
 				chainer._nc
 			}
 		}
 
-		<span class="comment">// borrow nonchain mutably
-		</span><span class="kw">impl</span>$(&lt;$(<span class="macro-nonterminal">$generics_decl</span>)<span class="kw-2">*</span>&gt;)<span class="question-mark">? </span>::std::convert::AsMut&lt;$(<span class="macro-nonterminal">$nonchain</span>)+&gt; <span class="kw">for </span><span class="macro-nonterminal">$chainer</span>$(&lt;$(<span class="macro-nonterminal">$generics</span>)<span class="kw-2">*</span>&gt;)<span class="question-mark">? </span>{
+		<span class="kw">impl</span>$(&lt;$(<span class="macro-nonterminal">$generics_decl</span>)<span class="kw-2">*</span>&gt;)<span class="question-mark">? </span>::std::convert::AsMut&lt;$(<span class="macro-nonterminal">$nonchain</span>)+&gt; <span class="kw">for </span><span class="macro-nonterminal">$chainer</span>$(&lt;$(<span class="macro-nonterminal">$generics</span>)<span class="kw-2">*</span>&gt;)<span class="question-mark">? </span>{
 			<span class="attr">#[inline(always)]
 			</span><span class="kw">fn </span>as_mut(<span class="kw-2">&amp;mut </span><span class="self">self</span>) -&gt; <span class="kw-2">&amp;mut </span>$(<span class="macro-nonterminal">$nonchain</span>)+ {
 				<span class="kw-2">&amp;mut </span><span class="self">self</span>._nc
 			}
 		}
 
-		<span class="comment">// borrow nonchain immutably
-		</span><span class="kw">impl</span>$(&lt;$(<span class="macro-nonterminal">$generics_decl</span>)<span class="kw-2">*</span>&gt;)<span class="question-mark">? </span>::std::convert::AsRef&lt;$(<span class="macro-nonterminal">$nonchain</span>)+&gt; <span class="kw">for </span><span class="macro-nonterminal">$chainer</span>$(&lt;$(<span class="macro-nonterminal">$generics</span>)<span class="kw-2">*</span>&gt;)<span class="question-mark">? </span>{
+		<span class="kw">impl</span>$(&lt;$(<span class="macro-nonterminal">$generics_decl</span>)<span class="kw-2">*</span>&gt;)<span class="question-mark">? </span>::std::convert::AsRef&lt;$(<span class="macro-nonterminal">$nonchain</span>)+&gt; <span class="kw">for </span><span class="macro-nonterminal">$chainer</span>$(&lt;$(<span class="macro-nonterminal">$generics</span>)<span class="kw-2">*</span>&gt;)<span class="question-mark">? </span>{
 			<span class="attr">#[inline(always)]
 			</span><span class="kw">fn </span>as_ref(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; <span class="kw-2">&amp;</span>$(<span class="macro-nonterminal">$nonchain</span>)+ {
 				<span class="kw-2">&amp;</span><span class="self">self</span>._nc
 			}
 		}
 
-		<span class="attr">#[allow(clippy::non_canonical_clone_impl)] </span><span class="comment">// shut
+		<span class="comment">// we follow whatever inner is doing (which _would_ include incorrect behaviour...)
+		</span><span class="attr">#[allow(clippy::non_canonical_clone_impl)]
 		</span><span class="kw">impl</span>$(&lt;$(<span class="macro-nonterminal">$generics_decl</span>)<span class="kw-2">*</span>&gt;)<span class="question-mark">? </span>::std::clone::Clone <span class="kw">for </span><span class="macro-nonterminal">$chainer</span>$(&lt;$(<span class="macro-nonterminal">$generics</span>)<span class="kw-2">*</span>&gt;)<span class="question-mark">?
 		</span><span class="kw">where
 			</span>$(<span class="macro-nonterminal">$nonchain</span>)+: ::std::clone::Clone
@@ -594,8 +586,7 @@
 			}
 		}
 
-		<span class="comment">// default, using inner's default impl
-		</span><span class="kw">impl</span>$(&lt;$(<span class="macro-nonterminal">$generics_decl</span>)<span class="kw-2">*</span>&gt;)<span class="question-mark">? </span>::std::default::Default <span class="kw">for </span><span class="macro-nonterminal">$chainer</span>$(&lt;$(<span class="macro-nonterminal">$generics</span>)<span class="kw-2">*</span>&gt;)<span class="question-mark">?
+		<span class="kw">impl</span>$(&lt;$(<span class="macro-nonterminal">$generics_decl</span>)<span class="kw-2">*</span>&gt;)<span class="question-mark">? </span>::std::default::Default <span class="kw">for </span><span class="macro-nonterminal">$chainer</span>$(&lt;$(<span class="macro-nonterminal">$generics</span>)<span class="kw-2">*</span>&gt;)<span class="question-mark">?
 		</span><span class="kw">where
 			</span>$(<span class="macro-nonterminal">$nonchain</span>)+: ::std::default::Default
 		{
@@ -605,8 +596,7 @@
 			}
 		}
 
-		<span class="comment">// forwards display to inner, so chain wrapper does not get in the way of it at all
-		</span><span class="kw">impl</span>$(&lt;$(<span class="macro-nonterminal">$generics_decl</span>)<span class="kw-2">*</span>&gt;)<span class="question-mark">? </span>::std::fmt::Display <span class="kw">for </span><span class="macro-nonterminal">$chainer</span>$(&lt;$(<span class="macro-nonterminal">$generics</span>)<span class="kw-2">*</span>&gt;)<span class="question-mark">?
+		<span class="kw">impl</span>$(&lt;$(<span class="macro-nonterminal">$generics_decl</span>)<span class="kw-2">*</span>&gt;)<span class="question-mark">? </span>::std::fmt::Display <span class="kw">for </span><span class="macro-nonterminal">$chainer</span>$(&lt;$(<span class="macro-nonterminal">$generics</span>)<span class="kw-2">*</span>&gt;)<span class="question-mark">?
 		</span><span class="kw">where
 			</span>$(<span class="macro-nonterminal">$nonchain</span>)+: ::std::fmt::Display
 		{
