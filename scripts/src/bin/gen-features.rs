@@ -474,9 +474,10 @@ fn main() {
 					.find(|f| f.name == *feature)
 					.unwrap_or_else(|| panic!("feature \"{name}\" wants to depend on feature\"{feature}\", which does not exist"));
 
-				if matches!(feature_type, FeatureType::Stable) && matches!(feature.feature_type, FeatureType::Unstable) {
-					panic!("stable feature cannot depend on unstable feature ({name} depending on {})", feature.name);
-				}
+				// TODO: implement the thing where implicitly enabled features don't allow external access to the modules
+				// if matches!(feature_type, FeatureType::Stable) && matches!(feature.feature_type, FeatureType::Unstable) {
+				// 	panic!("stable feature cannot depend on unstable feature ({name} depending on {})", feature.name);
+				// }
 
 				maybe_put_comma!();
 
