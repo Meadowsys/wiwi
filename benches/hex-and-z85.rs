@@ -48,33 +48,33 @@ fn benchmark(c: &mut Criterion) {
 			let _: Vec<u8> = wiwi::hex::decode_hex(encoded_hex_wiwi).unwrap();
 		}))
 
-		// .bench_function("(50MB) base32 encode", |b| b.iter(|| {}))
-		// .bench_function("(50MB) base32 decode", |b| b.iter(|| {}))
-		.bench_function("(50MB) base32 encode (wiwi)", |b| b.iter(|| {
-			let _: String = wiwi::base32::encode_base32(bytes);
-		}))
-		// .bench_function("(50MB) base32 decode (wiwi)", |b| b.iter(|| {}))
+		// // .bench_function("(50MB) base32 encode", |b| b.iter(|| {}))
+		// // .bench_function("(50MB) base32 decode", |b| b.iter(|| {}))
+		// .bench_function("(50MB) base32 encode (wiwi)", |b| b.iter(|| {
+		// 	let _: String = wiwi::base32::encode_base32(bytes);
+		// }))
+		// // .bench_function("(50MB) base32 decode (wiwi)", |b| b.iter(|| {}))
 
-		// .bench_function("(50MB) base32hex encode", |b| b.iter(|| {}))
-		// .bench_function("(50MB) base32hex decode", |b| b.iter(|| {}))
-		.bench_function("(50MB) base32hex encode (wiwi)", |b| b.iter(|| {
-			let _: String = wiwi::base32::encode_base32hex(bytes);
-		}))
-		// .bench_function("(50MB) base32hex decode (wiwi)", |b| b.iter(|| {}))
+		// // .bench_function("(50MB) base32hex encode", |b| b.iter(|| {}))
+		// // .bench_function("(50MB) base32hex decode", |b| b.iter(|| {}))
+		// .bench_function("(50MB) base32hex encode (wiwi)", |b| b.iter(|| {
+		// 	let _: String = wiwi::base32::encode_base32hex(bytes);
+		// }))
+		// // .bench_function("(50MB) base32hex decode (wiwi)", |b| b.iter(|| {}))
 
-		// .bench_function("(50MB) base64 encode", |b| b.iter(|| {}))
-		// .bench_function("(50MB) base64 decode", |b| b.iter(|| {}))
-		.bench_function("(50MB) base64 encode (wiwi)", |b| b.iter(|| {
-			let _: String = wiwi::base64::encode_base64(bytes);
-		}))
-		// .bench_function("(50MB) base64 decode (wiwi)", |b| b.iter(|| {}))
+		// // .bench_function("(50MB) base64 encode", |b| b.iter(|| {}))
+		// // .bench_function("(50MB) base64 decode", |b| b.iter(|| {}))
+		// .bench_function("(50MB) base64 encode (wiwi)", |b| b.iter(|| {
+		// 	let _: String = wiwi::base64::encode_base64(bytes);
+		// }))
+		// // .bench_function("(50MB) base64 decode (wiwi)", |b| b.iter(|| {}))
 
-		// .bench_function("(50MB) base64url encode", |b| b.iter(|| {}))
-		// .bench_function("(50MB) base64url decode", |b| b.iter(|| {}))
-		.bench_function("(50MB) base64url encode (wiwi)", |b| b.iter(|| {
-			let _: String = wiwi::base64::encode_base64url(bytes);
-		}))
-		// .bench_function("(50MB) base64url decode (wiwi)", |b| b.iter(|| {}))
+		// // .bench_function("(50MB) base64url encode", |b| b.iter(|| {}))
+		// // .bench_function("(50MB) base64url decode", |b| b.iter(|| {}))
+		// .bench_function("(50MB) base64url encode (wiwi)", |b| b.iter(|| {
+		// 	let _: String = wiwi::base64::encode_base64url(bytes);
+		// }))
+		// // .bench_function("(50MB) base64url decode (wiwi)", |b| b.iter(|| {}))
 	;
 }
 
