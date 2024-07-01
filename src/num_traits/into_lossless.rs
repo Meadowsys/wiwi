@@ -16,6 +16,8 @@ macro_rules! decl_into_lossless {
 		/// while guaranteeing absolutely no losses for all possible values. This
 		/// is not the same as an `as` cast!
 		pub trait $trait_name: Base {
+			/// Losslessly converts `self` into
+			#[doc = concat!("`", stringify!($into), "`")]
 			fn $fn_name(self) -> $into;
 		}
 

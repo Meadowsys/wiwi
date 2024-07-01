@@ -16,12 +16,19 @@ macro_rules! decl_from_lossless {
 		/// to the number type while guaranteeing absolutely no losses for all
 		/// possible values. This is not the same as an `as` cast!
 		pub trait $trait_name: Base {
+			/// Losslessly converts the provided
+			#[doc = concat!("`", stringify!($from), "`")]
+			/// into Self
 			fn $fn_name(val: $from) -> Self;
 		}
 
 		$(
 			$(#[$meta])*
 			impl $trait_name for $to {
+				/// Losslessly converts the provided
+				#[doc = concat!("`", stringify!($from), "`")]
+				/// into
+				#[doc = concat!("`", stringify!($to), "`")]
 				#[inline(always)]
 				fn $fn_name(val: $from) -> $to { val as _ }
 			}

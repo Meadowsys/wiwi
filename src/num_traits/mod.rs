@@ -30,6 +30,8 @@ decl_mod! {
 
 	from_lossless
 	into_lossless
+	from_lossy
+	into_lossy
 
 	widening
 	narrowing
