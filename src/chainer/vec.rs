@@ -1152,18 +1152,22 @@ impl VecChain<u8> {
 }
 
 impl<T> VecChain<T> {
+	#[inline]
 	pub fn nc_ptr(&self) -> *const T {
 		self.as_nonchain().as_ptr()
 	}
 
+	#[inline]
 	pub fn nc_ptr_mut(&mut self) -> *mut T {
 		self.as_nonchain_mut().as_mut_ptr()
 	}
 
+	#[inline]
 	pub fn nc_slice(&self) -> &[T] {
 		self.as_nonchain()
 	}
 
+	#[inline]
 	pub fn nc_slice_mut(&mut self) -> &mut [T] {
 		self.as_nonchain_mut()
 	}
@@ -1192,12 +1196,14 @@ impl<T, const N: usize> VecChain<[T; N]> {
 }
 
 impl<T> AsMut<[T]> for VecChain<T> {
+	#[inline]
 	fn as_mut(&mut self) -> &mut [T] {
 		self.as_nonchain_mut()
 	}
 }
 
 impl<T> AsRef<[T]> for VecChain<T> {
+	#[inline]
 	fn as_ref(&self) -> &[T] {
 		self.as_nonchain()
 	}
