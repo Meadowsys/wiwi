@@ -3,7 +3,7 @@ use std::mem::MaybeUninit;
 
 // TODO: generic params can't be used in const exprs because I dunno why
 // so we just return 2 arrays, in le order (so it can be transmuted to [I; BYTES * 2])
-pub fn widening_mul<const BYTES: usize, I>(
+pub fn mul_widening<const BYTES: usize, I>(
 	int1: [I; BYTES],
 	int2: [I; BYTES]
 ) -> [[I; BYTES]; 2]
@@ -79,7 +79,7 @@ mod tests {
 			let int1 = orig_int1.to_le_bytes();
 			let int2 = orig_int2.to_le_bytes();
 
-			let res = widening_mul(int1, int2);
+			let res = mul_widening(int1, int2);
 			let res = u64::from_le_bytes(unsafe { transmute(res) });
 
 			assert_eq!(expected, res);

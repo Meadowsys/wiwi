@@ -1,67 +1,7 @@
 use crate::num_traits::AddCarrying;
 use std::mem::MaybeUninit;
 
-// /// Performs standard addition, with overflow checking depending on overflow
-// /// checks compiler option
-// ///
-// /// NOTE: `cfg(overflow_checks)` is for some reason still unstable, so for now,
-// /// without the `nightly` feature, this will panic on overflow depending on
-// /// `cfg(debug_assertions)` (which is usually enabled in debug and disabled in release)
-// pub fn add<I: Int<BYTES_PER_INT>, const BYTES_PER_INT: usize, const BYTES: usize>(
-// 	int1: [I; BYTES],
-// 	int2: [I; BYTES]
-// ) -> [I; BYTES] {
-// 	let (res, overflow) = overflowing_add(int1, int2);
-//
-// 	#[cfg_attr(not(feature = "nightly"), cfg(debug_assertions))]
-// 	#[cfg_attr(feature = "nightly", cfg(overflow_checks))]
-// 	assert!(!overflow, "attempt to add with overflow");
-//
-// 	res
-// }
-
-// pub fn checked_add<I: Int<BYTES_PER_INT>, const BYTES_PER_INT: usize, const BYTES: usize>(
-// 	int1: [I; BYTES],
-// 	int2: [I; BYTES]
-// ) -> Option<[I; BYTES]> {
-// 	let (res, overflow) = overflowing_add(int1, int2);
-// 	if overflow { None } else { Some(res) }
-// }
-
-// pub fn strict_add<I: Int<BYTES_PER_INT>, const BYTES_PER_INT: usize, const BYTES: usize>(
-// 	int1: [I; BYTES],
-// 	int2: [I; BYTES]
-// ) -> [I; BYTES] {
-// 	let (res, overflow) = overflowing_add(int1, int2);
-// 	assert!(!overflow, "attempt to add with overflow");
-// 	res
-// }
-
-// pub unsafe fn unchecked_add<I: Int<BYTES_PER_INT>, const BYTES_PER_INT: usize, const BYTES: usize>(
-// 	int1: [I; BYTES],
-// 	int2: [I; BYTES]
-// ) -> [I; BYTES] {
-// 	let (res, overflow) = overflowing_add(int1, int2);
-// 	res
-// }
-
-// pub fn saturating_add<I: Int<BYTES_PER_INT>, const BYTES_PER_INT: usize, const BYTES: usize>(
-// 	int1: [I; BYTES],
-// 	int2: [I; BYTES]
-// ) -> [I; BYTES] {
-// 	let (res, overflow) = overflowing_add(int1, int2);
-// 	if overflow { [I::MAX; BYTES] } else { res }
-// }
-
-// pub fn wrapping_add<I: Int<BYTES_PER_INT>, const BYTES_PER_INT: usize, const BYTES: usize>(
-// 	int1: [I; BYTES],
-// 	int2: [I; BYTES]
-// ) -> [I; BYTES] {
-// 	let (res, overflow) = overflowing_add(int1, int2);
-// 	res
-// }
-
-pub fn overflowing_add<const BYTES: usize, I: AddCarrying + Copy>(
+pub fn add_overflowing<const BYTES: usize, I: AddCarrying + Copy>(
 	int1: [I; BYTES],
 	int2: [I; BYTES]
 ) -> ([I; BYTES], bool) {
@@ -90,6 +30,7 @@ pub fn overflowing_add<const BYTES: usize, I: AddCarrying + Copy>(
 
 #[cfg(test)]
 mod tests {
+	use crate::num_traits::AddOverflowing;
 	use super::*;
 	use rand::{ RngCore, Rng, thread_rng };
 	use std::mem::transmute;
@@ -99,12 +40,12 @@ mod tests {
 		for _ in 0..1000 {
 			let orig_int1 = thread_rng().next_u32();
 			let orig_int2 = thread_rng().next_u32();
-			let expected = orig_int1.overflowing_add(orig_int2);
+			let expected = orig_int1.add_overflowing(orig_int2);
 
 			let int1 = orig_int1.to_le_bytes();
 			let int2 = orig_int2.to_le_bytes();
 
-			let (res, overflow) = overflowing_add(int1, int2);
+			let (res, overflow) = add_overflowing(int1, int2);
 			let res = u32::from_le_bytes(res);
 
 			assert_eq!(expected, (res, overflow));

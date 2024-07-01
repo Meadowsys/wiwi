@@ -1,7 +1,7 @@
 use crate::num_traits::SubBorrowing;
 use std::mem::MaybeUninit;
 
-fn overflowing_sub<const BYTES: usize, I: SubBorrowing + Copy>(
+fn sub_overflowing<const BYTES: usize, I: SubBorrowing + Copy>(
 	int1: [I; BYTES],
 	int2: [I; BYTES]
 ) -> ([I; BYTES], bool) {
@@ -30,6 +30,7 @@ fn overflowing_sub<const BYTES: usize, I: SubBorrowing + Copy>(
 
 #[cfg(test)]
 mod tests {
+	use crate::num_traits::SubOverflowing;
 	use super::*;
 	use rand::{ RngCore, Rng, thread_rng };
 	use std::mem::transmute;
@@ -39,12 +40,12 @@ mod tests {
 		for _ in 0..1000 {
 			let orig_int1 = thread_rng().next_u32();
 			let orig_int2 = thread_rng().next_u32();
-			let expected = orig_int1.overflowing_sub(orig_int2);
+			let expected = orig_int1.sub_overflowing(orig_int2);
 
 			let int1 = orig_int1.to_le_bytes();
 			let int2 = orig_int2.to_le_bytes();
 
-			let (res, overflow) = overflowing_sub(int1, int2);
+			let (res, overflow) = sub_overflowing(int1, int2);
 			let res = u32::from_le_bytes(res);
 
 			assert_eq!(expected, (res, overflow));
