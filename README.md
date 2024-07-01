@@ -23,6 +23,7 @@ There exist features `all` to enable all stable features, `all-unstable` to enab
 - **`augment-panic-hook`** - allows you to augment the current panic hook in a convenient way, running some code on panic, but still calling the existing hook afterwards
 - **`clock-timer`** - An interval tracking clock, yielding ticks at specified intervals and doing so for a specified duration
 - **`debounce`** - Delay calling a function until a certain time period has passed since the last time it was called
+- **`export-all-submodules`** - convenience macro for declaring many private modules, then reexporting everything within them using a glob use statement
 - **`h`** - h
 - **`hex`** - Fast (faster than `hex` crate[^1]) implementation of hex encoding, supporting upper hex and lower hex
 - **`lazy-wrap`** - Wrapper around an initialisation function to lazily initialise a value on first access (can be used in statics)

@@ -46,6 +46,7 @@
 #![cfg_attr(all(feature = "clock-timer"), doc = "- `clock-timer`")]
 #![cfg_attr(all(feature = "debounce"), doc = "- `debounce`")]
 #![cfg_attr(all(feature = "defer-unstable"), doc = "- `defer` (unstable)")]
+#![cfg_attr(all(feature = "export-all-submodules"), doc = "- `export-all-submodules`")]
 #![cfg_attr(all(feature = "h"), doc = "- `h`")]
 #![cfg_attr(all(feature = "hex"), doc = "- `hex`")]
 #![cfg_attr(all(feature = "id-unstable"), doc = "- `id` (unstable)")]
@@ -77,6 +78,7 @@
 	not(feature = "clock-timer"),
 	not(feature = "debounce"),
 	not(feature = "defer-unstable"),
+	not(feature = "export-all-submodules"),
 	not(feature = "h"),
 	not(feature = "hex"),
 	not(feature = "id-unstable"),
@@ -167,6 +169,10 @@ pub mod debounce;
 #[cfg(feature = "defer-unstable")]
 #[cfg_attr(docsrs, doc(cfg(feature = "defer-unstable")))]
 pub mod defer;
+
+#[cfg(feature = "export-all-submodules")]
+#[cfg_attr(docsrs, doc(cfg(feature = "export-all-submodules")))]
+pub mod export_all_submodules;
 
 #[cfg(feature = "h")]
 #[cfg_attr(docsrs, doc(cfg(feature = "h")))]

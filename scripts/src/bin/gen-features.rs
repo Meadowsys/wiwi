@@ -70,6 +70,9 @@ fn main() {
 		"defer"
 		"utilities for deferring running code"
 
+		"export-all-submodules"
+		"convenience macro for declaring many private modules, then reexporting everything within them using a glob use statement"
+
 		"h"
 		"h"
 

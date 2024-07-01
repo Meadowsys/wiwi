@@ -12,6 +12,7 @@
 	not(feature = "clock-timer"),
 	not(feature = "debounce"),
 	not(feature = "defer-unstable"),
+	not(feature = "export-all-submodules"),
 	not(feature = "h"),
 	not(feature = "hex"),
 	not(feature = "id-unstable"),
