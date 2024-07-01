@@ -114,7 +114,7 @@ decl_into_lossless! {
 	trait_name: IntoI128Lossless
 	fn_name: into_i128
 	into: i128
-	u8 u16 u32 u64
+	u8 u16 u32 u64 usize
 	i8 i16 i32 i64 i128 isize
 }
 
