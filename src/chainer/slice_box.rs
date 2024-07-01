@@ -51,18 +51,22 @@ impl<T> SliceBoxChain<MaybeUninit<T>> {
 }
 
 impl<T> SliceBoxChain<T> {
+	#[inline]
 	pub fn nc_ptr(&self) -> *const T {
 		self.as_nonchain().as_ptr()
 	}
 
+	#[inline]
 	pub fn nc_ptr_mut(&mut self) -> *mut T {
 		self.as_nonchain_mut().as_mut_ptr()
 	}
 
+	#[inline]
 	pub fn nc_slice(&self) -> &[T] {
 		self.as_nonchain()
 	}
 
+	#[inline]
 	pub fn nc_slice_mut(&mut self) -> &mut [T] {
 		self.as_nonchain_mut()
 	}
