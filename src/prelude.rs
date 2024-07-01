@@ -29,6 +29,7 @@
 	not(feature = "string-pool-unstable"),
 	not(feature = "sudoku-unstable"),
 	not(feature = "to-maybeuninit"),
+	not(feature = "unicode-unstable"),
 	not(feature = "with-cloned"),
 	not(feature = "z85")
 ), doc = "(... of which there are none lol)")]

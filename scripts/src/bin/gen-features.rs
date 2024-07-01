@@ -148,6 +148,10 @@ fn main() {
 		"to-maybeuninit"
 		"Extension trait allowing converting from references to `MaybeUninit` references"
 
+		#[unstable]
+		"unicode"
+		"implementation of the [Unicode](https://home.unicode.org) standard, including UTF-8, UTF-16, and UTF-32 strings"
+
 		"with-cloned"
 		"easily execute code using clones of variables in a temporary scope (see the documentation on `with_cloned!`, I'm not sure how to best summarise ><)"
 
