@@ -70,3 +70,21 @@ impl MulWidening for u128 {
 		(lhs, rhs)
 	}
 }
+
+#[cfg(test)]
+mod tests {
+	use super::*;
+
+	#[test]
+	fn u128_widening_mul() {
+		// effectively just testing that we split/reassemble everything properly
+		// (like, in the right order etc), since widening_mul from int mod is
+		// tested already
+		let i1 = 0xffff_ffff_ffff_ffff_ffff_ffff_ffff_ffffu128;
+		let i2 = 0x1_0000_0000;
+		let expected_res = (0xffff_ffff_ffff_ffff_ffff_ffff_0000_0000u128, 0xffff_ffff);
+
+		let res = i1.mul_widening(i2);
+		assert_eq!(res, expected_res);
+	}
+}
