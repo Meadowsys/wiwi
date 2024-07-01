@@ -83,14 +83,6 @@
 <a href="#83" id="83">83</a>
 <a href="#84" id="84">84</a>
 <a href="#85" id="85">85</a>
-<a href="#86" id="86">86</a>
-<a href="#87" id="87">87</a>
-<a href="#88" id="88">88</a>
-<a href="#89" id="89">89</a>
-<a href="#90" id="90">90</a>
-<a href="#91" id="91">91</a>
-<a href="#92" id="92">92</a>
-<a href="#93" id="93">93</a>
 </pre></div><pre class="rust"><code><span class="attr">#![deny(unconditional_recursion)]
 
 </span><span class="doccomment">//! Number operations exposed as traits, enabling code to be written genericly
@@ -99,22 +91,14 @@
 //! Think the [`Add`](std::ops::Add) trait, except for things like
 //! [overflowing addition](AddOverflowing) as well
 
-</span><span class="kw">use </span>std::cmp::{ Eq, Ord, PartialEq, PartialOrd };
+</span><span class="kw">use </span><span class="kw">crate</span>::export_all_submodules::export_all_submodules;
+<span class="kw">use </span>std::cmp::{ Eq, Ord, PartialEq, PartialOrd };
 <span class="kw">use </span>std::fmt::{ Debug, Display };
 <span class="kw">use </span>std::hash::Hash;
 <span class="kw">use </span>std::iter::{ Sum, Product };
 <span class="kw">use </span>std::ops;
 
-<span class="macro">macro_rules!</span> decl_mod {
-	{ $(<span class="macro-nonterminal">$mod_name</span>:ident)* } =&gt; {
-		$(
-			<span class="kw">mod </span><span class="macro-nonterminal">$mod_name</span>;
-			<span class="kw">pub use </span><span class="macro-nonterminal">$mod_name</span>::<span class="kw-2">*</span>;
-		)*
-	}
-}
-
-<span class="macro">decl_mod!</span> {
+<span class="macro">export_all_submodules!</span> {
 	base
 	<span class="comment">// this doesn't need to be a "base"
 	// float_base
