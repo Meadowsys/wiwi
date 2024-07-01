@@ -133,6 +133,7 @@ minesweeper-unstable = [
 ]
 nominal = []
 num-traits-unstable = [
+	"export-all-submodules",
 	"int-unstable"
 ]
 path-unstable = []

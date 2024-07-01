@@ -6,22 +6,14 @@
 //! Think the [`Add`](std::ops::Add) trait, except for things like
 //! [overflowing addition](AddOverflowing) as well
 
+use crate::export_all_submodules::export_all_submodules;
 use std::cmp::{ Eq, Ord, PartialEq, PartialOrd };
 use std::fmt::{ Debug, Display };
 use std::hash::Hash;
 use std::iter::{ Sum, Product };
 use std::ops;
 
-macro_rules! decl_mod {
-	{ $($mod_name:ident)* } => {
-		$(
-			mod $mod_name;
-			pub use $mod_name::*;
-		)*
-	}
-}
-
-decl_mod! {
+export_all_submodules! {
 	base
 	// this doesn't need to be a "base"
 	// float_base

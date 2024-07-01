@@ -126,7 +126,7 @@ fn main() {
 		#[unstable]
 		"num-traits"
 		"traits for number types and number functionality"
-		features: ["int"]
+		features: ["export-all-submodules", "int"]
 
 		#[unstable]
 		"path"
