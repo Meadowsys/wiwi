@@ -1,4 +1,5 @@
 use crate::_internal::encoding_utils::{ ChunkedSlice, UnsafeBufWriteGuard };
+use crate::num_traits::*;
 use std::ptr;
 
 const CHAR_0: u8 = b'A';
@@ -18,11 +19,11 @@ const BINARY_FRAME_LEN: usize = 3;
 const STRING_FRAME_LEN: usize = 4;
 
 pub fn encode_base64(bytes: &[u8]) -> String {
-	_encode(bytes, &LAST_2_CHARS as *const u8)
+	_encode(bytes, LAST_2_CHARS.as_ptr())
 }
 
 pub fn encode_base64url(bytes: &[u8]) -> String {
-	_encode(bytes, &LAST_2_CHARS_URLSAFE as *const u8)
+	_encode(bytes, LAST_2_CHARS_URLSAFE.as_ptr())
 }
 
 fn _encode(bytes: &[u8], last_2_bytes: *const u8) -> String {
@@ -54,7 +55,7 @@ fn _encode(bytes: &[u8], last_2_bytes: *const u8) -> String {
 			frames_iter.with_remainder_unchecked(|frame| {
 				encode_frame(frame, last_2_bytes, &mut dest);
 				let ptr = dest.as_mut_ptr().sub(padding_amount);
-				ptr::copy_nonoverlapping(b"==" as *const u8, ptr, padding_amount);
+				ptr::copy_nonoverlapping(b"==".as_ptr(), ptr, padding_amount);
 			});
 		}
 	}
@@ -69,7 +70,7 @@ unsafe fn encode_frame(
 	last_2_bytes: *const u8,
 	dest: &mut UnsafeBufWriteGuard
 ) {
-	let frame = frame as *const u8;
+	let frame = frame.as_ptr();
 
 	// keep first 6 bytes
 	let byte1 = *frame >> 2;
@@ -92,7 +93,7 @@ unsafe fn encode_frame(
 			26..=51 => { (byte - 26) + CHAR_26 }
 			52..=61 => { (byte - 52) + CHAR_52 }
 			// 62, 63
-			_ => unsafe { *last_2_bytes.add(byte as usize - 62) }
+			_ => unsafe { *last_2_bytes.add(byte.into_usize() - 62) }
 		}
 	}
 
@@ -103,7 +104,7 @@ unsafe fn encode_frame(
 		transform_byte(last_2_bytes, byte4),
 	];
 
-	dest.write_bytes_const::<4>(&bytes as *const u8)
+	dest.write_bytes_const::<4>(bytes.as_ptr())
 }
 
 #[cfg(test)]

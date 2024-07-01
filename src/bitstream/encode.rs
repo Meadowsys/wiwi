@@ -1,3 +1,4 @@
+use crate::num_traits::*;
 use std::hint::unreachable_unchecked;
 
 pub struct Encoder {
@@ -84,35 +85,35 @@ impl Encoder {
 	/// Writes the specified amount of bits from the provided u8, checking that
 	/// the amount of bits to write is 8 or less
 	pub fn write_bits_u8_checked(&mut self, num_bits: usize, bits: u8) -> Option<()> {
-		(num_bits <= u8::BITS as usize)
+		(num_bits <= u8::BITS.into_usize())
 			.then(|| unsafe { self.write_bits_u8_unchecked(num_bits, bits) })
 	}
 
 	/// Writes the specified amount of bits from the provided u16, checking that
 	/// the amount of bits to write is 16 or less
 	pub fn write_bits_u16_checked(&mut self, num_bits: usize, bits: u16) -> Option<()> {
-		(num_bits <= u16::BITS as usize)
+		(num_bits <= u16::BITS.into_usize())
 			.then(|| unsafe { self.write_bits_u16_unchecked(num_bits, bits) })
 	}
 
 	/// Writes the specified amount of bits from the provided u32, checking that
 	/// the amount of bits to write is 32 or less
 	pub fn write_bits_u32_checked(&mut self, num_bits: usize, bits: u32) -> Option<()> {
-		(num_bits <= u32::BITS as usize)
+		(num_bits <= u32::BITS.into_usize())
 			.then(|| unsafe { self.write_bits_u32_unchecked(num_bits, bits) })
 	}
 
 	/// Writes the specified amount of bits from the provided u64, checking that
 	/// the amount of bits to write is 64 or less
 	pub fn write_bits_u64_checked(&mut self, num_bits: usize, bits: u64) -> Option<()> {
-		(num_bits <= u64::BITS as usize)
+		(num_bits <= u64::BITS.into_usize())
 			.then(|| unsafe { self.write_bits_u64_unchecked(num_bits, bits) })
 	}
 
 	/// Writes the specified amount of bits from the provided u128, checking that
 	/// the amount of bits to write is 128 or less
 	pub fn write_bits_u128_checked(&mut self, num_bits: usize, bits: u128) -> Option<()> {
-		(num_bits <= u128::BITS as usize)
+		(num_bits <= u128::BITS.into_usize())
 			.then(|| unsafe { self.write_bits_u128_unchecked(num_bits, bits) })
 	}
 
@@ -132,8 +133,8 @@ impl Encoder {
 	///
 	/// [`write_bits_u128_unchecked`]: Self::write_bits_u128_unchecked
 	pub unsafe fn write_bits_u8_unchecked(&mut self, num_bits: usize, bits: u8) {
-		if num_bits > u8::BITS as usize { unreachable_unchecked() }
-		self.write_bits_u128_unchecked(num_bits, bits as _);
+		if num_bits > u8::BITS.into_usize() { unreachable_unchecked() }
+		self.write_bits_u128_unchecked(num_bits, bits.into_u128());
 	}
 
 	/// Writes the specified amount of bits from the provided u16
@@ -152,8 +153,8 @@ impl Encoder {
 	///
 	/// [`write_bits_u128_unchecked`]: Self::write_bits_u128_unchecked
 	pub unsafe fn write_bits_u16_unchecked(&mut self, num_bits: usize, bits: u16) {
-		if num_bits > u16::BITS as usize { unreachable_unchecked() }
-		self.write_bits_u128_unchecked(num_bits, bits as _);
+		if num_bits > u16::BITS.into_usize() { unreachable_unchecked() }
+		self.write_bits_u128_unchecked(num_bits, bits.into_u128());
 	}
 
 	/// Writes the specified amount of bits from the provided u32
@@ -172,8 +173,8 @@ impl Encoder {
 	///
 	/// [`write_bits_u128_unchecked`]: Self::write_bits_u128_unchecked
 	pub unsafe fn write_bits_u32_unchecked(&mut self, num_bits: usize, bits: u32) {
-		if num_bits > u32::BITS as usize { unreachable_unchecked() }
-		self.write_bits_u128_unchecked(num_bits, bits as _);
+		if num_bits > u32::BITS.into_usize() { unreachable_unchecked() }
+		self.write_bits_u128_unchecked(num_bits, bits.into_u128());
 	}
 
 	/// Writes the specified amount of bits from the provided u64
@@ -192,8 +193,8 @@ impl Encoder {
 	///
 	/// [`write_bits_u128_unchecked`]: Self::write_bits_u128_unchecked
 	pub unsafe fn write_bits_u64_unchecked(&mut self, num_bits: usize, bits: u64) {
-		if num_bits > u64::BITS as usize { unreachable_unchecked() }
-		self.write_bits_u128_unchecked(num_bits, bits as _);
+		if num_bits > u64::BITS.into_usize() { unreachable_unchecked() }
+		self.write_bits_u128_unchecked(num_bits, bits.into_u128());
 	}
 
 	/// Writes the specified amount of bits from the provided u128
@@ -212,22 +213,22 @@ impl Encoder {
 	///
 	/// TODO
 	pub unsafe fn write_bits_u128_unchecked(&mut self, mut num_bits: usize, mut bits: u128) {
-		if num_bits > u128::BITS as usize { unreachable_unchecked() }
+		if num_bits > u128::BITS.into_usize() { unreachable_unchecked() }
 		if self.num_partial_bits >= 8 { unreachable_unchecked() }
 
 		// fill existing partial byte, if there's already stuff there
 		if self.num_partial_bits > 0 {
 			// shift our bits up to fill above existing bits, and merge
-			self.partial_bits |= (bits << self.num_partial_bits) as u8;
+			self.partial_bits |= (bits << self.num_partial_bits).into_u8_lossy();
 
 			// check if we filled it
-			let num_partial_bits = self.num_partial_bits + num_bits as u8;
+			let num_partial_bits = self.num_partial_bits + num_bits.into_u8_lossy();
 			if num_partial_bits >= 8 {
 				// we haven't overwritten `self.num_partial_bits` before this
 				let prev_empty = 8 - self.num_partial_bits;
 
 				// remove what got stored in that byte
-				num_bits -= prev_empty as usize;
+				num_bits -= prev_empty.into_usize();
 				bits >>= prev_empty;
 
 				self.output.push(self.partial_bits);
@@ -280,11 +281,11 @@ impl Encoder {
 
 			// shift down to get the upper remainder
 			// mul 8 is amount we've covered in full bytes (might be zero but that's fine)
-			self.partial_bits = (bits >> (full_bytes << 3)) as u8;
+			self.partial_bits = (bits >> (full_bytes << 3)).into_u8_lossy();
 			self.partial_bits <<= clearing_shift;
 			self.partial_bits >>= clearing_shift;
 
-			self.num_partial_bits = partial_bits as u8;
+			self.num_partial_bits = partial_bits.into_u8_lossy();
 		}
 	}
 
@@ -310,8 +311,8 @@ impl Encoder {
 	///
 	/// TODO
 	pub unsafe fn write_bits_usize_unchecked(&mut self, num_bits: usize, bits: usize) {
-		if num_bits > usize::BITS as usize { unreachable_unchecked() }
-		self.write_bits_u128_unchecked(num_bits, bits as _);
+		if num_bits > usize::BITS.into_usize() { unreachable_unchecked() }
+		self.write_bits_u128_unchecked(num_bits, bits.into_u128());
 	}
 }
 
@@ -382,7 +383,7 @@ mod tests {
 			]);
 
 			// write max amount of bits (top half 0s, bottom half 1s)
-			encoder.write_bits_u128_unchecked(128, u64::MAX as _);
+			encoder.write_bits_u128_unchecked(128, u64::MAX.into_u128());
 			assert_eq!(encoder.num_partial_bits, 6);
 			assert_eq!(encoder.partial_bits, 0b000000);
 			assert_eq!(&*encoder.output, &[

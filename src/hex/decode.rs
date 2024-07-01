@@ -1,4 +1,5 @@
 use crate::_internal::encoding_utils::UnsafeBufWriteGuard;
+use crate::num_traits::*;
 use super::DecodeError;
 
 // table is 256 long
@@ -28,12 +29,12 @@ pub(super) unsafe fn generic(
 	dest: &mut UnsafeBufWriteGuard,
 	rounds: usize
 ) -> Result<(), DecodeError> {
-	let table_ptr = TABLE_DECODER as *const [Option<u8>] as *const Option<u8>;
+	let table_ptr = TABLE_DECODER.as_ptr();
 
 	for _ in 0..rounds {
 		unsafe {
-			let byte1 = (*bytes_ptr) as usize;
-			let byte2 = (*bytes_ptr.add(1)) as usize;
+			let byte1 = (*bytes_ptr).into_usize();
+			let byte2 = (*bytes_ptr.add(1)).into_usize();
 
 			// SAFETY: a byte can only be between `0..256`, which fits
 			// within the lookup table

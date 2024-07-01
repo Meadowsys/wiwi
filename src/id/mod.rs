@@ -1,3 +1,4 @@
+use crate::num_traits::*;
 use rand::{ Rng, rngs::ThreadRng, thread_rng };
 use std::time::{ SystemTime, UNIX_EPOCH };
 use std::num::NonZeroU64;
@@ -61,7 +62,8 @@ impl IDGenerator {
 		let now = SystemTime::now()
 			.duration_since(UNIX_EPOCH)
 			.expect("we are before 01 jan 1970 lol?")
-			.as_millis() as u64;
+			.as_millis()
+			.into_u64_lossy();
 
 		if now > self.last_generated_time {
 			self.last_generated_time = now;
@@ -70,11 +72,11 @@ impl IDGenerator {
 
 		(self.count < MAX_COUNT).then(|| {
 			let now = self.last_generated_time << TIMESTAMP_SHIFT;
-			let random = (thread_rng().gen::<u8>() & RANDOM_COMPONENT_MASK) as u64;
+			let random = (thread_rng().gen::<u8>() & RANDOM_COMPONENT_MASK).into_u64();
 
 			// guaranteed to fit within 14 bits, as checked by
 			// bool statement before this closure
-			let increment = (self.count << COUNT_SHIFT) as u64;
+			let increment = (self.count << COUNT_SHIFT).into_u64();
 			self.count += 1;
 
 			// SAFETY: generated ID is always not zero, see comment in
@@ -151,7 +153,7 @@ impl GeneratedID {
 
 		while val > 0 {
 			// SAFETY: table only contains ASCII characters
-			string_vec.push(Self::ALPHANUMERIC_ALPHABET[(val % 62) as usize]);
+			string_vec.push(Self::ALPHANUMERIC_ALPHABET[(val % 62).into_usize()]);
 			val /= 62;
 		}
 
@@ -180,24 +182,24 @@ impl GeneratedID {
 			};
 
 			result *= 62;
-			result += byte as u128;
+			result += byte.into_u128();
 		}
 
-		if result > u64::MAX as u128 { return None }
-		let result = NonZeroU64::new(result as u64)?;
+		if result > u64::MAX.into_u128() { return None }
+		let result = NonZeroU64::new(result.into_u64_lossy())?;
 
 		Some(Self { unsigned: result })
 	}
 }
 
 #[inline]
-const fn unsigned_to_signed(unsigned: u64) -> i64 {
-	(unsigned ^ TOP_BIT) as i64
+fn unsigned_to_signed(unsigned: u64) -> i64 {
+	(unsigned ^ TOP_BIT).into_i64_lossy()
 }
 
 #[inline]
-const fn signed_to_unsigned(signed: i64) -> u64 {
-	(signed as u64) ^ TOP_BIT
+fn signed_to_unsigned(signed: i64) -> u64 {
+	(signed.into_u64_lossy()) ^ TOP_BIT
 }
 
 #[cfg(test)]

@@ -47,11 +47,11 @@ impl<T> Iter for VecIntoIter<T> {
 impl<T> Drop for VecIntoIter<T> {
 	fn drop(&mut self) {
 		let ptr = if size_of::<T>() == 0 || self.capacity == 0 {
-			self.ptr as *mut T
+			self.ptr.cast_mut()
 		} else {
 			unsafe {
 				let consumed = self.len - self.remaining;
-				let original_ptr = self.ptr.sub(consumed) as *mut T;
+				let original_ptr = self.ptr.sub(consumed).cast_mut();
 
 				// copy remaining elements to the front of ptr
 				ptr::copy(self.ptr, original_ptr, self.remaining);

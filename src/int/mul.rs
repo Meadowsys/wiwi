@@ -1,4 +1,4 @@
-use crate::num_traits::{ AddCarrying, AddOverflowing, MulWidening };
+use crate::num_traits::*;
 use std::mem::MaybeUninit;
 
 // TODO: generic params can't be used in const exprs because I dunno why
@@ -25,7 +25,7 @@ where
 		let int2_ptr = int2.as_ptr();
 
 		let mut result = [[I::ZERO; BYTES]; 2];
-		let result_ptr = result.as_mut_ptr() as *mut I;
+		let result_ptr = result.as_mut_ptr().cast::<I>();
 
 		for i_outer in 0..BYTES {
 			let i1 = *int1_ptr.add(i_outer);
@@ -74,7 +74,7 @@ mod tests {
 		for _ in 0..1000 {
 			let orig_int1 = thread_rng().next_u32();
 			let orig_int2 = thread_rng().next_u32();
-			let expected = orig_int1 as u64 * orig_int2 as u64;
+			let expected = orig_int1.into_u64() * orig_int2.into_u64();
 
 			let int1 = orig_int1.to_le_bytes();
 			let int2 = orig_int2.to_le_bytes();

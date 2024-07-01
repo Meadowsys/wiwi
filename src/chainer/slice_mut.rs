@@ -38,7 +38,7 @@ impl<'h, T> SliceMutChain<'h, T> {
 			let full = len / N;
 			let partial = len % N;
 
-			let full_ptr = ptr as *const [T; N];
+			let full_ptr = ptr.cast::<[T; N]>();
 			let partial_ptr = ptr.add(len - partial);
 
 			let full_chunk = slice::from_raw_parts(full_ptr, full);
@@ -59,7 +59,7 @@ impl<'h, T> SliceMutChain<'h, T> {
 			let full = len / N;
 			let partial = len % N;
 
-			let full_ptr = ptr as *mut [T; N];
+			let full_ptr = ptr.cast::<[T; N]>();
 			let partial_ptr = ptr.add(len - partial);
 
 			let full_chunk = slice::from_raw_parts_mut(full_ptr, full);
@@ -74,7 +74,7 @@ impl<'h, T> SliceMutChain<'h, T> {
 			// TODO: chainer?
 			CB: FnOnce(&[[T; N]])
 		} => {
-			let ptr = nc.as_ptr() as *const [T; N];
+			let ptr = nc.as_ptr().cast::<[T; N]>();
 			let chunks = nc.len() / N;
 
 			let slice = slice::from_raw_parts(ptr, chunks);
@@ -87,7 +87,7 @@ impl<'h, T> SliceMutChain<'h, T> {
 			// TODO: chainer?
 			CB: FnOnce(&mut [[T; N]])
 		} => {
-			let ptr = nc.as_mut_ptr() as *mut [T; N];
+			let ptr = nc.as_mut_ptr().cast::<[T; N]>();
 			let chunks = nc.len() / N;
 
 			let slice = slice::from_raw_parts_mut(ptr, chunks);
@@ -106,7 +106,7 @@ impl<'h, T> SliceMutChain<'h, T> {
 			let partial = len % N;
 			let full = len / N;
 
-			let full_ptr = ptr.add(partial) as *const [T; N];
+			let full_ptr = ptr.add(partial).cast::<[T; N]>();
 
 			let partial_chunk = slice::from_raw_parts(ptr, partial);
 			let full_chunk = slice::from_raw_parts(full_ptr, full);
@@ -126,7 +126,7 @@ impl<'h, T> SliceMutChain<'h, T> {
 			let partial = len % N;
 			let full = len / N;
 
-			let full_ptr = ptr.add(partial) as *mut [T; N];
+			let full_ptr = ptr.add(partial).cast::<[T; N]>();
 
 			let partial_chunk = slice::from_raw_parts_mut(ptr, partial);
 			let full_chunk = slice::from_raw_parts_mut(full_ptr, full);

@@ -1,5 +1,6 @@
 use crate::chainer::{ ChainHalf, NonChainHalf, SliceBoxChain, VecChain };
 use crate::iter::{ IntoStdIterator, IntoWiwiIter, Iter };
+use crate::num_traits::*;
 use crate::z85::{ encode_z85, decode_z85 };
 use rand::{ Rng, seq::SliceRandom, thread_rng };
 use rand::distributions::uniform::SampleRange;
@@ -287,8 +288,8 @@ impl Board {
 		let bytes = VecChain::with_capacity(17 + whole + remainder)
 			// version
 			.push(0)
-			.extend_from_slice(&(self.w.get() as u64).to_le_bytes())
-			.extend_from_slice(&(self.h.get() as u64).to_le_bytes());
+			.extend_from_slice(&(self.w.get().into_u64()).to_le_bytes())
+			.extend_from_slice(&(self.h.get().into_u64()).to_le_bytes());
 
 		let bytes = self.board.chunks(4)
 			.fold(bytes, |bytes, next| {

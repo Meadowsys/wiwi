@@ -179,7 +179,7 @@ impl<T> VecChain<T> {
 			let full = len / N;
 			let partial = len % N;
 
-			let full_ptr = ptr as *const [T; N];
+			let full_ptr = ptr.cast::<[T; N]>();
 			let partial_ptr = ptr.add(len - partial);
 
 			let full_chunk = slice::from_raw_parts(full_ptr, full);
@@ -199,7 +199,7 @@ impl<T> VecChain<T> {
 			let full = len / N;
 			let partial = len % N;
 
-			let full_ptr = ptr as *mut [T; N];
+			let full_ptr = ptr.cast::<[T; N]>();
 			let partial_ptr = ptr.add(len - partial);
 
 			let full_chunk = slice::from_raw_parts_mut(full_ptr, full);
@@ -213,7 +213,7 @@ impl<T> VecChain<T> {
 		unsafe as_chunks_unchecked[const N: usize, CB](nc, cb: CB) where {
 			CB: FnOnce(SliceRefChain<[T; N]>)
 		} => {
-			let ptr = nc.as_ptr() as *const [T; N];
+			let ptr = nc.as_ptr().cast::<[T; N]>();
 			let chunks = nc.len() / N;
 
 			let slice = slice::from_raw_parts(ptr, chunks);
@@ -225,7 +225,7 @@ impl<T> VecChain<T> {
 		unsafe as_chunks_unchecked_mut[const N: usize, CB](nc, cb: CB) where {
 			CB: FnOnce(SliceMutChain<[T; N]>)
 		} => {
-			let ptr = nc.as_mut_ptr() as *mut [T; N];
+			let ptr = nc.as_mut_ptr().cast::<[T; N]>();
 			let chunks = nc.len() / N;
 
 			let slice = slice::from_raw_parts_mut(ptr, chunks);
@@ -243,7 +243,7 @@ impl<T> VecChain<T> {
 			let partial = len % N;
 			let full = len / N;
 
-			let full_ptr = ptr.add(partial) as *const [T; N];
+			let full_ptr = ptr.add(partial).cast::<[T; N]>();
 
 			let partial_chunk = slice::from_raw_parts(ptr, partial);
 			let full_chunk = slice::from_raw_parts(full_ptr, full);
@@ -262,7 +262,7 @@ impl<T> VecChain<T> {
 			let partial = len % N;
 			let full = len / N;
 
-			let full_ptr = ptr.add(partial) as *mut [T; N];
+			let full_ptr = ptr.add(partial).cast::<[T; N]>();
 
 			let partial_chunk = slice::from_raw_parts_mut(ptr, partial);
 			let full_chunk = slice::from_raw_parts_mut(full_ptr, full);
@@ -840,7 +840,7 @@ impl<T> VecChain<T> {
 			let len = nc.len();
 			let cap = nc.capacity();
 
-			let spare_ptr = ptr.add(len) as *mut MaybeUninit<T>;
+			let spare_ptr = ptr.add(len).cast::<MaybeUninit<T>>();
 			let spare_len = cap - len;
 
 			let init = slice::from_raw_parts_mut(ptr, len);
@@ -1188,7 +1188,7 @@ impl<T, const N: usize> VecChain<[T; N]> {
 			)
 		};
 
-		let ptr = self.as_nonchain_mut().as_mut_ptr() as *mut T;
+		let ptr = self.as_nonchain_mut().as_mut_ptr().cast::<T>();
 		mem::forget(self);
 
 		unsafe { Vec::from_raw_parts(ptr, len, cap) }.into()

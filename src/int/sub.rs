@@ -10,7 +10,7 @@ fn overflowing_sub<const BYTES: usize, I: SubBorrowing + Copy>(
 		let int2_ptr = int2.as_ptr();
 
 		let mut result = MaybeUninit::<[I; BYTES]>::uninit();
-		let result_ptr = result.as_mut_ptr() as *mut I;
+		let result_ptr = result.as_mut_ptr().cast::<I>();
 
 		let mut borrow = false;
 

@@ -38,16 +38,18 @@ impl<'h, T, const N: usize> SliceRefChain<'h, [T; N]> {
 			self.as_nonchain().len() * N
 		};
 
-		let ptr = *self.as_nonchain() as *const [[T; N]] as *const T;
+		let ptr = self.nc_ptr().cast::<T>();
 		unsafe { slice::from_raw_parts(ptr, len).into() }
 	}
 }
 
 impl<'h, T> SliceRefChain<'h, T> {
+	#[inline]
 	pub fn nc_ptr(&self) -> *const T {
 		self.as_nonchain().as_ptr()
 	}
 
+	#[inline]
 	pub fn nc_slice(&'h self) -> &[T] {
 		self.as_nonchain()
 	}

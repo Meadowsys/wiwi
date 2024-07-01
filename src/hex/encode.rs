@@ -20,7 +20,7 @@ pub(super) unsafe fn generic<const UPPER: bool>(
 			if char2 > 9 { char_a } else { char_0 } + char2
 		];
 
-		let chars = &chars as *const [u8] as *const u8;
+		let chars = chars.as_ptr();
 		dest.write_bytes_const::<2>(chars);
 	}
 }

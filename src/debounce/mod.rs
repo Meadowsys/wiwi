@@ -1,6 +1,7 @@
 //! A debounced function; or a function that won't actually get called until
 //! there haven't been calls to it for a certain amount of time.
 
+use crate::num_traits::*;
 use chrono::{ Local, NaiveDateTime, TimeDelta };
 use std::{ mem::swap, sync::Arc };
 use tokio::runtime::Handle;
@@ -96,7 +97,7 @@ fn _debounce(
 	immediate: bool,
 	rt_handle: &Handle
 ) -> impl Fn() + Clone + Send + Sync + 'static {
-	let debounce_time = TimeDelta::try_milliseconds(wait_in_ms as _).unwrap();
+	let debounce_time = TimeDelta::try_milliseconds(wait_in_ms.into_i64_lossy()).unwrap();
 	let (sender, receiver) = unbounded_channel();
 	let (fn_caller_sender, fn_caller_receiver) = unbounded_channel();
 	let last_call_time = Arc::new(Mutex::new(None));

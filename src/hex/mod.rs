@@ -29,7 +29,7 @@ fn _encode<const UPPER: bool>(bytes: &[u8]) -> String {
 	let bytes_len = bytes.len();
 	let capacity = bytes_len * 2;
 
-	let mut bytes_ptr = bytes as *const [u8] as *const u8;
+	let mut bytes_ptr = bytes.as_ptr();
 	let mut dest = UnsafeBufWriteGuard::with_capacity(capacity);
 	let mut rounds = bytes_len;
 
@@ -71,7 +71,7 @@ pub fn decode_hex(bytes: &[u8]) -> Result<Vec<u8>, DecodeError> {
 	let mut dest = UnsafeBufWriteGuard::with_capacity(capacity);
 	// num rounds is same as capacity, since each round outputs one byte.
 
-	let bytes_ptr = bytes as *const [u8] as *const u8;
+	let bytes_ptr = bytes.as_ptr();
 
 	unsafe { decode::generic(bytes_ptr, &mut dest, capacity)? }
 

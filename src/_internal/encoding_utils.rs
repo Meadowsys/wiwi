@@ -147,13 +147,13 @@ impl<'h, const N: usize> ChunkedSlice<'h, N> {
 	pub unsafe fn next_frame_unchecked(&mut self) -> &'h [u8; N] {
 		debug_assert!(self.bytes.len() >= N, "enough bytes left to form another whole frame");
 
-		let self_ptr = self.bytes as *const [u8] as *const u8;
+		let self_ptr = self.bytes.as_ptr();
 		let self_len = self.bytes.len();
 
 		// SAFETY: this is the fixed size slice that is returned. Caller asserts
 		// that self contains at least N bytes (and so the ptr created from self
 		// will be safe to read from).
-		let new_slice = &*(self_ptr as *const [u8; N]);
+		let new_slice = &*(self_ptr.cast::<[u8; N]>());
 
 		// SAFETY: see function doc comment. Caller asserts self has at least N bytes.
 		// `self_len - N` and `self_ptr.add(N)` is safe becaue we have at least N
@@ -185,9 +185,9 @@ impl<'h, const N: usize> ChunkedSlice<'h, N> {
 		let mut slice = [0u8; N];
 
 		// ptr to self
-		let self_ptr = self.bytes as *const [u8] as *const u8;
+		let self_ptr = self.bytes.as_ptr();
 		// ptr to temp buffer
-		let slice_ptr = &mut slice as *mut [u8] as *mut u8;
+		let slice_ptr = slice.as_mut_ptr();
 
 		// SAFETY: slice in self has less than N bytes remaining as guaranteed by
 		// caller; therefore, the amount of bytes copied will be the correct

@@ -19,6 +19,7 @@
 //! Original Z85 spec: <https://rfc.zeromq.org/spec/32>
 
 use crate::_internal::encoding_utils::{ ChunkedSlice, UnsafeBufWriteGuard};
+use crate::num_traits::*;
 use std::slice;
 
 /// Length of the encoding table (ie. number of different characters)
@@ -175,7 +176,7 @@ pub fn decode_z85(mut bytes: &[u8]) -> Result<Vec<u8>, DecodeError> {
 				// bytes but at least 1 still holds). so this will not underflow
 				let one_shorter = bytes.len() - 1;
 
-				let ptr = bytes as *const [u8] as *const u8;
+				let ptr = bytes.as_ptr();
 				// this will be last byte in slice
 				let byte = *(ptr.add(one_shorter));
 
@@ -185,16 +186,16 @@ pub fn decode_z85(mut bytes: &[u8]) -> Result<Vec<u8>, DecodeError> {
 
 				// SAFETY: 0 <= n < 256 is always true for a u8, and TABLE_DECODER is len 256,
 				// so this is safe
-				let decoded = *TABLE_DECODER.get_unchecked(byte as usize);
+				let decoded = *TABLE_DECODER.get_unchecked(byte.into_usize());
 
-				match decoded {
+				match decoded.map(IntoUsizeLossless::into_usize) {
 					// having that last byte as a 0 is not something we generate,
 					// as its just a waste of a perfectly good byte, but it doesn't
 					// break this system (added a unit test for it to make sure).
-					Some(val) if (val as usize) < BINARY_FRAME_LEN => { val }
+					Some(val) if val < BINARY_FRAME_LEN => { val }
 					Some(_) | None => { return Err(DecodeError::InvalidChar) }
 				}
-			} as usize;
+			};
 
 			// if added_padding is 0, this returns
 			// the same values as the above.
@@ -215,7 +216,7 @@ pub fn decode_z85(mut bytes: &[u8]) -> Result<Vec<u8>, DecodeError> {
 			// every frame except the last. We've also preallocated enough capacity
 			// for the bytes we will write
 			let frame = frames_iter.next_frame_unchecked();
-			decode_frame(frame, |frame| dest.write_bytes_const::<BINARY_FRAME_LEN>(frame as *const u8))?;
+			decode_frame(frame, |frame| dest.write_bytes_const::<BINARY_FRAME_LEN>(frame.as_ptr()))?;
 		}
 	}
 
@@ -240,7 +241,7 @@ pub fn decode_z85(mut bytes: &[u8]) -> Result<Vec<u8>, DecodeError> {
 			// SAFETY: this writes the amount of bytes that aren't padding bytes,
 			// into the buffer. We subtracted padding bytes from the number we write
 			// already, so we write the perfect amount left and never over or under.
-			dest.write_bytes(frame as *const u8, non_padding_bytes);
+			dest.write_bytes(frame.as_ptr(), non_padding_bytes);
 		})?;
 	}
 
@@ -271,7 +272,7 @@ pub enum DecodeError {
 /// Caller must guarantee dest is valid for at least `STRING_FRAME_LEN` bytes
 /// to be written.
 unsafe fn encode_frame(frame: &[u8; BINARY_FRAME_LEN], dest: &mut UnsafeBufWriteGuard) {
-	let mut int = u32::from_be_bytes(*frame) as usize;
+	let mut int = u32::from_be_bytes(*frame).into_usize();
 
 	let byte5 = int % TABLE_ENCODER_LEN;
 	int /= TABLE_ENCODER_LEN;
@@ -303,7 +304,7 @@ unsafe fn encode_frame(frame: &[u8; BINARY_FRAME_LEN], dest: &mut UnsafeBufWrite
 
 	// SAFETY: internal function. caller guarantees past dest has at least
 	// `STRING_FRAME_LEN` bytes left.
-	dest.write_bytes_const::<STRING_FRAME_LEN>(&encoded_frame as *const u8);
+	dest.write_bytes_const::<STRING_FRAME_LEN>(encoded_frame.as_ptr());
 }
 
 /// # Safety
@@ -321,41 +322,41 @@ where
 	// so this is safe.
 	// Additionally, if this comes back as Some from TABLE_DECODER, it is guaranteed
 	// to be 0 <= n <= 84, since there are no Some(n) values outside this range.
-	let Some(byte1) = *TABLE_DECODER.get_unchecked(byte1 as usize) else {
+	let Some(byte1) = *TABLE_DECODER.get_unchecked(byte1.into_usize()) else {
 		return Err(DecodeError::InvalidChar)
 	};
-	let Some(byte2) = *TABLE_DECODER.get_unchecked(byte2 as usize) else {
+	let Some(byte2) = *TABLE_DECODER.get_unchecked(byte2.into_usize()) else {
 		return Err(DecodeError::InvalidChar)
 	};
-	let Some(byte3) = *TABLE_DECODER.get_unchecked(byte3 as usize) else {
+	let Some(byte3) = *TABLE_DECODER.get_unchecked(byte3.into_usize()) else {
 		return Err(DecodeError::InvalidChar)
 	};
-	let Some(byte4) = *TABLE_DECODER.get_unchecked(byte4 as usize) else {
+	let Some(byte4) = *TABLE_DECODER.get_unchecked(byte4.into_usize()) else {
 		return Err(DecodeError::InvalidChar)
 	};
-	let Some(byte5) = *TABLE_DECODER.get_unchecked(byte5 as usize) else {
+	let Some(byte5) = *TABLE_DECODER.get_unchecked(byte5.into_usize()) else {
 		return Err(DecodeError::InvalidChar)
 	};
 
 	// reversal process of encode. Max value is 84^5, or 4.182.119.424, which
 	// is less than u32::MAX, or 4.294.967.296, so will not overflow.
-	let mut int = byte1 as u64;
+	let mut int = byte1.into_u64();
 
-	int *= TABLE_ENCODER_LEN as u64;
-	int += byte2 as u64;
+	int *= TABLE_ENCODER_LEN.into_u64();
+	int += byte2.into_u64();
 
-	int *= TABLE_ENCODER_LEN as u64;
-	int += byte3 as u64;
+	int *= TABLE_ENCODER_LEN.into_u64();
+	int += byte3.into_u64();
 
-	int *= TABLE_ENCODER_LEN as u64;
-	int += byte4 as u64;
+	int *= TABLE_ENCODER_LEN.into_u64();
+	int += byte4.into_u64();
 
-	int *= TABLE_ENCODER_LEN as u64;
-	int += byte5 as u64;
+	int *= TABLE_ENCODER_LEN.into_u64();
+	int += byte5.into_u64();
 
 	if int >> u32::BITS != 0 { return Err(DecodeError::FrameOverflow) }
 
-	let decoded_frame = u32::to_be_bytes(int as u32);
+	let decoded_frame = u32::to_be_bytes(int.into_u32_lossy());
 	f(&decoded_frame);
 
 	Ok(())

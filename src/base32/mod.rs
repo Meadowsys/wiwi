@@ -80,7 +80,7 @@ fn _encode<
 				encode_frame::<BREAKPOINT, LOWER, UPPER_ADJUSTED>(frame, &mut dest);
 				let ptr = dest.as_mut_ptr().sub(padding_amount);
 				static PADDING: &[u8; 6] = b"======";
-				ptr::copy_nonoverlapping(PADDING as *const u8, ptr, padding_amount);
+				ptr::copy_nonoverlapping(PADDING.as_ptr(), ptr, padding_amount);
 			});
 		}
 	}
@@ -95,7 +95,7 @@ unsafe fn encode_frame<
 	const LOWER: u8,
 	const UPPER_ADJUSTED: u8
 >(frame: &[u8; BINARY_FRAME_LEN], dest: &mut UnsafeBufWriteGuard) {
-	let frame = frame as *const u8;
+	let frame = frame.as_ptr();
 
 	// keep first 5 bits from byte 0, leaving 3 bits left
 	let byte1 = *frame >> 3;
@@ -133,7 +133,7 @@ unsafe fn encode_frame<
 		if byte8 > BREAKPOINT { byte8 + UPPER_ADJUSTED } else { byte8 + LOWER }
 	];
 
-	dest.write_bytes_const::<8>(&bytes as *const u8);
+	dest.write_bytes_const::<8>(bytes.as_ptr());
 }
 
 #[cfg(test)]

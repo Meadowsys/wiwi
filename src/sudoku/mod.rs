@@ -1,5 +1,6 @@
 use crate::chainer::{ ArrayChain, ChainHalf, NonChainHalf, SliceRefChain };
 use crate::iter::*;
+use crate::num_traits::*;
 use std::mem::MaybeUninit;
 
 pub struct Board {
@@ -27,7 +28,7 @@ impl Board {
 		}, 81);
 
 		let mut board = MaybeUninit::<[CellValue; 81]>::uninit();
-		let board_ptr = board.as_mut_ptr() as *mut CellValue;
+		let board_ptr = board.as_mut_ptr().cast::<CellValue>();
 
 		for (r, arr) in game.into_iter().enumerate() {
 			for (c, cell) in arr.into_iter().enumerate() {
@@ -327,7 +328,7 @@ pub mod solution_encoding {
 	pub unsafe fn encode_byte_array_unchecked(bytes: &[u8; 81]) -> Encoded {
 		let mut out = ArrayChain::new_uninit();
 
-		let mut out_ptr = out.as_nonchain_mut().as_mut_ptr() as *mut u8;
+		let mut out_ptr = out.as_nonchain_mut().as_mut_ptr().cast::<u8>();
 		let mut bytes_ptr = bytes.as_ptr();
 
 		for _ in 0usize..16 {
@@ -336,7 +337,7 @@ pub mod solution_encoding {
 			for _ in 0..5usize {
 				// TODO: unchecked math?
 				current *= 9;
-				current += (*bytes_ptr - 1) as u16;
+				current += (*bytes_ptr - 1).into_u16();
 
 				bytes_ptr = bytes_ptr.add(1);
 			}
@@ -358,19 +359,19 @@ pub mod solution_encoding {
 	pub unsafe fn decode_board_unchecked(board: &Encoded) -> [u8; 81] {
 		let mut out = ArrayChain::new_uninit();
 
-		let mut out_ptr = out.as_nonchain_mut().as_mut_ptr() as *mut u8;
+		let mut out_ptr = out.as_nonchain_mut().as_mut_ptr().cast::<u8>();
 		let mut board_ptr = board.inner.as_ptr();
 
 		for _ in 0usize..16 {
 			let mut current = ArrayChain::new_uninit();
-			board_ptr.copy_to_nonoverlapping(current.as_nonchain_mut().as_mut_ptr() as _, 2);
+			board_ptr.copy_to_nonoverlapping(current.as_nonchain_mut().as_mut_ptr().cast::<u8>(), 2);
 			let mut current = u16::from_le_bytes(current.assume_init().into_nonchain());
 			board_ptr = board_ptr.add(2);
 
 			out_ptr = out_ptr.add(5);
 			for _ in 0..5usize {
 				out_ptr = out_ptr.sub(1);
-				out_ptr.write(((current % 9) + 1) as _);
+				out_ptr.write(((current % 9) + 1).into_u8_lossy());
 
 				current /= 9;
 			}
@@ -405,7 +406,7 @@ pub mod solution_encoding {
 			let mut accumulator = CellValue::new_empty_nongiven();
 
 			for offset in group {
-				let val = unsafe { *board_ptr.add(offset as usize) };
+				let val = unsafe { *board_ptr.add(offset.into_usize()) };
 				if accumulator.contains_value(val) { return false }
 				accumulator.mark_possible_unchecked(val);
 			}

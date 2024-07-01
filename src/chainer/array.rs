@@ -51,7 +51,7 @@ impl<T, const N: usize> ArrayChain<MaybeUninit<T>, N> {
 		// is unstable and likely won't ever be stable, MaybeUninit::array_assume_init
 		// is unstable (it uses transmute_unchecked internally))
 		let me = ManuallyDrop::new(self);
-		let ptr = me.as_nonchain() as *const [MaybeUninit<T>; N] as *const [T; N];
+		let ptr = me.as_nonchain().as_ptr().cast::<[T; N]>();
 		ptr::read(ptr).into()
 	}
 }
