@@ -49,6 +49,7 @@ fn main() {
 		#[unstable]
 		"bitstream"
 		"bit stream encoder/decoder"
+		features: ["num-traits"]
 
 		#[unstable]
 		"chainer"
@@ -65,6 +66,7 @@ fn main() {
 		"debounce"
 		"Delay calling a function until a certain time period has passed since the last time it was called"
 		dependencies: ["chrono", "tokio"]
+		features: ["num-traits"]
 
 		#[unstable]
 		"defer"
@@ -79,11 +81,13 @@ fn main() {
 		"hex"
 		"Fast (faster than `hex` crate[^1]) implementation of hex encoding, supporting upper hex and lower hex"
 		dependencies: ["thiserror"]
+		features: ["num-traits"]
 
 		#[unstable]
 		"id"
 		"ID generator, with all IDs generated from one generater guaranteed to be monotonically increasing"
 		dependencies: ["rand"]
+		features: ["num-traits"]
 
 		#[unstable]
 		"int"
@@ -114,7 +118,7 @@ fn main() {
 		"minesweeper"
 		"core logic components for minesweeper games of arbitrary size"
 		dependencies: ["rand"]
-		features: ["chainer", "iter", "z85"]
+		features: ["chainer", "iter", "num-traits", "z85"]
 
 		"nominal"
 		"zero cost wrapper to put data in a newtype, taking advantage of nominal typing for increased safety"
@@ -150,7 +154,7 @@ fn main() {
 		#[unstable]
 		"sudoku"
 		"Sudoku related... stuff"
-		features: ["chainer", "iter"]
+		features: ["chainer", "iter", "num-traits"]
 
 		#[unstable]
 		"unicode"
@@ -162,6 +166,7 @@ fn main() {
 		"z85"
 		"A fast (faster than `z85` crate[^2]) implementation of [ZeroMQ]'s [z85] format, a format to represent binary data as printable ASCII text. Think base64, but more efficient in encoded size. This implementation is not fully to spec, as it handles padding text to the correct length where the spec says the application code must handle it instead"
 		dependencies: ["thiserror"]
+		features: ["num-traits"]
 
 		#[addon]
 		"hashbrown"
@@ -330,7 +335,7 @@ fn main() {
 				generated_lib += &name.replace('-', "_");
 				generated_lib += ";\n\n";
 
-				generated_doc_cfgs_list += "#![cfg_attr(all(feature = \"";
+				generated_doc_cfgs_list += "#![cfg_attr(all(not(any(docsrs, kiwingay)), feature = \"";
 				generated_doc_cfgs_list += name;
 				if $unstable { generated_doc_cfgs_list += "-unstable" }
 				generated_doc_cfgs_list += "\"), doc = \"- `";

@@ -84,7 +84,9 @@ auth-unstable = [
 	"dep:zeroize",
 	"z85"
 ]
-bitstream-unstable = []
+bitstream-unstable = [
+	"num-traits-unstable"
+]
 chainer-unstable = []
 cli-unstable = []
 clock-timer = [
@@ -93,16 +95,19 @@ clock-timer = [
 ]
 debounce = [
 	"dep:chrono",
-	"dep:tokio"
+	"dep:tokio",
+	"num-traits-unstable"
 ]
 defer-unstable = []
 export-all-submodules = []
 h = []
 hex = [
-	"dep:thiserror"
+	"dep:thiserror",
+	"num-traits-unstable"
 ]
 id-unstable = [
-	"dep:rand"
+	"dep:rand",
+	"num-traits-unstable"
 ]
 int-unstable = [
 	"wiwiwiwiwi/int",
@@ -123,6 +128,7 @@ minesweeper-unstable = [
 	"dep:rand",
 	"chainer-unstable",
 	"iter-unstable",
+	"num-traits-unstable",
 	"z85"
 ]
 nominal = []
@@ -141,12 +147,14 @@ string-pool-unstable = [
 ]
 sudoku-unstable = [
 	"chainer-unstable",
-	"iter-unstable"
+	"iter-unstable",
+	"num-traits-unstable"
 ]
 unicode-unstable = []
 with-cloned = []
 z85 = [
-	"dep:thiserror"
+	"dep:thiserror",
+	"num-traits-unstable"
 ]
 
 # addon features
