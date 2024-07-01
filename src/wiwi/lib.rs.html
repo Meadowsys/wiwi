@@ -243,6 +243,18 @@
 <a href="#243" id="243">243</a>
 <a href="#244" id="244">244</a>
 <a href="#245" id="245">245</a>
+<a href="#246" id="246">246</a>
+<a href="#247" id="247">247</a>
+<a href="#248" id="248">248</a>
+<a href="#249" id="249">249</a>
+<a href="#250" id="250">250</a>
+<a href="#251" id="251">251</a>
+<a href="#252" id="252">252</a>
+<a href="#253" id="253">253</a>
+<a href="#254" id="254">254</a>
+<a href="#255" id="255">255</a>
+<a href="#256" id="256">256</a>
+<a href="#257" id="257">257</a>
 </pre></div><pre class="rust"><code><span class="attr">#![cfg_attr(feature = <span class="string">"nightly"</span>, feature(cfg_overflow_checks))]
 
 #![cfg_attr(feature = <span class="string">"omega-tuples-of-doom"</span>, recursion_limit = <span class="string">"256"</span>)]
@@ -291,6 +303,7 @@
 #![cfg_attr(all(feature = <span class="string">"clock-timer"</span>), doc = <span class="string">"- `clock-timer`"</span>)]
 #![cfg_attr(all(feature = <span class="string">"debounce"</span>), doc = <span class="string">"- `debounce`"</span>)]
 #![cfg_attr(all(feature = <span class="string">"defer-unstable"</span>), doc = <span class="string">"- `defer` (unstable)"</span>)]
+#![cfg_attr(all(feature = <span class="string">"export-all-submodules"</span>), doc = <span class="string">"- `export-all-submodules`"</span>)]
 #![cfg_attr(all(feature = <span class="string">"h"</span>), doc = <span class="string">"- `h`"</span>)]
 #![cfg_attr(all(feature = <span class="string">"hex"</span>), doc = <span class="string">"- `hex`"</span>)]
 #![cfg_attr(all(feature = <span class="string">"id-unstable"</span>), doc = <span class="string">"- `id` (unstable)"</span>)]
@@ -308,6 +321,7 @@
 #![cfg_attr(all(feature = <span class="string">"string-pool-unstable"</span>), doc = <span class="string">"- `string-pool` (unstable)"</span>)]
 #![cfg_attr(all(feature = <span class="string">"sudoku-unstable"</span>), doc = <span class="string">"- `sudoku` (unstable)"</span>)]
 #![cfg_attr(all(feature = <span class="string">"to-maybeuninit"</span>), doc = <span class="string">"- `to-maybeuninit`"</span>)]
+#![cfg_attr(all(feature = <span class="string">"unicode-unstable"</span>), doc = <span class="string">"- `unicode` (unstable)"</span>)]
 #![cfg_attr(all(feature = <span class="string">"with-cloned"</span>), doc = <span class="string">"- `with-cloned`"</span>)]
 #![cfg_attr(all(feature = <span class="string">"z85"</span>), doc = <span class="string">"- `z85`"</span>)]
 
@@ -321,6 +335,7 @@
 	not(feature = <span class="string">"clock-timer"</span>),
 	not(feature = <span class="string">"debounce"</span>),
 	not(feature = <span class="string">"defer-unstable"</span>),
+	not(feature = <span class="string">"export-all-submodules"</span>),
 	not(feature = <span class="string">"h"</span>),
 	not(feature = <span class="string">"hex"</span>),
 	not(feature = <span class="string">"id-unstable"</span>),
@@ -338,6 +353,7 @@
 	not(feature = <span class="string">"string-pool-unstable"</span>),
 	not(feature = <span class="string">"sudoku-unstable"</span>),
 	not(feature = <span class="string">"to-maybeuninit"</span>),
+	not(feature = <span class="string">"unicode-unstable"</span>),
 	not(feature = <span class="string">"with-cloned"</span>),
 	not(feature = <span class="string">"z85"</span>),
 	not(docsrs)
@@ -368,7 +384,7 @@
 )]
 
 #[cfg(target_pointer_width = <span class="string">"16"</span>)]
-</span><span class="macro">compile_error!</span>(<span class="string">"16-bit is not supported, but please do file an issue if for whatever reason you do need it!"</span>);
+</span><span class="macro">compile_error!</span>(<span class="string">"16-bit platforms are not supported (but please do file an issue if for whatever reason you do need it!)"</span>);
 
 <span class="kw">mod </span>_internal;
 <span class="kw">pub mod </span>prelude;
@@ -410,6 +426,10 @@
 <span class="attr">#[cfg(feature = <span class="string">"defer-unstable"</span>)]
 #[cfg_attr(docsrs, doc(cfg(feature = <span class="string">"defer-unstable"</span>)))]
 </span><span class="kw">pub mod </span>defer;
+
+<span class="attr">#[cfg(feature = <span class="string">"export-all-submodules"</span>)]
+#[cfg_attr(docsrs, doc(cfg(feature = <span class="string">"export-all-submodules"</span>)))]
+</span><span class="kw">pub mod </span>export_all_submodules;
 
 <span class="attr">#[cfg(feature = <span class="string">"h"</span>)]
 #[cfg_attr(docsrs, doc(cfg(feature = <span class="string">"h"</span>)))]
@@ -478,6 +498,10 @@
 <span class="attr">#[cfg(feature = <span class="string">"to-maybeuninit"</span>)]
 #[cfg_attr(docsrs, doc(cfg(feature = <span class="string">"to-maybeuninit"</span>)))]
 </span><span class="kw">pub mod </span>to_maybeuninit;
+
+<span class="attr">#[cfg(feature = <span class="string">"unicode-unstable"</span>)]
+#[cfg_attr(docsrs, doc(cfg(feature = <span class="string">"unicode-unstable"</span>)))]
+</span><span class="kw">pub mod </span>unicode;
 
 <span class="attr">#[cfg(feature = <span class="string">"with-cloned"</span>)]
 #[cfg_attr(docsrs, doc(cfg(feature = <span class="string">"with-cloned"</span>)))]
