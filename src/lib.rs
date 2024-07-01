@@ -63,7 +63,6 @@
 #![cfg_attr(all(feature = "serialiser-text-unstable"), doc = "- `serialiser-text` (unstable)")]
 #![cfg_attr(all(feature = "string-pool-unstable"), doc = "- `string-pool` (unstable)")]
 #![cfg_attr(all(feature = "sudoku-unstable"), doc = "- `sudoku` (unstable)")]
-#![cfg_attr(all(feature = "to-maybeuninit"), doc = "- `to-maybeuninit`")]
 #![cfg_attr(all(feature = "unicode-unstable"), doc = "- `unicode` (unstable)")]
 #![cfg_attr(all(feature = "with-cloned"), doc = "- `with-cloned`")]
 #![cfg_attr(all(feature = "z85"), doc = "- `z85`")]
@@ -95,7 +94,6 @@
 	not(feature = "serialiser-text-unstable"),
 	not(feature = "string-pool-unstable"),
 	not(feature = "sudoku-unstable"),
-	not(feature = "to-maybeuninit"),
 	not(feature = "unicode-unstable"),
 	not(feature = "with-cloned"),
 	not(feature = "z85"),
@@ -237,10 +235,6 @@ pub mod string_pool;
 #[cfg(feature = "sudoku-unstable")]
 #[cfg_attr(docsrs, doc(cfg(feature = "sudoku-unstable")))]
 pub mod sudoku;
-
-#[cfg(feature = "to-maybeuninit")]
-#[cfg_attr(docsrs, doc(cfg(feature = "to-maybeuninit")))]
-pub mod to_maybeuninit;
 
 #[cfg(feature = "unicode-unstable")]
 #[cfg_attr(docsrs, doc(cfg(feature = "unicode-unstable")))]

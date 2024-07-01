@@ -148,9 +148,6 @@ fn main() {
 		"Sudoku related... stuff"
 		features: ["chainer", "iter"]
 
-		"to-maybeuninit"
-		"Extension trait allowing converting from references to `MaybeUninit` references"
-
 		#[unstable]
 		"unicode"
 		"implementation of the [Unicode](https://home.unicode.org) standard, including UTF-8, UTF-16, and UTF-32 strings"
