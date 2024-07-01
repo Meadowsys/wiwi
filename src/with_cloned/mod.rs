@@ -17,7 +17,7 @@
 ///    let mut joined = s2; // moves `s2`
 ///    joined.push_str(&s1);
 ///    // demonstrate that it is indeed a clone
-///    drop(s1); // moves `s1`
+///    drop::<String>(s1); // moves `s1`
 ///
 ///    // you can also "return" values out of the macro
 ///    joined
@@ -87,7 +87,7 @@
 /// a value, then consume the clone, then access original). Or maybe we do know
 /// about them, but we haven't thought about it at time of writing this documentation
 /// :p. Needing to write all that boilerplate code for an otherwise very simple
-/// operation, doesn't feel very ergonomic or elegant, and quickly gets boring.
+/// operation, doesn't feel very ergonomic or elegant, and quickly gets repetitive.
 ///
 /// This macro can help with that:
 ///
