@@ -185,7 +185,7 @@ impl<T> VecChain<T> {
 			let full_chunk = slice::from_raw_parts(full_ptr, full);
 			let partial_chunk = slice::from_raw_parts(partial_ptr, partial);
 
-			cb(full_chunk.into_chainer(), partial_chunk.into_chainer());
+			cb(full_chunk.into(), partial_chunk.into());
 		}
 	}
 
@@ -205,7 +205,7 @@ impl<T> VecChain<T> {
 			let full_chunk = slice::from_raw_parts_mut(full_ptr, full);
 			let partial_chunk = slice::from_raw_parts_mut(partial_ptr, partial);
 
-			cb(full_chunk.into_chainer(), partial_chunk.into_chainer());
+			cb(full_chunk.into(), partial_chunk.into());
 		}
 	}
 
@@ -217,7 +217,7 @@ impl<T> VecChain<T> {
 			let chunks = nc.len() / N;
 
 			let slice = slice::from_raw_parts(ptr, chunks);
-			cb(slice.into_chainer());
+			cb(slice.into());
 		}
 	}
 
@@ -229,7 +229,7 @@ impl<T> VecChain<T> {
 			let chunks = nc.len() / N;
 
 			let slice = slice::from_raw_parts_mut(ptr, chunks);
-			cb(slice.into_chainer());
+			cb(slice.into());
 		}
 	}
 
@@ -248,7 +248,7 @@ impl<T> VecChain<T> {
 			let partial_chunk = slice::from_raw_parts(ptr, partial);
 			let full_chunk = slice::from_raw_parts(full_ptr, full);
 
-			cb(partial_chunk.into_chainer(), full_chunk.into_chainer());
+			cb(partial_chunk.into(), full_chunk.into());
 		}
 	}
 
@@ -267,7 +267,7 @@ impl<T> VecChain<T> {
 			let partial_chunk = slice::from_raw_parts_mut(ptr, partial);
 			let full_chunk = slice::from_raw_parts_mut(full_ptr, full);
 
-			cb(partial_chunk.into_chainer(), full_chunk.into_chainer());
+			cb(partial_chunk.into(), full_chunk.into());
 		}
 	}
 
@@ -819,7 +819,7 @@ impl<T> VecChain<T> {
 		/// ```
 		spare_capacity_mut[CB](nc, cb: CB) where {
 			CB: FnOnce(SliceMutChain<MaybeUninit<T>>)
-		} => cb(nc.spare_capacity_mut().into_chainer())
+		} => cb(nc.spare_capacity_mut().into())
 	}
 
 	chain_fn! {
@@ -846,7 +846,7 @@ impl<T> VecChain<T> {
 			let init = slice::from_raw_parts_mut(ptr, len);
 			let spare = slice::from_raw_parts_mut(spare_ptr, spare_len);
 
-			cb(init.into_chainer(), spare.into_chainer());
+			cb(init.into(), spare.into());
 		}
 	}
 

@@ -115,7 +115,6 @@ macro_rules! chainer {
 			type NonChain = $($nonchain)+;
 		}
 
-		// nonchain -> chain conversion
 		impl$(<$($generics_decl)*>)? ::std::convert::From<$($nonchain)+> for $chainer$(<$($generics)*>)? {
 			#[inline(always)]
 			fn from(nonchain: $($nonchain)+) -> Self {
@@ -123,7 +122,6 @@ macro_rules! chainer {
 			}
 		}
 
-		// chain -> nonchain conversion
 		impl$(<$($generics_decl)*>)? ::std::convert::From<$chainer$(<$($generics)*>)?> for $($nonchain)+ {
 			#[inline(always)]
 			fn from(chainer: $chainer$(<$($generics)*>)?) -> Self {
@@ -131,7 +129,6 @@ macro_rules! chainer {
 			}
 		}
 
-		// borrow nonchain mutably
 		impl$(<$($generics_decl)*>)? ::std::convert::AsMut<$($nonchain)+> for $chainer$(<$($generics)*>)? {
 			#[inline(always)]
 			fn as_mut(&mut self) -> &mut $($nonchain)+ {
@@ -139,7 +136,6 @@ macro_rules! chainer {
 			}
 		}
 
-		// borrow nonchain immutably
 		impl$(<$($generics_decl)*>)? ::std::convert::AsRef<$($nonchain)+> for $chainer$(<$($generics)*>)? {
 			#[inline(always)]
 			fn as_ref(&self) -> &$($nonchain)+ {
@@ -147,7 +143,8 @@ macro_rules! chainer {
 			}
 		}
 
-		#[allow(clippy::non_canonical_clone_impl)] // shut
+		// we follow whatever inner is doing (which _would_ include incorrect behaviour...)
+		#[allow(clippy::non_canonical_clone_impl)]
 		impl$(<$($generics_decl)*>)? ::std::clone::Clone for $chainer$(<$($generics)*>)?
 		where
 			$($nonchain)+: ::std::clone::Clone
@@ -174,7 +171,6 @@ macro_rules! chainer {
 			}
 		}
 
-		// default, using inner's default impl
 		impl$(<$($generics_decl)*>)? ::std::default::Default for $chainer$(<$($generics)*>)?
 		where
 			$($nonchain)+: ::std::default::Default
@@ -185,7 +181,6 @@ macro_rules! chainer {
 			}
 		}
 
-		// forwards display to inner, so chain wrapper does not get in the way of it at all
 		impl$(<$($generics_decl)*>)? ::std::fmt::Display for $chainer$(<$($generics)*>)?
 		where
 			$($nonchain)+: ::std::fmt::Display
