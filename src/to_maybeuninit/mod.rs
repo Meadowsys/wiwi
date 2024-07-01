@@ -9,7 +9,7 @@ pub trait ToMaybeUninit: Sized {
 	/// We can safely assume we have exclusive access to the value at this
 	/// location, since we have a mutable (exclusive) reference to it. HOWEVER,
 	/// that reference is to a location of an actual value which likely has
-	/// initialisation variations, that will be dropped in this function.
+	/// initialisation invariants, that will be dropped in this function.
 	/// The value behind this reference is effectively uninitialised, and you
 	/// _MUST_ write to the reference returned, otherwise you will cause a
 	/// use-after-free / double drop.
