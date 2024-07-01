@@ -1,7 +1,7 @@
-use super::{ MulUnchecked, Narrowing, Widening };
+use super::{ Mul, MulUnchecked, Narrowing, Widening };
 
 /// Widening multiplication
-pub trait MulWidening: MulUnchecked {
+pub trait MulWidening: Mul {
 	/// Performs widening multiplication, returning the result in two parts:
 	/// `(low, high)`
 	///
