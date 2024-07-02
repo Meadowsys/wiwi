@@ -7,9 +7,9 @@ use super::{ IntoIter, Iter, SizeHintImpl, SizeHintMarker };
 pub struct VecIntoIter<T> {
 	/// - if ZST: this is a pointer to the start (vec.as_ptr()) and never changed
 	/// - if not ZST: this ptr gets offset by 1 every iteration, so it points at the
-	/// next element. We keep track of amount of remaining elements (in addition to
-	/// capacity and (original) len) so we can offset it back to the original spot
-	/// upon drop
+	///   next element. We keep track of amount of remaining elements (in addition to
+	///   capacity and (original) len) so we can offset it back to the original spot
+	///   upon drop
 	ptr: *const T,
 	/// Vec capacity
 	capacity: usize,
