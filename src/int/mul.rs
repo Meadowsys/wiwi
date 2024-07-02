@@ -70,7 +70,7 @@ mod tests {
 	use std::mem::transmute;
 
 	#[test]
-	fn overflowing_random_u32_u64() {
+	fn widening_random_u32_u64() {
 		for _ in 0..1000 {
 			let orig_int1 = thread_rng().next_u32();
 			let orig_int2 = thread_rng().next_u32();
@@ -84,5 +84,59 @@ mod tests {
 
 			assert_eq!(expected, res);
 		}
+	}
+
+	#[test]
+	fn widening_random_few_other_types() {
+		for _ in 0..1000 {
+			let int1 = thread_rng().next_u64();
+			let int2 = thread_rng().next_u64();
+			let expected = int1.into_u128() * int2.into_u128();
+
+			let int1 = int1.to_le_bytes();
+			let int2 = int2.to_le_bytes();
+
+			let res = mul_widening(int1, int2);
+			let res = u128::from_le_bytes(unsafe { transmute(res) });
+
+			assert_eq!(expected, res);
+
+			// SAFETY: [u8; 8] to [u16; 4] is valid
+			let int1 = unsafe { transmute::<_, [u16; 4]>(int1) };
+			let int2 = unsafe { transmute::<_, [u16; 4]>(int2) };
+
+			let res = mul_widening(int1, int2);
+			let res = u128::from_le_bytes(unsafe { transmute(res) });
+
+			assert_eq!(expected, res);
+
+			// SAFETY: [u16; 4] to [u32; 2] is valid
+			let int1 = unsafe { transmute::<_, [u32; 2]>(int1) };
+			let int2 = unsafe { transmute::<_, [u32; 2]>(int2) };
+
+			let res = mul_widening(int1, int2);
+			let res = u128::from_le_bytes(unsafe { transmute(res) });
+
+			assert_eq!(expected, res);
+
+			// SAFETY: [u32; 2] to [u64; 1] is valid
+			let int1 = unsafe { transmute::<_, [u64; 1]>(int1) };
+			let int2 = unsafe { transmute::<_, [u64; 1]>(int2) };
+
+			let res = mul_widening(int1, int2);
+			let res = u128::from_le_bytes(unsafe { transmute(res) });
+
+			assert_eq!(expected, res);
+		}
+	}
+
+	#[test]
+	fn widening_zero_sized_array() {
+		// this is pretty much just a type check lol
+		// with 0 sized arrays the optimiser likely can prove the function
+		// is a no-op and completely yeet the whole thing
+		let res = mul_widening::<0, u32>([], []);
+		let res = unsafe { transmute::<_, [u32; 0]>(res) };
+		assert_eq!(res, []);
 	}
 }
