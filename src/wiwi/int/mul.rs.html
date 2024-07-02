@@ -91,7 +91,7 @@
 
 <span class="comment">// TODO: generic params can't be used in const exprs because I dunno why
 // so we just return 2 arrays, in le order (so it can be transmuted to [I; BYTES * 2])
-</span><span class="kw">pub fn </span>widening_mul&lt;<span class="kw">const </span>BYTES: usize, I&gt;(
+</span><span class="kw">pub fn </span>mul_widening&lt;<span class="kw">const </span>BYTES: usize, I&gt;(
 	int1: [I; BYTES],
 	int2: [I; BYTES]
 ) -&gt; [[I; BYTES]; <span class="number">2</span>]
@@ -167,7 +167,7 @@
 			<span class="kw">let </span>int1 = orig_int1.to_le_bytes();
 			<span class="kw">let </span>int2 = orig_int2.to_le_bytes();
 
-			<span class="kw">let </span>res = widening_mul(int1, int2);
+			<span class="kw">let </span>res = mul_widening(int1, int2);
 			<span class="kw">let </span>res = u64::from_le_bytes(<span class="kw">unsafe </span>{ transmute(res) });
 
 			<span class="macro">assert_eq!</span>(expected, res);
