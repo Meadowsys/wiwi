@@ -3,20 +3,20 @@ use std::mem::{ ManuallyDrop, MaybeUninit };
 use wiwi::z85::{ decode_z85, encode_z85 };
 
 #[repr(C)]
-pub struct Z85Input {
+struct Z85Input {
 	ptr: *const u8,
 	len: usize
 }
 
 #[repr(C)]
-pub struct Z85Result {
+struct Z85Result {
 	ptr: *const u8,
 	len: usize,
 	cap: usize
 }
 
 #[no_mangle]
-pub extern "C" fn wiwi_z85_encode(input: &Z85Input, output: &mut MaybeUninit<Z85Result>) {
+extern "C" fn wiwi_z85_encode(input: &Z85Input, output: &mut MaybeUninit<Z85Result>) {
 	let bytes = unsafe { slice::from_raw_parts(input.ptr, input.len) };
 	let vec = ManuallyDrop::new(encode_z85(bytes).into_bytes());
 
@@ -29,7 +29,8 @@ pub extern "C" fn wiwi_z85_encode(input: &Z85Input, output: &mut MaybeUninit<Z85
 	output.write(res);
 }
 
-pub extern "C" fn wiwi_z85_decode(input: &Z85Input, output: &mut MaybeUninit<Z85Result>) {
+#[no_mangle]
+extern "C" fn wiwi_z85_decode(input: &Z85Input, output: &mut MaybeUninit<Z85Result>) {
 	let bytes = unsafe { slice::from_raw_parts(input.ptr, input.len) };
 
 	let res = match decode_z85(bytes) {
@@ -55,7 +56,7 @@ pub extern "C" fn wiwi_z85_decode(input: &Z85Input, output: &mut MaybeUninit<Z85
 }
 
 #[no_mangle]
-pub extern "C" fn wiwi_drop_z85_result(res: &Z85Result) {
+extern "C" fn wiwi_drop_z85_result(res: &Z85Result) {
 	if !res.ptr.is_null() {
 		drop(unsafe { Vec::from_raw_parts(res.ptr.cast_mut(), res.len, res.len) })
 	}
