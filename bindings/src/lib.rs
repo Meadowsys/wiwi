@@ -56,7 +56,7 @@ extern "C" fn wiwi_z85_decode(input: &Z85Input, output: &mut MaybeUninit<Z85Resu
 }
 
 #[no_mangle]
-extern "C" fn wiwi_drop_z85_result(res: &Z85Result) {
+extern "C" fn wiwi_z85_drop_result(res: &Z85Result) {
 	if !res.ptr.is_null() {
 		drop(unsafe { Vec::from_raw_parts(res.ptr.cast_mut(), res.len, res.len) })
 	}

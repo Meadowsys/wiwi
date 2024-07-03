@@ -4,7 +4,7 @@ use "lib:bindings"
 
 use @wiwi_z85_encode[None](input: Z85Input tag, output: NullablePointer[Z85Result] tag)
 use @wiwi_z85_decode[None](input: Z85Input tag, output: NullablePointer[Z85Result] tag)
-use @wiwi_drop_z85_result[None](res: Z85Result tag)
+use @wiwi_z85_drop_result[None](res: Z85Result tag)
 
 primitive Wiwi
 	fun z85_encode(input': Array[U8 val] box): String ref^ =>
@@ -48,4 +48,4 @@ struct Z85Result
 	new create() => None
 
 	fun dispose() =>
-		@wiwi_drop_z85_result(this)
+		@wiwi_z85_drop_result(this)
