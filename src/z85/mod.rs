@@ -119,7 +119,7 @@ pub fn encode_z85(bytes: &[u8]) -> String {
 	unsafe { String::from_utf8_unchecked(vec) }
 }
 
-/// Decodes a slice of of a Z85 string back into the source bytes
+/// Decodes a slice of a Z85 string back into the source bytes
 pub fn decode_z85(mut bytes: &[u8]) -> Result<Vec<u8>, DecodeError> {
 	if bytes.len() < STRING_FRAME_LEN {
 		return if bytes.is_empty() {
