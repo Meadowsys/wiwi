@@ -21,7 +21,7 @@ extern "C" fn wiwi_z85_encode(input: &Z85Input, output: &mut MaybeUninit<Z85Resu
 	let vec = ManuallyDrop::new(encode_z85(bytes).into_bytes());
 
 	let res = Z85Result {
-		ptr: vec.as_ptr(),
+		ptr: if vec.capacity() > 0 { vec.as_ptr() } else { ptr::null() },
 		len: vec.len(),
 		cap: vec.capacity()
 	};
@@ -38,7 +38,7 @@ extern "C" fn wiwi_z85_decode(input: &Z85Input, output: &mut MaybeUninit<Z85Resu
 			let vec = ManuallyDrop::new(vec);
 
 			Z85Result {
-				ptr: vec.as_ptr(),
+				ptr: if vec.capacity() > 0 { vec.as_ptr() } else { ptr::null() },
 				len: vec.len(),
 				cap: vec.capacity()
 			}
