@@ -507,6 +507,20 @@
 <a href="#507" id="507">507</a>
 <a href="#508" id="508">508</a>
 <a href="#509" id="509">509</a>
+<a href="#510" id="510">510</a>
+<a href="#511" id="511">511</a>
+<a href="#512" id="512">512</a>
+<a href="#513" id="513">513</a>
+<a href="#514" id="514">514</a>
+<a href="#515" id="515">515</a>
+<a href="#516" id="516">516</a>
+<a href="#517" id="517">517</a>
+<a href="#518" id="518">518</a>
+<a href="#519" id="519">519</a>
+<a href="#520" id="520">520</a>
+<a href="#521" id="521">521</a>
+<a href="#522" id="522">522</a>
+<a href="#523" id="523">523</a>
 </pre></div><pre class="rust"><code><span class="doccomment">//! Fast and efficient implementation of Z85
 //!
 //! Includes nonstandard padding. The Z85 spec explicitly says that the application
@@ -572,29 +586,14 @@
 
 <span class="doccomment">/// Encodes a slice of bytes into a Z85 string, adding padding if necessary
 </span><span class="kw">pub fn </span>encode_z85(bytes: <span class="kw-2">&amp;</span>[u8]) -&gt; String {
-	<span class="comment">// we *don't* fast path out on zero bytes, because in like, 99% of situations,
-	// the input is not 0 length, lol. if it were, frames and remainder would be 0,
-	// capacity would end up 0 (so no allocation is made), the first loop wouldn't
-	// run, the remainder if block wouldn't run, debug_assert's pass, and String is
-	// created from empty Vec (empty string, no allocation too). so all is good
-	// functionality wise, and its still a fairly fast exit too, I think.
+	<span class="comment">// we *don't* fast path out on zero bytes, because in like, 99%
+	// of situations, the input is not 0 length, lol
 
-	// right shift 2 is same as integer divide by 4 (BINARY_FRAME_LEN)
-	</span><span class="kw">let </span>frames = bytes.len() &gt;&gt; <span class="number">2</span>;
-
-	<span class="comment">// binary AND with 0b11 (3) is the same as modulo 4 (BINARY_FRAME_LEN)
-	</span><span class="kw">let </span>remainder = bytes.len() &amp; <span class="number">0b11</span>;
-
-	<span class="comment">// preallocate exact amount of memory needed
-	</span><span class="kw">let </span>capacity = <span class="kw">if </span>remainder == <span class="number">0 </span>{
-		frames * STRING_FRAME_LEN
-	} <span class="kw">else </span>{
-		<span class="comment">// frames is number of *whole* binary frames, so the remainder is not
-		// included in this. adding 1 to allocate space for a whole frame for it.
-		</span><span class="kw">let </span>capacity = (frames + <span class="number">1</span>) * STRING_FRAME_LEN;
-		<span class="comment">// don't forget that last byte that encodes amount of padding
-		</span>capacity + <span class="number">1
-	</span>};
+	</span><span class="kw">let </span>EncodedReprInfo {
+		frames,
+		remainder,
+		needed_capacity: capacity
+	} = EncodedReprInfo::for_input_len(bytes.len());
 
 	<span class="kw">let </span><span class="kw-2">mut </span>frames_iter = ChunkedSlice::&lt;BINARY_FRAME_LEN&gt;::new(bytes);
 	<span class="kw">let </span><span class="kw-2">mut </span>dest = UnsafeBufWriteGuard::with_capacity(capacity);
@@ -774,6 +773,35 @@
 	<span class="doccomment">/// One frame of data contains characters that are too large and would overflow
 	</span><span class="attr">#[error(<span class="string">"correct characters, but incorrect combination that would cause overflow"</span>)]
 	</span>FrameOverflow
+}
+
+<span class="kw">pub struct </span>EncodedReprInfo {
+	<span class="kw">pub </span>frames: usize,
+	<span class="kw">pub </span>remainder: usize,
+	<span class="kw">pub </span>needed_capacity: usize
+}
+
+<span class="kw">impl </span>EncodedReprInfo {
+	<span class="attr">#[inline]
+	</span><span class="kw">pub fn </span>for_input_len(input_len: usize) -&gt; <span class="self">Self </span>{
+		<span class="comment">// right shift 2 is same as integer divide by 4 (BINARY_FRAME_LEN)
+		</span><span class="kw">let </span>frames = input_len &gt;&gt; <span class="number">2</span>;
+
+		<span class="comment">// binary AND with 0b11 (3) is the same as modulo 4 (BINARY_FRAME_LEN)
+		</span><span class="kw">let </span>remainder = input_len &amp; <span class="number">0b11</span>;
+
+		<span class="kw">let </span>needed_capacity = <span class="kw">if </span>remainder == <span class="number">0 </span>{
+			frames * STRING_FRAME_LEN
+		} <span class="kw">else </span>{
+			<span class="comment">// `frames` is number of *whole* binary frames, so the remainder is not
+			// included in this. adding 1 to allocate space for a whole frame for it.
+			</span><span class="kw">let </span>capacity = (frames + <span class="number">1</span>) * STRING_FRAME_LEN;
+			<span class="comment">// don't forget that last byte that encodes amount of padding
+			</span>capacity + <span class="number">1
+		</span>};
+
+		<span class="self">Self </span>{ frames, remainder, needed_capacity }
+	}
 }
 
 <span class="doccomment">/// # Safety
