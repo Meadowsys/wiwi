@@ -1,7 +1,3 @@
-#![allow(
-	clippy::missing_safety_doc
-)]
-
 use std::{ ptr, slice };
 use std::mem::{ ManuallyDrop, MaybeUninit };
 use wiwi::z85::{ decode_z85, encode_z85 };
@@ -20,30 +16,30 @@ pub struct Z85Result {
 }
 
 #[no_mangle]
-pub unsafe extern "C" fn wiwi_z85_encode(input: &Z85Input, output: &mut MaybeUninit<Z85Result>) {
-	let bytes = slice::from_raw_parts(input.ptr, input.len);
-	let res = ManuallyDrop::new(encode_z85(bytes).into_bytes());
+pub extern "C" fn wiwi_z85_encode(input: &Z85Input, output: &mut MaybeUninit<Z85Result>) {
+	let bytes = unsafe { slice::from_raw_parts(input.ptr, input.len) };
+	let vec = ManuallyDrop::new(encode_z85(bytes).into_bytes());
 
 	let res = Z85Result {
-		ptr: res.as_ptr(),
-		len: res.len(),
-		cap: res.capacity()
+		ptr: vec.as_ptr(),
+		len: vec.len(),
+		cap: vec.capacity()
 	};
 
 	output.write(res);
 }
 
-pub unsafe extern "C" fn wiwi_z85_decode(input: &Z85Input, output: &mut MaybeUninit<Z85Result>) {
-	let bytes = slice::from_raw_parts(input.ptr, input.len);
+pub extern "C" fn wiwi_z85_decode(input: &Z85Input, output: &mut MaybeUninit<Z85Result>) {
+	let bytes = unsafe { slice::from_raw_parts(input.ptr, input.len) };
 
 	let res = match decode_z85(bytes) {
 		Ok(vec) => {
-			let slice = ManuallyDrop::new(vec);
+			let vec = ManuallyDrop::new(vec);
 
 			Z85Result {
-				ptr: slice.as_ptr(),
-				len: slice.len(),
-				cap: slice.capacity()
+				ptr: vec.as_ptr(),
+				len: vec.len(),
+				cap: vec.capacity()
 			}
 		}
 		Err(_) => {
@@ -59,8 +55,7 @@ pub unsafe extern "C" fn wiwi_z85_decode(input: &Z85Input, output: &mut MaybeUni
 }
 
 #[no_mangle]
-pub unsafe extern "C" fn wiwi_drop_z85_result(res: &Z85Result) {
-	// let res = &*res;
+pub extern "C" fn wiwi_drop_z85_result(res: &Z85Result) {
 	if !res.ptr.is_null() {
 		drop(unsafe { Vec::from_raw_parts(res.ptr.cast_mut(), res.len, res.len) })
 	}
