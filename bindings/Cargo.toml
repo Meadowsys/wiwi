@@ -1,0 +1,16 @@
+[package]
+name = "bindings"
+description = "bindings to wiwi for other languages"
+version = { workspace = true }
+edition = { workspace = true }
+authors = { workspace = true }
+repository = { workspace = true }
+license = { workspace = true }
+publish = false
+
+[lib]
+crate-type = ["staticlib"]
+
+[dependencies.wiwi]
+path = ".."
+features = ["z85"]
