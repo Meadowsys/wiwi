@@ -4,7 +4,9 @@ Bindings to `wiwi` for [Pony](https://www.ponylang.io)
 
 ## status
 
-I wrote this as a kind of mess around, to see if I could use pony/rust's C FFI interfaces together. Currently, only the feature `z85` is included, and makes available only `Wiwi.z85_encode` and `Wiwi.z85_decode` functions
+I wrote this as a kind of mess around, to see if I could use pony/rust's C FFI interfaces together.
+
+Currently, the only wiwi feature included is `z85`, and makes available only `Wiwi.z85_encode` and `Wiwi.z85_decode` functions.
 
 ## how to use
 
