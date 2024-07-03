@@ -63,29 +63,14 @@ pub const STRING_FRAME_LEN: usize = 5;
 
 /// Encodes a slice of bytes into a Z85 string, adding padding if necessary
 pub fn encode_z85(bytes: &[u8]) -> String {
-	// we *don't* fast path out on zero bytes, because in like, 99% of situations,
-	// the input is not 0 length, lol. if it were, frames and remainder would be 0,
-	// capacity would end up 0 (so no allocation is made), the first loop wouldn't
-	// run, the remainder if block wouldn't run, debug_assert's pass, and String is
-	// created from empty Vec (empty string, no allocation too). so all is good
-	// functionality wise, and its still a fairly fast exit too, I think.
+	// we *don't* fast path out on zero bytes, because in like, 99%
+	// of situations, the input is not 0 length, lol
 
-	// right shift 2 is same as integer divide by 4 (BINARY_FRAME_LEN)
-	let frames = bytes.len() >> 2;
-
-	// binary AND with 0b11 (3) is the same as modulo 4 (BINARY_FRAME_LEN)
-	let remainder = bytes.len() & 0b11;
-
-	// preallocate exact amount of memory needed
-	let capacity = if remainder == 0 {
-		frames * STRING_FRAME_LEN
-	} else {
-		// frames is number of *whole* binary frames, so the remainder is not
-		// included in this. adding 1 to allocate space for a whole frame for it.
-		let capacity = (frames + 1) * STRING_FRAME_LEN;
-		// don't forget that last byte that encodes amount of padding
-		capacity + 1
-	};
+	let EncodedReprInfo {
+		frames,
+		remainder,
+		needed_capacity: capacity
+	} = EncodedReprInfo::for_input_len(bytes.len());
 
 	let mut frames_iter = ChunkedSlice::<BINARY_FRAME_LEN>::new(bytes);
 	let mut dest = UnsafeBufWriteGuard::with_capacity(capacity);
@@ -265,6 +250,35 @@ pub enum DecodeError {
 	/// One frame of data contains characters that are too large and would overflow
 	#[error("correct characters, but incorrect combination that would cause overflow")]
 	FrameOverflow
+}
+
+pub struct EncodedReprInfo {
+	pub frames: usize,
+	pub remainder: usize,
+	pub needed_capacity: usize
+}
+
+impl EncodedReprInfo {
+	#[inline]
+	pub fn for_input_len(input_len: usize) -> Self {
+		// right shift 2 is same as integer divide by 4 (BINARY_FRAME_LEN)
+		let frames = input_len >> 2;
+
+		// binary AND with 0b11 (3) is the same as modulo 4 (BINARY_FRAME_LEN)
+		let remainder = input_len & 0b11;
+
+		let needed_capacity = if remainder == 0 {
+			frames * STRING_FRAME_LEN
+		} else {
+			// `frames` is number of *whole* binary frames, so the remainder is not
+			// included in this. adding 1 to allocate space for a whole frame for it.
+			let capacity = (frames + 1) * STRING_FRAME_LEN;
+			// don't forget that last byte that encodes amount of padding
+			capacity + 1
+		};
+
+		Self { frames, remainder, needed_capacity }
+	}
 }
 
 /// # Safety
