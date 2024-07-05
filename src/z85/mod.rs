@@ -20,7 +20,7 @@
 
 use crate::_internal::encoding_utils::{ ChunkedSlice, UnsafeBufWriteGuard};
 use crate::num_traits::*;
-use std::slice;
+use std::{ slice, str };
 
 /// Length of the encoding table (ie. number of different characters)
 pub const TABLE_ENCODER_LEN: usize = 85;
@@ -115,7 +115,7 @@ pub fn encode_z85(bytes: &[u8]) -> String {
 	let vec = unsafe { dest.into_full_vec() };
 
 	// SAFETY: we only are pushing in chars in the table, which are all valid ASCII.
-	debug_assert!(String::from_utf8(vec.clone()).is_ok(), "output bytes are valid utf-8");
+	debug_assert!(str::from_utf8(&vec).is_ok(), "output bytes are valid utf-8");
 	unsafe { String::from_utf8_unchecked(vec) }
 }
 
