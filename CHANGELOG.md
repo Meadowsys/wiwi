@@ -1,6 +1,30 @@
-# changelog
+# changelog <!-- omit from toc -->
 
 Hallo!
+
+## table of contents <!-- omit from toc -->
+
+- [unreleased](#unreleased)
+- [v0.9.0](#v090)
+- [v0.8.0](#v080)
+- [v0.7.0](#v070)
+- [v0.6.1](#v061)
+- [v0.6.0](#v060)
+- [v0.5.4](#v054)
+- [v0.5.3](#v053)
+- [v0.5.2](#v052)
+- [v0.5.1](#v051)
+- [v0.5.0](#v050)
+- [v0.4.1](#v041)
+- [v0.4.0](#v040)
+- [v0.3.1](#v031)
+- [v0.3.0](#v030)
+- [v0.2.0](#v020)
+- [v0.1.2](#v012)
+- [v0.1.1](#v011)
+- [v0.1.0](#v010)
+- [v0.0.0](#v000)
+- [Yanked versions and reasons](#yanked-versions-and-reasons)
 
 ## unreleased
 
@@ -156,14 +180,16 @@ Hallo!
 
 <!-- TODO: review the commits / write more detailed potentially -->
 
-- store requested size and use that to set the len, instead of relying on capacity[^2]
+- store requested size and use that to set the len, instead of relying on capacity (see [list of yanked reasons] #2)
 - updated that overkill crate doc stuff
 - feature `sudoku`:
   - fixed missing `chainer` and `iter` feature dependency
 - feature `z85`:
   - updated docs
 
-## v0.6.0 (yanked[^2])
+## v0.6.0
+
+This release was yanked (see [list of yanked reasons] #2)
 
 <!-- TODO: review the commits / write more detailed potentially -->
 
@@ -217,7 +243,9 @@ Hallo!
 - feature `z85`:
   - updated docs
 
-## v0.5.4 (yanked[^2])
+## v0.5.4
+
+This release was yanked (see [list of yanked reasons] #2)
 
 <!-- TODO: review the commits / write more detailed potentially -->
 
@@ -225,9 +253,11 @@ Hallo!
   - they were never meant to be properly part of crate API though (they are removed in a future version)
 - feature `z85`:
   - fixed link in module doc not actually hyperlinking
-  - check for decode overflow[^1]
+  - check for decode overflow (see [list of yanked reasons] #1)
 
-## v0.5.3 (yanked[^2][^1])
+## v0.5.3
+
+This release was yanked (see [list of yanked reasons] #1, #2)
 
 <!-- TODO: review the commits / write more detailed potentially -->
 
@@ -237,7 +267,9 @@ Hallo!
 - feature `z85`:
   - tweaked some docs
 
-## v0.5.2 (yanked[^2][^1])
+## v0.5.2
+
+This release was yanked (see [list of yanked reasons] #1, #2)
 
 <!-- TODO: review the commits / write more detailed potentially -->
 
@@ -246,14 +278,18 @@ Hallo!
   - added neon implementation for `aarch64` (automatically enabled on `aarch64` targets using runtime feature detection)
   - fixed uppercase hex unintentionally outputting lowercase
 
-## v0.5.1 (yanked[^2][^1])
+## v0.5.1
+
+This release was yanked (see [list of yanked reasons] #1, #2)
 
 <!-- TODO: review the commits / write more detailed potentially -->
 
 - feature `hex`:
   - fixed missing `thiserror` dependency
 
-## v0.5.0 (yanked[^2][^1])
+## v0.5.0
+
+This release was yanked (see [list of yanked reasons] #1, #2)
 
 <!-- TODO: review the commits / write more detailed potentially -->
 
@@ -263,7 +299,9 @@ Hallo!
 - feature `z85`:
   - added footnote about its performance in readme
 
-## v0.4.1 (yanked[^2][^1])
+## v0.4.1
+
+This release was yanked (see [list of yanked reasons] #1, #2)
 
 <!-- TODO: review the commits / write more detailed potentially -->
 
@@ -272,7 +310,9 @@ Hallo!
   - improved performance
   - updated module doc
 
-## v0.4.0 (yanked[^2][^1])
+## v0.4.0
+
+This release was yanked (see [list of yanked reasons] #1, #2)
 
 <!-- TODO: review the commits / write more detailed potentially -->
 
@@ -361,5 +401,13 @@ Hallo!
 - yoink! `wiwi` on crates.io is now mine muahaha
 - initialised the package and stuffs
 
-[^1]: Depending on the compile setting for overflow checks, certain invalid input could cause either a panic or undefined behaviour (affected features: `z85`, affected versions: `>= 0.4.0, <= 0.5.3`)
-[^2]: `Vec::with_capacity` is allowed to overallocate, and in doing so will cause undefined behaviour (affected features: `hex`, `z85`, affected versions: `>= 0.4.0, <= 0.6.0`)
+## Yanked versions and reasons
+
+[list of yanked reasons]: #yanked-versions-and-reasons
+
+1. Depending on the compile setting for overflow checks, certain invalid input could cause either a panic or undefined behaviour
+   - Affected features: `z85`
+   - Affected versions: `>= 0.4.0, <= 0.5.3`
+1. `Vec::with_capacity` is allowed to overallocate, and in doing so will cause undefined behaviour
+   - Affected features: `hex`, `z85`
+   - Affected versions: `>= 0.4.0, <= 0.6.0`
