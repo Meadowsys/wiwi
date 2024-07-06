@@ -58,6 +58,38 @@
 <li>callbacks provide chainer structs as much as possible</li>
 </ul>
 </li>
+<li>feature <code>defer</code>
+<ul>
+<li>rewrote it :o</li>
+<li>added the ability to choose, at runtime, whether to run the drop code or not (using both a boolean value and a fn/closure)
+<ul>
+<li>before, the conditional was statically encoded in the type of <code>Defer</code></li>
+<li>this type of runtime choosing was possible previously by storing state in the value of the <code>Defer</code> itself, and using conditionals in the attached closure itself, but now it’s got its own seperated thing, which is cleaner and more obvious that this is possible with</li>
+<li><code>DeferRuntime</code> allows setting a boolean, and <code>DeferRuntimeFn</code> allows determining it with another closure (and another value)</li>
+<li>construct these with <code>DeferRuntime::new</code> and <code>DeferRuntimeFn::new</code></li>
+<li>access and modify these runtime when values when <code>DeferRuntime::should_run</code>, <code>DeferRuntime::set_should_run</code>, <code>DeferRuntimeFn::should_run_value where Twhen: Copy</code>, <code>DeferRuntimeFn::should_run_value_ref</code>, <code>DeferRuntimeFn::should_run_value_mut</code>, <code>DeferRuntimeFn::set_should_run_value</code>, and <code>DeferRuntimeFn::swap_should_run_value</code></li>
+</ul>
+</li>
+<li>Convert between the different static types with functions <code>Defer::into_always</code>, <code>Defer::into_on_success</code>, <code>Defer::into_on_unwind</code>, <code>Defer::into_runtime</code>, <code>Defer::into_runtime_fn</code>
+<ul>
+<li>These consume and return a new static type</li>
+<li>if you want just regular boolean setting, you’re probably looking for <code>DeferRuntime</code></li>
+</ul>
+</li>
+<li>replaced some functions with associated functions instead
+<ul>
+<li><code>defer_with</code> -&gt; <code>DeferAlways::new</code></li>
+<li><code>defer_on_success_with</code> -&gt; <code>DeferSuccess::new</code></li>
+<li><code>defer_on_unwind_with</code> -&gt; <code>DeferUnwind::new</code></li>
+</ul>
+</li>
+<li>removed <code>OnDrop::defer</code>, <code>OnDrop::defer_success</code>, and <code>OnDrop::defer_unwind</code>
+<ul>
+<li>they were just different names for <code>OnDrop::on_drop</code>, <code>OnDrop::on_success_drop</code>, and <code>OnDrop::on_unwind_drop</code>, respectively</li>
+</ul>
+</li>
+</ul>
+</li>
 <li>feature <code>int</code>
 <ul>
 <li>implemented (overflowing) add, (overflowing) sub, and (widening) mul for arrays of arbitrary length holding arbitrary integers (powered by <code>num-traits</code> feature, very nice)</li>
@@ -641,13 +673,13 @@
 </ul>
 <h3 id="yanked-versions-and-reasons"><a class="doc-anchor" href="#yanked-versions-and-reasons">§</a>Yanked versions and reasons</h3>
 <ol>
-<li>Depending on the compile setting for overflow checks, certain invalid input could cause either a panic or undefined behaviour
+<li>Depending on the compile setting for overflow checks, certain invalid input could cause integer overflow, and trigger either a panic or undefined behaviour
 <ul>
 <li>Affected features: <code>z85</code></li>
 <li>Affected versions: <code>&gt;= 0.4.0, &lt;= 0.5.3</code></li>
 </ul>
 </li>
-<li><code>Vec::with_capacity</code> is allowed to overallocate, and in doing so will cause undefined behaviour
+<li><code>Vec::with_capacity</code> is allowed to overallocate, and since <code>UnsafeBufWriteGuard</code> (internal struct) was using the <code>Vec</code>’s capacity to set the len at the end of the encoding/decoding, this could cause <code>UnsafeBufWriteGuard</code> to set the len too far out, include uninitialised memory into its “initialised” len, and cause undefined behaviour
 <ul>
 <li>Affected features: <code>hex</code>, <code>z85</code></li>
 <li>Affected versions: <code>&gt;= 0.4.0, &lt;= 0.6.0</code></li>
