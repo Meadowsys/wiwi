@@ -54,6 +54,7 @@
 #![cfg_attr(all(not(any(docsrs, kiwingay)), feature = "iter-unstable"), doc = "- `iter` (unstable)")]
 #![cfg_attr(all(not(any(docsrs, kiwingay)), feature = "lazy-wrap"), doc = "- `lazy-wrap`")]
 #![cfg_attr(all(not(any(docsrs, kiwingay)), feature = "lsl-unstable"), doc = "- `lsl` (unstable)")]
+#![cfg_attr(all(not(any(docsrs, kiwingay)), feature = "mcu-unstable"), doc = "- `mcu` (unstable)")]
 #![cfg_attr(all(not(any(docsrs, kiwingay)), feature = "memory-usage-unstable"), doc = "- `memory-usage` (unstable)")]
 #![cfg_attr(all(not(any(docsrs, kiwingay)), feature = "minesweeper-unstable"), doc = "- `minesweeper` (unstable)")]
 #![cfg_attr(all(not(any(docsrs, kiwingay)), feature = "nominal"), doc = "- `nominal`")]
@@ -86,6 +87,7 @@
 	not(feature = "iter-unstable"),
 	not(feature = "lazy-wrap"),
 	not(feature = "lsl-unstable"),
+	not(feature = "mcu-unstable"),
 	not(feature = "memory-usage-unstable"),
 	not(feature = "minesweeper-unstable"),
 	not(feature = "nominal"),
@@ -201,6 +203,10 @@ pub mod lazy_wrap;
 #[cfg(feature = "lsl-unstable")]
 #[cfg_attr(docsrs, doc(cfg(feature = "lsl-unstable")))]
 pub mod lsl;
+
+#[cfg(feature = "mcu-unstable")]
+#[cfg_attr(docsrs, doc(cfg(feature = "mcu-unstable")))]
+pub mod mcu;
 
 #[cfg(feature = "memory-usage-unstable")]
 #[cfg_attr(docsrs, doc(cfg(feature = "memory-usage-unstable")))]

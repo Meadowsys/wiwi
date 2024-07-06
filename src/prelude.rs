@@ -20,6 +20,7 @@
 	not(feature = "iter-unstable"),
 	not(feature = "lazy-wrap"),
 	not(feature = "lsl-unstable"),
+	not(feature = "mcu-unstable"),
 	not(feature = "memory-usage-unstable"),
 	not(feature = "minesweeper-unstable"),
 	not(feature = "nominal"),

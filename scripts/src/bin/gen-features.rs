@@ -110,6 +110,11 @@ fn main() {
 		features: ["id"]
 
 		#[unstable]
+		"mcu"
+		"[material colour utilities](https://github.com/material-foundation/material-color-utilities)"
+		features: ["num-traits"]
+
+		#[unstable]
 		"memory-usage"
 		"Calculate actual memory usage of Rust structs, including derive macro for custom types"
 		dependencies: ["macro"]
