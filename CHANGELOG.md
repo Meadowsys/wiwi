@@ -405,9 +405,9 @@ This release was yanked (see [list of yanked reasons] #1, #2)
 
 [list of yanked reasons]: #yanked-versions-and-reasons
 
-1. Depending on the compile setting for overflow checks, certain invalid input could cause either a panic or undefined behaviour
+1. Depending on the compile setting for overflow checks, certain invalid input could cause integer overflow, and trigger either a panic or undefined behaviour
    - Affected features: `z85`
    - Affected versions: `>= 0.4.0, <= 0.5.3`
-1. `Vec::with_capacity` is allowed to overallocate, and in doing so will cause undefined behaviour
+2. `Vec::with_capacity` is allowed to overallocate, and since `UnsafeBufWriteGuard` (internal struct) was using the `Vec`'s capacity to set the len at the end of the encoding/decoding, this could cause `UnsafeBufWriteGuard` to set the len too far out, include uninitialised memory into its "initialised" len, and cause undefined behaviour
    - Affected features: `hex`, `z85`
    - Affected versions: `>= 0.4.0, <= 0.6.0`
