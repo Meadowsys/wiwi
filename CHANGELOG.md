@@ -48,9 +48,11 @@ Hallo!
 - feature `defer`
   - rewrote it :o
   - added the ability to choose, at runtime, whether to run the drop code or not (using both a boolean value and a fn/closure)
-    - this was possible previously by storing state in the value of the `Defer` itself, and using conditionals in the attached closure itself, but now it's got its own seperated thing, which is cleaner and more obvious that this is possible with
+    - before, the conditional was statically encoded in the type of `Defer`
+    - this type of runtime choosing was possible previously by storing state in the value of the `Defer` itself, and using conditionals in the attached closure itself, but now it's got its own seperated thing, which is cleaner and more obvious that this is possible with
     - `DeferRuntime` allows setting a boolean, and `DeferRuntimeFn` allows determining it with another closure (and another value)
     - construct these with `DeferRuntime::new` and `DeferRuntimeFn::new`
+    - access and modify these runtime when values when `DeferRuntime::should_run`, `DeferRuntime::set_should_run`, `DeferRuntimeFn::should_run_value where Twhen: Copy`, `DeferRuntimeFn::should_run_value_ref`, `DeferRuntimeFn::should_run_value_mut`, `DeferRuntimeFn::set_should_run_value`, and `DeferRuntimeFn::swap_should_run_value`
   - Convert between the different static types with functions `Defer::into_always`, `Defer::into_on_success`, `Defer::into_on_unwind`, `Defer::into_runtime`, `Defer::into_runtime_fn`
     - These consume and return a new static type
     - if you want just regular boolean setting, you're probably looking for `DeferRuntime`
