@@ -129,6 +129,7 @@ macro_rules! impl_dyn_mem_usage_tuple {
 	{ @impl $($stuff:ident)+ } => {
 		#[allow(non_snake_case)]
 		impl<$($stuff: Dynamic,)+> Dynamic for ($($stuff,)+) {
+			#[inline]
 			fn calculate_memory_usage(&self) -> usize {
 				let ($($stuff,)*) = self;
 				let mut usage = 0;
@@ -136,6 +137,7 @@ macro_rules! impl_dyn_mem_usage_tuple {
 				usage
 			}
 
+			#[inline]
 			fn calculate_values_usage(&self) -> usize {
 				let ($($stuff,)*) = self;
 				let mut usage = 0;
@@ -228,21 +230,25 @@ impl_dyn_mem_usage_tuple! {
 }
 
 impl<T: Dynamic, const N: usize> Dynamic for [T; N] {
+	#[inline]
 	fn calculate_memory_usage(&self) -> usize {
 		self.iter().map(T::calculate_memory_usage).sum()
 	}
 
+	#[inline]
 	fn calculate_values_usage(&self) -> usize {
 		self.iter().map(T::calculate_values_usage).sum()
 	}
 }
 
 impl<T: Dynamic> Dynamic for [T] {
+	#[inline]
 	fn calculate_memory_usage(&self) -> usize {
 		let contents = self.iter().map(T::calculate_memory_usage).sum::<usize>();
 		size_of::<&[T]>() + contents
 	}
 
+	#[inline]
 	fn calculate_values_usage(&self) -> usize {
 		let contents = self.iter().map(T::calculate_values_usage).sum::<usize>();
 		size_of::<&[T]>() + contents
@@ -258,12 +264,14 @@ impl<T: ?Sized> Static for *mut T {
 }
 
 impl<T: Dynamic> Dynamic for Vec<T> {
+	#[inline]
 	fn calculate_memory_usage(&self) -> usize {
 		let contents = self.iter().map(T::calculate_memory_usage).sum::<usize>();
 		let uninit = (self.capacity() - self.len()) * size_of::<T>();
 		size_of::<Vec<T>>() + contents + uninit
 	}
 
+	#[inline]
 	fn calculate_values_usage(&self) -> usize {
 		let contents = self.iter().map(T::calculate_values_usage).sum::<usize>();
 		size_of::<Vec<T>>() + contents
@@ -271,10 +279,12 @@ impl<T: Dynamic> Dynamic for Vec<T> {
 }
 
 impl Dynamic for String {
+	#[inline]
 	fn calculate_memory_usage(&self) -> usize {
 		size_of::<String>() + self.capacity()
 	}
 
+	#[inline]
 	fn calculate_values_usage(&self) -> usize {
 		size_of::<String>() + self.len()
 	}

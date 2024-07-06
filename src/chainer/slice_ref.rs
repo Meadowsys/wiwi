@@ -26,6 +26,7 @@ impl<'h, T> SliceRefChain<'h, T> {
 impl<'h, T> SliceRefChain<'h, T> {}
 
 impl<'h, T, const N: usize> SliceRefChain<'h, [T; N]> {
+	#[inline]
 	pub fn flatten(self) -> SliceRefChain<'h, T> {
 		// TODO: use SizedTypeProperties / slice `flatten` when stabilised
 		let len = if mem::size_of::<T>() == 0 {

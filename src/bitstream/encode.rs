@@ -27,6 +27,7 @@ impl Encoder {
 	}
 
 	/// Returns the encoded byte vector
+	#[inline]
 	pub fn into_bytes(mut self) -> Vec<u8> {
 		if self.num_partial_bits > 0 { self.output.push(self.partial_bits) }
 		self.output
@@ -37,6 +38,7 @@ impl Encoder {
 	/// # Panics
 	///
 	/// Panics if the amount of bits to write is more than 8
+	#[inline]
 	pub fn write_bits_u8(&mut self, num_bits: usize, bits: u8) {
 		self.write_bits_u8_checked(num_bits, bits)
 			.expect("amount of bits cannot be more than 8")
@@ -47,6 +49,7 @@ impl Encoder {
 	/// # Panics
 	///
 	/// Panics if the amount of bits to write is more than 16
+	#[inline]
 	pub fn write_bits_u16(&mut self, num_bits: usize, bits: u16) {
 		self.write_bits_u16_checked(num_bits, bits)
 			.expect("amount of bits cannot be more than 16")
@@ -57,6 +60,7 @@ impl Encoder {
 	/// # Panics
 	///
 	/// Panics if the amount of bits to write is more than 32
+	#[inline]
 	pub fn write_bits_u32(&mut self, num_bits: usize, bits: u32) {
 		self.write_bits_u32_checked(num_bits, bits)
 			.expect("amount of bits cannot be more than 32")
@@ -67,6 +71,7 @@ impl Encoder {
 	/// # Panics
 	///
 	/// Panics if the amount of bits to write is more than 64
+	#[inline]
 	pub fn write_bits_u64(&mut self, num_bits: usize, bits: u64) {
 		self.write_bits_u64_checked(num_bits, bits)
 			.expect("amount of bits cannot be more than 64")
@@ -77,6 +82,7 @@ impl Encoder {
 	/// # Panics
 	///
 	/// Panics if the amount of bits to write is more than 128
+	#[inline]
 	pub fn write_bits_u128(&mut self, num_bits: usize, bits: u128) {
 		self.write_bits_u128_checked(num_bits, bits)
 			.expect("amount of bits cannot be more than 128")
@@ -84,6 +90,7 @@ impl Encoder {
 
 	/// Writes the specified amount of bits from the provided u8, checking that
 	/// the amount of bits to write is 8 or less
+	#[inline]
 	pub fn write_bits_u8_checked(&mut self, num_bits: usize, bits: u8) -> Option<()> {
 		(num_bits <= u8::BITS.into_usize())
 			.then(|| unsafe { self.write_bits_u8_unchecked(num_bits, bits) })
@@ -91,6 +98,7 @@ impl Encoder {
 
 	/// Writes the specified amount of bits from the provided u16, checking that
 	/// the amount of bits to write is 16 or less
+	#[inline]
 	pub fn write_bits_u16_checked(&mut self, num_bits: usize, bits: u16) -> Option<()> {
 		(num_bits <= u16::BITS.into_usize())
 			.then(|| unsafe { self.write_bits_u16_unchecked(num_bits, bits) })
@@ -98,6 +106,7 @@ impl Encoder {
 
 	/// Writes the specified amount of bits from the provided u32, checking that
 	/// the amount of bits to write is 32 or less
+	#[inline]
 	pub fn write_bits_u32_checked(&mut self, num_bits: usize, bits: u32) -> Option<()> {
 		(num_bits <= u32::BITS.into_usize())
 			.then(|| unsafe { self.write_bits_u32_unchecked(num_bits, bits) })
@@ -105,6 +114,7 @@ impl Encoder {
 
 	/// Writes the specified amount of bits from the provided u64, checking that
 	/// the amount of bits to write is 64 or less
+	#[inline]
 	pub fn write_bits_u64_checked(&mut self, num_bits: usize, bits: u64) -> Option<()> {
 		(num_bits <= u64::BITS.into_usize())
 			.then(|| unsafe { self.write_bits_u64_unchecked(num_bits, bits) })
@@ -112,6 +122,7 @@ impl Encoder {
 
 	/// Writes the specified amount of bits from the provided u128, checking that
 	/// the amount of bits to write is 128 or less
+	#[inline]
 	pub fn write_bits_u128_checked(&mut self, num_bits: usize, bits: u128) -> Option<()> {
 		(num_bits <= u128::BITS.into_usize())
 			.then(|| unsafe { self.write_bits_u128_unchecked(num_bits, bits) })
@@ -132,6 +143,7 @@ impl Encoder {
 	/// TODO
 	///
 	/// [`write_bits_u128_unchecked`]: Self::write_bits_u128_unchecked
+	#[inline]
 	pub unsafe fn write_bits_u8_unchecked(&mut self, num_bits: usize, bits: u8) {
 		if num_bits > u8::BITS.into_usize() { unreachable_unchecked() }
 		self.write_bits_u128_unchecked(num_bits, bits.into_u128());
@@ -152,6 +164,7 @@ impl Encoder {
 	/// TODO
 	///
 	/// [`write_bits_u128_unchecked`]: Self::write_bits_u128_unchecked
+	#[inline]
 	pub unsafe fn write_bits_u16_unchecked(&mut self, num_bits: usize, bits: u16) {
 		if num_bits > u16::BITS.into_usize() { unreachable_unchecked() }
 		self.write_bits_u128_unchecked(num_bits, bits.into_u128());
@@ -172,6 +185,7 @@ impl Encoder {
 	/// TODO
 	///
 	/// [`write_bits_u128_unchecked`]: Self::write_bits_u128_unchecked
+	#[inline]
 	pub unsafe fn write_bits_u32_unchecked(&mut self, num_bits: usize, bits: u32) {
 		if num_bits > u32::BITS.into_usize() { unreachable_unchecked() }
 		self.write_bits_u128_unchecked(num_bits, bits.into_u128());
@@ -192,6 +206,7 @@ impl Encoder {
 	/// TODO
 	///
 	/// [`write_bits_u128_unchecked`]: Self::write_bits_u128_unchecked
+	#[inline]
 	pub unsafe fn write_bits_u64_unchecked(&mut self, num_bits: usize, bits: u64) {
 		if num_bits > u64::BITS.into_usize() { unreachable_unchecked() }
 		self.write_bits_u128_unchecked(num_bits, bits.into_u128());
@@ -310,6 +325,7 @@ impl Encoder {
 	/// # Examples
 	///
 	/// TODO
+	#[inline]
 	pub unsafe fn write_bits_usize_unchecked(&mut self, num_bits: usize, bits: usize) {
 		if num_bits > usize::BITS.into_usize() { unreachable_unchecked() }
 		self.write_bits_u128_unchecked(num_bits, bits.into_u128());

@@ -28,6 +28,7 @@ pub struct Cell {
 }
 
 impl Board {
+	#[inline]
 	pub fn new(w: NonZeroUsize, h: NonZeroUsize) -> Self {
 		// SAFETY: zeroed is valid bit pattern for u8, and
 		// Cell has repr(transparent) to u8, so this is valid.
@@ -41,12 +42,14 @@ impl Board {
 		Self { w, h, board }
 	}
 
+	#[inline]
 	pub fn new_random_mines(w: NonZeroUsize, h: NonZeroUsize, mines: usize) -> Self {
 		let mut board = Self::new(w, h);
 		board.add_random_mines(mines);
 		board
 	}
 
+	#[inline]
 	pub unsafe fn new_with_first_placement_unchecked(
 		w: NonZeroUsize,
 		h: NonZeroUsize,
@@ -230,13 +233,15 @@ impl Board {
 	/// surrounding cell mine counts accordingly. It doesn't touch the board's
 	/// size (if you want a different-sized board, you should create a new
 	/// instance with the new dimensions).
+	#[inline]
 	pub fn clear(&mut self) {
 		unsafe { self.board_ptr_mut().write_bytes(0, self.board.len()) }
 	}
 
+	#[inline]
 	pub unsafe fn offset_of_unchecked(&self, r: usize, c: usize) -> usize {
 		self.debug_assert_in_bounds(r, c);
-		self.__offset(r, c)
+		self._offset(r, c)
 	}
 
 	pub fn add_random_mines(&mut self, mines: usize) {
@@ -264,10 +269,12 @@ impl Board {
 		self.board.as_mut_ptr()
 	}
 
+	#[inline]
 	pub unsafe fn get_coords_unchecked(&self, r: usize, c: usize) -> &Cell {
 		&*self.board_ptr().add(self.offset_of_unchecked(r, c))
 	}
 
+	#[inline]
 	pub unsafe fn get_coords_unchecked_mut(&mut self, r: usize, c: usize) -> &mut Cell {
 		&mut *self.board_ptr_mut().add(self.offset_of_unchecked(r, c))
 	}
@@ -390,7 +397,7 @@ impl Board {
 		debug_assert!(r < self.h.get());
 		debug_assert!(c < self.w.get());
 		debug_assert!(
-			unsafe { self.__offset(r, c) < self.board.len() },
+			unsafe { self._offset(r, c) < self.board.len() },
 			"invalid state: w = {w}, h = {h}, board len = {len} (should be w * h)",
 			w = self.w,
 			h = self.h,
@@ -399,7 +406,7 @@ impl Board {
 	}
 
 	#[inline(always)]
-	unsafe fn __offset(&self, r: usize, c: usize) -> usize {
+	unsafe fn _offset(&self, r: usize, c: usize) -> usize {
 		(r * self.w.get()) + c
 	}
 }

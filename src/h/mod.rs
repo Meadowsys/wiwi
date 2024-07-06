@@ -1,12 +1,14 @@
 //! h
 
 /// h
+#[inline]
 pub fn h() -> String {
 	"h".into()
 }
 
 /// H
 #[allow(non_snake_case)] // shut
+#[inline]
 pub fn H() -> String {
 	"H".into()
 }

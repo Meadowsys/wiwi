@@ -87,6 +87,7 @@ where
 
 	/// Fetch the value if its initialised, or return the initialisation function
 	/// if it isn't.
+	#[inline]
 	pub fn into_inner(this: Self) -> LazyWrapState<T, F> {
 		let initialised = Self::is_initialised(&this);
 		let this = ManuallyDrop::new(this);
@@ -102,6 +103,7 @@ where
 	}
 
 	/// Ensures that the value is initialised, then returns the value.
+	#[inline]
 	pub fn into_inner_initialised(this: Self) -> T {
 		Self::ensure_initialised(&this);
 		let this = ManuallyDrop::new(this);
@@ -216,12 +218,14 @@ where
 	T: Display,
 	F: FnOnce() -> T
 {
+	#[inline]
 	fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
 		Display::fmt(&**self, f)
 	}
 }
 
 impl<T, F> Drop for LazyWrap<T, F> {
+	#[inline]
 	fn drop(&mut self) {
 		use OnceState::*;
 		match self.once.state() {

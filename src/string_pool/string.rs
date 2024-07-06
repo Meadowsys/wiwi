@@ -17,26 +17,32 @@ pub struct String<P: Pool = GlobalPool> {
 
 /// constructors in default pool
 impl String {
+	#[inline]
 	pub fn new() -> Self {
 		Self::new_in(GlobalPool)
 	}
 
+	#[inline]
 	pub fn from_utf8(vec: Vec<u8>) -> Result<Self, std_string::FromUtf8Error> {
 		Self::from_utf8_in(vec, GlobalPool)
 	}
 
+	#[inline]
 	pub fn from_utf8_slice(slice: &[u8]) -> Result<Self, std_str::Utf8Error> {
 		Self::from_utf8_slice_in(slice, GlobalPool)
 	}
 
+	#[inline]
 	pub fn from_utf8_lossy(v: &[u8]) -> Self {
 		Self::from_utf8_lossy_in(v, GlobalPool)
 	}
 
+	#[inline]
 	pub fn from_utf16(v: &[u16]) -> Result<Self, std_string::FromUtf16Error> {
 		Self::from_utf16_in(v, GlobalPool)
 	}
 
+	#[inline]
 	pub fn from_utf16_lossy(v: &[u16]) -> Self {
 		Self::from_utf16_lossy_in(v, GlobalPool)
 	}
@@ -48,10 +54,12 @@ impl String {
 	// skipping (nightly): into_raw_parts
 	// skipping: from_raw_parts
 
+	#[inline]
 	pub unsafe fn from_utf8_unchecked(bytes: Vec<u8>) -> Self {
 		Self::from_utf8_unchecked_in(bytes, GlobalPool)
 	}
 
+	#[inline]
 	pub unsafe fn from_utf8_unchecked_slice(slice: &[u8]) -> Self {
 		Self::from_utf8_unchecked_slice_in(slice, GlobalPool)
 	}
@@ -59,16 +67,19 @@ impl String {
 
 /// constructors in custom pool
 impl<P: Pool> String<P> {
+	#[inline]
 	pub fn new_in(pool: P) -> Self {
 		let raw = pool.raw_empty();
 		Self { raw, pool }
 	}
 
+	#[inline]
 	pub fn from_str_in(s: &str, pool: P) -> Self {
 		let raw = unsafe { pool.raw_from_slice(s.as_bytes()) };
 		Self { raw, pool }
 	}
 
+	#[inline]
 	pub fn from_utf8_in(vec: Vec<u8>, pool: P) -> Result<Self, std_string::FromUtf8Error> {
 		// running it through std String because it gives us FromUtf8Error, for
 		// compat with std String's from_utf8 function, don't think there is
@@ -79,52 +90,61 @@ impl<P: Pool> String<P> {
 		Ok(Self { raw, pool })
 	}
 
+	#[inline]
 	pub fn from_utf8_slice_in(slice: &[u8], pool: P) -> Result<Self, std_str::Utf8Error> {
 		let s = std_str::from_utf8(slice)?;
 		let raw = unsafe { pool.raw_from_slice(s.as_bytes()) };
 		Ok(Self { raw, pool })
 	}
 
+	#[inline]
 	pub fn from_utf8_lossy_in(v: &[u8], pool: P) -> Self {
 		let s = StdString::from_utf8_lossy(v);
 		let raw = unsafe { pool.raw_from_slice(s.as_bytes()) };
 		Self { raw, pool }
 	}
 
+	#[inline]
 	pub fn from_utf16_in(v: &[u16], pool: P) -> Result<Self, std_string::FromUtf16Error> {
 		let s = StdString::from_utf16(v)?;
 		let raw = unsafe { pool.raw_from_slice(s.as_bytes()) };
 		Ok(Self { raw, pool })
 	}
 
+	#[inline]
 	pub fn from_utf16_lossy_in(v: &[u16], pool: P) -> Self {
 		let s = StdString::from_utf16_lossy(v);
 		let raw = unsafe { pool.raw_from_slice(s.as_bytes()) };
 		Self { raw, pool }
 	}
 
+	#[inline]
 	pub unsafe fn from_utf8_unchecked_in(bytes: Vec<u8>, pool: P) -> Self {
 		let raw = pool.raw_from_vec(bytes);
 		Self { raw, pool }
 	}
 
+	#[inline]
 	pub unsafe fn from_utf8_unchecked_slice_in(slice: &[u8], pool: P) -> Self {
 		let raw = pool.raw_from_slice(slice);
 		Self { raw, pool }
 	}
 
+	#[inline]
 	pub fn to_other_pool<P2: Pool>(&self, pool: P2) -> String<P2> {
 		let slice = self.pool.raw_to_slice(&self.raw);
 		let raw = unsafe { pool.raw_from_slice(slice) };
 		String { raw, pool }
 	}
 
+	#[inline]
 	pub fn into_other_pool<P2: Pool>(self, pool: P2) -> String<P2> {
 		let vec = self.pool.raw_into_vec(self.raw);
 		let raw = unsafe { pool.raw_from_vec(vec) };
 		String { raw, pool }
 	}
 
+	#[inline]
 	pub fn clone_to<P2: Pool>(&self, pool: P2) -> String<P2> {
 		self.to_other_pool(pool)
 	}
@@ -132,16 +152,19 @@ impl<P: Pool> String<P> {
 
 /// methods that work with any pool
 impl<P: Pool> String<P> {
+	#[inline]
 	pub fn into_bytes(self) -> Vec<u8> {
 		self.pool.raw_into_vec(self.raw)
 	}
 
+	#[inline]
 	pub fn as_str(&self) -> &str {
 		unsafe { std_str::from_utf8_unchecked(self.as_bytes()) }
 	}
 
 	// skipping: as_mut_str
 
+	#[inline]
 	pub fn push_str(&mut self, string: &str) {
 		let new_raw = unsafe {
 			self.pool.raw_from_slices(SlicesWrap(&[
@@ -162,14 +185,17 @@ impl<P: Pool> String<P> {
 	// skipping: shrink_to_fit
 	// skipping: shrink_to
 
+	#[inline]
 	pub fn push(&mut self, ch: char) {
 		self.push_str(ch.encode_utf8(&mut [0u8; 4]));
 	}
 
+	#[inline]
 	pub fn as_bytes(&self) -> &[u8] {
 		self.pool.raw_to_slice(&self.raw)
 	}
 
+	#[inline]
 	pub fn truncate(&mut self, new_len: usize) {
 		if new_len > self.len() { return }
 
@@ -180,6 +206,7 @@ impl<P: Pool> String<P> {
 		self.raw = new_raw;
 	}
 
+	#[inline]
 	pub fn pop(&mut self) -> Option<char> {
 		let ch = self.chars().next_back()?;
 		let new_len = self.len() - ch.len_utf8();
@@ -191,6 +218,7 @@ impl<P: Pool> String<P> {
 		Some(ch)
 	}
 
+	#[inline]
 	pub fn remove(&mut self, i: usize) -> char {
 		// let slice =
 		let ch = self[i..].chars().next()
@@ -254,10 +282,12 @@ impl<P: Pool> String<P> {
 		self.raw = new_raw;
 	}
 
+	#[inline]
 	pub fn insert(&mut self, i: usize, ch: char) {
 		self.insert_str(i, ch.encode_utf8(&mut [0u8; 4]));
 	}
 
+	#[inline]
 	pub fn insert_str(&mut self, i: usize, string: &str) {
 		assert!(self.is_char_boundary(i));
 		let slice = self.as_bytes();
@@ -275,10 +305,12 @@ impl<P: Pool> String<P> {
 
 	// skipping: as_mut_vec
 
+	#[inline]
 	pub fn split_off(&mut self, at: usize) -> Self {
 		self.split_off_in(at, self.pool.clone())
 	}
 
+	#[inline]
 	pub fn split_off_in<P2: Pool>(&mut self, at: usize, pool: P2) -> String<P2> {
 		assert!(self.is_char_boundary(at));
 
@@ -289,6 +321,7 @@ impl<P: Pool> String<P> {
 		String { raw: other_raw, pool }
 	}
 
+	#[inline]
 	pub fn clear(&mut self) {
 		self.raw = self.pool.raw_empty();
 	}
@@ -296,11 +329,13 @@ impl<P: Pool> String<P> {
 	// skipping (for now): drain
 	// skipping (for now): replace_range
 
+	#[inline]
 	pub fn into_boxed_str(self) -> Box<str> {
 		let boxed = self.pool.raw_into_boxed_slice(self.raw);
 		unsafe { std_str::from_boxed_utf8_unchecked(boxed) }
 	}
 
+	#[inline]
 	pub fn leak<'h>(self) -> &'h mut str {
 		let slice = self.pool.raw_into_vec(self.raw).leak();
 		unsafe { std_str::from_utf8_unchecked_mut(slice) }
@@ -309,6 +344,8 @@ impl<P: Pool> String<P> {
 
 impl<P: Pool> Add<&str> for String<P> {
 	type Output = Self;
+
+	#[inline]
 	fn add(mut self, rhs: &str) -> Self {
 		// delegates to AddAssign<&str> for String<P>
 		self += rhs;
@@ -318,6 +355,8 @@ impl<P: Pool> Add<&str> for String<P> {
 
 impl<P: Pool> Add<&str> for &String<P> {
 	type Output = String<P>;
+
+	#[inline]
 	fn add(self, rhs: &str) -> String<P> {
 		let raw = unsafe {
 			self.pool.raw_from_slices(SlicesWrap(&[
@@ -333,6 +372,8 @@ impl<P: Pool> Add<&str> for &String<P> {
 
 impl<P: Pool, P2: Pool> Add<String<P2>> for String<P> {
 	type Output = Self;
+
+	#[inline]
 	fn add(self, rhs: String<P2>) -> Self {
 		// delegates to Add<&str> for String<P>
 		self + &*rhs
@@ -341,6 +382,8 @@ impl<P: Pool, P2: Pool> Add<String<P2>> for String<P> {
 
 impl<P: Pool, P2: Pool> Add<String<P2>> for &String<P> {
 	type Output = String<P>;
+
+	#[inline]
 	fn add(self, rhs: String<P2>) -> String<P> {
 		// delegates to Add<&str> for &String<P>
 		self + &*rhs
@@ -349,6 +392,8 @@ impl<P: Pool, P2: Pool> Add<String<P2>> for &String<P> {
 
 impl<P: Pool, P2: Pool> Add<&String<P2>> for String<P> {
 	type Output = Self;
+
+	#[inline]
 	fn add(self, rhs: &String<P2>) -> Self {
 		// delegates to Add<&str> for String<P>
 		self + &**rhs
@@ -357,6 +402,8 @@ impl<P: Pool, P2: Pool> Add<&String<P2>> for String<P> {
 
 impl<P: Pool, P2: Pool> Add<&String<P2>> for &String<P> {
 	type Output = String<P>;
+
+	#[inline]
 	fn add(self, rhs: &String<P2>) -> String<P> {
 		// delegates to Add<&str> for &String<P>
 		self + &**rhs
@@ -365,6 +412,8 @@ impl<P: Pool, P2: Pool> Add<&String<P2>> for &String<P> {
 
 impl<P: Pool> Add<StdString> for String<P> {
 	type Output = Self;
+
+	#[inline]
 	fn add(self, rhs: StdString) -> Self {
 		// delegates to Add<&str> for String<P>
 		self + &*rhs
@@ -373,6 +422,8 @@ impl<P: Pool> Add<StdString> for String<P> {
 
 impl<P: Pool> Add<&StdString> for String<P> {
 	type Output = Self;
+
+	#[inline]
 	fn add(self, rhs: &StdString) -> Self {
 		// delegates to Add<&str> for String<P>
 		self + &**rhs
@@ -381,6 +432,8 @@ impl<P: Pool> Add<&StdString> for String<P> {
 
 impl<P: Pool> Add<StdString> for &String<P> {
 	type Output = String<P>;
+
+	#[inline]
 	fn add(self, rhs: StdString) -> String<P> {
 		// delegates to Add<&str> for &String<P>
 		self + &*rhs
@@ -389,6 +442,8 @@ impl<P: Pool> Add<StdString> for &String<P> {
 
 impl<P: Pool> Add<&StdString> for &String<P> {
 	type Output = String<P>;
+
+	#[inline]
 	fn add(self, rhs: &StdString) -> String<P> {
 		// delegates to Add<&str> for &String<P>
 		self + &**rhs
@@ -396,12 +451,14 @@ impl<P: Pool> Add<&StdString> for &String<P> {
 }
 
 impl<P: Pool> AddAssign<&str> for String<P> {
+	#[inline]
 	fn add_assign(&mut self, rhs: &str) {
 		self.push_str(rhs);
 	}
 }
 
 impl<P: Pool, P2: Pool> AddAssign<String<P2>> for String<P> {
+	#[inline]
 	fn add_assign(&mut self, rhs: String<P2>) {
 		// delegates to AddAssign<&str> for String<P>
 		*self += &*rhs
@@ -409,6 +466,7 @@ impl<P: Pool, P2: Pool> AddAssign<String<P2>> for String<P> {
 }
 
 impl<P: Pool, P2: Pool> AddAssign<&String<P2>> for String<P> {
+	#[inline]
 	fn add_assign(&mut self, rhs: &String<P2>) {
 		// delegates to AddAssign<&str> for String<P>
 		*self += &**rhs
@@ -416,36 +474,42 @@ impl<P: Pool, P2: Pool> AddAssign<&String<P2>> for String<P> {
 }
 
 impl<P: Pool> AsRef<[u8]> for String<P> {
+	#[inline]
 	fn as_ref(&self) -> &[u8] {
 		self.as_bytes()
 	}
 }
 
 impl<P: Pool> AsRef<OsStr> for String<P> {
+	#[inline]
 	fn as_ref(&self) -> &OsStr {
 		self.as_str().as_ref()
 	}
 }
 
 impl<P: Pool> AsRef<Path> for String<P> {
+	#[inline]
 	fn as_ref(&self) -> &Path {
 		self.as_str().as_ref()
 	}
 }
 
 impl<P: Pool> AsRef<str> for String<P> {
+	#[inline]
 	fn as_ref(&self) -> &str {
 		self
 	}
 }
 
 impl<P: Pool> Borrow<str> for String<P> {
+	#[inline]
 	fn borrow(&self) -> &str {
 		self
 	}
 }
 
 impl<P: Pool> Clone for String<P> {
+	#[inline]
 	fn clone(&self) -> Self {
 		let raw = self.pool.raw_clone(&self.raw);
 		let pool = self.pool.clone();
@@ -463,6 +527,7 @@ impl<P: Pool> Debug for String<P> {
 }
 
 impl<P: Pool> Default for String<P> {
+	#[inline]
 	fn default() -> Self {
 		let pool = P::default();
 		let raw = pool.raw_empty();
@@ -472,12 +537,15 @@ impl<P: Pool> Default for String<P> {
 
 impl<P: Pool> Deref for String<P> {
 	type Target = str;
+
+	#[inline]
 	fn deref(&self) -> &str {
 		self.as_str()
 	}
 }
 
 impl<P: Pool> Display for String<P> {
+	#[inline]
 	fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
 		Display::fmt(&**self, f)
 	}
@@ -492,12 +560,14 @@ impl<P: Pool> Display for String<P> {
 // impl<P: Pool> Extend<char> for String<P> {}
 
 impl From<&str> for String {
+	#[inline]
 	fn from(s: &str) -> Self {
 		Self::from_str_in(s, GlobalPool)
 	}
 }
 
 impl<P: Pool> From<(&str, P)> for String<P> {
+	#[inline]
 	fn from((s, pool): (&str, P)) -> Self {
 		Self::from_str_in(s, pool)
 	}

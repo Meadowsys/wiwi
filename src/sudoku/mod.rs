@@ -63,21 +63,25 @@ impl CellValue {
 	/// # Safety
 	///
 	/// The provided value must be within 1..=9
+	#[inline]
 	unsafe fn from_given_u8_unchecked(val: u8) -> Self {
 		Self { bitfield: (1 << (val - 1)) | 0x8000 }
 	}
 
 	/// TODO: find a better name than "nongiven" to the values that aren't part
 	/// of the initial puzzle lol
+	#[inline]
 	fn new_conservatively_marked_nongiven() -> Self {
 		// last 9 bits filled
 		Self { bitfield: 0b111111111 }
 	}
 
+	#[inline]
 	fn new_empty_nongiven() -> Self {
 		Self { bitfield: 0 }
 	}
 
+	#[inline]
 	unsafe fn is_given(&self) -> bool {
 		self.bitfield >> 15 == 1
 	}
@@ -85,6 +89,7 @@ impl CellValue {
 	/// # Safety
 	///
 	/// `self` must not be a given value, and `val` must be within 1..=9
+	#[inline]
 	unsafe fn mark_possible_unchecked(&mut self, val: u8) {
 		self.bitfield |= 1 << (val - 1)
 	}
@@ -92,6 +97,7 @@ impl CellValue {
 	/// # Safety
 	///
 	/// `self` must not be a given value, and `val` must be within 1..=9
+	#[inline]
 	unsafe fn unmark_possible_unchecked(&mut self, val: u8) {
 		self.bitfield &= !(1 << (val - 1))
 	}
@@ -99,6 +105,7 @@ impl CellValue {
 	/// # Safety
 	///
 	/// `self` must be a given value
+	#[inline]
 	unsafe fn value_of_given(&self) -> u8 {
 		debug_assert!(
 			self.is_given() && self.bitfield.count_ones() == 2,
@@ -117,10 +124,12 @@ impl CellValue {
 		}
 	}
 
+	#[inline]
 	unsafe fn contains_value(&self, val: u8) -> bool {
 		(self.bitfield >> (val - 1)) & 1 != 0
 	}
 
+	#[inline]
 	unsafe fn ungiven_possible_values_iter(&self) -> CellUngivenValuesIter {
 		CellUngivenValuesIter::new(self.bitfield)
 	}
@@ -132,6 +141,7 @@ struct CellUngivenValuesIter {
 }
 
 impl CellUngivenValuesIter {
+	#[inline]
 	fn new(bitfield: u16) -> Self {
 		Self { value: 1, acc: bitfield }
 	}
@@ -317,6 +327,7 @@ pub mod solution_encoding {
 			Self { inner: array }
 		}
 
+		#[inline]
 		pub fn as_bytes(&self) -> &[u8] {
 			&self.inner
 		}
@@ -383,12 +394,14 @@ pub mod solution_encoding {
 		out.assume_init().into_nonchain()
 	}
 
+	#[inline]
 	pub const fn encoded_all_ones() -> Encoded {
 		let mut inner = [0u8; 33];
 		inner[32] = 1;
 		Encoded { inner }
 	}
 
+	#[inline]
 	pub fn encode_byte_array_checked(board: &[u8; 81]) -> Option<Encoded> {
 		for cell in *board {
 			// shut
@@ -415,6 +428,7 @@ pub mod solution_encoding {
 		true
 	}
 
+	#[inline]
 	pub unsafe fn get_next_valid(board: &mut [u8; 81]) -> Option<Encoded> {
 		loop {
 			let valid = is_valid_sudoku_board(board);

@@ -45,6 +45,7 @@ pub trait Pool: Clone + Debug + Default {
 	/// # Safety
 	///
 	/// The provided slice must be valid UTF-8.
+	#[inline]
 	unsafe fn raw_from_slice(&self, slice: &[u8]) -> Self::Raw {
 		self.raw_from_slices(SlicesWrap(&[slice]))
 	}
@@ -57,6 +58,7 @@ pub trait Pool: Clone + Debug + Default {
 	/// # Safety
 	///
 	/// The provided vec must be valid UTF-8.
+	#[inline]
 	unsafe fn raw_from_vec(&self, vec: Vec<u8>) -> Self::Raw {
 		self.raw_from_slice(&vec)
 	}
@@ -66,6 +68,7 @@ pub trait Pool: Clone + Debug + Default {
 	///
 	/// note to implementors: A default implementation is provided;
 	/// however this can be overridden for optimisation reasons.
+	#[inline]
 	fn raw_empty(&self) -> Self::Raw {
 		unsafe { self.raw_from_slice(&[]) }
 	}
@@ -75,6 +78,7 @@ pub trait Pool: Clone + Debug + Default {
 	///
 	/// note to implementors: A default implementation is provided;
 	/// however this can be overridden for optimisation reasons.
+	#[inline]
 	fn raw_into_vec(&self, raw: Self::Raw) -> Vec<u8> {
 		self.raw_to_slice(&raw).to_vec()
 	}
@@ -84,6 +88,7 @@ pub trait Pool: Clone + Debug + Default {
 	///
 	/// note to implementors: A default implementation is provided;
 	/// however this can be overridden for optimisation reasons.
+	#[inline]
 	fn raw_into_boxed_slice(&self, raw: Self::Raw) -> Box<[u8]> {
 		self.raw_into_vec(raw).into_boxed_slice()
 	}
@@ -93,6 +98,7 @@ pub trait Pool: Clone + Debug + Default {
 	///
 	/// note to implementors: A default implementation is provided;
 	/// however this can be overridden for optimisation reasons.
+	#[inline]
 	fn raw_clone(&self, raw: &Self::Raw) -> Self::Raw {
 		let slice = self.raw_to_slice(raw);
 		unsafe { self.raw_from_slice(slice) }
@@ -111,17 +117,20 @@ pub struct SlicesWrap<'h>(pub &'h [&'h [u8]]);
 
 impl<'h> SlicesWrap<'h> {
 	/// Joins the slices in sequence, returning a vector of bytes.
+	#[inline]
 	pub fn to_vec(&self) -> Vec<u8> {
 		self.into_iter().collect()
 	}
 
 	/// Joins the slices in sequence, returning a boxed slice.
+	#[inline]
 	pub fn to_boxed_slice(&self) -> Box<[u8]> {
 		self.to_vec().into_boxed_slice()
 	}
 }
 
 impl<'h> Hash for SlicesWrap<'h> {
+	#[inline]
 	fn hash<H: Hasher>(&self, state: &mut H) {
 		self.into_iter().for_each(|b| state.write_u8(b));
 	}
@@ -131,6 +140,7 @@ impl<'h> IntoIterator for &SlicesWrap<'h> {
 	type Item = <SlicesWrapIter<'h> as Iterator>::Item;
 	type IntoIter = SlicesWrapIter<'h>;
 
+	#[inline]
 	fn into_iter(self) -> Self::IntoIter {
 		let mut vec = Vec::with_capacity(self.0.len());
 		self.0.iter().rev().for_each(|slice| vec.push(*slice));
@@ -165,6 +175,7 @@ impl<'h> Iterator for SlicesWrapIter<'h> {
 		}
 	}
 
+	#[inline]
 	fn size_hint(&self) -> (usize, Option<usize>) {
 		let len = self.0.iter().map(|s| s.len()).sum();
 		(len, Some(len))

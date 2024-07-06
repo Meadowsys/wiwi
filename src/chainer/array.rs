@@ -79,12 +79,14 @@ impl<T, const N: usize> ArrayChain<T, N> {
 }
 
 impl<T, const N: usize> AsMut<[T]> for ArrayChain<T, N> {
+	#[inline]
 	fn as_mut(&mut self) -> &mut [T] {
 		self.as_nonchain_mut()
 	}
 }
 
 impl<T, const N: usize> AsRef<[T]> for ArrayChain<T, N> {
+	#[inline]
 	fn as_ref(&self) -> &[T] {
 		self.as_nonchain()
 	}

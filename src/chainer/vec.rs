@@ -1174,6 +1174,7 @@ impl<T> VecChain<T> {
 }
 
 impl<T, const N: usize> VecChain<[T; N]> {
+	#[inline]
 	pub fn flatten(mut self) -> VecChain<T> {
 		let (len, cap) = if mem::size_of::<T>() == 0 {
 			let len = self.as_nonchain().len()

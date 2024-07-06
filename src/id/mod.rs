@@ -46,6 +46,7 @@ pub struct GeneratedID {
 }
 
 impl IDGenerator {
+	#[inline]
 	pub fn new() -> Self {
 		// if, _somehow_, the first ID is indeed generated at UNIX time 0,
 		// this initial count value of 1 will mean that ID is not zero. However,
@@ -58,6 +59,7 @@ impl IDGenerator {
 		Self { last_generated_time, count }
 	}
 
+	#[inline]
 	pub fn next(&mut self) -> Option<GeneratedID> {
 		let now = SystemTime::now()
 			.duration_since(UNIX_EPOCH)

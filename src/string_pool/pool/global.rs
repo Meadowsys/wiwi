@@ -39,10 +39,12 @@ impl Pool for GlobalPool {
 		}
 	}
 
+	#[inline]
 	fn raw_to_slice<'r>(&self, raw: &'r Self::Raw) -> &'r [u8] {
 		&raw.0
 	}
 
+	#[inline]
 	fn raw_clone(&self, raw: &Self::Raw) -> Self::Raw {
 		Arc::clone(raw)
 	}

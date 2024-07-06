@@ -83,6 +83,7 @@ macro_rules! iter_tuple_impl {
 		{
 			type Item = ($($rem_t::Item,)* $curr_t::Item,);
 
+			#[inline]
 			fn next(&mut self) -> Option<Self::Item> {
 				let Self { $($rem_f,)* $curr_f, exhausted } = self;
 				if *exhausted { return None }
@@ -97,6 +98,7 @@ macro_rules! iter_tuple_impl {
 				}
 			}
 
+			#[inline]
 			unsafe fn size_hint_impl(&self, _: SizeHintMarker) -> SizeHintImpl {
 				let Self { $($rem_f,)* $curr_f, exhausted } = self;
 				if *exhausted { return unsafe { SizeHintImpl::hard(0) } }
