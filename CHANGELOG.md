@@ -6,6 +6,10 @@ Hallo!
 
 - created `nightly` addon features, to enable features only available in nightly rust
   - As of now, there's nothing taking advantage of it yet
+- don't show list of enabled features on docs.rs/wiwi.kiwin.gay, it feels pretty redundent
+- created some bindings for [pony](https://www.ponylang.io)!
+  - currently it only provides `z85_encode` and `z85_decode` functions
+  - I am not sure if I want to continue this, or maybe eventually provide bindings for other languages too?
 - feature `augment-panic-hook`
   - created the feature
   - allows you to augment the current panic hook in a convenient way, running some code on panic, but still calling the existing hook afterwards
@@ -13,17 +17,26 @@ Hallo!
   - create chainers `ArrayChain`, `SliceMutChain`, `SliceRefChain`, with some method impls
   - implement more methods on `VecChain`
   - implement many standard traits, like `Clone`, `Default`, etc
-    - This is done through `chainer!` macro, so all chainer structs will have it where applicabl
+    - This is done through `chainer!` macro, so all chainer structs will automatically have it where applicable
     - they are implemented by the chain type if the nonchain type implements it as well, and for the most part just delegate the impl into the inner struct (one exception is `Debug`, where the chainer struct makes itself known, but still forwards to inner)
   - some more documentation
+  - callbacks provide chainer structs as much as possible
+- feature `int`
+  - implemented (overflowing) add, (overflowing) sub, and (widening) mul for arrays of arbitrary length holding arbitrary integers (powered by `num-traits` feature, very nice)
 - feature `lsl`
   - yeeted it all, we're starting over lol
   - started sketching out the structs for it again
-- feature `num-traits`
+- feature `mcu`
   - created the feature (unstable)
-  - `Int` trait for std integers and integers that are trivial to copy (ie. implements `Copy`)
-  - `BigInt` for integers that shouldn't be copied around
-    - All ints that implement `Int` get `BigInt` for free as well
+  - a port of the utilities found [here](https://github.com/material-foundation/material-color-utilities)
+- feature `num-traits` <!-- TODO: list them? maybe? -->
+  - gone a fully modular route, creating one trait for one bit of functionality (add checked, add (regular), add unchecked, etc. like that)
+  - because of the above, there's over 100 structs as of now, and I'm not nearly done yet :p
+  - plan to add overarching traits like `Int`, or maybe even `Number`, which will be a supertrait of as much of the other traits as makes sense
+- feature `ptr`
+  - created the feature (unstable)
+  - contains some extension traits relating to pointers, like
+    - ex. explicitly converting a reference to a pointer
 
 ## v0.9.0
 

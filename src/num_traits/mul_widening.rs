@@ -81,8 +81,8 @@ mod tests {
 		// (like, in the right order etc), since widening_mul from int mod is
 		// tested already
 		let i1 = 0xffff_ffff_ffff_ffff_ffff_ffff_ffff_ffffu128;
-		let i2 = 0x1_0000_0000;
-		let expected_res = (0xffff_ffff_ffff_ffff_ffff_ffff_0000_0000u128, 0xffff_ffff);
+		let i2 = 0x1_0000_0000u128;
+		let expected_res = (0xffff_ffff_ffff_ffff_ffff_ffff_0000_0000u128, 0xffff_ffffu128);
 
 		let res = i1.mul_widening(i2);
 		assert_eq!(res, expected_res);
