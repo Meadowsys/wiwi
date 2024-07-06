@@ -252,6 +252,16 @@ where
 	pub fn new(value: T, f: F, should_run: bool) -> Self {
 		Self::_new(value, f, when::Runtime { should_run })
 	}
+
+	#[inline]
+	pub fn should_run(&self) -> bool {
+		self.when.should_run
+	}
+
+	#[inline]
+	pub fn set_should_run(&mut self, should_run: bool) {
+		self.when.should_run = should_run;
+	}
 }
 
 impl<T, Twhen, F, Fwhen> DeferRuntimeFn<T, Twhen, F, Fwhen>
@@ -265,6 +275,41 @@ where
 			value: ManuallyDrop::new(should_run_value),
 			f: ManuallyDrop::new(should_run)
 		})
+	}
+
+	#[inline]
+	pub fn should_run_value(&self) -> Twhen
+	where
+		Twhen: Copy
+	{
+		*self.when.value
+	}
+
+	#[inline]
+	pub fn should_run_value_ref(&self) -> &Twhen {
+		&self.when.value
+	}
+
+	#[inline]
+	pub fn should_run_value_mut(&mut self) -> &mut Twhen {
+		&mut self.when.value
+	}
+
+	#[inline]
+	pub fn set_should_run_value(&mut self, should_run_value: Twhen) {
+		unsafe {
+			ManuallyDrop::drop(&mut self.when.value);
+			self.when.value = ManuallyDrop::new(should_run_value);
+		}
+	}
+
+	#[inline]
+	pub fn swap_should_run_value(&mut self, should_run_value: Twhen) -> Twhen {
+		unsafe {
+			let old = ManuallyDrop::take(&mut self.when.value);
+			self.when.value = ManuallyDrop::new(should_run_value);
+			old
+		}
 	}
 }
 
