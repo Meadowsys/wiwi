@@ -420,6 +420,22 @@
 <a href="#420" id="420">420</a>
 <a href="#421" id="421">421</a>
 <a href="#422" id="422">422</a>
+<a href="#423" id="423">423</a>
+<a href="#424" id="424">424</a>
+<a href="#425" id="425">425</a>
+<a href="#426" id="426">426</a>
+<a href="#427" id="427">427</a>
+<a href="#428" id="428">428</a>
+<a href="#429" id="429">429</a>
+<a href="#430" id="430">430</a>
+<a href="#431" id="431">431</a>
+<a href="#432" id="432">432</a>
+<a href="#433" id="433">433</a>
+<a href="#434" id="434">434</a>
+<a href="#435" id="435">435</a>
+<a href="#436" id="436">436</a>
+<a href="#437" id="437">437</a>
+<a href="#438" id="438">438</a>
 </pre></div><pre class="rust"><code><span class="kw">use </span><span class="kw">crate</span>::num_traits::<span class="kw-2">*</span>;
 <span class="kw">use </span>std::hint::unreachable_unchecked;
 
@@ -449,6 +465,7 @@
 	}
 
 	<span class="doccomment">/// Returns the encoded byte vector
+	</span><span class="attr">#[inline]
 	</span><span class="kw">pub fn </span>into_bytes(<span class="kw-2">mut </span><span class="self">self</span>) -&gt; Vec&lt;u8&gt; {
 		<span class="kw">if </span><span class="self">self</span>.num_partial_bits &gt; <span class="number">0 </span>{ <span class="self">self</span>.output.push(<span class="self">self</span>.partial_bits) }
 		<span class="self">self</span>.output
@@ -459,6 +476,7 @@
 	/// # Panics
 	///
 	/// Panics if the amount of bits to write is more than 8
+	</span><span class="attr">#[inline]
 	</span><span class="kw">pub fn </span>write_bits_u8(<span class="kw-2">&amp;mut </span><span class="self">self</span>, num_bits: usize, bits: u8) {
 		<span class="self">self</span>.write_bits_u8_checked(num_bits, bits)
 			.expect(<span class="string">"amount of bits cannot be more than 8"</span>)
@@ -469,6 +487,7 @@
 	/// # Panics
 	///
 	/// Panics if the amount of bits to write is more than 16
+	</span><span class="attr">#[inline]
 	</span><span class="kw">pub fn </span>write_bits_u16(<span class="kw-2">&amp;mut </span><span class="self">self</span>, num_bits: usize, bits: u16) {
 		<span class="self">self</span>.write_bits_u16_checked(num_bits, bits)
 			.expect(<span class="string">"amount of bits cannot be more than 16"</span>)
@@ -479,6 +498,7 @@
 	/// # Panics
 	///
 	/// Panics if the amount of bits to write is more than 32
+	</span><span class="attr">#[inline]
 	</span><span class="kw">pub fn </span>write_bits_u32(<span class="kw-2">&amp;mut </span><span class="self">self</span>, num_bits: usize, bits: u32) {
 		<span class="self">self</span>.write_bits_u32_checked(num_bits, bits)
 			.expect(<span class="string">"amount of bits cannot be more than 32"</span>)
@@ -489,6 +509,7 @@
 	/// # Panics
 	///
 	/// Panics if the amount of bits to write is more than 64
+	</span><span class="attr">#[inline]
 	</span><span class="kw">pub fn </span>write_bits_u64(<span class="kw-2">&amp;mut </span><span class="self">self</span>, num_bits: usize, bits: u64) {
 		<span class="self">self</span>.write_bits_u64_checked(num_bits, bits)
 			.expect(<span class="string">"amount of bits cannot be more than 64"</span>)
@@ -499,6 +520,7 @@
 	/// # Panics
 	///
 	/// Panics if the amount of bits to write is more than 128
+	</span><span class="attr">#[inline]
 	</span><span class="kw">pub fn </span>write_bits_u128(<span class="kw-2">&amp;mut </span><span class="self">self</span>, num_bits: usize, bits: u128) {
 		<span class="self">self</span>.write_bits_u128_checked(num_bits, bits)
 			.expect(<span class="string">"amount of bits cannot be more than 128"</span>)
@@ -506,6 +528,7 @@
 
 	<span class="doccomment">/// Writes the specified amount of bits from the provided u8, checking that
 	/// the amount of bits to write is 8 or less
+	</span><span class="attr">#[inline]
 	</span><span class="kw">pub fn </span>write_bits_u8_checked(<span class="kw-2">&amp;mut </span><span class="self">self</span>, num_bits: usize, bits: u8) -&gt; <span class="prelude-ty">Option</span>&lt;()&gt; {
 		(num_bits &lt;= u8::BITS.into_usize())
 			.then(|| <span class="kw">unsafe </span>{ <span class="self">self</span>.write_bits_u8_unchecked(num_bits, bits) })
@@ -513,6 +536,7 @@
 
 	<span class="doccomment">/// Writes the specified amount of bits from the provided u16, checking that
 	/// the amount of bits to write is 16 or less
+	</span><span class="attr">#[inline]
 	</span><span class="kw">pub fn </span>write_bits_u16_checked(<span class="kw-2">&amp;mut </span><span class="self">self</span>, num_bits: usize, bits: u16) -&gt; <span class="prelude-ty">Option</span>&lt;()&gt; {
 		(num_bits &lt;= u16::BITS.into_usize())
 			.then(|| <span class="kw">unsafe </span>{ <span class="self">self</span>.write_bits_u16_unchecked(num_bits, bits) })
@@ -520,6 +544,7 @@
 
 	<span class="doccomment">/// Writes the specified amount of bits from the provided u32, checking that
 	/// the amount of bits to write is 32 or less
+	</span><span class="attr">#[inline]
 	</span><span class="kw">pub fn </span>write_bits_u32_checked(<span class="kw-2">&amp;mut </span><span class="self">self</span>, num_bits: usize, bits: u32) -&gt; <span class="prelude-ty">Option</span>&lt;()&gt; {
 		(num_bits &lt;= u32::BITS.into_usize())
 			.then(|| <span class="kw">unsafe </span>{ <span class="self">self</span>.write_bits_u32_unchecked(num_bits, bits) })
@@ -527,6 +552,7 @@
 
 	<span class="doccomment">/// Writes the specified amount of bits from the provided u64, checking that
 	/// the amount of bits to write is 64 or less
+	</span><span class="attr">#[inline]
 	</span><span class="kw">pub fn </span>write_bits_u64_checked(<span class="kw-2">&amp;mut </span><span class="self">self</span>, num_bits: usize, bits: u64) -&gt; <span class="prelude-ty">Option</span>&lt;()&gt; {
 		(num_bits &lt;= u64::BITS.into_usize())
 			.then(|| <span class="kw">unsafe </span>{ <span class="self">self</span>.write_bits_u64_unchecked(num_bits, bits) })
@@ -534,6 +560,7 @@
 
 	<span class="doccomment">/// Writes the specified amount of bits from the provided u128, checking that
 	/// the amount of bits to write is 128 or less
+	</span><span class="attr">#[inline]
 	</span><span class="kw">pub fn </span>write_bits_u128_checked(<span class="kw-2">&amp;mut </span><span class="self">self</span>, num_bits: usize, bits: u128) -&gt; <span class="prelude-ty">Option</span>&lt;()&gt; {
 		(num_bits &lt;= u128::BITS.into_usize())
 			.then(|| <span class="kw">unsafe </span>{ <span class="self">self</span>.write_bits_u128_unchecked(num_bits, bits) })
@@ -554,6 +581,7 @@
 	/// TODO
 	///
 	/// [`write_bits_u128_unchecked`]: Self::write_bits_u128_unchecked
+	</span><span class="attr">#[inline]
 	</span><span class="kw">pub unsafe fn </span>write_bits_u8_unchecked(<span class="kw-2">&amp;mut </span><span class="self">self</span>, num_bits: usize, bits: u8) {
 		<span class="kw">if </span>num_bits &gt; u8::BITS.into_usize() { unreachable_unchecked() }
 		<span class="self">self</span>.write_bits_u128_unchecked(num_bits, bits.into_u128());
@@ -574,6 +602,7 @@
 	/// TODO
 	///
 	/// [`write_bits_u128_unchecked`]: Self::write_bits_u128_unchecked
+	</span><span class="attr">#[inline]
 	</span><span class="kw">pub unsafe fn </span>write_bits_u16_unchecked(<span class="kw-2">&amp;mut </span><span class="self">self</span>, num_bits: usize, bits: u16) {
 		<span class="kw">if </span>num_bits &gt; u16::BITS.into_usize() { unreachable_unchecked() }
 		<span class="self">self</span>.write_bits_u128_unchecked(num_bits, bits.into_u128());
@@ -594,6 +623,7 @@
 	/// TODO
 	///
 	/// [`write_bits_u128_unchecked`]: Self::write_bits_u128_unchecked
+	</span><span class="attr">#[inline]
 	</span><span class="kw">pub unsafe fn </span>write_bits_u32_unchecked(<span class="kw-2">&amp;mut </span><span class="self">self</span>, num_bits: usize, bits: u32) {
 		<span class="kw">if </span>num_bits &gt; u32::BITS.into_usize() { unreachable_unchecked() }
 		<span class="self">self</span>.write_bits_u128_unchecked(num_bits, bits.into_u128());
@@ -614,6 +644,7 @@
 	/// TODO
 	///
 	/// [`write_bits_u128_unchecked`]: Self::write_bits_u128_unchecked
+	</span><span class="attr">#[inline]
 	</span><span class="kw">pub unsafe fn </span>write_bits_u64_unchecked(<span class="kw-2">&amp;mut </span><span class="self">self</span>, num_bits: usize, bits: u64) {
 		<span class="kw">if </span>num_bits &gt; u64::BITS.into_usize() { unreachable_unchecked() }
 		<span class="self">self</span>.write_bits_u128_unchecked(num_bits, bits.into_u128());
@@ -732,6 +763,7 @@
 	/// # Examples
 	///
 	/// TODO
+	</span><span class="attr">#[inline]
 	</span><span class="kw">pub unsafe fn </span>write_bits_usize_unchecked(<span class="kw-2">&amp;mut </span><span class="self">self</span>, num_bits: usize, bits: usize) {
 		<span class="kw">if </span>num_bits &gt; usize::BITS.into_usize() { unreachable_unchecked() }
 		<span class="self">self</span>.write_bits_u128_unchecked(num_bits, bits.into_u128());

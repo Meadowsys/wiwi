@@ -243,6 +243,10 @@
 <a href="#243" id="243">243</a>
 <a href="#244" id="244">244</a>
 <a href="#245" id="245">245</a>
+<a href="#246" id="246">246</a>
+<a href="#247" id="247">247</a>
+<a href="#248" id="248">248</a>
+<a href="#249" id="249">249</a>
 </pre></div><pre class="rust"><code><span class="doccomment">//! Wrapper for initialisation function, initialising it only on first access.
 //!
 //! Works in static contexts (static variables)
@@ -332,6 +336,7 @@
 
 	<span class="doccomment">/// Fetch the value if its initialised, or return the initialisation function
 	/// if it isn't.
+	</span><span class="attr">#[inline]
 	</span><span class="kw">pub fn </span>into_inner(this: <span class="self">Self</span>) -&gt; LazyWrapState&lt;T, F&gt; {
 		<span class="kw">let </span>initialised = <span class="self">Self</span>::is_initialised(<span class="kw-2">&amp;</span>this);
 		<span class="kw">let </span>this = ManuallyDrop::new(this);
@@ -347,6 +352,7 @@
 	}
 
 	<span class="doccomment">/// Ensures that the value is initialised, then returns the value.
+	</span><span class="attr">#[inline]
 	</span><span class="kw">pub fn </span>into_inner_initialised(this: <span class="self">Self</span>) -&gt; T {
 		<span class="self">Self</span>::ensure_initialised(<span class="kw-2">&amp;</span>this);
 		<span class="kw">let </span>this = ManuallyDrop::new(this);
@@ -461,13 +467,15 @@
 	</span>T: Display,
 	F: FnOnce() -&gt; T
 {
-	<span class="kw">fn </span>fmt(<span class="kw-2">&amp;</span><span class="self">self</span>, f: <span class="kw-2">&amp;mut </span>fmt::Formatter&lt;<span class="lifetime">'_</span>&gt;) -&gt; fmt::Result {
+	<span class="attr">#[inline]
+	</span><span class="kw">fn </span>fmt(<span class="kw-2">&amp;</span><span class="self">self</span>, f: <span class="kw-2">&amp;mut </span>fmt::Formatter&lt;<span class="lifetime">'_</span>&gt;) -&gt; fmt::Result {
 		Display::fmt(<span class="kw-2">&amp;**</span><span class="self">self</span>, f)
 	}
 }
 
 <span class="kw">impl</span>&lt;T, F&gt; Drop <span class="kw">for </span>LazyWrap&lt;T, F&gt; {
-	<span class="kw">fn </span>drop(<span class="kw-2">&amp;mut </span><span class="self">self</span>) {
+	<span class="attr">#[inline]
+	</span><span class="kw">fn </span>drop(<span class="kw-2">&amp;mut </span><span class="self">self</span>) {
 		<span class="kw">use </span>OnceState::<span class="kw-2">*</span>;
 		<span class="kw">match </span><span class="self">self</span>.once.state() {
 			New =&gt; {

@@ -543,7 +543,7 @@
 
 </span><span class="kw">use </span><span class="kw">crate</span>::_internal::encoding_utils::{ ChunkedSlice, UnsafeBufWriteGuard};
 <span class="kw">use </span><span class="kw">crate</span>::num_traits::<span class="kw-2">*</span>;
-<span class="kw">use </span>std::slice;
+<span class="kw">use </span>std::{ slice, str };
 
 <span class="doccomment">/// Length of the encoding table (ie. number of different characters)
 </span><span class="kw">pub const </span>TABLE_ENCODER_LEN: usize = <span class="number">85</span>;
@@ -638,7 +638,7 @@
 	</span><span class="kw">let </span>vec = <span class="kw">unsafe </span>{ dest.into_full_vec() };
 
 	<span class="comment">// SAFETY: we only are pushing in chars in the table, which are all valid ASCII.
-	</span><span class="macro">debug_assert!</span>(String::from_utf8(vec.clone()).is_ok(), <span class="string">"output bytes are valid utf-8"</span>);
+	</span><span class="macro">debug_assert!</span>(str::from_utf8(<span class="kw-2">&amp;</span>vec).is_ok(), <span class="string">"output bytes are valid utf-8"</span>);
 	<span class="kw">unsafe </span>{ String::from_utf8_unchecked(vec) }
 }
 

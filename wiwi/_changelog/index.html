@@ -1,0 +1,603 @@
+<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><meta name="generator" content="rustdoc"><meta name="description" content="changelog"><title>wiwi::_changelog - Rust</title><script>if(window.location.protocol!=="file:")document.head.insertAdjacentHTML("beforeend","SourceSerif4-Regular-46f98efaafac5295.ttf.woff2,FiraSans-Regular-018c141bf0843ffd.woff2,FiraSans-Medium-8f9a781e4970d388.woff2,SourceCodePro-Regular-562dcc5011b6de7d.ttf.woff2,SourceCodePro-Semibold-d899c5a5c4aeb14a.ttf.woff2".split(",").map(f=>`<link rel="preload" as="font" type="font/woff2" crossorigin href="../../static.files/${f}">`).join(""))</script><link rel="stylesheet" href="../../static.files/normalize-76eba96aa4d2e634.css"><link rel="stylesheet" href="../../static.files/rustdoc-dd39b87e5fcfba68.css"><meta name="rustdoc-vars" data-root-path="../../" data-static-root-path="../../static.files/" data-current-crate="wiwi" data-themes="meadow" data-resource-suffix="" data-rustdoc-version="1.81.0-nightly (e9e6e2e44 2024-06-28)" data-channel="nightly" data-search-js="search-0fe7219eb170c82e.js" data-settings-js="settings-4313503d2e1961c2.js" ><script src="../../static.files/storage-118b08c4c78b968e.js"></script><script defer src="../sidebar-items.js"></script><script defer src="../../static.files/main-20a3ad099b048cf2.js"></script><noscript><link rel="stylesheet" href="../../static.files/noscript-df360f571f6edeae.css"></noscript><link rel="alternate icon" type="image/png" href="../../static.files/favicon-32x32-422f7d1d52889060.png"><link rel="icon" type="image/svg+xml" href="../../static.files/favicon-2c020d218678b618.svg"></head><body class="rustdoc mod"><!--[if lte IE 11]><div class="warning">This old browser is unsupported and will most likely display funky things.</div><![endif]--><nav class="mobile-topbar"><button class="sidebar-menu-toggle" title="show sidebar"></button></nav><nav class="sidebar"><div class="sidebar-crate"><h2><a href="../../wiwi/index.html">wiwi</a><span class="version">0.9.0</span></h2></div><h2 class="location"><a href="#">Module _changelog</a></h2><div class="sidebar-elems"><h2><a href="../index.html">In crate wiwi</a></h2></div></nav><div class="sidebar-resizer"></div><main><div class="width-limiter"><rustdoc-search></rustdoc-search><section id="main-content" class="content"><div class="main-heading"><h1>Module <a href="../index.html">wiwi</a>::<wbr><a class="mod" href="#">_changelog</a><button id="copy-path" title="Copy item path to clipboard">Copy item path</button></h1><span class="out-of-band"><a class="src" href="../../src/wiwi/lib.rs.html#136">source</a> · <button id="toggle-all-docs" title="collapse all docs">[<span>&#x2212;</span>]</button></span></div><details class="toggle top-doc" open><summary class="hideme"><span>Expand description</span></summary><div class="docblock"><h2 id="changelog"><a class="doc-anchor" href="#changelog">§</a>changelog</h2>
+<p>Hallo!</p>
+<h3 id="unreleased"><a class="doc-anchor" href="#unreleased">§</a>unreleased</h3>
+<ul>
+<li>created <code>nightly</code> addon features, to enable features only available in nightly rust
+<ul>
+<li>As of now, there’s nothing taking advantage of it yet</li>
+</ul>
+</li>
+<li>don’t show list of enabled features on docs.rs/wiwi.kiwin.gay, it feels pretty redundent</li>
+<li>created some bindings for <a href="https://www.ponylang.io">pony</a>!
+<ul>
+<li>currently it only provides <code>z85_encode</code> and <code>z85_decode</code> functions</li>
+<li>I am not sure if I want to continue this, or maybe eventually provide bindings for other languages too?</li>
+</ul>
+</li>
+<li>feature <code>augment-panic-hook</code>
+<ul>
+<li>created the feature</li>
+<li>allows you to augment the current panic hook in a convenient way, running some code on panic, but still calling the existing hook afterwards</li>
+</ul>
+</li>
+<li>feature <code>chainer</code>
+<ul>
+<li>create chainers <code>ArrayChain</code>, <code>SliceMutChain</code>, <code>SliceRefChain</code>, with some method impls</li>
+<li>implement more methods on <code>VecChain</code></li>
+<li>implement many standard traits, like <code>Clone</code>, <code>Default</code>, etc
+<ul>
+<li>This is done through <code>chainer!</code> macro, so all chainer structs will automatically have it where applicable</li>
+<li>they are implemented by the chain type if the nonchain type implements it as well, and for the most part just delegate the impl into the inner struct (one exception is <code>Debug</code>, where the chainer struct makes itself known, but still forwards to inner)</li>
+</ul>
+</li>
+<li>some more documentation</li>
+<li>callbacks provide chainer structs as much as possible</li>
+</ul>
+</li>
+<li>feature <code>int</code>
+<ul>
+<li>implemented (overflowing) add, (overflowing) sub, and (widening) mul for arrays of arbitrary length holding arbitrary integers (powered by <code>num-traits</code> feature, very nice)</li>
+</ul>
+</li>
+<li>feature <code>lsl</code>
+<ul>
+<li>yeeted it all, we’re starting over lol</li>
+<li>started sketching out the structs for it again</li>
+</ul>
+</li>
+<li>feature <code>mcu</code>
+<ul>
+<li>created the feature (unstable)</li>
+<li>a port of the utilities found <a href="https://github.com/material-foundation/material-color-utilities">here</a></li>
+</ul>
+</li>
+<li>feature <code>num-traits</code> <!-- TODO: list them? maybe? -->
+<ul>
+<li>gone a fully modular route, creating one trait for one bit of functionality (add checked, add (regular), add unchecked, etc. like that)</li>
+<li>because of the above, there’s over 100 structs as of now, and I’m not nearly done yet :p</li>
+<li>plan to add overarching traits like <code>Int</code>, or maybe even <code>Number</code>, which will be a supertrait of as much of the other traits as makes sense</li>
+</ul>
+</li>
+<li>feature <code>ptr</code>
+<ul>
+<li>created the feature (unstable)</li>
+<li>contains some extension traits relating to pointers, like
+<ul>
+<li>ex. explicitly converting a reference to a pointer</li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+<h3 id="v090"><a class="doc-anchor" href="#v090">§</a>v0.9.0</h3>
+<ul>
+<li>completely redesigned readme
+<ul>
+<li>seperated stable and unstable features, making it easy to see the stable stuff</li>
+</ul>
+</li>
+<li><code>gen-features</code> script
+<ul>
+<li>now, dependencies and features are declared in there, and it’ll check them, and then generate/update the content for all the other places that previously needed to be manually updated, including <code>Cargo.toml</code>, <code>README.md</code>, <code>lib.rs</code>, the prelude, and may come in handy for other places too</li>
+</ul>
+</li>
+<li>feature <code>cli</code>
+<ul>
+<li>created the feature (unstable)</li>
+<li>it’s empty lol</li>
+</ul>
+</li>
+<li>feature <code>with-cloned</code>
+<ul>
+<li>stabilised the feature</li>
+</ul>
+</li>
+<li>tuples
+<ul>
+<li>by default, wiwi will only include code to accomodate tuples with up to 8 elements (where applicable).</li>
+<li>created features <code>large-tuples</code> and <code>omega-tuples-of-doom</code>
+<ul>
+<li><code>large-tuples</code> enables implementations for tuples with up to 32 elements</li>
+<li><code>omega-tuples-of-doom</code> enables implementations for tuples with up to 128 elements… if for some reason you need this</li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+<h3 id="v080"><a class="doc-anchor" href="#v080">§</a>v0.8.0</h3>
+<ul>
+<li>created <code>all-addons</code> feature, that enables all addon features (3rd-party crate integration)</li>
+<li>feature <code>aoc</code>:
+<ul>
+<li>created the feature (unstable)</li>
+</ul>
+</li>
+<li>feature <code>bitstream</code>:
+<ul>
+<li>added regular (panicking) and checked versions of the write methods</li>
+</ul>
+</li>
+<li>feature <code>chainer</code>:
+<ul>
+<li>added <code>vec_chain!</code> macro, same to <code>vec!</code> except it returns a <code>VecChain</code></li>
+</ul>
+</li>
+<li>feature <code>int</code>:
+<ul>
+<li>renamed from <code>bigint</code> (still unstable)</li>
+<li>it’s… effectively useless right now</li>
+</ul>
+</li>
+<li>feature <code>iter</code>:
+<ul>
+<li>added <code>Iter::enumerate</code></li>
+<li>added <code>Iter::enumerate1</code>, identical to <code>Iter::enumerate</code> but it starts at 1, not 0</li>
+<li>completely redid size hint struct</li>
+<li>tuple iters will now fuse and never advance any inner iters again after one returns <code>None</code></li>
+</ul>
+</li>
+<li>feature <code>lazy-wrap</code>:
+<ul>
+<li>added some documentation on the trait impl bounds of <code>Send</code>, <code>Sync</code>, <code>UnwindSafe</code>, <code>RefUnwindSafe</code>, and <code>Unpin</code></li>
+</ul>
+</li>
+<li>feature <code>with-cloned</code>:
+<ul>
+<li>created the feature (unstable)</li>
+<li>macro that helps with the clone-and-move pattern (hey..! is that a good description/name for it?)</li>
+<li>…with this addition, we definitely fit under <code>rust-patterns</code> category now</li>
+</ul>
+</li>
+</ul>
+<h3 id="v070"><a class="doc-anchor" href="#v070">§</a>v0.7.0</h3>
+<ul>
+<li>docs for the latest commits are now being published to <a href="https://wiwi.kiwin.gay">wiwi.kiwin.gay</a>! (<code>all-unstable</code> is enabled for it)</li>
+<li>created a proc macro crate, so we can have proc macros now!</li>
+<li>update categories and keywords
+<ul>
+<li>keywords: changed to <code>fundamental</code>, <code>general</code>, <code>general-purpose</code>, <code>z85</code></li>
+<li>categories: <code>rust-patterns</code></li>
+</ul>
+</li>
+<li>update the fancy, over the top crate docs</li>
+<li>removed feature configuration features (<code>debounce-dyn-fn</code>)</li>
+<li>prelude:
+<ul>
+<li>added <code>h::H</code></li>
+</ul>
+</li>
+<li>feature <code>bigint</code>:
+<ul>
+<li>created the feature (unstable)</li>
+</ul>
+</li>
+<li>feature <code>bitstream</code>:
+<ul>
+<li>created the feature (unstable)</li>
+</ul>
+</li>
+<li>feature <code>chainer</code>:
+<ul>
+<li>… fresh start
+<ul>
+<li>the old one is still available under <code>wiwi::chainer</code></li>
+<li>the new one is temporarily available under <code>wiwi::chainer::new</code> and will be exported under <code>wiwi::chainer</code> once we feel it’s ready to replace the existing one
+<ul>
+<li>we have features depending on chainer too, so gotta keep the old one around for now</li>
+</ul>
+</li>
+<li>chain traits <code>ChainHalf</code> and <code>NonChainHalf</code>
+<ul>
+<li>they have many trait bounds and require each other, ensuring a “base level” of ability to convert between chainer/non for all chainers</li>
+<li>all the traits and requirements (and even the struct definition itself) is handled in the macro, so very little boilerplate required</li>
+</ul>
+</li>
+<li>chains are now declared via macro, saving considerable boilerplate</li>
+<li>chained functions are now declared via macro, also saving lots of boilerplate</li>
+<li>maybe about like, 98% of the old <code>VecChain</code> has been reimplemented in the new <code>VecChain</code>, no other chainers available just yet</li>
+</ul>
+</li>
+</ul>
+</li>
+<li>feature <code>debounce</code>:
+<ul>
+<li>removed <code>debounce-dyn-fn</code>, it will now always store the inner function in a dyn box
+<ul>
+<li>reasoning: a debounced function will inherently not run in a hot loop, since its literally a delaying mechanism, so the overhead of dyn box should be unnoticeable. The heap allocation indirection / dyn vtable indirection is only really noticeable when used in hot loops</li>
+</ul>
+</li>
+</ul>
+</li>
+<li>feature <code>defer</code>:
+<ul>
+<li>created the feature (unstable)</li>
+</ul>
+</li>
+<li>feature <code>h</code>:
+<ul>
+<li>added <code>H</code></li>
+<li>h</li>
+</ul>
+</li>
+<li>feature <code>id</code>:
+<ul>
+<li><code>GeneratedID::to_alphanumeric_string</code> and <code>GeneratedID::from_alphanumeric_string</code>, encoding to/from a custom string representation that’s <code>0-9A-Za-z</code> (base 62 I suppose)</li>
+<li>make <code>IDGenerator</code> threadsafe (by not holding onto an instance of <code>ThreadRng</code>)</li>
+</ul>
+</li>
+<li>feature <code>iter</code>:
+<ul>
+<li>updated docs</li>
+<li>added many tests</li>
+<li>changed <code>Iter::size_hint</code>
+<ul>
+<li>it now returns a struct containing upper and lower bound, both which may be present or not</li>
+<li>bounds can either be estimates or hard bounds</li>
+<li>estimates are estimates, same as std’s size_hint in terms of trustworthiness</li>
+<li>hard bounds are for when you’re strictly sure its going to be that way, consumers of the function are allowed to rely on this for safety
+<ul>
+<li>because of that, hard bounds can only be constructed through <code>unsafe</code> interfaces</li>
+</ul>
+</li>
+</ul>
+</li>
+<li>assert that <code>Iter</code> is object safe</li>
+<li>impl <code>IntoIter</code> for <code>Vec</code> with a custom <code>Iter</code> type</li>
+<li>renamed a few interfaces
+<ul>
+<li><code>AsWiwiIter::as_wiwi_iter</code> -&gt; <code>AsWiwiIter::borrow_std_as_wiwi_iter</code></li>
+<li><code>AsStdIterator::as_std_iterator</code> -&gt; <code>AsStdIterator::borrow_wiwi_as_std_iterator</code></li>
+<li><code>IntoWiwiIter::into_wiwi_iter</code> -&gt; <code>IntoWiwiIter::convert_std_into_wiwi_iter</code></li>
+<li><code>IntoStdIterator::into_std_iterator</code> -&gt; <code>IntoStdIterator::convert_wiwi_into_std_iterator</code></li>
+<li><code>IntoIter::into_iter</code> -&gt; <code>IntoIter::into_wiwi_iter</code> (unfortunate)</li>
+</ul>
+</li>
+<li>added <code>Iter::for_each</code>, <code>Iter::map</code></li>
+<li><code>RepeatPerItem&lt;I, T&gt;</code> -&gt; <code>RepeatPerItem&lt;T, I&gt;</code></li>
+<li>attempted to add a “peekable here” type of API and trait, but it’s not possible without trait specialisation I think</li>
+<li>tuple impls (<code>IntoIter</code> is implemented for tuples with up to 32 elements, where all its elements also implement <code>IntoIter</code>)</li>
+<li><code>DoubleEndedIter</code></li>
+</ul>
+</li>
+<li>feature <code>memory-usage</code>:
+<ul>
+<li>created the feature (unstable)</li>
+</ul>
+</li>
+<li>feature <code>minesweeper</code>:
+<ul>
+<li>created the feature (unstable)</li>
+</ul>
+</li>
+<li>feature <code>nominal</code>:
+<ul>
+<li>copied from <a href="https://github.com/meadowsys/wiwipaccer">wiwipaccer</a> (but with <em>many</em> modifications, base idea is the same though)</li>
+</ul>
+</li>
+<li>feature <code>serialiser</code>:
+<ul>
+<li>at some point we yeeted everything to start over, not sure when, but it’s (mostly) yeeted now</li>
+</ul>
+</li>
+<li>feature <code>sudoku</code>:
+<ul>
+<li>functions to brute force generate valid solutions
+<ul>
+<li>not feasible at all lol (maybe in 200 years when we have quantum computers or something)</li>
+</ul>
+</li>
+</ul>
+</li>
+<li>feature <code>superstring</code>:
+<ul>
+<li>removed the feature</li>
+</ul>
+</li>
+</ul>
+<h3 id="v061"><a class="doc-anchor" href="#v061">§</a>v0.6.1</h3><!-- TODO: review the commits / write more detailed potentially -->
+<ul>
+<li>store requested size and use that to set the len, instead of relying on capacity<sup id="fnref1"><a href="#fn1">1</a></sup></li>
+<li>updated that overkill crate doc stuff</li>
+<li>feature <code>sudoku</code>:
+<ul>
+<li>fixed missing <code>chainer</code> and <code>iter</code> feature dependency</li>
+</ul>
+</li>
+<li>feature <code>z85</code>:
+<ul>
+<li>updated docs</li>
+</ul>
+</li>
+</ul>
+<h3 id="v060-yanked"><a class="doc-anchor" href="#v060-yanked">§</a>v0.6.0 (yanked<sup id="fnref1"><a href="#fn1">1</a></sup>)</h3><!-- TODO: review the commits / write more detailed potentially -->
+<ul>
+<li>officially support macOS and Linux (Windows support will only be on best effort basis… not to imply I don’t want to support it or anything)</li>
+<li>fancy, over the top, crate docs
+<ul>
+<li>locally built crate docs will list the features that are enabled</li>
+<li>docs.rs prints a notice saying that the <code>all</code> feature is enabled (ie. only stable features), and to build locally if you want docs for unstable features</li>
+<li>a message along the lines of “no features enabled! you should probably enable some” will show up if you have no features enabled (also something similar for the prelude too)</li>
+</ul>
+</li>
+<li>use <code>Result::expect</code> instead of <code>Result::unwrap</code> for better panic messages</li>
+<li>move binaries out of the crate and into a (non-published) scripts crate</li>
+<li>created addon features system</li>
+<li>removed multiple runtime feature system (we only support tokio now, nor was it additive features)</li>
+<li>created unstable feature system
+<ul>
+<li>features that are not completed/stabilised yet. These are <strong><em>not</em></strong> covered by the semver guarantee that the rest of the crate is.</li>
+<li>for features that are unstable, they have their name appended with <code>-unstable</code> (eg. feature <code>thingie</code> would be <code>thingie-unstable</code> while unstable)</li>
+<li>got tired of commenting out incomplete features just to be able to publish lol</li>
+</ul>
+</li>
+<li>created feature <code>all</code> (enables all stable features, doesn’t enable any addon features)</li>
+<li>created feature <code>all-unstable</code> (enables all stable and unstable features, doesn’t enable any addon features)</li>
+<li>addon features:
+<ul>
+<li>added <code>hashbrown</code></li>
+<li>added <code>image</code></li>
+<li>added <code>serde-json</code></li>
+</ul>
+</li>
+<li>feature <code>auth</code>:
+<ul>
+<li>created the feature (unstable)</li>
+</ul>
+</li>
+<li>feature <code>chainer</code>:
+<ul>
+<li>created the feature (unstable)</li>
+</ul>
+</li>
+<li>feature <code>clock-timer</code>:
+<ul>
+<li>updated docs</li>
+</ul>
+</li>
+<li>feature <code>hex</code>:
+<ul>
+<li>disabled neon implementation (it doesn’t seem to make a difference, LLVM auto vectorisation go brr?)</li>
+<li>updated docs</li>
+</ul>
+</li>
+<li>feature <code>id</code>:
+<ul>
+<li>created the feature (unstable)</li>
+</ul>
+</li>
+<li>feature <code>iter</code>:
+<ul>
+<li>created the feature (unstable)</li>
+</ul>
+</li>
+<li>feature <code>lsl</code>:
+<ul>
+<li>created the feature (unstable)</li>
+</ul>
+</li>
+<li>feature <code>path</code>:
+<ul>
+<li>created the feature (unstable)</li>
+</ul>
+</li>
+<li>feature <code>serialiser</code>:
+<ul>
+<li>created the feature (unstable)</li>
+</ul>
+</li>
+<li>feature <code>string-pool</code>:
+<ul>
+<li>demoted to unstable lol <!-- swimming pool --></li>
+<li>updated docs</li>
+</ul>
+</li>
+<li>feature <code>sudoku</code>:
+<ul>
+<li>created the feature (unstable)</li>
+</ul>
+</li>
+<li>feature <code>superstring</code>:
+<ul>
+<li>created the feature (unstable)</li>
+</ul>
+</li>
+<li>feature <code>to-maybeuninit</code>:
+<ul>
+<li>created the feature</li>
+</ul>
+</li>
+<li>feature <code>z85</code>:
+<ul>
+<li>updated docs</li>
+</ul>
+</li>
+</ul>
+<h3 id="v054-yanked"><a class="doc-anchor" href="#v054-yanked">§</a>v0.5.4 (yanked<sup id="fnref1"><a href="#fn1">1</a></sup>)</h3><!-- TODO: review the commits / write more detailed potentially -->
+<ul>
+<li>gate binaries behind appropriate features
+<ul>
+<li>they were never meant to be properly part of crate API though (they are removed in a future version)</li>
+</ul>
+</li>
+<li>feature <code>z85</code>:
+<ul>
+<li>fixed link in module doc not actually hyperlinking</li>
+<li>check for decode overflow<sup id="fnref2"><a href="#fn2">2</a></sup></li>
+</ul>
+</li>
+</ul>
+<h3 id="v053-yanked"><a class="doc-anchor" href="#v053-yanked">§</a>v0.5.3 (yanked<sup id="fnref1"><a href="#fn1">1</a></sup><sup id="fnref2"><a href="#fn2">2</a></sup>)</h3><!-- TODO: review the commits / write more detailed potentially -->
+<ul>
+<li>added MIT license file (however, MIT license was always specified in crate manifest)</li>
+<li>feature <code>clock-timer-2</code>:
+<ul>
+<li>added info about if a tick was delayed (<code>Tick::delayed</code> and <code>Tick::past_due</code>, both of which do the same thing)</li>
+</ul>
+</li>
+<li>feature <code>z85</code>:
+<ul>
+<li>tweaked some docs</li>
+</ul>
+</li>
+</ul>
+<h3 id="v052-yanked"><a class="doc-anchor" href="#v052-yanked">§</a>v0.5.2 (yanked<sup id="fnref1"><a href="#fn1">1</a></sup><sup id="fnref2"><a href="#fn2">2</a></sup>)</h3><!-- TODO: review the commits / write more detailed potentially -->
+<ul>
+<li>added keywords <code>decode</code>, <code>encode</code>, <code>hex</code>, <code>z85</code> to crate manifest</li>
+<li>feature <code>hex</code>:
+<ul>
+<li>added neon implementation for <code>aarch64</code> (automatically enabled on <code>aarch64</code> targets using runtime feature detection)</li>
+<li>fixed uppercase hex unintentionally outputting lowercase</li>
+</ul>
+</li>
+</ul>
+<h3 id="v051-yanked"><a class="doc-anchor" href="#v051-yanked">§</a>v0.5.1 (yanked<sup id="fnref1"><a href="#fn1">1</a></sup><sup id="fnref2"><a href="#fn2">2</a></sup>)</h3><!-- TODO: review the commits / write more detailed potentially -->
+<ul>
+<li>feature <code>hex</code>:
+<ul>
+<li>fixed missing <code>thiserror</code> dependency</li>
+</ul>
+</li>
+</ul>
+<h3 id="v050-yanked"><a class="doc-anchor" href="#v050-yanked">§</a>v0.5.0 (yanked<sup id="fnref1"><a href="#fn1">1</a></sup><sup id="fnref2"><a href="#fn2">2</a></sup>)</h3><!-- TODO: review the commits / write more detailed potentially -->
+<ul>
+<li>feature <code>hex</code>:
+<ul>
+<li>created the feature</li>
+<li>added footnote about its performance in readme</li>
+</ul>
+</li>
+<li>feature <code>z85</code>:
+<ul>
+<li>added footnote about its performance in readme</li>
+</ul>
+</li>
+</ul>
+<h3 id="v041-yanked"><a class="doc-anchor" href="#v041-yanked">§</a>v0.4.1 (yanked<sup id="fnref1"><a href="#fn1">1</a></sup><sup id="fnref2"><a href="#fn2">2</a></sup>)</h3><!-- TODO: review the commits / write more detailed potentially -->
+<ul>
+<li>feature <code>z85</code>:
+<ul>
+<li>added test for non-padded compatability with <code>z85</code> crate (we now guarantee that for non-padded inputs (ie. input length is a multiple of 4), our output will be the same as <code>z85</code> crate)</li>
+<li>improved performance</li>
+<li>updated module doc</li>
+</ul>
+</li>
+</ul>
+<h3 id="v040-yanked"><a class="doc-anchor" href="#v040-yanked">§</a>v0.4.0 (yanked<sup id="fnref1"><a href="#fn1">1</a></sup><sup id="fnref2"><a href="#fn2">2</a></sup>)</h3><!-- TODO: review the commits / write more detailed potentially -->
+<ul>
+<li>feature <code>z85</code>:
+<ul>
+<li>created the feature</li>
+</ul>
+</li>
+</ul>
+<h3 id="v031"><a class="doc-anchor" href="#v031">§</a>v0.3.1</h3><!-- TODO: review the commits / write more detailed potentially -->
+<ul>
+<li>feature <code>clock-timer-2</code>:
+<ul>
+<li>added methods on <code>Tick</code> to get start/end time, elapsed/remaining time, etc</li>
+</ul>
+</li>
+</ul>
+<h3 id="v030"><a class="doc-anchor" href="#v030">§</a>v0.3.0</h3><!-- TODO: review the commits / write more detailed potentially -->
+<ul>
+<li>created readme! (finally)</li>
+<li>added crate doc (it’s just including readme in it :p)</li>
+<li>added configuration features (they can only be enabled if the feature they configure is enabled too, otherwise it will compile error)</li>
+<li>feature <code>clock-timer</code>:
+<ul>
+<li>added module doc</li>
+<li>deprecated (use feature <code>clock-timer-2</code> instead)</li>
+<li>effectively removed, as the <code>clock-timer</code> feature is removed (replaced by <code>clock-timer-2</code>)</li>
+</ul>
+</li>
+<li>feature <code>debounce</code>:
+<ul>
+<li>added module doc</li>
+</ul>
+</li>
+<li>feature <code>h</code>:
+<ul>
+<li>added module doc</li>
+<li>h</li>
+</ul>
+</li>
+<li>feature <code>lazy-wrap</code>:
+<ul>
+<li>added module doc</li>
+</ul>
+</li>
+<li>feature <code>clock-timer-2</code>:
+<ul>
+<li>created the feature</li>
+<li>the (eventual) replacement of <code>clock-tower</code> feature</li>
+<li>requires <code>tokio</code> runtime feature to work</li>
+</ul>
+</li>
+<li>feature <code>debounce</code>:
+<ul>
+<li>added configuration <code>debounce-dyn-function</code>, controling whether to wrap the actual functions in <code>Box&lt;dyn Fn&gt;</code> instead of monomorphising</li>
+<li>switched to use <code>impl Fn</code> rather than generics</li>
+</ul>
+</li>
+</ul>
+<h3 id="v020"><a class="doc-anchor" href="#v020">§</a>v0.2.0</h3><!-- TODO: review the commits / write more detailed potentially -->
+<ul>
+<li>removed the default features that were accidentally committed (whoopsie, that’s stuck on crates.io forever lol)</li>
+<li>added <code>prelude</code> module</li>
+<li>feature <code>debounce</code>:
+<ul>
+<li>created the feature</li>
+</ul>
+</li>
+</ul>
+<h3 id="v012"><a class="doc-anchor" href="#v012">§</a>v0.1.2</h3><!-- TODO: review the commits / write more detailed potentially -->
+<ul>
+<li>feature <code>clock-timer</code>:
+<ul>
+<li>re-exported <code>chrono::Timelike</code> (it’s needed for the API)</li>
+</ul>
+</li>
+</ul>
+<h3 id="v011"><a class="doc-anchor" href="#v011">§</a>v0.1.1</h3><!-- TODO: review the commits / write more detailed potentially -->
+<ul>
+<li>added configuration for docs.rs so its not just empty crate lol</li>
+</ul>
+<h3 id="v010"><a class="doc-anchor" href="#v010">§</a>v0.1.0</h3><!-- TODO: review the commits / write more detailed potentially -->
+<ul>
+<li>created features system</li>
+<li>created runtime feature selection system (compmile errors if none are selected, and currently only supports <code>tokio</code>)</li>
+<li>feature <code>lazy-wrap</code>:
+<ul>
+<li>created the feature</li>
+<li>copied from our crate <code>lazy-wrap</code> v0.4.1</li>
+<li>added <code>Debug</code> and <code>Display</code> impls</li>
+<li>added documentation</li>
+</ul>
+</li>
+<li>feature <code>string-pool</code>:
+<ul>
+<li>created the feature</li>
+<li>copied from our crate <code>string-pool</code> (either v0.2.1 or <code>wiwi</code> branch on git, cannot remember)</li>
+<li><code>Pool</code> trait now requires <code>Debug</code> and <code>Default</code>, and <code>String</code> now always implements <code>Debug</code> and <code>Default</code></li>
+</ul>
+</li>
+<li>feature <code>h</code>:
+<ul>
+<li>created the feature</li>
+<li>h</li>
+</ul>
+</li>
+<li>feature <code>clock-timer</code>:
+<ul>
+<li>created the feature</li>
+<li>requires <code>tokio</code> runtime feature to work</li>
+</ul>
+</li>
+</ul>
+<h3 id="v000"><a class="doc-anchor" href="#v000">§</a>v0.0.0</h3>
+<ul>
+<li>yoink! <code>wiwi</code> on crates.io is now mine muahaha</li>
+<li>initialised the package and stuffs</li>
+</ul>
+<div class="footnotes"><hr><ol><li id="fn1"><p><code>Vec::with_capacity</code> is allowed to overallocate, and in doing so will cause undefined behaviour (affected features: <code>hex</code>, <code>z85</code>, affected versions: <code>&gt;= 0.4.0, &lt;= 0.6.0</code>)&nbsp;<a href="#fnref1">↩</a></p></li><li id="fn2"><p>Depending on the compile setting for overflow checks, certain invalid input could cause either a panic or undefined behaviour (affected features: <code>z85</code>, affected versions: <code>&gt;= 0.4.0, &lt;= 0.5.3</code>)
+&nbsp;<a href="#fnref2">↩</a></p></li></ol></div></div></details></section></div></main></body></html>

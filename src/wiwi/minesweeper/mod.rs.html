@@ -511,6 +511,13 @@
 <a href="#511" id="511">511</a>
 <a href="#512" id="512">512</a>
 <a href="#513" id="513">513</a>
+<a href="#514" id="514">514</a>
+<a href="#515" id="515">515</a>
+<a href="#516" id="516">516</a>
+<a href="#517" id="517">517</a>
+<a href="#518" id="518">518</a>
+<a href="#519" id="519">519</a>
+<a href="#520" id="520">520</a>
 </pre></div><pre class="rust"><code><span class="kw">use </span><span class="kw">crate</span>::chainer::{ ChainHalf, NonChainHalf, SliceBoxChain, VecChain };
 <span class="kw">use </span><span class="kw">crate</span>::iter::{ IntoStdIterator, IntoWiwiIter, Iter };
 <span class="kw">use </span><span class="kw">crate</span>::num_traits::<span class="kw-2">*</span>;
@@ -541,7 +548,8 @@
 }
 
 <span class="kw">impl </span>Board {
-	<span class="kw">pub fn </span>new(w: NonZeroUsize, h: NonZeroUsize) -&gt; <span class="self">Self </span>{
+	<span class="attr">#[inline]
+	</span><span class="kw">pub fn </span>new(w: NonZeroUsize, h: NonZeroUsize) -&gt; <span class="self">Self </span>{
 		<span class="comment">// SAFETY: zeroed is valid bit pattern for u8, and
 		// Cell has repr(transparent) to u8, so this is valid.
 		// a Cell with zero bit pattern is not revealed, not a mine, with zero surrounding
@@ -554,13 +562,15 @@
 		<span class="self">Self </span>{ w, h, board }
 	}
 
-	<span class="kw">pub fn </span>new_random_mines(w: NonZeroUsize, h: NonZeroUsize, mines: usize) -&gt; <span class="self">Self </span>{
+	<span class="attr">#[inline]
+	</span><span class="kw">pub fn </span>new_random_mines(w: NonZeroUsize, h: NonZeroUsize, mines: usize) -&gt; <span class="self">Self </span>{
 		<span class="kw">let </span><span class="kw-2">mut </span>board = <span class="self">Self</span>::new(w, h);
 		board.add_random_mines(mines);
 		board
 	}
 
-	<span class="kw">pub unsafe fn </span>new_with_first_placement_unchecked(
+	<span class="attr">#[inline]
+	</span><span class="kw">pub unsafe fn </span>new_with_first_placement_unchecked(
 		w: NonZeroUsize,
 		h: NonZeroUsize,
 		r: usize,
@@ -743,13 +753,15 @@
 	/// surrounding cell mine counts accordingly. It doesn't touch the board's
 	/// size (if you want a different-sized board, you should create a new
 	/// instance with the new dimensions).
+	</span><span class="attr">#[inline]
 	</span><span class="kw">pub fn </span>clear(<span class="kw-2">&amp;mut </span><span class="self">self</span>) {
 		<span class="kw">unsafe </span>{ <span class="self">self</span>.board_ptr_mut().write_bytes(<span class="number">0</span>, <span class="self">self</span>.board.len()) }
 	}
 
-	<span class="kw">pub unsafe fn </span>offset_of_unchecked(<span class="kw-2">&amp;</span><span class="self">self</span>, r: usize, c: usize) -&gt; usize {
+	<span class="attr">#[inline]
+	</span><span class="kw">pub unsafe fn </span>offset_of_unchecked(<span class="kw-2">&amp;</span><span class="self">self</span>, r: usize, c: usize) -&gt; usize {
 		<span class="self">self</span>.debug_assert_in_bounds(r, c);
-		<span class="self">self</span>.__offset(r, c)
+		<span class="self">self</span>._offset(r, c)
 	}
 
 	<span class="kw">pub fn </span>add_random_mines(<span class="kw-2">&amp;mut </span><span class="self">self</span>, mines: usize) {
@@ -777,11 +789,13 @@
 		<span class="self">self</span>.board.as_mut_ptr()
 	}
 
-	<span class="kw">pub unsafe fn </span>get_coords_unchecked(<span class="kw-2">&amp;</span><span class="self">self</span>, r: usize, c: usize) -&gt; <span class="kw-2">&amp;</span>Cell {
+	<span class="attr">#[inline]
+	</span><span class="kw">pub unsafe fn </span>get_coords_unchecked(<span class="kw-2">&amp;</span><span class="self">self</span>, r: usize, c: usize) -&gt; <span class="kw-2">&amp;</span>Cell {
 		<span class="kw-2">&amp;*</span><span class="self">self</span>.board_ptr().add(<span class="self">self</span>.offset_of_unchecked(r, c))
 	}
 
-	<span class="kw">pub unsafe fn </span>get_coords_unchecked_mut(<span class="kw-2">&amp;mut </span><span class="self">self</span>, r: usize, c: usize) -&gt; <span class="kw-2">&amp;mut </span>Cell {
+	<span class="attr">#[inline]
+	</span><span class="kw">pub unsafe fn </span>get_coords_unchecked_mut(<span class="kw-2">&amp;mut </span><span class="self">self</span>, r: usize, c: usize) -&gt; <span class="kw-2">&amp;mut </span>Cell {
 		<span class="kw-2">&amp;mut *</span><span class="self">self</span>.board_ptr_mut().add(<span class="self">self</span>.offset_of_unchecked(r, c))
 	}
 
@@ -903,7 +917,7 @@
 		<span class="macro">debug_assert!</span>(r &lt; <span class="self">self</span>.h.get());
 		<span class="macro">debug_assert!</span>(c &lt; <span class="self">self</span>.w.get());
 		<span class="macro">debug_assert!</span>(
-			<span class="kw">unsafe </span>{ <span class="self">self</span>.__offset(r, c) &lt; <span class="self">self</span>.board.len() },
+			<span class="kw">unsafe </span>{ <span class="self">self</span>._offset(r, c) &lt; <span class="self">self</span>.board.len() },
 			<span class="string">"invalid state: w = {w}, h = {h}, board len = {len} (should be w * h)"</span>,
 			w = <span class="self">self</span>.w,
 			h = <span class="self">self</span>.h,
@@ -912,7 +926,7 @@
 	}
 
 	<span class="attr">#[inline(always)]
-	</span><span class="kw">unsafe fn </span>__offset(<span class="kw-2">&amp;</span><span class="self">self</span>, r: usize, c: usize) -&gt; usize {
+	</span><span class="kw">unsafe fn </span>_offset(<span class="kw-2">&amp;</span><span class="self">self</span>, r: usize, c: usize) -&gt; usize {
 		(r * <span class="self">self</span>.w.get()) + c
 	}
 }

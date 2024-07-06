@@ -289,6 +289,7 @@
 <a href="#289" id="289">289</a>
 <a href="#290" id="290">290</a>
 <a href="#291" id="291">291</a>
+<a href="#292" id="292">292</a>
 </pre></div><pre class="rust"><code><span class="kw">use super</span>::{ chainer, chain_fn, ChainHalf, NonChainHalf };
 <span class="kw">use </span>std::ops::Range;
 <span class="kw">use </span>std::{ mem, slice };
@@ -317,7 +318,8 @@
 <span class="kw">impl</span>&lt;<span class="lifetime">'h</span>, T&gt; SliceRefChain&lt;<span class="lifetime">'h</span>, T&gt; {}
 
 <span class="kw">impl</span>&lt;<span class="lifetime">'h</span>, T, <span class="kw">const </span>N: usize&gt; SliceRefChain&lt;<span class="lifetime">'h</span>, [T; N]&gt; {
-	<span class="kw">pub fn </span>flatten(<span class="self">self</span>) -&gt; SliceRefChain&lt;<span class="lifetime">'h</span>, T&gt; {
+	<span class="attr">#[inline]
+	</span><span class="kw">pub fn </span>flatten(<span class="self">self</span>) -&gt; SliceRefChain&lt;<span class="lifetime">'h</span>, T&gt; {
 		<span class="comment">// TODO: use SizedTypeProperties / slice `flatten` when stabilised
 		</span><span class="kw">let </span>len = <span class="kw">if </span>mem::size_of::&lt;T&gt;() == <span class="number">0 </span>{
 			<span class="self">self</span>.as_nonchain()

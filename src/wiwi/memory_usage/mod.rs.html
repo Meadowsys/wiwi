@@ -327,6 +327,16 @@
 <a href="#327" id="327">327</a>
 <a href="#328" id="328">328</a>
 <a href="#329" id="329">329</a>
+<a href="#330" id="330">330</a>
+<a href="#331" id="331">331</a>
+<a href="#332" id="332">332</a>
+<a href="#333" id="333">333</a>
+<a href="#334" id="334">334</a>
+<a href="#335" id="335">335</a>
+<a href="#336" id="336">336</a>
+<a href="#337" id="337">337</a>
+<a href="#338" id="338">338</a>
+<a href="#339" id="339">339</a>
 </pre></div><pre class="rust"><code><span class="kw">use </span>std::mem::size_of;
 <span class="kw">pub use </span>wiwiwiwiwi::MemoryUsage;
 
@@ -458,14 +468,16 @@
 	{ @<span class="kw">impl </span>$(<span class="macro-nonterminal">$stuff</span>:ident)+ } =&gt; {
 		<span class="attr">#[allow(non_snake_case)]
 		</span><span class="kw">impl</span>&lt;$(<span class="macro-nonterminal">$stuff</span>: Dynamic,)+&gt; Dynamic <span class="kw">for </span>($(<span class="macro-nonterminal">$stuff</span>,)+) {
-			<span class="kw">fn </span>calculate_memory_usage(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; usize {
+			<span class="attr">#[inline]
+			</span><span class="kw">fn </span>calculate_memory_usage(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; usize {
 				<span class="kw">let </span>($(<span class="macro-nonterminal">$stuff</span>,)<span class="kw-2">*</span>) = <span class="self">self</span>;
 				<span class="kw">let </span><span class="kw-2">mut </span>usage = <span class="number">0</span>;
 				$(usage += &lt;<span class="macro-nonterminal">$stuff</span>&gt;::calculate_memory_usage(<span class="macro-nonterminal">$stuff</span>);)*
 				usage
 			}
 
-			<span class="kw">fn </span>calculate_values_usage(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; usize {
+			<span class="attr">#[inline]
+			</span><span class="kw">fn </span>calculate_values_usage(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; usize {
 				<span class="kw">let </span>($(<span class="macro-nonterminal">$stuff</span>,)<span class="kw-2">*</span>) = <span class="self">self</span>;
 				<span class="kw">let </span><span class="kw-2">mut </span>usage = <span class="number">0</span>;
 				$(usage += &lt;<span class="macro-nonterminal">$stuff</span>&gt;::calculate_values_usage(<span class="macro-nonterminal">$stuff</span>);)*
@@ -557,22 +569,26 @@
 }
 
 <span class="kw">impl</span>&lt;T: Dynamic, <span class="kw">const </span>N: usize&gt; Dynamic <span class="kw">for </span>[T; N] {
-	<span class="kw">fn </span>calculate_memory_usage(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; usize {
+	<span class="attr">#[inline]
+	</span><span class="kw">fn </span>calculate_memory_usage(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; usize {
 		<span class="self">self</span>.iter().map(T::calculate_memory_usage).sum()
 	}
 
-	<span class="kw">fn </span>calculate_values_usage(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; usize {
+	<span class="attr">#[inline]
+	</span><span class="kw">fn </span>calculate_values_usage(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; usize {
 		<span class="self">self</span>.iter().map(T::calculate_values_usage).sum()
 	}
 }
 
 <span class="kw">impl</span>&lt;T: Dynamic&gt; Dynamic <span class="kw">for </span>[T] {
-	<span class="kw">fn </span>calculate_memory_usage(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; usize {
+	<span class="attr">#[inline]
+	</span><span class="kw">fn </span>calculate_memory_usage(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; usize {
 		<span class="kw">let </span>contents = <span class="self">self</span>.iter().map(T::calculate_memory_usage).sum::&lt;usize&gt;();
 		size_of::&lt;<span class="kw-2">&amp;</span>[T]&gt;() + contents
 	}
 
-	<span class="kw">fn </span>calculate_values_usage(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; usize {
+	<span class="attr">#[inline]
+	</span><span class="kw">fn </span>calculate_values_usage(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; usize {
 		<span class="kw">let </span>contents = <span class="self">self</span>.iter().map(T::calculate_values_usage).sum::&lt;usize&gt;();
 		size_of::&lt;<span class="kw-2">&amp;</span>[T]&gt;() + contents
 	}
@@ -587,24 +603,28 @@
 }
 
 <span class="kw">impl</span>&lt;T: Dynamic&gt; Dynamic <span class="kw">for </span>Vec&lt;T&gt; {
-	<span class="kw">fn </span>calculate_memory_usage(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; usize {
+	<span class="attr">#[inline]
+	</span><span class="kw">fn </span>calculate_memory_usage(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; usize {
 		<span class="kw">let </span>contents = <span class="self">self</span>.iter().map(T::calculate_memory_usage).sum::&lt;usize&gt;();
 		<span class="kw">let </span>uninit = (<span class="self">self</span>.capacity() - <span class="self">self</span>.len()) * size_of::&lt;T&gt;();
 		size_of::&lt;Vec&lt;T&gt;&gt;() + contents + uninit
 	}
 
-	<span class="kw">fn </span>calculate_values_usage(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; usize {
+	<span class="attr">#[inline]
+	</span><span class="kw">fn </span>calculate_values_usage(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; usize {
 		<span class="kw">let </span>contents = <span class="self">self</span>.iter().map(T::calculate_values_usage).sum::&lt;usize&gt;();
 		size_of::&lt;Vec&lt;T&gt;&gt;() + contents
 	}
 }
 
 <span class="kw">impl </span>Dynamic <span class="kw">for </span>String {
-	<span class="kw">fn </span>calculate_memory_usage(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; usize {
+	<span class="attr">#[inline]
+	</span><span class="kw">fn </span>calculate_memory_usage(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; usize {
 		size_of::&lt;String&gt;() + <span class="self">self</span>.capacity()
 	}
 
-	<span class="kw">fn </span>calculate_values_usage(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; usize {
+	<span class="attr">#[inline]
+	</span><span class="kw">fn </span>calculate_values_usage(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; usize {
 		size_of::&lt;String&gt;() + <span class="self">self</span>.len()
 	}
 }

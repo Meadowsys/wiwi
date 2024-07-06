@@ -170,6 +170,17 @@
 <a href="#170" id="170">170</a>
 <a href="#171" id="171">171</a>
 <a href="#172" id="172">172</a>
+<a href="#173" id="173">173</a>
+<a href="#174" id="174">174</a>
+<a href="#175" id="175">175</a>
+<a href="#176" id="176">176</a>
+<a href="#177" id="177">177</a>
+<a href="#178" id="178">178</a>
+<a href="#179" id="179">179</a>
+<a href="#180" id="180">180</a>
+<a href="#181" id="181">181</a>
+<a href="#182" id="182">182</a>
+<a href="#183" id="183">183</a>
 </pre></div><pre class="rust"><code><span class="doccomment">//! Backing pools. Contains the default global pool, as well as the [`Pool`] trait
 //! for writing your own string pool implementations that can plug into the [`String`] type.
 //!
@@ -217,6 +228,7 @@
 	/// # Safety
 	///
 	/// The provided slice must be valid UTF-8.
+	</span><span class="attr">#[inline]
 	</span><span class="kw">unsafe fn </span>raw_from_slice(<span class="kw-2">&amp;</span><span class="self">self</span>, slice: <span class="kw-2">&amp;</span>[u8]) -&gt; <span class="self">Self</span>::Raw {
 		<span class="self">self</span>.raw_from_slices(SlicesWrap(<span class="kw-2">&amp;</span>[slice]))
 	}
@@ -229,6 +241,7 @@
 	/// # Safety
 	///
 	/// The provided vec must be valid UTF-8.
+	</span><span class="attr">#[inline]
 	</span><span class="kw">unsafe fn </span>raw_from_vec(<span class="kw-2">&amp;</span><span class="self">self</span>, vec: Vec&lt;u8&gt;) -&gt; <span class="self">Self</span>::Raw {
 		<span class="self">self</span>.raw_from_slice(<span class="kw-2">&amp;</span>vec)
 	}
@@ -238,6 +251,7 @@
 	///
 	/// note to implementors: A default implementation is provided;
 	/// however this can be overridden for optimisation reasons.
+	</span><span class="attr">#[inline]
 	</span><span class="kw">fn </span>raw_empty(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; <span class="self">Self</span>::Raw {
 		<span class="kw">unsafe </span>{ <span class="self">self</span>.raw_from_slice(<span class="kw-2">&amp;</span>[]) }
 	}
@@ -247,6 +261,7 @@
 	///
 	/// note to implementors: A default implementation is provided;
 	/// however this can be overridden for optimisation reasons.
+	</span><span class="attr">#[inline]
 	</span><span class="kw">fn </span>raw_into_vec(<span class="kw-2">&amp;</span><span class="self">self</span>, raw: <span class="self">Self</span>::Raw) -&gt; Vec&lt;u8&gt; {
 		<span class="self">self</span>.raw_to_slice(<span class="kw-2">&amp;</span>raw).to_vec()
 	}
@@ -256,6 +271,7 @@
 	///
 	/// note to implementors: A default implementation is provided;
 	/// however this can be overridden for optimisation reasons.
+	</span><span class="attr">#[inline]
 	</span><span class="kw">fn </span>raw_into_boxed_slice(<span class="kw-2">&amp;</span><span class="self">self</span>, raw: <span class="self">Self</span>::Raw) -&gt; Box&lt;[u8]&gt; {
 		<span class="self">self</span>.raw_into_vec(raw).into_boxed_slice()
 	}
@@ -265,6 +281,7 @@
 	///
 	/// note to implementors: A default implementation is provided;
 	/// however this can be overridden for optimisation reasons.
+	</span><span class="attr">#[inline]
 	</span><span class="kw">fn </span>raw_clone(<span class="kw-2">&amp;</span><span class="self">self</span>, raw: <span class="kw-2">&amp;</span><span class="self">Self</span>::Raw) -&gt; <span class="self">Self</span>::Raw {
 		<span class="kw">let </span>slice = <span class="self">self</span>.raw_to_slice(raw);
 		<span class="kw">unsafe </span>{ <span class="self">self</span>.raw_from_slice(slice) }
@@ -283,18 +300,21 @@
 
 <span class="kw">impl</span>&lt;<span class="lifetime">'h</span>&gt; SlicesWrap&lt;<span class="lifetime">'h</span>&gt; {
 	<span class="doccomment">/// Joins the slices in sequence, returning a vector of bytes.
+	</span><span class="attr">#[inline]
 	</span><span class="kw">pub fn </span>to_vec(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; Vec&lt;u8&gt; {
 		<span class="self">self</span>.into_iter().collect()
 	}
 
 	<span class="doccomment">/// Joins the slices in sequence, returning a boxed slice.
+	</span><span class="attr">#[inline]
 	</span><span class="kw">pub fn </span>to_boxed_slice(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; Box&lt;[u8]&gt; {
 		<span class="self">self</span>.to_vec().into_boxed_slice()
 	}
 }
 
 <span class="kw">impl</span>&lt;<span class="lifetime">'h</span>&gt; Hash <span class="kw">for </span>SlicesWrap&lt;<span class="lifetime">'h</span>&gt; {
-	<span class="kw">fn </span>hash&lt;H: Hasher&gt;(<span class="kw-2">&amp;</span><span class="self">self</span>, state: <span class="kw-2">&amp;mut </span>H) {
+	<span class="attr">#[inline]
+	</span><span class="kw">fn </span>hash&lt;H: Hasher&gt;(<span class="kw-2">&amp;</span><span class="self">self</span>, state: <span class="kw-2">&amp;mut </span>H) {
 		<span class="self">self</span>.into_iter().for_each(|b| state.write_u8(b));
 	}
 }
@@ -303,7 +323,8 @@
 	<span class="kw">type </span>Item = &lt;SlicesWrapIter&lt;<span class="lifetime">'h</span>&gt; <span class="kw">as </span>Iterator&gt;::Item;
 	<span class="kw">type </span>IntoIter = SlicesWrapIter&lt;<span class="lifetime">'h</span>&gt;;
 
-	<span class="kw">fn </span>into_iter(<span class="self">self</span>) -&gt; <span class="self">Self</span>::IntoIter {
+	<span class="attr">#[inline]
+	</span><span class="kw">fn </span>into_iter(<span class="self">self</span>) -&gt; <span class="self">Self</span>::IntoIter {
 		<span class="kw">let </span><span class="kw-2">mut </span>vec = Vec::with_capacity(<span class="self">self</span>.<span class="number">0</span>.len());
 		<span class="self">self</span>.<span class="number">0</span>.iter().rev().for_each(|slice| vec.push(<span class="kw-2">*</span>slice));
 		SlicesWrapIter(vec)
@@ -337,7 +358,8 @@
 		}
 	}
 
-	<span class="kw">fn </span>size_hint(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; (usize, <span class="prelude-ty">Option</span>&lt;usize&gt;) {
+	<span class="attr">#[inline]
+	</span><span class="kw">fn </span>size_hint(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; (usize, <span class="prelude-ty">Option</span>&lt;usize&gt;) {
 		<span class="kw">let </span>len = <span class="self">self</span>.<span class="number">0</span>.iter().map(|s| s.len()).sum();
 		(len, <span class="prelude-val">Some</span>(len))
 	}

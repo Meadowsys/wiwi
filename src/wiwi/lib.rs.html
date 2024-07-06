@@ -255,6 +255,16 @@
 <a href="#255" id="255">255</a>
 <a href="#256" id="256">256</a>
 <a href="#257" id="257">257</a>
+<a href="#258" id="258">258</a>
+<a href="#259" id="259">259</a>
+<a href="#260" id="260">260</a>
+<a href="#261" id="261">261</a>
+<a href="#262" id="262">262</a>
+<a href="#263" id="263">263</a>
+<a href="#264" id="264">264</a>
+<a href="#265" id="265">265</a>
+<a href="#266" id="266">266</a>
+<a href="#267" id="267">267</a>
 </pre></div><pre class="rust"><code><span class="attr">#![cfg_attr(feature = <span class="string">"nightly"</span>, feature(cfg_overflow_checks))]
 
 #![cfg_attr(feature = <span class="string">"omega-tuples-of-doom"</span>, recursion_limit = <span class="string">"256"</span>)]
@@ -311,6 +321,7 @@
 #![cfg_attr(all(not(any(docsrs, kiwingay)), feature = <span class="string">"iter-unstable"</span>), doc = <span class="string">"- `iter` (unstable)"</span>)]
 #![cfg_attr(all(not(any(docsrs, kiwingay)), feature = <span class="string">"lazy-wrap"</span>), doc = <span class="string">"- `lazy-wrap`"</span>)]
 #![cfg_attr(all(not(any(docsrs, kiwingay)), feature = <span class="string">"lsl-unstable"</span>), doc = <span class="string">"- `lsl` (unstable)"</span>)]
+#![cfg_attr(all(not(any(docsrs, kiwingay)), feature = <span class="string">"mcu-unstable"</span>), doc = <span class="string">"- `mcu` (unstable)"</span>)]
 #![cfg_attr(all(not(any(docsrs, kiwingay)), feature = <span class="string">"memory-usage-unstable"</span>), doc = <span class="string">"- `memory-usage` (unstable)"</span>)]
 #![cfg_attr(all(not(any(docsrs, kiwingay)), feature = <span class="string">"minesweeper-unstable"</span>), doc = <span class="string">"- `minesweeper` (unstable)"</span>)]
 #![cfg_attr(all(not(any(docsrs, kiwingay)), feature = <span class="string">"nominal"</span>), doc = <span class="string">"- `nominal`"</span>)]
@@ -343,6 +354,7 @@
 	not(feature = <span class="string">"iter-unstable"</span>),
 	not(feature = <span class="string">"lazy-wrap"</span>),
 	not(feature = <span class="string">"lsl-unstable"</span>),
+	not(feature = <span class="string">"mcu-unstable"</span>),
 	not(feature = <span class="string">"memory-usage-unstable"</span>),
 	not(feature = <span class="string">"minesweeper-unstable"</span>),
 	not(feature = <span class="string">"nominal"</span>),
@@ -385,6 +397,10 @@
 
 #[cfg(target_pointer_width = <span class="string">"16"</span>)]
 </span><span class="macro">compile_error!</span>(<span class="string">"16-bit platforms are not supported (but please do file an issue if for whatever reason you do need it!)"</span>);
+
+<span class="attr">#[cfg(any(doc, docsrs, kiwingay))]
+#[doc = <span class="macro">include_str!</span>(<span class="string">"../CHANGELOG.md"</span>)]
+</span><span class="kw">pub mod </span>_changelog {}
 
 <span class="kw">mod </span>_internal;
 <span class="kw">pub mod </span>prelude;
@@ -458,6 +474,10 @@
 <span class="attr">#[cfg(feature = <span class="string">"lsl-unstable"</span>)]
 #[cfg_attr(docsrs, doc(cfg(feature = <span class="string">"lsl-unstable"</span>)))]
 </span><span class="kw">pub mod </span>lsl;
+
+<span class="attr">#[cfg(feature = <span class="string">"mcu-unstable"</span>)]
+#[cfg_attr(docsrs, doc(cfg(feature = <span class="string">"mcu-unstable"</span>)))]
+</span><span class="kw">pub mod </span>mcu;
 
 <span class="attr">#[cfg(feature = <span class="string">"memory-usage-unstable"</span>)]
 #[cfg_attr(docsrs, doc(cfg(feature = <span class="string">"memory-usage-unstable"</span>)))]

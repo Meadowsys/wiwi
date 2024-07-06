@@ -1,0 +1,1 @@
+window.SIDEBAR_ITEMS = {"fn":["argb_from_hex","hex","hex_from_argb"]};

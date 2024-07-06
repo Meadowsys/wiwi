@@ -256,6 +256,8 @@
 <a href="#256" id="256">256</a>
 <a href="#257" id="257">257</a>
 <a href="#258" id="258">258</a>
+<a href="#259" id="259">259</a>
+<a href="#260" id="260">260</a>
 </pre></div><pre class="rust"><code><span class="kw">use </span><span class="kw">crate</span>::num_traits::<span class="kw-2">*</span>;
 <span class="kw">use </span>rand::{ Rng, rngs::ThreadRng, thread_rng };
 <span class="kw">use </span>std::time::{ SystemTime, UNIX_EPOCH };
@@ -304,7 +306,8 @@
 }
 
 <span class="kw">impl </span>IDGenerator {
-	<span class="kw">pub fn </span>new() -&gt; <span class="self">Self </span>{
+	<span class="attr">#[inline]
+	</span><span class="kw">pub fn </span>new() -&gt; <span class="self">Self </span>{
 		<span class="comment">// if, _somehow_, the first ID is indeed generated at UNIX time 0,
 		// this initial count value of 1 will mean that ID is not zero. However,
 		// in practical use, the first ID generated will have last_generated_time
@@ -316,7 +319,8 @@
 		<span class="self">Self </span>{ last_generated_time, count }
 	}
 
-	<span class="kw">pub fn </span>next(<span class="kw-2">&amp;mut </span><span class="self">self</span>) -&gt; <span class="prelude-ty">Option</span>&lt;GeneratedID&gt; {
+	<span class="attr">#[inline]
+	</span><span class="kw">pub fn </span>next(<span class="kw-2">&amp;mut </span><span class="self">self</span>) -&gt; <span class="prelude-ty">Option</span>&lt;GeneratedID&gt; {
 		<span class="kw">let </span>now = SystemTime::now()
 			.duration_since(UNIX_EPOCH)
 			.expect(<span class="string">"we are before 01 jan 1970 lol?"</span>)

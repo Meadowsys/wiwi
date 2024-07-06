@@ -653,6 +653,76 @@
 <a href="#653" id="653">653</a>
 <a href="#654" id="654">654</a>
 <a href="#655" id="655">655</a>
+<a href="#656" id="656">656</a>
+<a href="#657" id="657">657</a>
+<a href="#658" id="658">658</a>
+<a href="#659" id="659">659</a>
+<a href="#660" id="660">660</a>
+<a href="#661" id="661">661</a>
+<a href="#662" id="662">662</a>
+<a href="#663" id="663">663</a>
+<a href="#664" id="664">664</a>
+<a href="#665" id="665">665</a>
+<a href="#666" id="666">666</a>
+<a href="#667" id="667">667</a>
+<a href="#668" id="668">668</a>
+<a href="#669" id="669">669</a>
+<a href="#670" id="670">670</a>
+<a href="#671" id="671">671</a>
+<a href="#672" id="672">672</a>
+<a href="#673" id="673">673</a>
+<a href="#674" id="674">674</a>
+<a href="#675" id="675">675</a>
+<a href="#676" id="676">676</a>
+<a href="#677" id="677">677</a>
+<a href="#678" id="678">678</a>
+<a href="#679" id="679">679</a>
+<a href="#680" id="680">680</a>
+<a href="#681" id="681">681</a>
+<a href="#682" id="682">682</a>
+<a href="#683" id="683">683</a>
+<a href="#684" id="684">684</a>
+<a href="#685" id="685">685</a>
+<a href="#686" id="686">686</a>
+<a href="#687" id="687">687</a>
+<a href="#688" id="688">688</a>
+<a href="#689" id="689">689</a>
+<a href="#690" id="690">690</a>
+<a href="#691" id="691">691</a>
+<a href="#692" id="692">692</a>
+<a href="#693" id="693">693</a>
+<a href="#694" id="694">694</a>
+<a href="#695" id="695">695</a>
+<a href="#696" id="696">696</a>
+<a href="#697" id="697">697</a>
+<a href="#698" id="698">698</a>
+<a href="#699" id="699">699</a>
+<a href="#700" id="700">700</a>
+<a href="#701" id="701">701</a>
+<a href="#702" id="702">702</a>
+<a href="#703" id="703">703</a>
+<a href="#704" id="704">704</a>
+<a href="#705" id="705">705</a>
+<a href="#706" id="706">706</a>
+<a href="#707" id="707">707</a>
+<a href="#708" id="708">708</a>
+<a href="#709" id="709">709</a>
+<a href="#710" id="710">710</a>
+<a href="#711" id="711">711</a>
+<a href="#712" id="712">712</a>
+<a href="#713" id="713">713</a>
+<a href="#714" id="714">714</a>
+<a href="#715" id="715">715</a>
+<a href="#716" id="716">716</a>
+<a href="#717" id="717">717</a>
+<a href="#718" id="718">718</a>
+<a href="#719" id="719">719</a>
+<a href="#720" id="720">720</a>
+<a href="#721" id="721">721</a>
+<a href="#722" id="722">722</a>
+<a href="#723" id="723">723</a>
+<a href="#724" id="724">724</a>
+<a href="#725" id="725">725</a>
 </pre></div><pre class="rust"><code><span class="doccomment">//! The String type
 
 </span><span class="kw">use </span><span class="kw">super</span>::pool::{ GlobalPool, Pool, SlicesWrap };
@@ -672,27 +742,33 @@
 
 <span class="doccomment">/// constructors in default pool
 </span><span class="kw">impl </span>String {
-	<span class="kw">pub fn </span>new() -&gt; <span class="self">Self </span>{
+	<span class="attr">#[inline]
+	</span><span class="kw">pub fn </span>new() -&gt; <span class="self">Self </span>{
 		<span class="self">Self</span>::new_in(GlobalPool)
 	}
 
-	<span class="kw">pub fn </span>from_utf8(vec: Vec&lt;u8&gt;) -&gt; <span class="prelude-ty">Result</span>&lt;<span class="self">Self</span>, std_string::FromUtf8Error&gt; {
+	<span class="attr">#[inline]
+	</span><span class="kw">pub fn </span>from_utf8(vec: Vec&lt;u8&gt;) -&gt; <span class="prelude-ty">Result</span>&lt;<span class="self">Self</span>, std_string::FromUtf8Error&gt; {
 		<span class="self">Self</span>::from_utf8_in(vec, GlobalPool)
 	}
 
-	<span class="kw">pub fn </span>from_utf8_slice(slice: <span class="kw-2">&amp;</span>[u8]) -&gt; <span class="prelude-ty">Result</span>&lt;<span class="self">Self</span>, std_str::Utf8Error&gt; {
+	<span class="attr">#[inline]
+	</span><span class="kw">pub fn </span>from_utf8_slice(slice: <span class="kw-2">&amp;</span>[u8]) -&gt; <span class="prelude-ty">Result</span>&lt;<span class="self">Self</span>, std_str::Utf8Error&gt; {
 		<span class="self">Self</span>::from_utf8_slice_in(slice, GlobalPool)
 	}
 
-	<span class="kw">pub fn </span>from_utf8_lossy(v: <span class="kw-2">&amp;</span>[u8]) -&gt; <span class="self">Self </span>{
+	<span class="attr">#[inline]
+	</span><span class="kw">pub fn </span>from_utf8_lossy(v: <span class="kw-2">&amp;</span>[u8]) -&gt; <span class="self">Self </span>{
 		<span class="self">Self</span>::from_utf8_lossy_in(v, GlobalPool)
 	}
 
-	<span class="kw">pub fn </span>from_utf16(v: <span class="kw-2">&amp;</span>[u16]) -&gt; <span class="prelude-ty">Result</span>&lt;<span class="self">Self</span>, std_string::FromUtf16Error&gt; {
+	<span class="attr">#[inline]
+	</span><span class="kw">pub fn </span>from_utf16(v: <span class="kw-2">&amp;</span>[u16]) -&gt; <span class="prelude-ty">Result</span>&lt;<span class="self">Self</span>, std_string::FromUtf16Error&gt; {
 		<span class="self">Self</span>::from_utf16_in(v, GlobalPool)
 	}
 
-	<span class="kw">pub fn </span>from_utf16_lossy(v: <span class="kw-2">&amp;</span>[u16]) -&gt; <span class="self">Self </span>{
+	<span class="attr">#[inline]
+	</span><span class="kw">pub fn </span>from_utf16_lossy(v: <span class="kw-2">&amp;</span>[u16]) -&gt; <span class="self">Self </span>{
 		<span class="self">Self</span>::from_utf16_lossy_in(v, GlobalPool)
 	}
 
@@ -703,28 +779,33 @@
 	// skipping (nightly): into_raw_parts
 	// skipping: from_raw_parts
 
+	</span><span class="attr">#[inline]
 	</span><span class="kw">pub unsafe fn </span>from_utf8_unchecked(bytes: Vec&lt;u8&gt;) -&gt; <span class="self">Self </span>{
 		<span class="self">Self</span>::from_utf8_unchecked_in(bytes, GlobalPool)
 	}
 
-	<span class="kw">pub unsafe fn </span>from_utf8_unchecked_slice(slice: <span class="kw-2">&amp;</span>[u8]) -&gt; <span class="self">Self </span>{
+	<span class="attr">#[inline]
+	</span><span class="kw">pub unsafe fn </span>from_utf8_unchecked_slice(slice: <span class="kw-2">&amp;</span>[u8]) -&gt; <span class="self">Self </span>{
 		<span class="self">Self</span>::from_utf8_unchecked_slice_in(slice, GlobalPool)
 	}
 }
 
 <span class="doccomment">/// constructors in custom pool
 </span><span class="kw">impl</span>&lt;P: Pool&gt; String&lt;P&gt; {
-	<span class="kw">pub fn </span>new_in(pool: P) -&gt; <span class="self">Self </span>{
+	<span class="attr">#[inline]
+	</span><span class="kw">pub fn </span>new_in(pool: P) -&gt; <span class="self">Self </span>{
 		<span class="kw">let </span>raw = pool.raw_empty();
 		<span class="self">Self </span>{ raw, pool }
 	}
 
-	<span class="kw">pub fn </span>from_str_in(s: <span class="kw-2">&amp;</span>str, pool: P) -&gt; <span class="self">Self </span>{
+	<span class="attr">#[inline]
+	</span><span class="kw">pub fn </span>from_str_in(s: <span class="kw-2">&amp;</span>str, pool: P) -&gt; <span class="self">Self </span>{
 		<span class="kw">let </span>raw = <span class="kw">unsafe </span>{ pool.raw_from_slice(s.as_bytes()) };
 		<span class="self">Self </span>{ raw, pool }
 	}
 
-	<span class="kw">pub fn </span>from_utf8_in(vec: Vec&lt;u8&gt;, pool: P) -&gt; <span class="prelude-ty">Result</span>&lt;<span class="self">Self</span>, std_string::FromUtf8Error&gt; {
+	<span class="attr">#[inline]
+	</span><span class="kw">pub fn </span>from_utf8_in(vec: Vec&lt;u8&gt;, pool: P) -&gt; <span class="prelude-ty">Result</span>&lt;<span class="self">Self</span>, std_string::FromUtf8Error&gt; {
 		<span class="comment">// running it through std String because it gives us FromUtf8Error, for
 		// compat with std String's from_utf8 function, don't think there is
 		// any other way to get it than through this
@@ -734,69 +815,81 @@
 		<span class="prelude-val">Ok</span>(<span class="self">Self </span>{ raw, pool })
 	}
 
-	<span class="kw">pub fn </span>from_utf8_slice_in(slice: <span class="kw-2">&amp;</span>[u8], pool: P) -&gt; <span class="prelude-ty">Result</span>&lt;<span class="self">Self</span>, std_str::Utf8Error&gt; {
+	<span class="attr">#[inline]
+	</span><span class="kw">pub fn </span>from_utf8_slice_in(slice: <span class="kw-2">&amp;</span>[u8], pool: P) -&gt; <span class="prelude-ty">Result</span>&lt;<span class="self">Self</span>, std_str::Utf8Error&gt; {
 		<span class="kw">let </span>s = std_str::from_utf8(slice)<span class="question-mark">?</span>;
 		<span class="kw">let </span>raw = <span class="kw">unsafe </span>{ pool.raw_from_slice(s.as_bytes()) };
 		<span class="prelude-val">Ok</span>(<span class="self">Self </span>{ raw, pool })
 	}
 
-	<span class="kw">pub fn </span>from_utf8_lossy_in(v: <span class="kw-2">&amp;</span>[u8], pool: P) -&gt; <span class="self">Self </span>{
+	<span class="attr">#[inline]
+	</span><span class="kw">pub fn </span>from_utf8_lossy_in(v: <span class="kw-2">&amp;</span>[u8], pool: P) -&gt; <span class="self">Self </span>{
 		<span class="kw">let </span>s = StdString::from_utf8_lossy(v);
 		<span class="kw">let </span>raw = <span class="kw">unsafe </span>{ pool.raw_from_slice(s.as_bytes()) };
 		<span class="self">Self </span>{ raw, pool }
 	}
 
-	<span class="kw">pub fn </span>from_utf16_in(v: <span class="kw-2">&amp;</span>[u16], pool: P) -&gt; <span class="prelude-ty">Result</span>&lt;<span class="self">Self</span>, std_string::FromUtf16Error&gt; {
+	<span class="attr">#[inline]
+	</span><span class="kw">pub fn </span>from_utf16_in(v: <span class="kw-2">&amp;</span>[u16], pool: P) -&gt; <span class="prelude-ty">Result</span>&lt;<span class="self">Self</span>, std_string::FromUtf16Error&gt; {
 		<span class="kw">let </span>s = StdString::from_utf16(v)<span class="question-mark">?</span>;
 		<span class="kw">let </span>raw = <span class="kw">unsafe </span>{ pool.raw_from_slice(s.as_bytes()) };
 		<span class="prelude-val">Ok</span>(<span class="self">Self </span>{ raw, pool })
 	}
 
-	<span class="kw">pub fn </span>from_utf16_lossy_in(v: <span class="kw-2">&amp;</span>[u16], pool: P) -&gt; <span class="self">Self </span>{
+	<span class="attr">#[inline]
+	</span><span class="kw">pub fn </span>from_utf16_lossy_in(v: <span class="kw-2">&amp;</span>[u16], pool: P) -&gt; <span class="self">Self </span>{
 		<span class="kw">let </span>s = StdString::from_utf16_lossy(v);
 		<span class="kw">let </span>raw = <span class="kw">unsafe </span>{ pool.raw_from_slice(s.as_bytes()) };
 		<span class="self">Self </span>{ raw, pool }
 	}
 
-	<span class="kw">pub unsafe fn </span>from_utf8_unchecked_in(bytes: Vec&lt;u8&gt;, pool: P) -&gt; <span class="self">Self </span>{
+	<span class="attr">#[inline]
+	</span><span class="kw">pub unsafe fn </span>from_utf8_unchecked_in(bytes: Vec&lt;u8&gt;, pool: P) -&gt; <span class="self">Self </span>{
 		<span class="kw">let </span>raw = pool.raw_from_vec(bytes);
 		<span class="self">Self </span>{ raw, pool }
 	}
 
-	<span class="kw">pub unsafe fn </span>from_utf8_unchecked_slice_in(slice: <span class="kw-2">&amp;</span>[u8], pool: P) -&gt; <span class="self">Self </span>{
+	<span class="attr">#[inline]
+	</span><span class="kw">pub unsafe fn </span>from_utf8_unchecked_slice_in(slice: <span class="kw-2">&amp;</span>[u8], pool: P) -&gt; <span class="self">Self </span>{
 		<span class="kw">let </span>raw = pool.raw_from_slice(slice);
 		<span class="self">Self </span>{ raw, pool }
 	}
 
-	<span class="kw">pub fn </span>to_other_pool&lt;P2: Pool&gt;(<span class="kw-2">&amp;</span><span class="self">self</span>, pool: P2) -&gt; String&lt;P2&gt; {
+	<span class="attr">#[inline]
+	</span><span class="kw">pub fn </span>to_other_pool&lt;P2: Pool&gt;(<span class="kw-2">&amp;</span><span class="self">self</span>, pool: P2) -&gt; String&lt;P2&gt; {
 		<span class="kw">let </span>slice = <span class="self">self</span>.pool.raw_to_slice(<span class="kw-2">&amp;</span><span class="self">self</span>.raw);
 		<span class="kw">let </span>raw = <span class="kw">unsafe </span>{ pool.raw_from_slice(slice) };
 		String { raw, pool }
 	}
 
-	<span class="kw">pub fn </span>into_other_pool&lt;P2: Pool&gt;(<span class="self">self</span>, pool: P2) -&gt; String&lt;P2&gt; {
+	<span class="attr">#[inline]
+	</span><span class="kw">pub fn </span>into_other_pool&lt;P2: Pool&gt;(<span class="self">self</span>, pool: P2) -&gt; String&lt;P2&gt; {
 		<span class="kw">let </span>vec = <span class="self">self</span>.pool.raw_into_vec(<span class="self">self</span>.raw);
 		<span class="kw">let </span>raw = <span class="kw">unsafe </span>{ pool.raw_from_vec(vec) };
 		String { raw, pool }
 	}
 
-	<span class="kw">pub fn </span>clone_to&lt;P2: Pool&gt;(<span class="kw-2">&amp;</span><span class="self">self</span>, pool: P2) -&gt; String&lt;P2&gt; {
+	<span class="attr">#[inline]
+	</span><span class="kw">pub fn </span>clone_to&lt;P2: Pool&gt;(<span class="kw-2">&amp;</span><span class="self">self</span>, pool: P2) -&gt; String&lt;P2&gt; {
 		<span class="self">self</span>.to_other_pool(pool)
 	}
 }
 
 <span class="doccomment">/// methods that work with any pool
 </span><span class="kw">impl</span>&lt;P: Pool&gt; String&lt;P&gt; {
-	<span class="kw">pub fn </span>into_bytes(<span class="self">self</span>) -&gt; Vec&lt;u8&gt; {
+	<span class="attr">#[inline]
+	</span><span class="kw">pub fn </span>into_bytes(<span class="self">self</span>) -&gt; Vec&lt;u8&gt; {
 		<span class="self">self</span>.pool.raw_into_vec(<span class="self">self</span>.raw)
 	}
 
-	<span class="kw">pub fn </span>as_str(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; <span class="kw-2">&amp;</span>str {
+	<span class="attr">#[inline]
+	</span><span class="kw">pub fn </span>as_str(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; <span class="kw-2">&amp;</span>str {
 		<span class="kw">unsafe </span>{ std_str::from_utf8_unchecked(<span class="self">self</span>.as_bytes()) }
 	}
 
 	<span class="comment">// skipping: as_mut_str
 
+	</span><span class="attr">#[inline]
 	</span><span class="kw">pub fn </span>push_str(<span class="kw-2">&amp;mut </span><span class="self">self</span>, string: <span class="kw-2">&amp;</span>str) {
 		<span class="kw">let </span>new_raw = <span class="kw">unsafe </span>{
 			<span class="self">self</span>.pool.raw_from_slices(SlicesWrap(<span class="kw-2">&amp;</span>[
@@ -817,15 +910,18 @@
 	// skipping: shrink_to_fit
 	// skipping: shrink_to
 
+	</span><span class="attr">#[inline]
 	</span><span class="kw">pub fn </span>push(<span class="kw-2">&amp;mut </span><span class="self">self</span>, ch: char) {
 		<span class="self">self</span>.push_str(ch.encode_utf8(<span class="kw-2">&amp;mut </span>[<span class="number">0u8</span>; <span class="number">4</span>]));
 	}
 
-	<span class="kw">pub fn </span>as_bytes(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; <span class="kw-2">&amp;</span>[u8] {
+	<span class="attr">#[inline]
+	</span><span class="kw">pub fn </span>as_bytes(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; <span class="kw-2">&amp;</span>[u8] {
 		<span class="self">self</span>.pool.raw_to_slice(<span class="kw-2">&amp;</span><span class="self">self</span>.raw)
 	}
 
-	<span class="kw">pub fn </span>truncate(<span class="kw-2">&amp;mut </span><span class="self">self</span>, new_len: usize) {
+	<span class="attr">#[inline]
+	</span><span class="kw">pub fn </span>truncate(<span class="kw-2">&amp;mut </span><span class="self">self</span>, new_len: usize) {
 		<span class="kw">if </span>new_len &gt; <span class="self">self</span>.len() { <span class="kw">return </span>}
 
 		<span class="macro">assert!</span>(<span class="self">self</span>.is_char_boundary(new_len));
@@ -835,7 +931,8 @@
 		<span class="self">self</span>.raw = new_raw;
 	}
 
-	<span class="kw">pub fn </span>pop(<span class="kw-2">&amp;mut </span><span class="self">self</span>) -&gt; <span class="prelude-ty">Option</span>&lt;char&gt; {
+	<span class="attr">#[inline]
+	</span><span class="kw">pub fn </span>pop(<span class="kw-2">&amp;mut </span><span class="self">self</span>) -&gt; <span class="prelude-ty">Option</span>&lt;char&gt; {
 		<span class="kw">let </span>ch = <span class="self">self</span>.chars().next_back()<span class="question-mark">?</span>;
 		<span class="kw">let </span>new_len = <span class="self">self</span>.len() - ch.len_utf8();
 
@@ -846,7 +943,8 @@
 		<span class="prelude-val">Some</span>(ch)
 	}
 
-	<span class="kw">pub fn </span>remove(<span class="kw-2">&amp;mut </span><span class="self">self</span>, i: usize) -&gt; char {
+	<span class="attr">#[inline]
+	</span><span class="kw">pub fn </span>remove(<span class="kw-2">&amp;mut </span><span class="self">self</span>, i: usize) -&gt; char {
 		<span class="comment">// let slice =
 		</span><span class="kw">let </span>ch = <span class="self">self</span>[i..].chars().next()
 			.expect(<span class="string">"cannot remove a char from the end of a string"</span>);
@@ -909,11 +1007,13 @@
 		<span class="self">self</span>.raw = new_raw;
 	}
 
-	<span class="kw">pub fn </span>insert(<span class="kw-2">&amp;mut </span><span class="self">self</span>, i: usize, ch: char) {
+	<span class="attr">#[inline]
+	</span><span class="kw">pub fn </span>insert(<span class="kw-2">&amp;mut </span><span class="self">self</span>, i: usize, ch: char) {
 		<span class="self">self</span>.insert_str(i, ch.encode_utf8(<span class="kw-2">&amp;mut </span>[<span class="number">0u8</span>; <span class="number">4</span>]));
 	}
 
-	<span class="kw">pub fn </span>insert_str(<span class="kw-2">&amp;mut </span><span class="self">self</span>, i: usize, string: <span class="kw-2">&amp;</span>str) {
+	<span class="attr">#[inline]
+	</span><span class="kw">pub fn </span>insert_str(<span class="kw-2">&amp;mut </span><span class="self">self</span>, i: usize, string: <span class="kw-2">&amp;</span>str) {
 		<span class="macro">assert!</span>(<span class="self">self</span>.is_char_boundary(i));
 		<span class="kw">let </span>slice = <span class="self">self</span>.as_bytes();
 
@@ -930,11 +1030,13 @@
 
 	<span class="comment">// skipping: as_mut_vec
 
+	</span><span class="attr">#[inline]
 	</span><span class="kw">pub fn </span>split_off(<span class="kw-2">&amp;mut </span><span class="self">self</span>, at: usize) -&gt; <span class="self">Self </span>{
 		<span class="self">self</span>.split_off_in(at, <span class="self">self</span>.pool.clone())
 	}
 
-	<span class="kw">pub fn </span>split_off_in&lt;P2: Pool&gt;(<span class="kw-2">&amp;mut </span><span class="self">self</span>, at: usize, pool: P2) -&gt; String&lt;P2&gt; {
+	<span class="attr">#[inline]
+	</span><span class="kw">pub fn </span>split_off_in&lt;P2: Pool&gt;(<span class="kw-2">&amp;mut </span><span class="self">self</span>, at: usize, pool: P2) -&gt; String&lt;P2&gt; {
 		<span class="macro">assert!</span>(<span class="self">self</span>.is_char_boundary(at));
 
 		<span class="kw">let </span>self_raw = <span class="kw">unsafe </span>{ <span class="self">self</span>.pool.raw_from_slice(<span class="self">self</span>[..at].as_bytes()) };
@@ -944,19 +1046,22 @@
 		String { raw: other_raw, pool }
 	}
 
-	<span class="kw">pub fn </span>clear(<span class="kw-2">&amp;mut </span><span class="self">self</span>) {
+	<span class="attr">#[inline]
+	</span><span class="kw">pub fn </span>clear(<span class="kw-2">&amp;mut </span><span class="self">self</span>) {
 		<span class="self">self</span>.raw = <span class="self">self</span>.pool.raw_empty();
 	}
 
 	<span class="comment">// skipping (for now): drain
 	// skipping (for now): replace_range
 
+	</span><span class="attr">#[inline]
 	</span><span class="kw">pub fn </span>into_boxed_str(<span class="self">self</span>) -&gt; Box&lt;str&gt; {
 		<span class="kw">let </span>boxed = <span class="self">self</span>.pool.raw_into_boxed_slice(<span class="self">self</span>.raw);
 		<span class="kw">unsafe </span>{ std_str::from_boxed_utf8_unchecked(boxed) }
 	}
 
-	<span class="kw">pub fn </span>leak&lt;<span class="lifetime">'h</span>&gt;(<span class="self">self</span>) -&gt; <span class="kw-2">&amp;</span><span class="lifetime">'h </span><span class="kw-2">mut </span>str {
+	<span class="attr">#[inline]
+	</span><span class="kw">pub fn </span>leak&lt;<span class="lifetime">'h</span>&gt;(<span class="self">self</span>) -&gt; <span class="kw-2">&amp;</span><span class="lifetime">'h </span><span class="kw-2">mut </span>str {
 		<span class="kw">let </span>slice = <span class="self">self</span>.pool.raw_into_vec(<span class="self">self</span>.raw).leak();
 		<span class="kw">unsafe </span>{ std_str::from_utf8_unchecked_mut(slice) }
 	}
@@ -964,7 +1069,9 @@
 
 <span class="kw">impl</span>&lt;P: Pool&gt; Add&lt;<span class="kw-2">&amp;</span>str&gt; <span class="kw">for </span>String&lt;P&gt; {
 	<span class="kw">type </span>Output = <span class="self">Self</span>;
-	<span class="kw">fn </span>add(<span class="kw-2">mut </span><span class="self">self</span>, rhs: <span class="kw-2">&amp;</span>str) -&gt; <span class="self">Self </span>{
+
+	<span class="attr">#[inline]
+	</span><span class="kw">fn </span>add(<span class="kw-2">mut </span><span class="self">self</span>, rhs: <span class="kw-2">&amp;</span>str) -&gt; <span class="self">Self </span>{
 		<span class="comment">// delegates to AddAssign&lt;&amp;str&gt; for String&lt;P&gt;
 		</span><span class="self">self </span>+= rhs;
 		<span class="self">self
@@ -973,7 +1080,9 @@
 
 <span class="kw">impl</span>&lt;P: Pool&gt; Add&lt;<span class="kw-2">&amp;</span>str&gt; <span class="kw">for </span><span class="kw-2">&amp;</span>String&lt;P&gt; {
 	<span class="kw">type </span>Output = String&lt;P&gt;;
-	<span class="kw">fn </span>add(<span class="self">self</span>, rhs: <span class="kw-2">&amp;</span>str) -&gt; String&lt;P&gt; {
+
+	<span class="attr">#[inline]
+	</span><span class="kw">fn </span>add(<span class="self">self</span>, rhs: <span class="kw-2">&amp;</span>str) -&gt; String&lt;P&gt; {
 		<span class="kw">let </span>raw = <span class="kw">unsafe </span>{
 			<span class="self">self</span>.pool.raw_from_slices(SlicesWrap(<span class="kw-2">&amp;</span>[
 				<span class="self">self</span>.as_bytes(),
@@ -988,7 +1097,9 @@
 
 <span class="kw">impl</span>&lt;P: Pool, P2: Pool&gt; Add&lt;String&lt;P2&gt;&gt; <span class="kw">for </span>String&lt;P&gt; {
 	<span class="kw">type </span>Output = <span class="self">Self</span>;
-	<span class="kw">fn </span>add(<span class="self">self</span>, rhs: String&lt;P2&gt;) -&gt; <span class="self">Self </span>{
+
+	<span class="attr">#[inline]
+	</span><span class="kw">fn </span>add(<span class="self">self</span>, rhs: String&lt;P2&gt;) -&gt; <span class="self">Self </span>{
 		<span class="comment">// delegates to Add&lt;&amp;str&gt; for String&lt;P&gt;
 		</span><span class="self">self </span>+ <span class="kw-2">&amp;*</span>rhs
 	}
@@ -996,7 +1107,9 @@
 
 <span class="kw">impl</span>&lt;P: Pool, P2: Pool&gt; Add&lt;String&lt;P2&gt;&gt; <span class="kw">for </span><span class="kw-2">&amp;</span>String&lt;P&gt; {
 	<span class="kw">type </span>Output = String&lt;P&gt;;
-	<span class="kw">fn </span>add(<span class="self">self</span>, rhs: String&lt;P2&gt;) -&gt; String&lt;P&gt; {
+
+	<span class="attr">#[inline]
+	</span><span class="kw">fn </span>add(<span class="self">self</span>, rhs: String&lt;P2&gt;) -&gt; String&lt;P&gt; {
 		<span class="comment">// delegates to Add&lt;&amp;str&gt; for &amp;String&lt;P&gt;
 		</span><span class="self">self </span>+ <span class="kw-2">&amp;*</span>rhs
 	}
@@ -1004,7 +1117,9 @@
 
 <span class="kw">impl</span>&lt;P: Pool, P2: Pool&gt; Add&lt;<span class="kw-2">&amp;</span>String&lt;P2&gt;&gt; <span class="kw">for </span>String&lt;P&gt; {
 	<span class="kw">type </span>Output = <span class="self">Self</span>;
-	<span class="kw">fn </span>add(<span class="self">self</span>, rhs: <span class="kw-2">&amp;</span>String&lt;P2&gt;) -&gt; <span class="self">Self </span>{
+
+	<span class="attr">#[inline]
+	</span><span class="kw">fn </span>add(<span class="self">self</span>, rhs: <span class="kw-2">&amp;</span>String&lt;P2&gt;) -&gt; <span class="self">Self </span>{
 		<span class="comment">// delegates to Add&lt;&amp;str&gt; for String&lt;P&gt;
 		</span><span class="self">self </span>+ <span class="kw-2">&amp;**</span>rhs
 	}
@@ -1012,7 +1127,9 @@
 
 <span class="kw">impl</span>&lt;P: Pool, P2: Pool&gt; Add&lt;<span class="kw-2">&amp;</span>String&lt;P2&gt;&gt; <span class="kw">for </span><span class="kw-2">&amp;</span>String&lt;P&gt; {
 	<span class="kw">type </span>Output = String&lt;P&gt;;
-	<span class="kw">fn </span>add(<span class="self">self</span>, rhs: <span class="kw-2">&amp;</span>String&lt;P2&gt;) -&gt; String&lt;P&gt; {
+
+	<span class="attr">#[inline]
+	</span><span class="kw">fn </span>add(<span class="self">self</span>, rhs: <span class="kw-2">&amp;</span>String&lt;P2&gt;) -&gt; String&lt;P&gt; {
 		<span class="comment">// delegates to Add&lt;&amp;str&gt; for &amp;String&lt;P&gt;
 		</span><span class="self">self </span>+ <span class="kw-2">&amp;**</span>rhs
 	}
@@ -1020,7 +1137,9 @@
 
 <span class="kw">impl</span>&lt;P: Pool&gt; Add&lt;StdString&gt; <span class="kw">for </span>String&lt;P&gt; {
 	<span class="kw">type </span>Output = <span class="self">Self</span>;
-	<span class="kw">fn </span>add(<span class="self">self</span>, rhs: StdString) -&gt; <span class="self">Self </span>{
+
+	<span class="attr">#[inline]
+	</span><span class="kw">fn </span>add(<span class="self">self</span>, rhs: StdString) -&gt; <span class="self">Self </span>{
 		<span class="comment">// delegates to Add&lt;&amp;str&gt; for String&lt;P&gt;
 		</span><span class="self">self </span>+ <span class="kw-2">&amp;*</span>rhs
 	}
@@ -1028,7 +1147,9 @@
 
 <span class="kw">impl</span>&lt;P: Pool&gt; Add&lt;<span class="kw-2">&amp;</span>StdString&gt; <span class="kw">for </span>String&lt;P&gt; {
 	<span class="kw">type </span>Output = <span class="self">Self</span>;
-	<span class="kw">fn </span>add(<span class="self">self</span>, rhs: <span class="kw-2">&amp;</span>StdString) -&gt; <span class="self">Self </span>{
+
+	<span class="attr">#[inline]
+	</span><span class="kw">fn </span>add(<span class="self">self</span>, rhs: <span class="kw-2">&amp;</span>StdString) -&gt; <span class="self">Self </span>{
 		<span class="comment">// delegates to Add&lt;&amp;str&gt; for String&lt;P&gt;
 		</span><span class="self">self </span>+ <span class="kw-2">&amp;**</span>rhs
 	}
@@ -1036,7 +1157,9 @@
 
 <span class="kw">impl</span>&lt;P: Pool&gt; Add&lt;StdString&gt; <span class="kw">for </span><span class="kw-2">&amp;</span>String&lt;P&gt; {
 	<span class="kw">type </span>Output = String&lt;P&gt;;
-	<span class="kw">fn </span>add(<span class="self">self</span>, rhs: StdString) -&gt; String&lt;P&gt; {
+
+	<span class="attr">#[inline]
+	</span><span class="kw">fn </span>add(<span class="self">self</span>, rhs: StdString) -&gt; String&lt;P&gt; {
 		<span class="comment">// delegates to Add&lt;&amp;str&gt; for &amp;String&lt;P&gt;
 		</span><span class="self">self </span>+ <span class="kw-2">&amp;*</span>rhs
 	}
@@ -1044,64 +1167,75 @@
 
 <span class="kw">impl</span>&lt;P: Pool&gt; Add&lt;<span class="kw-2">&amp;</span>StdString&gt; <span class="kw">for </span><span class="kw-2">&amp;</span>String&lt;P&gt; {
 	<span class="kw">type </span>Output = String&lt;P&gt;;
-	<span class="kw">fn </span>add(<span class="self">self</span>, rhs: <span class="kw-2">&amp;</span>StdString) -&gt; String&lt;P&gt; {
+
+	<span class="attr">#[inline]
+	</span><span class="kw">fn </span>add(<span class="self">self</span>, rhs: <span class="kw-2">&amp;</span>StdString) -&gt; String&lt;P&gt; {
 		<span class="comment">// delegates to Add&lt;&amp;str&gt; for &amp;String&lt;P&gt;
 		</span><span class="self">self </span>+ <span class="kw-2">&amp;**</span>rhs
 	}
 }
 
 <span class="kw">impl</span>&lt;P: Pool&gt; AddAssign&lt;<span class="kw-2">&amp;</span>str&gt; <span class="kw">for </span>String&lt;P&gt; {
-	<span class="kw">fn </span>add_assign(<span class="kw-2">&amp;mut </span><span class="self">self</span>, rhs: <span class="kw-2">&amp;</span>str) {
+	<span class="attr">#[inline]
+	</span><span class="kw">fn </span>add_assign(<span class="kw-2">&amp;mut </span><span class="self">self</span>, rhs: <span class="kw-2">&amp;</span>str) {
 		<span class="self">self</span>.push_str(rhs);
 	}
 }
 
 <span class="kw">impl</span>&lt;P: Pool, P2: Pool&gt; AddAssign&lt;String&lt;P2&gt;&gt; <span class="kw">for </span>String&lt;P&gt; {
-	<span class="kw">fn </span>add_assign(<span class="kw-2">&amp;mut </span><span class="self">self</span>, rhs: String&lt;P2&gt;) {
+	<span class="attr">#[inline]
+	</span><span class="kw">fn </span>add_assign(<span class="kw-2">&amp;mut </span><span class="self">self</span>, rhs: String&lt;P2&gt;) {
 		<span class="comment">// delegates to AddAssign&lt;&amp;str&gt; for String&lt;P&gt;
 		</span><span class="kw-2">*</span><span class="self">self </span>+= <span class="kw-2">&amp;*</span>rhs
 	}
 }
 
 <span class="kw">impl</span>&lt;P: Pool, P2: Pool&gt; AddAssign&lt;<span class="kw-2">&amp;</span>String&lt;P2&gt;&gt; <span class="kw">for </span>String&lt;P&gt; {
-	<span class="kw">fn </span>add_assign(<span class="kw-2">&amp;mut </span><span class="self">self</span>, rhs: <span class="kw-2">&amp;</span>String&lt;P2&gt;) {
+	<span class="attr">#[inline]
+	</span><span class="kw">fn </span>add_assign(<span class="kw-2">&amp;mut </span><span class="self">self</span>, rhs: <span class="kw-2">&amp;</span>String&lt;P2&gt;) {
 		<span class="comment">// delegates to AddAssign&lt;&amp;str&gt; for String&lt;P&gt;
 		</span><span class="kw-2">*</span><span class="self">self </span>+= <span class="kw-2">&amp;**</span>rhs
 	}
 }
 
 <span class="kw">impl</span>&lt;P: Pool&gt; AsRef&lt;[u8]&gt; <span class="kw">for </span>String&lt;P&gt; {
-	<span class="kw">fn </span>as_ref(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; <span class="kw-2">&amp;</span>[u8] {
+	<span class="attr">#[inline]
+	</span><span class="kw">fn </span>as_ref(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; <span class="kw-2">&amp;</span>[u8] {
 		<span class="self">self</span>.as_bytes()
 	}
 }
 
 <span class="kw">impl</span>&lt;P: Pool&gt; AsRef&lt;OsStr&gt; <span class="kw">for </span>String&lt;P&gt; {
-	<span class="kw">fn </span>as_ref(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; <span class="kw-2">&amp;</span>OsStr {
+	<span class="attr">#[inline]
+	</span><span class="kw">fn </span>as_ref(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; <span class="kw-2">&amp;</span>OsStr {
 		<span class="self">self</span>.as_str().as_ref()
 	}
 }
 
 <span class="kw">impl</span>&lt;P: Pool&gt; AsRef&lt;Path&gt; <span class="kw">for </span>String&lt;P&gt; {
-	<span class="kw">fn </span>as_ref(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; <span class="kw-2">&amp;</span>Path {
+	<span class="attr">#[inline]
+	</span><span class="kw">fn </span>as_ref(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; <span class="kw-2">&amp;</span>Path {
 		<span class="self">self</span>.as_str().as_ref()
 	}
 }
 
 <span class="kw">impl</span>&lt;P: Pool&gt; AsRef&lt;str&gt; <span class="kw">for </span>String&lt;P&gt; {
-	<span class="kw">fn </span>as_ref(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; <span class="kw-2">&amp;</span>str {
+	<span class="attr">#[inline]
+	</span><span class="kw">fn </span>as_ref(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; <span class="kw-2">&amp;</span>str {
 		<span class="self">self
 	</span>}
 }
 
 <span class="kw">impl</span>&lt;P: Pool&gt; Borrow&lt;str&gt; <span class="kw">for </span>String&lt;P&gt; {
-	<span class="kw">fn </span>borrow(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; <span class="kw-2">&amp;</span>str {
+	<span class="attr">#[inline]
+	</span><span class="kw">fn </span>borrow(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; <span class="kw-2">&amp;</span>str {
 		<span class="self">self
 	</span>}
 }
 
 <span class="kw">impl</span>&lt;P: Pool&gt; Clone <span class="kw">for </span>String&lt;P&gt; {
-	<span class="kw">fn </span>clone(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; <span class="self">Self </span>{
+	<span class="attr">#[inline]
+	</span><span class="kw">fn </span>clone(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; <span class="self">Self </span>{
 		<span class="kw">let </span>raw = <span class="self">self</span>.pool.raw_clone(<span class="kw-2">&amp;</span><span class="self">self</span>.raw);
 		<span class="kw">let </span>pool = <span class="self">self</span>.pool.clone();
 		<span class="self">Self </span>{ raw, pool }
@@ -1118,7 +1252,8 @@
 }
 
 <span class="kw">impl</span>&lt;P: Pool&gt; Default <span class="kw">for </span>String&lt;P&gt; {
-	<span class="kw">fn </span>default() -&gt; <span class="self">Self </span>{
+	<span class="attr">#[inline]
+	</span><span class="kw">fn </span>default() -&gt; <span class="self">Self </span>{
 		<span class="kw">let </span>pool = P::default();
 		<span class="kw">let </span>raw = pool.raw_empty();
 		<span class="self">Self </span>{ raw, pool }
@@ -1127,13 +1262,16 @@
 
 <span class="kw">impl</span>&lt;P: Pool&gt; Deref <span class="kw">for </span>String&lt;P&gt; {
 	<span class="kw">type </span>Target = str;
-	<span class="kw">fn </span>deref(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; <span class="kw-2">&amp;</span>str {
+
+	<span class="attr">#[inline]
+	</span><span class="kw">fn </span>deref(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; <span class="kw-2">&amp;</span>str {
 		<span class="self">self</span>.as_str()
 	}
 }
 
 <span class="kw">impl</span>&lt;P: Pool&gt; Display <span class="kw">for </span>String&lt;P&gt; {
-	<span class="kw">fn </span>fmt(<span class="kw-2">&amp;</span><span class="self">self</span>, f: <span class="kw-2">&amp;mut </span>fmt::Formatter&lt;<span class="lifetime">'_</span>&gt;) -&gt; fmt::Result {
+	<span class="attr">#[inline]
+	</span><span class="kw">fn </span>fmt(<span class="kw-2">&amp;</span><span class="self">self</span>, f: <span class="kw-2">&amp;mut </span>fmt::Formatter&lt;<span class="lifetime">'_</span>&gt;) -&gt; fmt::Result {
 		Display::fmt(<span class="kw-2">&amp;**</span><span class="self">self</span>, f)
 	}
 }
@@ -1147,13 +1285,15 @@
 // impl&lt;P: Pool&gt; Extend&lt;char&gt; for String&lt;P&gt; {}
 
 </span><span class="kw">impl </span>From&lt;<span class="kw-2">&amp;</span>str&gt; <span class="kw">for </span>String {
-	<span class="kw">fn </span>from(s: <span class="kw-2">&amp;</span>str) -&gt; <span class="self">Self </span>{
+	<span class="attr">#[inline]
+	</span><span class="kw">fn </span>from(s: <span class="kw-2">&amp;</span>str) -&gt; <span class="self">Self </span>{
 		<span class="self">Self</span>::from_str_in(s, GlobalPool)
 	}
 }
 
 <span class="kw">impl</span>&lt;P: Pool&gt; From&lt;(<span class="kw-2">&amp;</span>str, P)&gt; <span class="kw">for </span>String&lt;P&gt; {
-	<span class="kw">fn </span>from((s, pool): (<span class="kw-2">&amp;</span>str, P)) -&gt; <span class="self">Self </span>{
+	<span class="attr">#[inline]
+	</span><span class="kw">fn </span>from((s, pool): (<span class="kw-2">&amp;</span>str, P)) -&gt; <span class="self">Self </span>{
 		<span class="self">Self</span>::from_str_in(s, pool)
 	}
 }

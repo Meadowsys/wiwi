@@ -1593,6 +1593,7 @@
 <a href="#1593" id="1593">1593</a>
 <a href="#1594" id="1594">1594</a>
 <a href="#1595" id="1595">1595</a>
+<a href="#1596" id="1596">1596</a>
 </pre></div><pre class="rust"><code><span class="kw">use super</span>::{ chainer, chain_fn, ChainHalf, NonChainHalf, SliceMutChain, SliceRefChain };
 <span class="kw">use </span>std::{ ptr, str, vec };
 <span class="kw">use </span>std::cmp::Ordering;
@@ -2769,7 +2770,8 @@
 }
 
 <span class="kw">impl</span>&lt;T, <span class="kw">const </span>N: usize&gt; VecChain&lt;[T; N]&gt; {
-	<span class="kw">pub fn </span>flatten(<span class="kw-2">mut </span><span class="self">self</span>) -&gt; VecChain&lt;T&gt; {
+	<span class="attr">#[inline]
+	</span><span class="kw">pub fn </span>flatten(<span class="kw-2">mut </span><span class="self">self</span>) -&gt; VecChain&lt;T&gt; {
 		<span class="kw">let </span>(len, cap) = <span class="kw">if </span>mem::size_of::&lt;T&gt;() == <span class="number">0 </span>{
 			<span class="kw">let </span>len = <span class="self">self</span>.as_nonchain().len()
 				.checked_mul(N)

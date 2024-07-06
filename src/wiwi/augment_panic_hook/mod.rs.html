@@ -8,22 +8,14 @@
 <a href="#8" id="8">8</a>
 <a href="#9" id="9">9</a>
 <a href="#10" id="10">10</a>
-<a href="#11" id="11">11</a>
-<a href="#12" id="12">12</a>
-<a href="#13" id="13">13</a>
-<a href="#14" id="14">14</a>
 </pre></div><pre class="rust"><code><span class="kw">use </span>std::panic::{ <span class="self">self</span>, PanicInfo };
 
 <span class="attr">#[inline]
 </span><span class="kw">pub fn </span>augment_panic_hook(hook: <span class="kw">impl </span>Fn(<span class="kw-2">&amp;</span>PanicInfo&lt;<span class="lifetime">'_</span>&gt;) + Send + Sync + <span class="lifetime">'static</span>) {
-	augment_panic_hook_inner(Box::new(hook))
-}
-
-<span class="kw">fn </span>augment_panic_hook_inner(hook: Box&lt;<span class="kw">dyn </span>Fn(<span class="kw-2">&amp;</span>PanicInfo&lt;<span class="lifetime">'_</span>&gt;) + Send + Sync + <span class="lifetime">'static</span>&gt;) {
 	<span class="kw">let </span>old = panic::take_hook();
 	panic::set_hook(Box::new(<span class="kw">move </span>|panic_info| {
 		hook(panic_info);
-		old(panic_info)
+		old(panic_info);
 	}))
 }
 </code></pre></div></section></main></body></html>
