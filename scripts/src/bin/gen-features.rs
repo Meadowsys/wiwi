@@ -111,7 +111,7 @@ fn main() {
 
 		#[unstable]
 		"mcu"
-		"[material colour utilities](https://github.com/material-foundation/material-color-utilities)"
+		"[material colour utilities](https://github.com/material-foundation/material-color-utilities), ported to rust"
 		features: ["num-traits"]
 
 		#[unstable]
