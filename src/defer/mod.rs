@@ -4,6 +4,15 @@ use std::mem::ManuallyDrop;
 use std::ops::{ Deref, DerefMut };
 use std::thread::panicking;
 
+/// Defer some code to run at the end of the current scope
+///
+/// Note: this macro will capture all values it uses, and hold it until the end
+/// of the scope, where the code is actually run. You can specify `move` at the
+/// start of the macro to move them in, use [`Cell`](std::cell::Cell) or something
+/// similar for interior mutability, use wiwi's `with-cloned` feature and `move`
+/// to clone them in, ... or just write the code at the end of the scope, to get
+/// around this limitation. Unfortunately, there isn't any (compiler) magic going
+/// on here :<
 #[macro_export]
 macro_rules! defer {
 	{ move $($defer:tt)* } => {
@@ -16,6 +25,10 @@ macro_rules! defer {
 }
 pub use defer;
 
+/// Defer some code to run at the end of the current scope, but only if the thread
+/// is not panicking
+///
+/// See [`defer!`] for more information
 #[macro_export]
 macro_rules! defer_success {
 	{ move $($defer:tt)* } => {
@@ -28,6 +41,10 @@ macro_rules! defer_success {
 }
 pub use defer_success;
 
+/// Defer some code to run at the end of the current scope, but only if the thread
+/// is unwinding due to panic
+///
+/// See [`defer!`] for more information
 #[macro_export]
 macro_rules! defer_unwind {
 	{ move $($defer:tt)* } => {
@@ -40,6 +57,11 @@ macro_rules! defer_unwind {
 }
 pub use defer_unwind;
 
+/// The main deferring container struct
+///
+/// You're probably looking for one of [`DeferAlways`], [`DeferSuccess`],
+/// [`DeferUnwind`], [`DeferRuntime`], or [`DeferRuntimeFn`], as those type aliases
+/// are the ones that contain the actual useful interfaces.
 #[must_use = "the code intended to be deferred would run immediately because rust drops the value immediately (if you only want to defer running some code, consider `defer!` or its success/unwind variants)"]
 pub struct Defer<T, W: when::When, F = fn(T)>
 where
@@ -139,10 +161,20 @@ mod when {
 	}
 }
 
+/// Run the deferred code always
 pub type DeferAlways<T, F = fn(T)> = Defer<T, when::Always, F>;
+
+/// Run the deferred code only if the thread is not panicking
 pub type DeferSuccess<T, F = fn(T)> = Defer<T, when::Success, F>;
+
+/// Run the deferred code only if the thread is unwinding due to panick
 pub type DeferUnwind<T, F = fn(T)> = Defer<T, when::Unwind, F>;
+
+/// Run the deferred code, based on a condition (`bool` value) evaluated at runtime
 pub type DeferRuntime<T, F = fn(T)> = Defer<T, when::Runtime, F>;
+
+/// Run the deferred code, based on a more complex condition (closure taking a
+/// stored value, returning a bool) evaluated at runtime
 pub type DeferRuntimeFn<
 	T,
 	Twhen,
@@ -155,6 +187,7 @@ where
 	W: when::When,
 	F: FnOnce(T)
 {
+	/// Internal fn to construct [`Defer`] with a given [`When`](when::When) instance
 	#[inline]
 	fn _new(value: T, f: F, when: W) -> Self {
 		let value = ManuallyDrop::new(value);
@@ -163,6 +196,8 @@ where
 		Defer { value, when, f }
 	}
 
+	/// Internal fn to disassemble `self`, drop `when`, and reconstruct the
+	/// [`Defer`] it with the given `when` instance
 	#[inline]
 	fn _replace_when<W2>(self, when: W2) -> Defer<T, W2, F>
 	where
@@ -179,26 +214,36 @@ where
 		}
 	}
 
+	/// Consumes and returns an instance of [`DeferAlways`] with the same
+	/// closure and value
 	#[inline]
 	pub fn into_always(self) -> DeferAlways<T, F> {
 		self._replace_when(when::Always)
 	}
 
+	/// Consumes and returns an instance of [`DeferSuccess`] with the same
+	/// closure and value
 	#[inline]
 	pub fn into_on_success(self) -> DeferSuccess<T, F> {
 		self._replace_when(when::Success)
 	}
 
+	/// Consumes and returns an instance of [`DeferUnwind`] with the same
+	/// closure and value
 	#[inline]
 	pub fn into_on_unwind(self) -> DeferUnwind<T, F> {
 		self._replace_when(when::Unwind)
 	}
 
+	/// Consumes and returns an instance of [`DeferRuntime`] with the same
+	/// closure and value
 	#[inline]
 	pub fn into_runtime(self, should_run: bool) -> DeferRuntime<T, F> {
 		self._replace_when(when::Runtime { should_run })
 	}
 
+	/// Consumes and returns an instance of [`DeferRuntimeFn`] with the same
+	/// closure and value
 	#[inline]
 	pub fn into_runtime_fn<Twhen, Fwhen>(
 		self,
@@ -253,11 +298,13 @@ where
 		Self::_new(value, f, when::Runtime { should_run })
 	}
 
+	/// Returns if this [`DeferRuntime`] will run
 	#[inline]
 	pub fn should_run(&self) -> bool {
 		self.when.should_run
 	}
 
+	/// Set if this [`DeferRuntime`] should run
 	#[inline]
 	pub fn set_should_run(&mut self, should_run: bool) {
 		self.when.should_run = should_run;
@@ -277,6 +324,7 @@ where
 		})
 	}
 
+	/// Takes a copy of the should run value, if it implements [`Copy`]
 	#[inline]
 	pub fn should_run_value(&self) -> Twhen
 	where
@@ -285,24 +333,28 @@ where
 		*self.when.value
 	}
 
+	/// Returns a reference to the should run value
 	#[inline]
 	pub fn should_run_value_ref(&self) -> &Twhen {
 		&self.when.value
 	}
 
+	/// Returns a mut reference to the should run value
 	#[inline]
 	pub fn should_run_value_mut(&mut self) -> &mut Twhen {
 		&mut self.when.value
 	}
 
+	/// Sets the should run value to the provided value, dropping the
+	/// previous one
 	#[inline]
 	pub fn set_should_run_value(&mut self, should_run_value: Twhen) {
-		unsafe {
-			ManuallyDrop::drop(&mut self.when.value);
-			self.when.value = ManuallyDrop::new(should_run_value);
-		}
+		let old = self.swap_should_run_value(should_run_value);
+		drop(old);
 	}
 
+	/// Swaps the stored should run value with the provided value, then
+	/// returns it
 	#[inline]
 	pub fn swap_should_run_value(&mut self, should_run_value: Twhen) -> Twhen {
 		unsafe {
