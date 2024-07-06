@@ -131,6 +131,10 @@
 #[cfg(target_pointer_width = "16")]
 compile_error!("16-bit platforms are not supported (but please do file an issue if for whatever reason you do need it!)");
 
+#[cfg(any(doc, docsrs, kiwingay))]
+#[doc = include_str!("../CHANGELOG.md")]
+pub mod _changelog {}
+
 mod _internal;
 pub mod prelude;
 
