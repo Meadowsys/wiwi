@@ -45,6 +45,21 @@ Hallo!
     - they are implemented by the chain type if the nonchain type implements it as well, and for the most part just delegate the impl into the inner struct (one exception is `Debug`, where the chainer struct makes itself known, but still forwards to inner)
   - some more documentation
   - callbacks provide chainer structs as much as possible
+- feature `defer`
+  - rewrote it :o
+  - added the ability to choose, at runtime, whether to run the drop code or not (using both a boolean value and a fn/closure)
+    - this was possible previously by storing state in the value of the `Defer` itself, and using conditionals in the attached closure itself, but now it's got its own seperated thing, which is cleaner and more obvious that this is possible with
+    - `DeferRuntime` allows setting a boolean, and `DeferRuntimeFn` allows determining it with another closure (and another value)
+    - construct these with `DeferRuntime::new` and `DeferRuntimeFn::new`
+  - Convert between the different static types with functions `Defer::into_always`, `Defer::into_on_success`, `Defer::into_on_unwind`, `Defer::into_runtime`, `Defer::into_runtime_fn`
+    - These consume and return a new static type
+    - if you want just regular boolean setting, you're probably looking for `DeferRuntime`
+  - replaced some functions with associated functions instead
+    - `defer_with` -> `DeferAlways::new`
+    - `defer_on_success_with` -> `DeferSuccess::new`
+    - `defer_on_unwind_with` -> `DeferUnwind::new`
+  - removed `OnDrop::defer`, `OnDrop::defer_success`, and `OnDrop::defer_unwind`
+    - they were just different names for `OnDrop::on_drop`, `OnDrop::on_success_drop`, and `OnDrop::on_unwind_drop`, respectively
 - feature `int`
   - implemented (overflowing) add, (overflowing) sub, and (widening) mul for arrays of arbitrary length holding arbitrary integers (powered by `num-traits` feature, very nice)
 - feature `lsl`
