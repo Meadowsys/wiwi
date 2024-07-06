@@ -2,17 +2,16 @@ use std::fmt::{ self, Debug, Display };
 use std::marker::PhantomData;
 use std::mem::ManuallyDrop;
 use std::ops::{ Deref, DerefMut };
-use std::ptr;
 use std::thread::panicking;
 
 #[macro_export]
 macro_rules! defer {
 	{ move $($defer:tt)* } => {
-		let __defer = $crate::defer::defer_with((), move |()| { $($defer)* });
+		let __defer = $crate::defer::DeferAlways::new((), move |()| { $($defer)* });
 	};
 
 	{ $($defer:tt)* } => {
-		let __defer = $crate::defer::defer_with((), |()| { $($defer)* });
+		let __defer = $crate::defer::DeferAlways::new((), |()| { $($defer)* });
 	};
 }
 pub use defer;
@@ -20,11 +19,11 @@ pub use defer;
 #[macro_export]
 macro_rules! defer_success {
 	{ move $($defer:tt)* } => {
-		let __defer = $crate::defer::defer_on_success_with((), move |()| { $($defer)* });
+		let __defer = $crate::defer::DeferSuccess::new((), move |()| { $($defer)* });
 	};
 
 	{ $($defer:tt)* } => {
-		let __defer = $crate::defer::defer_on_success_with((), |()| { $($defer)* });
+		let __defer = $crate::defer::DeferSuccess::new((), |()| { $($defer)* });
 	};
 }
 pub use defer_success;
@@ -32,11 +31,11 @@ pub use defer_success;
 #[macro_export]
 macro_rules! defer_unwind {
 	{ move $($defer:tt)* } => {
-		let __defer = $crate::defer::defer_on_unwind_with((), move |()| { $($defer)* });
+		let __defer = $crate::defer::DeferUnwind::new((), move |()| { $($defer)* });
 	};
 
 	{ $($defer:tt)* } => {
-		let __defer = $crate::defer::defer_on_unwind_with((), |()| { $($defer)* });
+		let __defer = $crate::defer::DeferUnwind::new((), |()| { $($defer)* });
 	};
 }
 pub use defer_unwind;
@@ -47,84 +46,226 @@ where
 	F: FnOnce(T)
 {
 	value: ManuallyDrop<T>,
-	f: ManuallyDrop<F>,
-	_when: PhantomData<W>
+	when: ManuallyDrop<W>,
+	f: ManuallyDrop<F>
 }
 
 mod when {
 	use super::*;
 
-	pub trait When: Debug {
-		fn run() -> bool;
-		fn construct_for_debug() -> Self;
+	pub trait When {
+		fn should_run(self) -> bool;
 	}
 
 	#[derive(Debug)]
 	pub struct Always;
-	#[derive(Debug)]
-	pub struct Success;
-	#[derive(Debug)]
-	pub struct Unwind;
 
 	impl When for Always {
 		#[inline]
-		fn run() -> bool { true }
-		#[inline]
-		fn construct_for_debug() -> Self { Self }
+		fn should_run(self) -> bool { true }
 	}
+
+	#[derive(Debug)]
+	pub struct Success;
 
 	impl When for Success {
 		#[inline]
-		fn run() -> bool { !panicking() }
-		#[inline]
-		fn construct_for_debug() -> Self { Self }
+		fn should_run(self) -> bool { !panicking() }
 	}
+
+	#[derive(Debug)]
+	pub struct Unwind;
 
 	impl When for Unwind {
 		#[inline]
-		fn run() -> bool { panicking() }
+		fn should_run(self) -> bool { panicking() }
+	}
+
+	#[derive(Debug)]
+	pub struct Runtime {
+		pub(super) should_run: bool
+	}
+
+	impl When for Runtime {
 		#[inline]
-		fn construct_for_debug() -> Self { Self }
+		fn should_run(self) -> bool { self.should_run }
+	}
+
+	pub struct RuntimeFn<T, F = fn(T) -> bool>
+	where
+		F: FnOnce(T) -> bool
+	{
+		pub(super) value: ManuallyDrop<T>,
+		pub(super) f: ManuallyDrop<F>
+	}
+
+	impl<T, F> Debug for RuntimeFn<T, F>
+	where
+		F: FnOnce(T) -> bool,
+		T: Debug
+	{
+		fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
+			f.debug_struct("Defer<Runtime>")
+				.field("value", &*self.value)
+				.finish_non_exhaustive()
+		}
+	}
+
+	impl<T, F> When for RuntimeFn<T, F>
+	where
+		F: FnOnce(T) -> bool
+	{
+		#[inline]
+		fn should_run(self) -> bool {
+			unsafe {
+				let mut me = ManuallyDrop::new(self);
+				let value = ManuallyDrop::take(&mut me.value);
+				let f = ManuallyDrop::take(&mut me.f);
+				f(value)
+			}
+		}
+	}
+
+	impl<T, F> Drop for RuntimeFn<T, F>
+	where
+		F: FnOnce(T) -> bool
+	{
+		fn drop(&mut self) {
+			unsafe {
+				ManuallyDrop::drop(&mut self.value);
+				ManuallyDrop::drop(&mut self.f);
+			}
+		}
 	}
 }
 
-pub type DeferAlways<T, F> = Defer<T, when::Always, F>;
-pub type DeferSuccess<T, F> = Defer<T, when::Success, F>;
-pub type DeferUnwind<T, F> = Defer<T, when::Unwind, F>;
+pub type DeferAlways<T, F = fn(T)> = Defer<T, when::Always, F>;
+pub type DeferSuccess<T, F = fn(T)> = Defer<T, when::Success, F>;
+pub type DeferUnwind<T, F = fn(T)> = Defer<T, when::Unwind, F>;
+pub type DeferRuntime<T, F = fn(T)> = Defer<T, when::Runtime, F>;
+pub type DeferRuntimeFn<
+	T,
+	Twhen,
+	F = fn(T),
+	Fwhen = fn(Twhen) -> bool
+> = Defer<T, when::RuntimeFn<Twhen, Fwhen>, F>;
 
-#[inline]
-fn _new_with<T, W, F>(value: T, f: F) -> Defer<T, W, F>
+impl<T, W, F> Defer<T, W, F>
 where
 	W: when::When,
 	F: FnOnce(T)
 {
-	let value = ManuallyDrop::new(value);
-	let f = ManuallyDrop::new(f);
-	Defer { value, f, _when: PhantomData }
+	#[inline]
+	fn _new(value: T, f: F, when: W) -> Self {
+		let value = ManuallyDrop::new(value);
+		let when = ManuallyDrop::new(when);
+		let f = ManuallyDrop::new(f);
+		Defer { value, when, f }
+	}
+
+	#[inline]
+	fn _replace_when<W2>(self, when: W2) -> Defer<T, W2, F>
+	where
+		W2: when::When
+	{
+		unsafe {
+			let mut me = ManuallyDrop::new(self);
+
+			let value = ManuallyDrop::take(&mut me.value);
+			let f = ManuallyDrop::take(&mut me.f);
+			ManuallyDrop::drop(&mut me.when);
+
+			Defer::_new(value, f, when)
+		}
+	}
+
+	#[inline]
+	pub fn into_always(self) -> DeferAlways<T, F> {
+		self._replace_when(when::Always)
+	}
+
+	#[inline]
+	pub fn into_on_success(self) -> DeferSuccess<T, F> {
+		self._replace_when(when::Success)
+	}
+
+	#[inline]
+	pub fn into_on_unwind(self) -> DeferUnwind<T, F> {
+		self._replace_when(when::Unwind)
+	}
+
+	#[inline]
+	pub fn into_runtime(self, should_run: bool) -> DeferRuntime<T, F> {
+		self._replace_when(when::Runtime { should_run })
+	}
+
+	#[inline]
+	pub fn into_runtime_fn<Twhen, Fwhen>(
+		self,
+		should_run_value: Twhen,
+		should_run: Fwhen
+	) -> DeferRuntimeFn<T, Twhen, F, Fwhen>
+	where
+		Fwhen: FnOnce(Twhen) -> bool
+	{
+		let value = ManuallyDrop::new(should_run_value);
+		let f = ManuallyDrop::new(should_run);
+		self._replace_when(when::RuntimeFn { value, f })
+	}
 }
 
-#[inline]
-pub fn defer_with<T, F>(value: T, f: F) -> DeferAlways<T, F>
+impl<T, F> DeferAlways<T, F>
 where
 	F: FnOnce(T)
 {
-	_new_with(value, f)
+	#[inline]
+	pub fn new(value: T, f: F) -> Self {
+		Self::_new(value, f, when::Always)
+	}
 }
 
-#[inline]
-pub fn defer_on_success_with<T, F>(value: T, f: F) -> DeferSuccess<T, F>
+impl<T, F> DeferSuccess<T, F>
 where
 	F: FnOnce(T)
 {
-	_new_with(value, f)
+	#[inline]
+	pub fn new(value: T, f: F) -> Self {
+		Self::_new(value, f, when::Success)
+	}
 }
 
-#[inline]
-pub fn defer_on_unwind_with<T, F>(value: T, f: F) -> DeferUnwind<T, F>
+impl<T, F> DeferUnwind<T, F>
 where
 	F: FnOnce(T)
 {
-	_new_with(value, f)
+	#[inline]
+	pub fn new(value: T, f: F) -> Self {
+		Self::_new(value, f, when::Unwind)
+	}
+}
+
+impl<T, F> DeferRuntime<T, F>
+where
+	F: FnOnce(T)
+{
+	#[inline]
+	pub fn new(value: T, f: F, should_run: bool) -> Self {
+		Self::_new(value, f, when::Runtime { should_run })
+	}
+}
+
+impl<T, Twhen, F, Fwhen> DeferRuntimeFn<T, Twhen, F, Fwhen>
+where
+	F: FnOnce(T),
+	Fwhen: FnOnce(Twhen) -> bool
+{
+	#[inline]
+	pub fn new(value: T, f: F, should_run_value: Twhen, should_run: Fwhen) -> Self {
+		Self::_new(value, f, when::RuntimeFn {
+			value: ManuallyDrop::new(should_run_value),
+			f: ManuallyDrop::new(should_run)
+		})
+	}
 }
 
 impl<T, W, F> Deref for Defer<T, W, F>
@@ -159,10 +300,11 @@ where
 	#[inline]
 	fn drop(&mut self) {
 		unsafe {
-			let value = ptr::read(&*self.value);
-			let f = ptr::read(&*self.f);
+			let value = ManuallyDrop::take(&mut self.value);
+			let when = ManuallyDrop::take(&mut self.when);
+			let f = ManuallyDrop::take(&mut self.f);
 
-			if !W::run() { return }
+			if !when.should_run() { return }
 			f(value);
 		}
 	}
@@ -171,13 +313,13 @@ where
 impl<T, W, F> Debug for Defer<T, W, F>
 where
 	T: Debug,
-	W: when::When,
+	W: when::When + Debug,
 	F: FnOnce(T)
 {
 	fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
 		f.debug_struct("Defer")
 			.field("value", &**self)
-			.field("when", &W::construct_for_debug())
+			.field("when", &*self.when)
 			.finish_non_exhaustive()
 	}
 }
@@ -224,7 +366,7 @@ pub trait OnDrop: Sized {
 	where
 		F: FnOnce(Self)
 	{
-		_new_with(self, f)
+		DeferAlways::new(self, f)
 	}
 
 	#[inline]
@@ -232,7 +374,7 @@ pub trait OnDrop: Sized {
 	where
 		F: FnOnce(Self)
 	{
-		_new_with(self, f)
+		DeferSuccess::new(self, f)
 	}
 
 	#[inline]
@@ -240,31 +382,7 @@ pub trait OnDrop: Sized {
 	where
 		F: FnOnce(Self)
 	{
-		_new_with(self, f)
-	}
-
-	#[inline]
-	fn defer<F>(self, f: F) -> DeferAlways<Self, F>
-	where
-		F: FnOnce(Self)
-	{
-		_new_with(self, f)
-	}
-
-	#[inline]
-	fn defer_success<F>(self, f: F) -> DeferSuccess<Self, F>
-	where
-		F: FnOnce(Self)
-	{
-		_new_with(self, f)
-	}
-
-	#[inline]
-	fn defer_unwind<F>(self, f: F) -> DeferUnwind<Self, F>
-	where
-		F: FnOnce(Self)
-	{
-		_new_with(self, f)
+		DeferUnwind::new(self, f)
 	}
 }
 
