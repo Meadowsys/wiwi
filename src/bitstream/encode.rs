@@ -432,7 +432,5 @@ mod tests {
 				0b00000000
 			]);
 		}
-
-		fn write_bits_checked_u128() {}
 	}
 }

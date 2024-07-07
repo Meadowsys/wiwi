@@ -352,8 +352,8 @@ where
 		return Err(DecodeError::InvalidChar)
 	};
 
-	// reversal process of encode. Max value is 84^5, or 4.182.119.424, which
-	// is less than u32::MAX, or 4.294.967.296, so will not overflow.
+	// this can overflow a u32 (but not u64), so we decode in a u64 first,
+	// and then we check for overflow past u32's bits and error if so
 	let mut int = byte1.into_u64();
 
 	int *= TABLE_ENCODER_LEN.into_u64();

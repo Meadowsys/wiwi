@@ -197,7 +197,7 @@ where
 	}
 
 	/// Internal fn to disassemble `self`, drop `when`, and reconstruct the
-	/// [`Defer`] it with the given `when` instance
+	/// [`Defer`] with the given `when` instance
 	#[inline]
 	fn _replace_when<W2>(self, when: W2) -> Defer<T, W2, F>
 	where

@@ -1,5 +1,7 @@
 //! Fast and efficient implementation of hex encoding.
+
 use crate::_internal::encoding_utils::UnsafeBufWriteGuard;
+use std::str;
 
 /// Length of encoding table. Not actually used in encoding/decoding data.
 pub const TABLE_ENCODER_LEN: usize = 16;
@@ -55,7 +57,7 @@ fn _encode<const UPPER: bool>(bytes: &[u8]) -> String {
 	unsafe { encode::generic::<UPPER>(bytes_ptr, &mut dest, rounds) };
 
 	let vec = unsafe { dest.into_full_vec() };
-	debug_assert!(String::from_utf8(vec.clone()).is_ok(), "output bytes are valid utf-8");
+	debug_assert!(str::from_utf8(&vec).is_ok(), "output bytes are valid utf-8");
 	unsafe { String::from_utf8_unchecked(vec) }
 }
 
