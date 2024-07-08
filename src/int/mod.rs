@@ -3,5 +3,6 @@ pub mod ints;
 mod add;
 mod sub;
 pub(crate) mod mul;
+mod div;
 
-// TODO: div, rem, shl, shr, not, bitand, bitor, bitxor, sum, product
+// TODO: rem, shl, shr, not, bitand, bitor, bitxor, sum, product
