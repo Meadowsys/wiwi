@@ -1,10 +1,13 @@
 use crate::num_traits::SubBorrowing;
 use std::mem::MaybeUninit;
 
-fn sub_overflowing<const BYTES: usize, I: SubBorrowing + Copy>(
-	int1: [I; BYTES],
-	int2: [I; BYTES]
-) -> ([I; BYTES], bool) {
+fn sub_overflowing<I, const BYTES: usize>(
+	int1: &[I; BYTES],
+	int2: &[I; BYTES]
+) -> ([I; BYTES], bool)
+where
+	I: SubBorrowing
+{
 	unsafe {
 		let int1_ptr = int1.as_ptr();
 		let int2_ptr = int2.as_ptr();
@@ -15,8 +18,8 @@ fn sub_overflowing<const BYTES: usize, I: SubBorrowing + Copy>(
 		let mut borrow = false;
 
 		for i in 0..BYTES {
-			let i1 = *int1_ptr.add(i);
-			let i2 = *int2_ptr.add(i);
+			let i1 = (*int1_ptr.add(i)).clone();
+			let i2 = (*int2_ptr.add(i)).clone();
 
 			let (r, b) = I::sub_borrowing(i1, i2, borrow);
 
@@ -45,7 +48,7 @@ mod tests {
 			let int1 = orig_int1.to_le_bytes();
 			let int2 = orig_int2.to_le_bytes();
 
-			let (res, overflow) = sub_overflowing(int1, int2);
+			let (res, overflow) = sub_overflowing(&int1, &int2);
 			let res = u32::from_le_bytes(res);
 
 			assert_eq!(expected, (res, overflow));

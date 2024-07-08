@@ -3,12 +3,12 @@ use std::mem::MaybeUninit;
 
 // TODO: generic params can't be used in const exprs because I dunno why
 // so we just return 2 arrays, in le order (so it can be transmuted to [I; BYTES * 2])
-pub fn mul_widening<const BYTES: usize, I>(
-	int1: [I; BYTES],
-	int2: [I; BYTES]
+pub fn mul_widening<I, const BYTES: usize>(
+	int1: &[I; BYTES],
+	int2: &[I; BYTES]
 ) -> [[I; BYTES]; 2]
 where
-	I: AddCarrying + AddOverflowing + MulWidening + Copy
+	I: AddCarrying + AddOverflowing + MulWidening
 {
 	// SAFETY: it is not possible to overflow `result`:
 	// - `result` is double the size of one input array of length `BYTES`
@@ -24,31 +24,38 @@ where
 		let int1_ptr = int1.as_ptr();
 		let int2_ptr = int2.as_ptr();
 
-		let mut result = [[I::ZERO; BYTES]; 2];
+		// manually construct the array
+		let mut result = MaybeUninit::<[[I; BYTES]; 2]>::uninit();
+		let result_ptr = result.as_mut_ptr().cast::<I>();
+		for i in 0..(BYTES * 2) {
+			result_ptr.add(i).write(I::ZERO);
+		}
+
+		let mut result = result.assume_init();
 		let result_ptr = result.as_mut_ptr().cast::<I>();
 
 		for i_outer in 0..BYTES {
-			let i1 = *int1_ptr.add(i_outer);
+			let i1 = &*int1_ptr.add(i_outer);
 			for i_inner in 0..BYTES {
-				let i2 = *int2_ptr.add(i_inner);
+				let i2 = &*int2_ptr.add(i_inner);
 
-				let (l, h) = I::mul_widening(i1, i2);
+				let (l, h) = I::mul_widening(i1.clone(), i2.clone());
 
 				let base = i_outer + i_inner;
 				let mut base_ptr = result_ptr.add(base);
 
-				let (res, carry) = (*base_ptr).add_overflowing(l);
+				let (res, carry) = (*base_ptr).clone().add_overflowing(l);
 				base_ptr.write(res);
 				base_ptr = base_ptr.add(1);
 
-				let (mut res, mut carry) = (*base_ptr).add_carrying(h, carry);
+				let (mut res, mut carry) = (*base_ptr).clone().add_carrying(h, carry);
 				base_ptr.write(res);
 				base_ptr = base_ptr.add(1);
 
 				for _ in (base + 2)..(BYTES * 2) {
 					if !carry { break }
 
-					let (r, c) = (*base_ptr).add_overflowing(I::ONE);
+					let (r, c) = (*base_ptr).clone().add_overflowing(I::ONE);
 					base_ptr.write(r);
 
 					base_ptr = base_ptr.add(1);
@@ -79,7 +86,7 @@ mod tests {
 			let int1 = orig_int1.to_le_bytes();
 			let int2 = orig_int2.to_le_bytes();
 
-			let res = mul_widening(int1, int2);
+			let res = mul_widening(&int1, &int2);
 			let res = u64::from_le_bytes(unsafe { transmute(res) });
 
 			assert_eq!(expected, res);
@@ -96,7 +103,7 @@ mod tests {
 			let int1 = int1.to_le_bytes();
 			let int2 = int2.to_le_bytes();
 
-			let res = mul_widening(int1, int2);
+			let res = mul_widening(&int1, &int2);
 			let res = u128::from_le_bytes(unsafe { transmute(res) });
 
 			assert_eq!(expected, res);
@@ -105,7 +112,7 @@ mod tests {
 			let int1 = unsafe { transmute::<_, [u16; 4]>(int1) };
 			let int2 = unsafe { transmute::<_, [u16; 4]>(int2) };
 
-			let res = mul_widening(int1, int2);
+			let res = mul_widening(&int1, &int2);
 			let res = u128::from_le_bytes(unsafe { transmute(res) });
 
 			assert_eq!(expected, res);
@@ -114,7 +121,7 @@ mod tests {
 			let int1 = unsafe { transmute::<_, [u32; 2]>(int1) };
 			let int2 = unsafe { transmute::<_, [u32; 2]>(int2) };
 
-			let res = mul_widening(int1, int2);
+			let res = mul_widening(&int1, &int2);
 			let res = u128::from_le_bytes(unsafe { transmute(res) });
 
 			assert_eq!(expected, res);
@@ -123,7 +130,7 @@ mod tests {
 			let int1 = unsafe { transmute::<_, [u64; 1]>(int1) };
 			let int2 = unsafe { transmute::<_, [u64; 1]>(int2) };
 
-			let res = mul_widening(int1, int2);
+			let res = mul_widening(&int1, &int2);
 			let res = u128::from_le_bytes(unsafe { transmute(res) });
 
 			assert_eq!(expected, res);
@@ -135,7 +142,7 @@ mod tests {
 		// this is pretty much just a type check lol
 		// with 0 sized arrays the optimiser likely can prove the function
 		// is a no-op and completely yeet the whole thing
-		let res = mul_widening::<0, u32>([], []);
+		let res = mul_widening::<u32, 0>(&[], &[]);
 		let res = unsafe { transmute::<_, [u32; 0]>(res) };
 		assert_eq!(res, []);
 	}

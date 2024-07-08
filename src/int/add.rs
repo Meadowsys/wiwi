@@ -1,10 +1,13 @@
 use crate::num_traits::AddCarrying;
 use std::mem::MaybeUninit;
 
-pub fn add_overflowing<const BYTES: usize, I: AddCarrying + Copy>(
-	int1: [I; BYTES],
-	int2: [I; BYTES]
-) -> ([I; BYTES], bool) {
+pub fn add_overflowing<I, const BYTES: usize>(
+	int1: &[I; BYTES],
+	int2: &[I; BYTES]
+) -> ([I; BYTES], bool)
+where
+	I: AddCarrying
+{
 	unsafe {
 		let int1_ptr = int1.as_ptr();
 		let int2_ptr = int2.as_ptr();
@@ -15,8 +18,8 @@ pub fn add_overflowing<const BYTES: usize, I: AddCarrying + Copy>(
 		let mut carry = false;
 
 		for i in 0..BYTES {
-			let i1 = *int1_ptr.add(i);
-			let i2 = *int2_ptr.add(i);
+			let i1 = (*int1_ptr.add(i)).clone();
+			let i2 = (*int2_ptr.add(i)).clone();
 
 			let (r, c) = I::add_carrying(i1, i2, carry);
 
@@ -45,7 +48,7 @@ mod tests {
 			let int1 = orig_int1.to_le_bytes();
 			let int2 = orig_int2.to_le_bytes();
 
-			let (res, overflow) = add_overflowing(int1, int2);
+			let (res, overflow) = add_overflowing(&int1, &int2);
 			let res = u32::from_le_bytes(res);
 
 			assert_eq!(expected, (res, overflow));

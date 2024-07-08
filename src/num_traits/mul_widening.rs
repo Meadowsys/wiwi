@@ -60,8 +60,8 @@ impl MulWidening for u128 {
 		let (rhs1, rhs2) = <u128 as Narrowing<u64>>::split(rhs);
 
 		let [[lhs1, lhs2], [rhs1, rhs2]] = crate::int::mul::mul_widening(
-			[lhs1, lhs2],
-			[rhs1, rhs2]
+			&[lhs1, lhs2],
+			&[rhs1, rhs2]
 		);
 
 		let lhs = <u128 as Narrowing<u64>>::join(lhs1, lhs2);
