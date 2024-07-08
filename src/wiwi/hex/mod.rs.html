@@ -192,8 +192,12 @@
 <a href="#192" id="192">192</a>
 <a href="#193" id="193">193</a>
 <a href="#194" id="194">194</a>
+<a href="#195" id="195">195</a>
+<a href="#196" id="196">196</a>
 </pre></div><pre class="rust"><code><span class="doccomment">//! Fast and efficient implementation of hex encoding.
+
 </span><span class="kw">use </span><span class="kw">crate</span>::_internal::encoding_utils::UnsafeBufWriteGuard;
+<span class="kw">use </span>std::str;
 
 <span class="doccomment">/// Length of encoding table. Not actually used in encoding/decoding data.
 </span><span class="kw">pub const </span>TABLE_ENCODER_LEN: usize = <span class="number">16</span>;
@@ -249,7 +253,7 @@
 	</span><span class="kw">unsafe </span>{ encode::generic::&lt;UPPER&gt;(bytes_ptr, <span class="kw-2">&amp;mut </span>dest, rounds) };
 
 	<span class="kw">let </span>vec = <span class="kw">unsafe </span>{ dest.into_full_vec() };
-	<span class="macro">debug_assert!</span>(String::from_utf8(vec.clone()).is_ok(), <span class="string">"output bytes are valid utf-8"</span>);
+	<span class="macro">debug_assert!</span>(str::from_utf8(<span class="kw-2">&amp;</span>vec).is_ok(), <span class="string">"output bytes are valid utf-8"</span>);
 	<span class="kw">unsafe </span>{ String::from_utf8_unchecked(vec) }
 }
 

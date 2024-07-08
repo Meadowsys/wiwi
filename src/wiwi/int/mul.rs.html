@@ -140,17 +140,24 @@
 <a href="#140" id="140">140</a>
 <a href="#141" id="141">141</a>
 <a href="#142" id="142">142</a>
+<a href="#143" id="143">143</a>
+<a href="#144" id="144">144</a>
+<a href="#145" id="145">145</a>
+<a href="#146" id="146">146</a>
+<a href="#147" id="147">147</a>
+<a href="#148" id="148">148</a>
+<a href="#149" id="149">149</a>
 </pre></div><pre class="rust"><code><span class="kw">use </span><span class="kw">crate</span>::num_traits::<span class="kw-2">*</span>;
 <span class="kw">use </span>std::mem::MaybeUninit;
 
 <span class="comment">// TODO: generic params can't be used in const exprs because I dunno why
 // so we just return 2 arrays, in le order (so it can be transmuted to [I; BYTES * 2])
-</span><span class="kw">pub fn </span>mul_widening&lt;<span class="kw">const </span>BYTES: usize, I&gt;(
-	int1: [I; BYTES],
-	int2: [I; BYTES]
+</span><span class="kw">pub fn </span>mul_widening&lt;I, <span class="kw">const </span>BYTES: usize&gt;(
+	int1: <span class="kw-2">&amp;</span>[I; BYTES],
+	int2: <span class="kw-2">&amp;</span>[I; BYTES]
 ) -&gt; [[I; BYTES]; <span class="number">2</span>]
 <span class="kw">where
-	</span>I: AddCarrying + AddOverflowing + MulWidening + Copy
+	</span>I: AddCarrying + AddOverflowing + MulWidening
 {
 	<span class="comment">// SAFETY: it is not possible to overflow `result`:
 	// - `result` is double the size of one input array of length `BYTES`
@@ -166,31 +173,38 @@
 		<span class="kw">let </span>int1_ptr = int1.as_ptr();
 		<span class="kw">let </span>int2_ptr = int2.as_ptr();
 
-		<span class="kw">let </span><span class="kw-2">mut </span>result = [[I::ZERO; BYTES]; <span class="number">2</span>];
+		<span class="comment">// manually construct the array
+		</span><span class="kw">let </span><span class="kw-2">mut </span>result = MaybeUninit::&lt;[[I; BYTES]; <span class="number">2</span>]&gt;::uninit();
+		<span class="kw">let </span>result_ptr = result.as_mut_ptr().cast::&lt;I&gt;();
+		<span class="kw">for </span>i <span class="kw">in </span><span class="number">0</span>..(BYTES * <span class="number">2</span>) {
+			result_ptr.add(i).write(I::ZERO);
+		}
+
+		<span class="kw">let </span><span class="kw-2">mut </span>result = result.assume_init();
 		<span class="kw">let </span>result_ptr = result.as_mut_ptr().cast::&lt;I&gt;();
 
 		<span class="kw">for </span>i_outer <span class="kw">in </span><span class="number">0</span>..BYTES {
-			<span class="kw">let </span>i1 = <span class="kw-2">*</span>int1_ptr.add(i_outer);
+			<span class="kw">let </span>i1 = <span class="kw-2">&amp;*</span>int1_ptr.add(i_outer);
 			<span class="kw">for </span>i_inner <span class="kw">in </span><span class="number">0</span>..BYTES {
-				<span class="kw">let </span>i2 = <span class="kw-2">*</span>int2_ptr.add(i_inner);
+				<span class="kw">let </span>i2 = <span class="kw-2">&amp;*</span>int2_ptr.add(i_inner);
 
-				<span class="kw">let </span>(l, h) = I::mul_widening(i1, i2);
+				<span class="kw">let </span>(l, h) = I::mul_widening(i1.clone(), i2.clone());
 
 				<span class="kw">let </span>base = i_outer + i_inner;
 				<span class="kw">let </span><span class="kw-2">mut </span>base_ptr = result_ptr.add(base);
 
-				<span class="kw">let </span>(res, carry) = (<span class="kw-2">*</span>base_ptr).add_overflowing(l);
+				<span class="kw">let </span>(res, carry) = (<span class="kw-2">*</span>base_ptr).clone().add_overflowing(l);
 				base_ptr.write(res);
 				base_ptr = base_ptr.add(<span class="number">1</span>);
 
-				<span class="kw">let </span>(<span class="kw-2">mut </span>res, <span class="kw-2">mut </span>carry) = (<span class="kw-2">*</span>base_ptr).add_carrying(h, carry);
+				<span class="kw">let </span>(<span class="kw-2">mut </span>res, <span class="kw-2">mut </span>carry) = (<span class="kw-2">*</span>base_ptr).clone().add_carrying(h, carry);
 				base_ptr.write(res);
 				base_ptr = base_ptr.add(<span class="number">1</span>);
 
 				<span class="kw">for _ in </span>(base + <span class="number">2</span>)..(BYTES * <span class="number">2</span>) {
 					<span class="kw">if </span>!carry { <span class="kw">break </span>}
 
-					<span class="kw">let </span>(r, c) = (<span class="kw-2">*</span>base_ptr).add_overflowing(I::ONE);
+					<span class="kw">let </span>(r, c) = (<span class="kw-2">*</span>base_ptr).clone().add_overflowing(I::ONE);
 					base_ptr.write(r);
 
 					base_ptr = base_ptr.add(<span class="number">1</span>);
@@ -221,7 +235,7 @@
 			<span class="kw">let </span>int1 = orig_int1.to_le_bytes();
 			<span class="kw">let </span>int2 = orig_int2.to_le_bytes();
 
-			<span class="kw">let </span>res = mul_widening(int1, int2);
+			<span class="kw">let </span>res = mul_widening(<span class="kw-2">&amp;</span>int1, <span class="kw-2">&amp;</span>int2);
 			<span class="kw">let </span>res = u64::from_le_bytes(<span class="kw">unsafe </span>{ transmute(res) });
 
 			<span class="macro">assert_eq!</span>(expected, res);
@@ -238,7 +252,7 @@
 			<span class="kw">let </span>int1 = int1.to_le_bytes();
 			<span class="kw">let </span>int2 = int2.to_le_bytes();
 
-			<span class="kw">let </span>res = mul_widening(int1, int2);
+			<span class="kw">let </span>res = mul_widening(<span class="kw-2">&amp;</span>int1, <span class="kw-2">&amp;</span>int2);
 			<span class="kw">let </span>res = u128::from_le_bytes(<span class="kw">unsafe </span>{ transmute(res) });
 
 			<span class="macro">assert_eq!</span>(expected, res);
@@ -247,7 +261,7 @@
 			</span><span class="kw">let </span>int1 = <span class="kw">unsafe </span>{ transmute::&lt;<span class="kw">_</span>, [u16; <span class="number">4</span>]&gt;(int1) };
 			<span class="kw">let </span>int2 = <span class="kw">unsafe </span>{ transmute::&lt;<span class="kw">_</span>, [u16; <span class="number">4</span>]&gt;(int2) };
 
-			<span class="kw">let </span>res = mul_widening(int1, int2);
+			<span class="kw">let </span>res = mul_widening(<span class="kw-2">&amp;</span>int1, <span class="kw-2">&amp;</span>int2);
 			<span class="kw">let </span>res = u128::from_le_bytes(<span class="kw">unsafe </span>{ transmute(res) });
 
 			<span class="macro">assert_eq!</span>(expected, res);
@@ -256,7 +270,7 @@
 			</span><span class="kw">let </span>int1 = <span class="kw">unsafe </span>{ transmute::&lt;<span class="kw">_</span>, [u32; <span class="number">2</span>]&gt;(int1) };
 			<span class="kw">let </span>int2 = <span class="kw">unsafe </span>{ transmute::&lt;<span class="kw">_</span>, [u32; <span class="number">2</span>]&gt;(int2) };
 
-			<span class="kw">let </span>res = mul_widening(int1, int2);
+			<span class="kw">let </span>res = mul_widening(<span class="kw-2">&amp;</span>int1, <span class="kw-2">&amp;</span>int2);
 			<span class="kw">let </span>res = u128::from_le_bytes(<span class="kw">unsafe </span>{ transmute(res) });
 
 			<span class="macro">assert_eq!</span>(expected, res);
@@ -265,7 +279,7 @@
 			</span><span class="kw">let </span>int1 = <span class="kw">unsafe </span>{ transmute::&lt;<span class="kw">_</span>, [u64; <span class="number">1</span>]&gt;(int1) };
 			<span class="kw">let </span>int2 = <span class="kw">unsafe </span>{ transmute::&lt;<span class="kw">_</span>, [u64; <span class="number">1</span>]&gt;(int2) };
 
-			<span class="kw">let </span>res = mul_widening(int1, int2);
+			<span class="kw">let </span>res = mul_widening(<span class="kw-2">&amp;</span>int1, <span class="kw-2">&amp;</span>int2);
 			<span class="kw">let </span>res = u128::from_le_bytes(<span class="kw">unsafe </span>{ transmute(res) });
 
 			<span class="macro">assert_eq!</span>(expected, res);
@@ -277,7 +291,7 @@
 		<span class="comment">// this is pretty much just a type check lol
 		// with 0 sized arrays the optimiser likely can prove the function
 		// is a no-op and completely yeet the whole thing
-		</span><span class="kw">let </span>res = mul_widening::&lt;<span class="number">0</span>, u32&gt;([], []);
+		</span><span class="kw">let </span>res = mul_widening::&lt;u32, <span class="number">0</span>&gt;(<span class="kw-2">&amp;</span>[], <span class="kw-2">&amp;</span>[]);
 		<span class="kw">let </span>res = <span class="kw">unsafe </span>{ transmute::&lt;<span class="kw">_</span>, [u32; <span class="number">0</span>]&gt;(res) };
 		<span class="macro">assert_eq!</span>(res, []);
 	}

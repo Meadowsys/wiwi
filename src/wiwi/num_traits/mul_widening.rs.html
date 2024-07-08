@@ -150,8 +150,8 @@
 		<span class="kw">let </span>(rhs1, rhs2) = &lt;u128 <span class="kw">as </span>Narrowing&lt;u64&gt;&gt;::split(rhs);
 
 		<span class="kw">let </span>[[lhs1, lhs2], [rhs1, rhs2]] = <span class="kw">crate</span>::int::mul::mul_widening(
-			[lhs1, lhs2],
-			[rhs1, rhs2]
+			<span class="kw-2">&amp;</span>[lhs1, lhs2],
+			<span class="kw-2">&amp;</span>[rhs1, rhs2]
 		);
 
 		<span class="kw">let </span>lhs = &lt;u128 <span class="kw">as </span>Narrowing&lt;u64&gt;&gt;::join(lhs1, lhs2);

@@ -52,13 +52,19 @@
 <a href="#52" id="52">52</a>
 <a href="#53" id="53">53</a>
 <a href="#54" id="54">54</a>
+<a href="#55" id="55">55</a>
+<a href="#56" id="56">56</a>
+<a href="#57" id="57">57</a>
 </pre></div><pre class="rust"><code><span class="kw">use </span><span class="kw">crate</span>::num_traits::SubBorrowing;
 <span class="kw">use </span>std::mem::MaybeUninit;
 
-<span class="kw">fn </span>sub_overflowing&lt;<span class="kw">const </span>BYTES: usize, I: SubBorrowing + Copy&gt;(
-	int1: [I; BYTES],
-	int2: [I; BYTES]
-) -&gt; ([I; BYTES], bool) {
+<span class="kw">fn </span>sub_overflowing&lt;I, <span class="kw">const </span>BYTES: usize&gt;(
+	int1: <span class="kw-2">&amp;</span>[I; BYTES],
+	int2: <span class="kw-2">&amp;</span>[I; BYTES]
+) -&gt; ([I; BYTES], bool)
+<span class="kw">where
+	</span>I: SubBorrowing
+{
 	<span class="kw">unsafe </span>{
 		<span class="kw">let </span>int1_ptr = int1.as_ptr();
 		<span class="kw">let </span>int2_ptr = int2.as_ptr();
@@ -69,8 +75,8 @@
 		<span class="kw">let </span><span class="kw-2">mut </span>borrow = <span class="bool-val">false</span>;
 
 		<span class="kw">for </span>i <span class="kw">in </span><span class="number">0</span>..BYTES {
-			<span class="kw">let </span>i1 = <span class="kw-2">*</span>int1_ptr.add(i);
-			<span class="kw">let </span>i2 = <span class="kw-2">*</span>int2_ptr.add(i);
+			<span class="kw">let </span>i1 = (<span class="kw-2">*</span>int1_ptr.add(i)).clone();
+			<span class="kw">let </span>i2 = (<span class="kw-2">*</span>int2_ptr.add(i)).clone();
 
 			<span class="kw">let </span>(r, b) = I::sub_borrowing(i1, i2, borrow);
 
@@ -99,7 +105,7 @@
 			<span class="kw">let </span>int1 = orig_int1.to_le_bytes();
 			<span class="kw">let </span>int2 = orig_int2.to_le_bytes();
 
-			<span class="kw">let </span>(res, overflow) = sub_overflowing(int1, int2);
+			<span class="kw">let </span>(res, overflow) = sub_overflowing(<span class="kw-2">&amp;</span>int1, <span class="kw-2">&amp;</span>int2);
 			<span class="kw">let </span>res = u32::from_le_bytes(res);
 
 			<span class="macro">assert_eq!</span>(expected, (res, overflow));
