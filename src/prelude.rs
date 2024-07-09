@@ -26,7 +26,6 @@
 	not(feature = "nominal"),
 	not(feature = "num-traits-unstable"),
 	not(feature = "path-unstable"),
-	not(feature = "ptr-unstable"),
 	not(feature = "serialiser-binary-unstable"),
 	not(feature = "serialiser-text-unstable"),
 	not(feature = "string-pool-unstable"),
