@@ -1,3 +1,5 @@
+use std::mem::transmute;
+
 #[repr(transparent)]
 pub struct Str {
 	inner: [u8]
@@ -9,13 +11,13 @@ pub struct String {
 
 impl Str {
 	#[inline]
-	pub unsafe fn from_utf8_unchecked(utf8: &[u8]) -> &Str {
-		&*(utf8 as *const [u8] as *const Str)
+	pub const unsafe fn from_utf8_unchecked(utf8: &[u8]) -> &Str {
+		transmute(utf8)
 	}
 
 	#[inline]
 	pub unsafe fn from_utf8_unchecked_mut(utf8: &mut [u8]) -> &mut Str {
-		&mut *(utf8 as *mut [u8] as *mut Str)
+		transmute(utf8)
 	}
 }
 

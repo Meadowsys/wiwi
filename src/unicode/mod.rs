@@ -14,7 +14,7 @@ pub struct Char {
 
 impl Char {
 	#[inline]
-	pub const fn from_std_char(c: std::primitive::char) -> Self {
+	pub const fn from_std_char(c: char) -> Self {
 		// std's char has same invariants that we do
 		debug_assert!(Self::try_from_u32(c as _).is_some());
 
@@ -23,10 +23,10 @@ impl Char {
 
 	#[inline]
 	pub const fn try_from_u32(c: u32) -> Option<Self> {
-		if (c > 0xd7ff && c < 0xe000) || c > 0x10ffff {
-			None
-		} else {
+		if validate_codepoint(c) {
 			Some(Self { inner: c })
+		} else {
+			None
 		}
 	}
 
@@ -76,6 +76,7 @@ impl Char {
 		}
 	}
 
+	#[inline]
 	pub const fn encode_utf32(self) -> CharUtf32 {
 		CharUtf32::One { value: self.to_u32() }
 	}
@@ -98,6 +99,11 @@ pub enum CharUtf16 {
 #[derive(Debug, PartialEq, Eq)]
 pub enum CharUtf32 {
 	One { value: u32 }
+}
+
+#[inline]
+pub const fn validate_codepoint(c: u32) -> bool {
+	!((c > 0xd7ff && c < 0xe000) || c > 0x10ffff)
 }
 
 #[cfg(test)]
