@@ -1,1 +1,1 @@
-window.SIDEBAR_ITEMS = {};
+window.SIDEBAR_ITEMS = {"enum":["CharUtf16","CharUtf32","CharUtf8"],"fn":["validate_codepoint"],"mod":["utf16","utf32","utf8"],"struct":["Char"]};

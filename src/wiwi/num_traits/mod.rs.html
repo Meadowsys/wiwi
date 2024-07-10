@@ -82,7 +82,6 @@
 <a href="#82" id="82">82</a>
 <a href="#83" id="83">83</a>
 <a href="#84" id="84">84</a>
-<a href="#85" id="85">85</a>
 </pre></div><pre class="rust"><code><span class="attr">#![deny(unconditional_recursion)]
 
 </span><span class="doccomment">//! Number operations exposed as traits, enabling code to be written genericly
@@ -91,14 +90,13 @@
 //! Think the [`Add`](std::ops::Add) trait, except for things like
 //! [overflowing addition](AddOverflowing) as well
 
-</span><span class="kw">use </span><span class="kw">crate</span>::export_all_submodules::export_all_submodules;
-<span class="kw">use </span>std::cmp::{ Eq, Ord, PartialEq, PartialOrd };
+</span><span class="kw">use </span>std::cmp::{ Eq, Ord, PartialEq, PartialOrd };
 <span class="kw">use </span>std::fmt::{ Debug, Display };
 <span class="kw">use </span>std::hash::Hash;
 <span class="kw">use </span>std::iter::{ Sum, Product };
 <span class="kw">use </span>std::ops;
 
-<span class="macro">export_all_submodules!</span> {
+<span class="macro">crate::export_all_submodules!</span> {
 	base
 	<span class="comment">// this doesn't need to be a "base"
 	// float_base
