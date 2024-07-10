@@ -44,6 +44,16 @@ impl Str {
 
 impl String {
 	#[inline]
+	pub fn from_utf32(utf32: Vec<u32>) -> Result<Self, Vec<u32>> {
+		if run_utf32_validation(&utf32) {
+			// SAFETY: just validated
+			Ok(unsafe { Self::from_utf32_unchecked(utf32) })
+		} else {
+			Err(utf32)
+		}
+	}
+
+	#[inline]
 	pub unsafe fn from_utf32_unchecked(utf32: Vec<u32>) -> String {
 		String { inner: utf32 }
 	}

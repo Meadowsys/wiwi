@@ -43,6 +43,16 @@ impl Str {
 
 impl String {
 	#[inline]
+	pub fn from_utf16(utf16: Vec<u16>) -> Result<Self, Vec<u16>> {
+		if run_utf16_validation(&utf16) {
+			// SAFETY: just validated
+			Ok(unsafe { Self::from_utf16_unchecked(utf16) })
+		} else {
+			Err(utf16)
+		}
+	}
+
+	#[inline]
 	pub unsafe fn from_utf16_unchecked(utf16: Vec<u16>) -> String {
 		String { inner: utf16 }
 	}
