@@ -3,7 +3,7 @@
 //
 // https://www.unicode.org/versions/Unicode15.1.0/
 
-mod alg;
+mod _internal;
 pub mod char;
 pub mod utf8;
 pub mod utf16;
