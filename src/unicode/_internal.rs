@@ -81,6 +81,53 @@ impl CodepointUtf32 {
 	}
 }
 
+pub const fn validate_utf16(code_units: &[u16]) -> bool {
+	let len = code_units.len();
+	let mut i = 0;
+
+	while i < len {
+		match code_units[i] {
+			0..=0xd7ff | 0xe000..=0xffff => {
+				// BMP
+				i += 1;
+			}
+			0xd800..=0xdbff => {
+				// leading surrogate code unit
+				let next = i + 1;
+				if next >= len || !matches!(code_units[next], 0xdc00..=0xdfff) {
+					// the next one isn't trailing surrogate code unit
+					// isloated leading surrogate (invalid)
+					return false
+				}
+				i += 2;
+			}
+			0xdc00..=0xdfff => {
+				// any leading surrogate code units would be checked in previous
+				// match arm, and the trailing one would be checked in there as well
+				// isloated trailing surrogate (invalid)
+				return false
+			}
+		}
+	}
+
+	true
+}
+
+#[inline]
+pub const fn validate_utf32(code_units: &[u32]) -> bool {
+	let len = code_units.len();
+	let mut i = 0;
+
+	while i < len {
+		let c = code_units[i];
+		// every utf32 code unit is just a codepoint
+		if !validate_codepoint(c) { return false }
+		i += 1;
+	}
+
+	true
+}
+
 
 #[cfg(test)]
 mod tests {
