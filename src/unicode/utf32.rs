@@ -1,4 +1,4 @@
-use super::validate_codepoint;
+use super::{ Char, CharUtf32, validate_codepoint };
 use std::mem::transmute;
 
 #[repr(transparent)]
@@ -56,6 +56,12 @@ impl String {
 	#[inline]
 	pub unsafe fn from_utf32_unchecked(utf32: Vec<u32>) -> String {
 		String { inner: utf32 }
+	}
+
+	pub fn push_char(&mut self, c: Char) {
+		match c.encode_utf32() {
+			CharUtf32::One { value } => { self.inner.push(value) }
+		}
 	}
 }
 

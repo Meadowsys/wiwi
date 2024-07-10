@@ -1,3 +1,4 @@
+use super::{ Char, CharUtf16 };
 use std::mem::transmute;
 
 #[repr(transparent)]
@@ -55,6 +56,13 @@ impl String {
 	#[inline]
 	pub unsafe fn from_utf16_unchecked(utf16: Vec<u16>) -> String {
 		String { inner: utf16 }
+	}
+
+	pub fn push_char(&mut self, c: Char) {
+		match c.encode_utf16() {
+			CharUtf16::One { value } => { self.inner.push(value) }
+			CharUtf16::Two { values } => { self.inner.extend_from_slice(&values) }
+		}
 	}
 }
 
