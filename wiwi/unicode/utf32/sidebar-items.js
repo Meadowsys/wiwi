@@ -1,1 +1,1 @@
-window.SIDEBAR_ITEMS = {"fn":["run_utf32_validation"],"struct":["Str","String"]};
+window.SIDEBAR_ITEMS = {};
