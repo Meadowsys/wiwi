@@ -81,25 +81,144 @@ impl CodepointUtf32 {
 	}
 }
 
+#[inline]
+pub const fn validate_utf8(code_units: &[u8]) -> bool {
+	// table 3-7
+
+	let len = code_units.len();
+	let mut i = 0;
+
+	macro_rules! next_must_match {
+		($range:pat) => {
+			{
+				i += 1;
+				if i >= len || !matches!(code_units[i], $range) {
+					return false
+				}
+			}
+		}
+	}
+
+	'outer: while i < len {
+		// table 3-7
+		match code_units[i] {
+			0x00..=0x7f if i % (2 * size_of::<usize>()) == 0 => {
+				const _ASSERT_USIZE_ALIGN_LTE_SIZE: () = assert!(size_of::<usize>() >= align_of::<usize>());
+				// special ASCII case
+				// we attempt to skip ahead quickly for ASCII in usize-sized chunks
+				// but try this only every 2-usize chunks
+
+				let remaining = code_units.len() - i;
+				if remaining >= (2 * size_of::<usize>()) {
+					unsafe {
+						const MASK: usize = usize::from_ne_bytes([0x80; size_of::<usize>()]);
+
+						// shift to current i first, then cast to pointer of usize
+						// SAFETY: this is sound because the if condition above guarantees
+						// sufficient alignment of usize
+						let mut ptr = code_units
+							.as_ptr()
+							.add(i)
+							.cast::<usize>();
+
+						// truncating division, so will only return the amount of 2-usize
+						// values we can dereference before we go out of bounds. this is
+						// always at least one (because of the check above)
+						let max = remaining / (2 * size_of::<usize>());
+
+						let mut usize_i = 0;
+						while usize_i < max {
+							// SAFETY: while loop does not loop more than we can read,
+							// so ptr will not dereference out of bounds
+							let units = *ptr;
+							let units2 = *ptr.add(1);
+
+							// if it isn't valid, this break (which leads to the continue
+							// statement after it) would not update the counter, so next
+							// loop would start at good spot
+							if units & MASK != 0 { break }
+							if units2 & MASK != 0 { break }
+
+							usize_i += 2;
+							ptr = ptr.add(2);
+							i += 2 * size_of::<usize>();
+						}
+
+						// if loop did not even run (ie. first usize amount of bytes
+						// were not ascii), we need to increment 1, so we only
+						// continue/skip forward if usize_i is gt 0 (we looped at least once)
+						if usize_i > 0 { continue 'outer }
+					}
+				}
+
+				// else... we fall through as normal (`i` is incremented normally at the end)
+				// so we always increment by at least 1, so this does not infinite-loop/deadlock
+			}
+			0x00..=0x7f => {
+				// ASCII (non `2 * size_of::<usize>()` aligned)
+			}
+			0xc2..=0xdf => {
+				next_must_match!(0x80..=0xbf);
+			}
+			0xe0 => {
+				next_must_match!(0xa0..=0xbf);
+				next_must_match!(0x80..=0xbf);
+			}
+			0xe1..=0xec => {
+				next_must_match!(0x80..=0xbf);
+				next_must_match!(0x80..=0xbf);
+			}
+			0xed => {
+				next_must_match!(0x80..=0x9f);
+				next_must_match!(0x80..=0xbf);
+			}
+			0xee..=0xef => {
+				next_must_match!(0x80..=0xbf);
+				next_must_match!(0x80..=0xbf);
+			}
+			0xf0 => {
+				next_must_match!(0x90..=0xbf);
+				next_must_match!(0x80..=0xbf);
+				next_must_match!(0x80..=0xbf);
+			}
+			0xf1..=0xf3 => {
+				next_must_match!(0x80..=0xbf);
+				next_must_match!(0x80..=0xbf);
+				next_must_match!(0x80..=0xbf);
+			}
+			0xf4 => {
+				next_must_match!(0x80..=0x8f);
+				next_must_match!(0x80..=0xbf);
+				next_must_match!(0x80..=0xbf);
+			}
+			_ => { return false }
+		}
+
+		i += 1;
+	}
+
+	true
+}
+
+#[inline]
 pub const fn validate_utf16(code_units: &[u16]) -> bool {
 	let len = code_units.len();
 	let mut i = 0;
 
 	while i < len {
 		match code_units[i] {
-			0..=0xd7ff | 0xe000..=0xffff => {
+			0x0000..=0xd7ff | 0xe000..=0xffff => {
 				// BMP
-				i += 1;
 			}
 			0xd800..=0xdbff => {
 				// leading surrogate code unit
-				let next = i + 1;
-				if next >= len || !matches!(code_units[next], 0xdc00..=0xdfff) {
+				i += 1;
+
+				if i >= len || !matches!(code_units[i], 0xdc00..=0xdfff) {
 					// the next one isn't trailing surrogate code unit
 					// isloated leading surrogate (invalid)
 					return false
 				}
-				i += 2;
 			}
 			0xdc00..=0xdfff => {
 				// any leading surrogate code units would be checked in previous
@@ -108,6 +227,8 @@ pub const fn validate_utf16(code_units: &[u16]) -> bool {
 				return false
 			}
 		}
+
+		i += 1;
 	}
 
 	true
