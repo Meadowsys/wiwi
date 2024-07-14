@@ -185,7 +185,20 @@ pub mod defer;
 
 #[cfg(all(
 	not(feature = "export-all-submodules"),
-	feature = "num-traits-unstable"
+	any(
+		feature = "auth-unstable",
+		feature = "bitstream-unstable",
+		feature = "debounce",
+		feature = "hex",
+		feature = "id-unstable",
+		feature = "int-unstable",
+		feature = "lsl-unstable",
+		feature = "mcu-unstable",
+		feature = "minesweeper-unstable",
+		feature = "num-traits-unstable",
+		feature = "sudoku-unstable",
+		feature = "z85"
+	)
 ))]
 mod export_all_submodules;
 
@@ -213,7 +226,20 @@ pub mod id;
 
 #[cfg(all(
 	not(feature = "int-unstable"),
-	feature = "num-traits-unstable"
+	any(
+		feature = "auth-unstable",
+		feature = "bitstream-unstable",
+		feature = "debounce",
+		feature = "hex",
+		feature = "id-unstable",
+		feature = "int-unstable",
+		feature = "lsl-unstable",
+		feature = "mcu-unstable",
+		feature = "minesweeper-unstable",
+		feature = "num-traits-unstable",
+		feature = "sudoku-unstable",
+		feature = "z85"
+	)
 ))]
 mod int;
 
@@ -268,13 +294,16 @@ pub mod nominal;
 #[cfg(all(
 	not(feature = "num-traits-unstable"),
 	any(
+		feature = "auth-unstable",
 		feature = "bitstream-unstable",
 		feature = "debounce",
 		feature = "hex",
 		feature = "id-unstable",
 		feature = "int-unstable",
+		feature = "lsl-unstable",
 		feature = "mcu-unstable",
 		feature = "minesweeper-unstable",
+		feature = "num-traits-unstable",
 		feature = "sudoku-unstable",
 		feature = "z85"
 	)

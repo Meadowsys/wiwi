@@ -1,3 +1,5 @@
+use std::cmp::Ordering;
+use std::collections::BTreeSet;
 use std::fs;
 
 // TODO: enhancements for the future:
@@ -302,18 +304,45 @@ fn main() {
 	let mut all_unstable_refs = Vec::new();
 	let mut all_addons_refs = Vec::new();
 
-	for Feature {
+	for f @ Feature {
 		name,
 		feature_type,
 		desc,
 		dependencies: _,
 		features: _
 	} in &_features {
-		// find features that depend on the current feature
-		let mut dependants = _features.iter()
-			.filter(|f| f.features.iter().any(|f| f == name))
-			.peekable();
-		let has_dependants = dependants.peek().is_some();
+		// // find features that depend on the current feature
+		// let mut dependants = _features.iter()
+		// 	.filter(|f| f.features.iter().any(|f| f == name))
+		// 	.peekable();
+		// let has_dependants = dependants.peek().is_some();
+
+		fn recurse_in_dependants<'h>(_features: &'h [Feature], feature: &Feature, out: &mut BTreeSet<&'h Feature>) {
+			let new_features = _features.iter()
+				.filter(|f| f.features.iter().any(|f2| *f2 == feature.name))
+				.filter(|f| out.insert(f))
+				.collect::<Vec<_>>();
+
+			if !new_features.is_empty() {
+				new_features.iter()
+					.for_each(|f| recurse_in_dependants(_features, f, out));
+			}
+		}
+
+		// fn _recurse_in_dependants_ols<'h>(_features: &'h [Feature], f: &Feature, out: &mut BTreeSet<&'h Feature>) {
+		// 	let new_features = f.features.iter()
+		// 		.map(|f| _features.iter().find(|f2| f2.name == *f).unwrap())
+		// 		.filter(|f| out.insert(f))
+		// 		.collect::<Vec<_>>();
+
+		// 	if !new_features.is_empty() {
+		// 		new_features.into_iter()
+		// 			.for_each(|f| recurse_in_dependants(_features, f, out));
+		// 	}
+		// }
+
+		let mut dependants = BTreeSet::new();
+		recurse_in_dependants(&_features, f, &mut dependants);
 
 		macro_rules! push_feature_doc {
 			($output:ident) => {
@@ -332,7 +361,7 @@ fn main() {
 
 		macro_rules! push_feature_cfg {
 			($unstable:literal) => {
-				if has_dependants {
+				if !dependants.is_empty() {
 					push_feature_mod_dependants_enabled!($unstable);
 				}
 				push_feature_mod_self_enabled!($unstable);
@@ -346,7 +375,7 @@ fn main() {
 				if $unstable { generated_lib += "-unstable" }
 				generated_lib += "\"),\n\t";
 
-				let dependants = dependants.collect::<Vec<_>>();
+				let dependants = dependants.into_iter().collect::<Vec<_>>();
 
 				if let [only] = &*dependants {
 					generated_lib += "feature = \"";
@@ -359,10 +388,10 @@ fn main() {
 					if is_unstable!(first) { generated_lib += "-unstable" }
 					generated_lib += "\"";
 
-					for feat in rem {
+					for f in rem {
 						generated_lib += ",\n\t\tfeature = \"";
-						generated_lib += feat.name;
-						if is_unstable!(feat) { generated_lib += "-unstable" }
+						generated_lib += f.name;
+						if is_unstable!(f) { generated_lib += "-unstable" }
 						generated_lib += "\"";
 					}
 
@@ -626,6 +655,26 @@ enum FeatureType {
 	Addon
 }
 
+impl PartialEq for Feature {
+	fn eq(&self, other: &Self) -> bool {
+		matches!(self.cmp(other), Ordering::Equal)
+	}
+}
+
+impl Eq for Feature {}
+
+impl PartialOrd for Feature {
+	fn partial_cmp(&self, other: &Self) -> Option<Ordering> {
+		Some(self.cmp(other))
+	}
+}
+
+impl Ord for Feature {
+	fn cmp(&self, other: &Self) -> Ordering {
+		<&str>::cmp(&self.name, &other.name)
+	}
+}
+
 macro_rules! decl_dependencies {
 	{
 		$(
@@ -806,6 +855,6 @@ macro_rules! const_unwrap {
 use const_unwrap;
 
 macro_rules! is_unstable {
-	($feat:ident) => { matches!($feat.feature_type, FeatureType::Unstable) }
+	($f:ident) => { matches!($f.feature_type, FeatureType::Unstable) }
 }
 use is_unstable;
