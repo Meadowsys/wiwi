@@ -309,7 +309,13 @@ fn main() {
 		dependencies: _,
 		features: _
 	} in &_features {
-		macro_rules! append_feature {
+		// find features that depend on the current feature
+		let mut dependants = _features.iter()
+			.filter(|f| f.features.iter().any(|f| f == name))
+			.peekable();
+		let has_dependants = dependants.peek().is_some();
+
+		macro_rules! push_feature_doc {
 			($output:ident) => {
 				$output += "- **`";
 				$output += name;
@@ -324,7 +330,56 @@ fn main() {
 			}
 		}
 
-		macro_rules! push_feature {
+		macro_rules! push_feature_cfg {
+			($unstable:literal) => {
+				if has_dependants {
+					push_feature_mod_dependants_enabled!($unstable);
+				}
+				push_feature_mod_self_enabled!($unstable);
+			}
+		}
+
+		macro_rules! push_feature_mod_dependants_enabled {
+			($unstable:literal) => {
+				generated_lib += "#[cfg(all(\n\tnot(feature = \"";
+				generated_lib += name;
+				if $unstable { generated_lib += "-unstable" }
+				generated_lib += "\"),\n\t";
+
+				let dependants = dependants.collect::<Vec<_>>();
+
+				if let [only] = &*dependants {
+					generated_lib += "feature = \"";
+					generated_lib += only.name;
+					if is_unstable!(only) { generated_lib += "-unstable" }
+					generated_lib += "\"";
+				} else if let [first, rem @ ..] = &*dependants {
+					generated_lib += "any(\n\t\tfeature = \"";
+					generated_lib += first.name;
+					if is_unstable!(first) { generated_lib += "-unstable" }
+					generated_lib += "\"";
+
+					for feat in rem {
+						generated_lib += ",\n\t\tfeature = \"";
+						generated_lib += feat.name;
+						if is_unstable!(feat) { generated_lib += "-unstable" }
+						generated_lib += "\"";
+					}
+
+					generated_lib += "\n\t)";
+				} else {
+					panic!("invalid state??");
+				}
+
+				generated_lib += "\n))]\n";
+
+				generated_lib += "mod ";
+				generated_lib += &name.replace('-', "_");
+				generated_lib += ";\n\n";
+			}
+		}
+
+		macro_rules! push_feature_mod_self_enabled {
 			($unstable:literal) => {
 				generated_lib += "#[cfg(feature = \"";
 				generated_lib += name;
@@ -335,6 +390,12 @@ fn main() {
 				generated_lib += "\")))]\npub mod ";
 				generated_lib += &name.replace('-', "_");
 				generated_lib += ";\n\n";
+			}
+		}
+
+		macro_rules! push_feature_mod {
+			($unstable:literal) => {
+				push_feature_cfg!($unstable);
 
 				generated_doc_cfgs_list += "#![cfg_attr(all(not(any(docsrs, kiwingay)), feature = \"";
 				generated_doc_cfgs_list += name;
@@ -355,17 +416,17 @@ fn main() {
 		match feature_type {
 			FeatureType::Stable => {
 				all_refs.push(*name);
-				append_feature!(generated_readme_stable);
-				push_feature!(false);
+				push_feature_doc!(generated_readme_stable);
+				push_feature_mod!(false);
 			}
 			FeatureType::Unstable => {
 				all_unstable_refs.push(*name);
-				append_feature!(generated_readme_unstable);
-				push_feature!(true);
+				push_feature_doc!(generated_readme_unstable);
+				push_feature_mod!(true);
 			}
 			FeatureType::Addon => {
 				all_addons_refs.push(*name);
-				append_feature!(generated_readme_addons);
+				push_feature_doc!(generated_readme_addons);
 			}
 		}
 	}
@@ -411,7 +472,7 @@ fn main() {
 		feature_type,
 		desc: _,
 		dependencies,
-		features
+		features: _
 	} in &_features {
 		match feature_type {
 			FeatureType::Stable => {
@@ -432,7 +493,7 @@ fn main() {
 
 		generated_manifest += " = [";
 
-		if !dependencies.is_empty() || !features.is_empty() {
+		if !dependencies.is_empty() {
 			let mut seen = false;
 
 			macro_rules! maybe_put_comma {
@@ -470,28 +531,6 @@ fn main() {
 					generated_manifest += &dependency.name.replace('-', "_");
 				} else {
 					generated_manifest += dependency.name;
-				}
-
-				generated_manifest += "\"";
-			}
-
-			for feature in *features {
-				let feature = _features.iter()
-					.find(|f| f.name == *feature)
-					.unwrap_or_else(|| panic!("feature \"{name}\" wants to depend on feature\"{feature}\", which does not exist"));
-
-				// TODO: implement the thing where implicitly enabled features don't allow external access to the modules
-				// if matches!(feature_type, FeatureType::Stable) && matches!(feature.feature_type, FeatureType::Unstable) {
-				// 	panic!("stable feature cannot depend on unstable feature ({name} depending on {})", feature.name);
-				// }
-
-				maybe_put_comma!();
-
-				generated_manifest += "\n\t\"";
-				generated_manifest += feature.name;
-
-				if matches!(feature.feature_type, FeatureType::Unstable) {
-					generated_manifest += "-unstable";
 				}
 
 				generated_manifest += "\"";
@@ -765,3 +804,8 @@ macro_rules! const_unwrap {
 	}
 }
 use const_unwrap;
+
+macro_rules! is_unstable {
+	($feat:ident) => { matches!($feat.feature_type, FeatureType::Unstable) }
+}
+use is_unstable;

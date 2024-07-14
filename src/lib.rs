@@ -154,6 +154,15 @@ pub mod auth;
 #[cfg_attr(docsrs, doc(cfg(feature = "bitstream-unstable")))]
 pub mod bitstream;
 
+#[cfg(all(
+	not(feature = "chainer-unstable"),
+	any(
+		feature = "minesweeper-unstable",
+		feature = "sudoku-unstable"
+	)
+))]
+mod chainer;
+
 #[cfg(feature = "chainer-unstable")]
 #[cfg_attr(docsrs, doc(cfg(feature = "chainer-unstable")))]
 pub mod chainer;
@@ -174,6 +183,12 @@ pub mod debounce;
 #[cfg_attr(docsrs, doc(cfg(feature = "defer-unstable")))]
 pub mod defer;
 
+#[cfg(all(
+	not(feature = "export-all-submodules"),
+	feature = "num-traits-unstable"
+))]
+mod export_all_submodules;
+
 #[cfg(feature = "export-all-submodules")]
 #[cfg_attr(docsrs, doc(cfg(feature = "export-all-submodules")))]
 pub mod export_all_submodules;
@@ -186,17 +201,45 @@ pub mod h;
 #[cfg_attr(docsrs, doc(cfg(feature = "hex")))]
 pub mod hex;
 
+#[cfg(all(
+	not(feature = "id-unstable"),
+	feature = "lsl-unstable"
+))]
+mod id;
+
 #[cfg(feature = "id-unstable")]
 #[cfg_attr(docsrs, doc(cfg(feature = "id-unstable")))]
 pub mod id;
+
+#[cfg(all(
+	not(feature = "int-unstable"),
+	feature = "num-traits-unstable"
+))]
+mod int;
 
 #[cfg(feature = "int-unstable")]
 #[cfg_attr(docsrs, doc(cfg(feature = "int-unstable")))]
 pub mod int;
 
+#[cfg(all(
+	not(feature = "iter-unstable"),
+	any(
+		feature = "aoc-unstable",
+		feature = "minesweeper-unstable",
+		feature = "sudoku-unstable"
+	)
+))]
+mod iter;
+
 #[cfg(feature = "iter-unstable")]
 #[cfg_attr(docsrs, doc(cfg(feature = "iter-unstable")))]
 pub mod iter;
+
+#[cfg(all(
+	not(feature = "lazy-wrap"),
+	feature = "string-pool-unstable"
+))]
+mod lazy_wrap;
 
 #[cfg(feature = "lazy-wrap")]
 #[cfg_attr(docsrs, doc(cfg(feature = "lazy-wrap")))]
@@ -221,6 +264,22 @@ pub mod minesweeper;
 #[cfg(feature = "nominal")]
 #[cfg_attr(docsrs, doc(cfg(feature = "nominal")))]
 pub mod nominal;
+
+#[cfg(all(
+	not(feature = "num-traits-unstable"),
+	any(
+		feature = "bitstream-unstable",
+		feature = "debounce",
+		feature = "hex",
+		feature = "id-unstable",
+		feature = "int-unstable",
+		feature = "mcu-unstable",
+		feature = "minesweeper-unstable",
+		feature = "sudoku-unstable",
+		feature = "z85"
+	)
+))]
+mod num_traits;
 
 #[cfg(feature = "num-traits-unstable")]
 #[cfg_attr(docsrs, doc(cfg(feature = "num-traits-unstable")))]
@@ -253,6 +312,15 @@ pub mod unicode;
 #[cfg(feature = "with-cloned")]
 #[cfg_attr(docsrs, doc(cfg(feature = "with-cloned")))]
 pub mod with_cloned;
+
+#[cfg(all(
+	not(feature = "z85"),
+	any(
+		feature = "auth-unstable",
+		feature = "minesweeper-unstable"
+	)
+))]
+mod z85;
 
 #[cfg(feature = "z85")]
 #[cfg_attr(docsrs, doc(cfg(feature = "z85")))]

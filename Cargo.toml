@@ -71,9 +71,7 @@ all = ["augment-panic-hook", "clock-timer", "debounce", "export-all-submodules",
 all-unstable = ["all", "aoc-unstable", "auth-unstable", "bitstream-unstable", "chainer-unstable", "cli-unstable", "defer-unstable", "id-unstable", "int-unstable", "iter-unstable", "lsl-unstable", "mcu-unstable", "memory-usage-unstable", "minesweeper-unstable", "num-traits-unstable", "path-unstable", "serialiser-binary-unstable", "serialiser-text-unstable", "string-pool-unstable", "sudoku-unstable", "unicode-unstable"]
 all-addons = ["hashbrown", "image", "large-tuples", "nightly", "omega-tuples-of-doom", "serde-json"]
 
-aoc-unstable = [
-	"iter-unstable"
-]
+aoc-unstable = []
 augment-panic-hook = []
 auth-unstable = [
 	"dep:argon2",
@@ -82,12 +80,9 @@ auth-unstable = [
 	"dep:p384",
 	"dep:rand",
 	"dep:thiserror",
-	"dep:zeroize",
-	"z85"
+	"dep:zeroize"
 ]
-bitstream-unstable = [
-	"num-traits-unstable"
-]
+bitstream-unstable = []
 chainer-unstable = []
 cli-unstable = []
 clock-timer = [
@@ -96,69 +91,49 @@ clock-timer = [
 ]
 debounce = [
 	"dep:chrono",
-	"dep:tokio",
-	"num-traits-unstable"
+	"dep:tokio"
 ]
 defer-unstable = []
 export-all-submodules = []
 h = []
 hex = [
-	"dep:thiserror",
-	"num-traits-unstable"
+	"dep:thiserror"
 ]
 id-unstable = [
-	"dep:rand",
-	"num-traits-unstable"
+	"dep:rand"
 ]
 int-unstable = [
-	"wiwiwiwiwi/int",
-	"num-traits-unstable"
+	"wiwiwiwiwi/int"
 ]
 iter-unstable = []
 lazy-wrap = [
 	"dep:parking_lot"
 ]
 lsl-unstable = [
-	"dep:hashbrown",
-	"id-unstable"
+	"dep:hashbrown"
 ]
-mcu-unstable = [
-	"num-traits-unstable"
-]
+mcu-unstable = []
 memory-usage-unstable = [
 	"wiwiwiwiwi/memory-usage"
 ]
 minesweeper-unstable = [
-	"dep:rand",
-	"chainer-unstable",
-	"iter-unstable",
-	"num-traits-unstable",
-	"z85"
+	"dep:rand"
 ]
 nominal = []
-num-traits-unstable = [
-	"export-all-submodules",
-	"int-unstable"
-]
+num-traits-unstable = []
 path-unstable = []
 serialiser-binary-unstable = [
 	"dep:ordered-float"
 ]
 serialiser-text-unstable = []
 string-pool-unstable = [
-	"dep:hashbrown",
-	"lazy-wrap"
+	"dep:hashbrown"
 ]
-sudoku-unstable = [
-	"chainer-unstable",
-	"iter-unstable",
-	"num-traits-unstable"
-]
+sudoku-unstable = []
 unicode-unstable = []
 with-cloned = []
 z85 = [
-	"dep:thiserror",
-	"num-traits-unstable"
+	"dep:thiserror"
 ]
 
 # addon features
@@ -170,9 +145,7 @@ image = [
 ]
 large-tuples = []
 nightly = []
-omega-tuples-of-doom = [
-	"large-tuples"
-]
+omega-tuples-of-doom = []
 serde-json = [
 	"dep:serde_json"
 ]
