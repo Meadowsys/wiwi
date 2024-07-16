@@ -9,6 +9,10 @@
 <a href="#9" id="9">9</a>
 <a href="#10" id="10">10</a>
 <a href="#11" id="11">11</a>
+<a href="#12" id="12">12</a>
+<a href="#13" id="13">13</a>
+<a href="#14" id="14">14</a>
+<a href="#15" id="15">15</a>
 </pre></div><pre class="rust"><code><span class="doccomment">//! Implemetation of [Unicode](https://www.unicode.org)
 //!
 //! Currently, we are aiming to implement [Unicode 15.1].
@@ -16,8 +20,12 @@
 //! [Unicode 15.1]: https://www.unicode.org/versions/Unicode15.1.0/
 
 </span><span class="kw">mod </span>_internal;
-<span class="kw">pub mod </span>char;
-<span class="kw">pub mod </span>utf8;
-<span class="kw">pub mod </span>utf16;
-<span class="kw">pub mod </span>utf32;
+<span class="kw">mod </span>char;
+<span class="kw">mod </span>utf8;
+<span class="kw">mod </span>utf16;
+<span class="kw">mod </span>utf32;
+
+<span class="kw">pub use </span>utf8::StrUtf8;
+<span class="kw">pub use </span>utf16::StrUtf16;
+<span class="kw">pub use </span>utf32::StrUtf32;
 </code></pre></div></section></main></body></html>
