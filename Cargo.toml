@@ -154,7 +154,9 @@ sudoku-unstable = [
 	"iter-unstable",
 	"num-traits-unstable"
 ]
-unicode-unstable = []
+unicode-unstable = [
+	"wiwiwiwiwi/unicode"
+]
 with-cloned = []
 z85 = [
 	"dep:thiserror",

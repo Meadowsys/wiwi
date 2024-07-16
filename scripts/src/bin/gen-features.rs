@@ -160,6 +160,7 @@ fn main() {
 		#[unstable]
 		"unicode"
 		"implementation of the [Unicode](https://home.unicode.org) standard, including UTF-8, UTF-16, and UTF-32 strings"
+		dependencies: ["macro"]
 
 		"with-cloned"
 		"easily execute code using clones of variables in a temporary scope (see the documentation on `with_cloned!`, I'm not sure how to best summarise ><)"
@@ -478,7 +479,7 @@ fn main() {
 			for feature in *features {
 				let feature = _features.iter()
 					.find(|f| f.name == *feature)
-					.unwrap_or_else(|| panic!("feature \"{name}\" wants to depend on feature\"{feature}\", which does not exist"));
+					.unwrap_or_else(|| panic!("feature \"{name}\" wants to depend on feature \"{feature}\", which does not exist"));
 
 				// TODO: implement the thing where implicitly enabled features don't allow external access to the modules
 				// if matches!(feature_type, FeatureType::Stable) && matches!(feature.feature_type, FeatureType::Unstable) {

@@ -26,3 +26,6 @@ mod int;
 pub fn define_int(input: proc_macro::TokenStream) -> proc_macro::TokenStream {
 	int::macro_impl(input)
 }
+
+#[cfg(feature = "unicode")]
+mod unicode;

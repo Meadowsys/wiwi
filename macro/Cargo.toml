@@ -20,6 +20,7 @@ default = ["syn/full"]
 
 int = []
 memory-usage = []
+unicode = []
 
 [package.metadata.docs.rs]
 # https://docs.rs/about/metadata
