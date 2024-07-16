@@ -39,7 +39,7 @@ impl StrUtf8 {
 	}
 
 	#[inline]
-	pub const fn to_bytes(&self) -> &[u8] {
+	pub const fn to_utf8_code_units(&self) -> &[u8] {
 		// SAFETY: [u8] and Self have same layout
 		unsafe { &*(self as *const Self as *const [u8]) }
 	}
