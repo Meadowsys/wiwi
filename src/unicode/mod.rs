@@ -5,7 +5,11 @@
 //! [Unicode 15.1]: https://www.unicode.org/versions/Unicode15.1.0/
 
 mod _internal;
-pub mod char;
-pub mod utf8;
-pub mod utf16;
-pub mod utf32;
+mod char;
+mod utf8;
+mod utf16;
+mod utf32;
+
+pub use utf8::StrUtf8;
+pub use utf16::StrUtf16;
+pub use utf32::StrUtf32;
