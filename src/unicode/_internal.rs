@@ -1,11 +1,5 @@
 //! Internal implementations
 
-/// Returns whether a codepoint is a valid unicode codepoint
-#[inline]
-pub(super) const fn validate_codepoint(c: u32) -> bool {
-	!((c > 0xd7ff && c < 0xe000) || c > 0x10ffff)
-}
-
 #[derive(Debug, PartialEq, Eq)]
 pub(super) enum CodepointUtf8 {
 	One { value: u8 },
@@ -14,56 +8,10 @@ pub(super) enum CodepointUtf8 {
 	Four { values: [u8; 4] }
 }
 
-impl CodepointUtf8 {
-	/// # Safety
-	///
-	/// `c` must be a valid unicode codepoint
-	pub(super) const unsafe fn from_codepoint_unchecked(c: u32) -> Self {
-		use CodepointUtf8::*;
-
-		if c & 0x7f == c {
-			One { value: c as _ }
-		} else if c & 0x7ff == c {
-			let c1 = 0xc0 | (c >> 6) as u8;
-			let c2 = 0x80 | (c & 0x3f) as u8;
-			Two { values: [c1, c2] }
-		} else if c & 0xffff == c {
-			let c1 = 0xe0 | (c >> 12) as u8;
-			let c2 = 0x80 | ((c >> 6) & 0x3f) as u8;
-			let c3 = 0x80 | (c & 0x3f) as u8;
-			Three { values: [c1, c2, c3] }
-		} else {
-			let c1 = 0xf0 | (c >> 18) as u8;
-			let c2 = 0x80 | ((c >> 12) & 0x3f) as u8;
-			let c3 = 0x80 | ((c >> 6) & 0x3f) as u8;
-			let c4 = 0x80 | (c & 0x3f) as u8;
-			Four { values: [c1, c2, c3, c4] }
-		}
-	}
-}
-
 #[derive(Debug, PartialEq, Eq)]
 pub(super) enum CodepointUtf16 {
 	One { value: u16 },
 	Two { values: [u16; 2] }
-}
-
-impl CodepointUtf16 {
-	/// # Safety
-	///
-	/// `c` must be a valid unicode codepoint
-	pub(super) const unsafe fn from_codepoint_unchecked(c: u32) -> Self {
-		use CodepointUtf16::*;
-
-		if c & 0xffff == c {
-			One { value: c as _ }
-		} else {
-			let c_offset = (c - 0x10000) as u16;
-			let c1 = 0xd800 | (c_offset >> 10);
-			let c2 = 0xdc00 | (c_offset & 0x3ff);
-			Two { values: [c1, c2] }
-		}
-	}
 }
 
 #[derive(Debug, PartialEq, Eq)]
@@ -71,18 +19,64 @@ pub(super) enum CodepointUtf32 {
 	One { value: u32 }
 }
 
-impl CodepointUtf32 {
-	/// # Safety
-	///
-	/// `c` must be a valid unicode codepoint
-	#[inline]
-	pub(super) const unsafe fn from_codepoint_unchecked(c: u32) -> CodepointUtf32 {
-		CodepointUtf32::One { value: c }
+/// Returns whether a codepoint is a valid unicode codepoint
+#[inline]
+pub(super) const fn validate_codepoint(c: u32) -> bool {
+	!((c > 0xd7ff && c < 0xe000) || c > 0x10ffff)
+}
+
+/// # Safety
+///
+/// `c` must be a valid unicode codepoint
+pub(super) const unsafe fn codepoint_to_utf8_unchecked(c: u32) -> CodepointUtf8 {
+	use CodepointUtf8::*;
+
+	if c & 0x7f == c {
+		One { value: c as _ }
+	} else if c & 0x7ff == c {
+		let c1 = 0xc0 | (c >> 6) as u8;
+		let c2 = 0x80 | (c & 0x3f) as u8;
+		Two { values: [c1, c2] }
+	} else if c & 0xffff == c {
+		let c1 = 0xe0 | (c >> 12) as u8;
+		let c2 = 0x80 | ((c >> 6) & 0x3f) as u8;
+		let c3 = 0x80 | (c & 0x3f) as u8;
+		Three { values: [c1, c2, c3] }
+	} else {
+		let c1 = 0xf0 | (c >> 18) as u8;
+		let c2 = 0x80 | ((c >> 12) & 0x3f) as u8;
+		let c3 = 0x80 | ((c >> 6) & 0x3f) as u8;
+		let c4 = 0x80 | (c & 0x3f) as u8;
+		Four { values: [c1, c2, c3, c4] }
 	}
 }
 
+/// # Safety
+///
+/// `c` must be a valid unicode codepoint
+pub(super) const unsafe fn codepoint_to_utf16_unchecked(c: u32) -> CodepointUtf16 {
+	use CodepointUtf16::*;
+
+	if c & 0xffff == c {
+		One { value: c as _ }
+	} else {
+		let c_offset = (c - 0x10000) as u16;
+		let c1 = 0xd800 | (c_offset >> 10);
+		let c2 = 0xdc00 | (c_offset & 0x3ff);
+		Two { values: [c1, c2] }
+	}
+}
+
+/// # Safety
+///
+/// `c` must be a valid unicode codepoint
 #[inline]
-pub const fn validate_utf8(code_units: &[u8]) -> bool {
+pub(super) const unsafe fn codepoint_to_utf32_unchecked(c: u32) -> CodepointUtf32 {
+	CodepointUtf32::One { value: c }
+}
+
+#[inline]
+pub(super) const fn validate_utf8(code_units: &[u8]) -> bool {
 	// table 3-7
 
 	let len = code_units.len();
@@ -99,7 +93,7 @@ pub const fn validate_utf8(code_units: &[u8]) -> bool {
 		}
 	}
 
-	'outer: while i < len {
+	while i < len {
 		// table 3-7
 		match code_units[i] {
 			0x00..=0x7f if i % (2 * size_of::<usize>()) == 0 => {
@@ -147,7 +141,7 @@ pub const fn validate_utf8(code_units: &[u8]) -> bool {
 						// if loop did not even run (ie. first usize amount of bytes
 						// were not ascii), we need to increment 1, so we only
 						// continue/skip forward if usize_i is gt 0 (we looped at least once)
-						if usize_i > 0 { continue 'outer }
+						if usize_i > 0 { continue }
 					}
 				}
 
@@ -201,7 +195,7 @@ pub const fn validate_utf8(code_units: &[u8]) -> bool {
 }
 
 #[inline]
-pub const fn validate_utf16(code_units: &[u16]) -> bool {
+pub(super) const fn validate_utf16(code_units: &[u16]) -> bool {
 	let len = code_units.len();
 	let mut i = 0;
 
@@ -235,7 +229,7 @@ pub const fn validate_utf16(code_units: &[u16]) -> bool {
 }
 
 #[inline]
-pub const fn validate_utf32(code_units: &[u32]) -> bool {
+pub(super) const fn validate_utf32(code_units: &[u32]) -> bool {
 	let len = code_units.len();
 	let mut i = 0;
 
@@ -248,7 +242,6 @@ pub const fn validate_utf32(code_units: &[u32]) -> bool {
 
 	true
 }
-
 
 #[cfg(test)]
 mod tests {
@@ -290,7 +283,7 @@ mod tests {
 			assert!(validate_codepoint(codepoint));
 			assert_eq!(
 				// SAFETY: just asserted codepoint is valid above
-				unsafe { CodepointUtf8::from_codepoint_unchecked(codepoint) },
+				unsafe { codepoint_to_utf8_unchecked(codepoint) },
 				expected.make_codepoint_utf8()
 			);
 		}
