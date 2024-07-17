@@ -54,23 +54,47 @@ impl StrUtf16 {
 	#[inline]
 	pub fn to_utf16le_bytes(&self) -> Cow<'_, [u8]> {
 		// TODO: this can be unchecked mul
-		let byte_len = self.inner.len() * 2;
+		let byte_len = self.len_code_units() * 2;
 
+		// if we're on little endian platform, we can just provide byte view
+		// into the same slice
 		#[cfg(target_endian = "little")]
 		let rv = unsafe {
 			let ptr = self.to_utf16_code_units() as *const [u16] as *const u8;
+
+			// SAFETY:
+			// - u8 is half the size of u16, so len of resulting slice being
+			//   twice len will refer to same region of memory
+			// - u16 has more alignment than u8, so this alignment is fine
+			// - we're only borrowing / providing a different view on the same memory
+			//   owned by someone else, so we don't have to worry about eg. deallocation
+			//   must be using the same layout
 			Cow::Borrowed(slice::from_raw_parts(ptr, byte_len))
 		};
 
+		// ... but if we're not on little endian...
+		// we gotta make a copy and flip the code units
 		#[cfg(not(target_endian = "little"))]
 		let rv = unsafe {
-			let mut le_bytes = Vec::with_capacity(byte_len);
+			// create vec with enough capacity (u8 is half size, so needs twice
+			// amount to get same byte size of capacity)
+			let mut le_bytes = Vec::<u8>::with_capacity(byte_len);
+
+			// SAFETY: this resulting ptr is safe to write to:
+			// - [u8; 2] has same alignment as u8, so the ptr is aligned
+			// - [u8; 2] is has the same size as [u16]
+			// and, we cast to [u8; 2] because u16::to_le_bytes returns [u8; 2],
+			// so we can do a simple .add call on the ptr to get to the right slot
 			let le_bytes_ptr = le_bytes.as_mut_ptr() as *mut [u8; 2];
 
+			// SAFETY: we're iter() on the code units slice, which is what we
+			// based the length on initially, so the vec pointer will be
+			// guaranteed to have enough space to write to
 			self.to_utf16_code_units()
 				.iter()
 				.copied()
 				.enumerate()
+				// to_le_bytes here flips the bytes before returning the array to write
 				.for_each(|(i, cu)| le_bytes_ptr.add(i).write(cu.to_le_bytes()));
 
 			Cow::Owned(le_bytes)
@@ -82,23 +106,47 @@ impl StrUtf16 {
 	#[inline]
 	pub fn to_utf16be_bytes(&self) -> Cow<'_, [u8]> {
 		// TODO: this can be unchecked mul
-		let byte_len = self.inner.len() * 2;
+		let byte_len = self.len_code_units() * 2;
 
+		// if we're on big endian platform, we can just provide byte view
+		// into the same slice
 		#[cfg(target_endian = "big")]
 		let rv = unsafe {
 			let ptr = self.to_utf16_code_units() as *const [u16] as *const u8;
+
+			// SAFETY:
+			// - u8 is half the size of u16, so len of resulting slice being
+			//   twice len will refer to same region of memory
+			// - u16 has more alignment than u8, so this alignment is fine
+			// - we're only borrowing / providing a different view on the same memory
+			//   owned by someone else, so we don't have to worry about eg. deallocation
+			//   must be using the same layout
 			Cow::Borrowed(slice::from_raw_parts(ptr, byte_len))
 		};
 
+		// ... but if we're not on big endian...
+		// we gotta make a copy and flip the code units
 		#[cfg(not(target_endian = "big"))]
 		let rv = unsafe {
-			let mut be_bytes = Vec::with_capacity(byte_len);
+			// create vec with enough capacity (u8 is half size, so needs twice
+			// amount to get same byte size of capacity)
+			let mut be_bytes = Vec::<u8>::with_capacity(byte_len);
+
+			// SAFETY: this resulting ptr is safe to write to:
+			// - [u8; 2] has same alignment as u8, so the ptr is aligned
+			// - [u8; 2] is has the same size as u16
+			// and, we cast to [u8; 2] because u16::to_le_bytes returns [u8; 2],
+			// so we can do a simple .add call on the ptr to get to the right slot
 			let be_bytes_ptr = be_bytes.as_mut_ptr() as *mut [u8; 2];
 
+			// SAFETY: we're iter() on the code units slice, which is what we
+			// based the length on initially, so the vec pointer will be
+			// guaranteed to have enough space to write to
 			self.to_utf16_code_units()
 				.iter()
 				.copied()
 				.enumerate()
+				// to_be_bytes here flips the bytes before returning the array to write
 				.for_each(|(i, cu)| be_bytes_ptr.add(i).write(cu.to_be_bytes()));
 
 			Cow::Owned(be_bytes)
