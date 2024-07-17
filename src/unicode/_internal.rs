@@ -342,6 +342,69 @@ pub(super) const unsafe fn is_char_boundary_utf32_unchecked(utf32: &[u32], i: us
 	true
 }
 
+/// # Safety
+///
+/// The provided code unit slice must be valid UTF-8, and have a length greater
+/// than 0. If both of those preconditions are satisfied, it must mean the slice
+/// also has at least one UTF-8 character.
+#[inline]
+pub(super) const unsafe fn next_codepoint_utf8_unchecked(utf8: &[u8]) -> (u32, &[u8]) {
+	debug_assert!(!utf8.is_empty());
+
+	let (cp, consumed) = next_codepoint_utf8_ptr_unchecked(utf8.as_ptr());
+	(cp, slice::from_raw_parts(utf8.as_ptr().add(consumed), utf8.len() - consumed))
+}
+
+/// # Safety
+///
+/// The provided code unit slice must be valid UTF-16, and have a length greater
+/// than 0. If both of those preconditions are satisfied, it must mean the slice
+/// also has at least one UTF-16 character.
+#[inline]
+pub(super) const unsafe fn next_codepoint_utf16_unchecked(utf16: &[u16]) -> (u32, &[u16]) {
+	debug_assert!(!utf16.is_empty());
+
+	let (cp, consumed) = next_codepoint_utf16_ptr_unchecked(utf16.as_ptr());
+	(cp, slice::from_raw_parts(utf16.as_ptr().add(consumed), utf16.len() - consumed))
+}
+
+/// # Safety
+///
+/// The provided code unit slice must be valid UTF-32, and have a length greater
+/// than 0. If both of those preconditions are satisfied, it must mean the slice
+/// also has at least one UTF-32 character.
+#[inline]
+pub(super) const unsafe fn next_codepoint_utf32_unchecked(utf32: &[u32]) -> (u32, &[u32]) {
+	debug_assert!(!utf32.is_empty());
+
+	let (cp, consumed) = next_codepoint_utf32_ptr_unchecked(utf32.as_ptr());
+	(cp, slice::from_raw_parts(utf32.as_ptr().add(consumed), utf32.len() - consumed))
+}
+
+#[inline]
+pub(super) const unsafe fn next_codepoint_back_utf8_unchecked(utf8: &[u8]) -> (u32, &[u8]) {
+	debug_assert!(!utf8.is_empty());
+
+	let (cp, consumed) = next_codepoint_back_utf8_ptr_unchecked(utf8.as_ptr().add(utf8.len()));
+	(cp, slice::from_raw_parts(utf8.as_ptr(), utf8.len() - consumed))
+}
+
+#[inline]
+pub(super) const unsafe fn next_codepoint_back_utf16_unchecked(utf16: &[u16]) -> (u32, &[u16]) {
+	debug_assert!(!utf16.is_empty());
+
+	let (cp, consumed) = next_codepoint_back_utf16_ptr_unchecked(utf16.as_ptr().add(utf16.len()));
+	(cp, slice::from_raw_parts(utf16.as_ptr(), utf16.len() - consumed))
+}
+
+#[inline]
+pub(super) const unsafe fn next_codepoint_back_utf32_unchecked(utf32: &[u32]) -> (u32, &[u32]) {
+	debug_assert!(!utf32.is_empty());
+
+	let (cp, consumed) = next_codepoint_back_utf32_ptr_unchecked(utf32.as_ptr().add(utf32.len()));
+	(cp, slice::from_raw_parts(utf32.as_ptr(), utf32.len() - consumed))
+}
+
 #[inline]
 pub(super) const unsafe fn next_codepoint_utf8_ptr_unchecked(front_ptr: *const u8) -> (u32, usize) {
 	let first_cu = *front_ptr;
