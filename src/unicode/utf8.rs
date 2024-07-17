@@ -6,6 +6,10 @@ pub struct StrUtf8 {
 	inner: [u8]
 }
 
+pub struct StringUtf8 {
+	inner: Vec<u8>
+}
+
 impl StrUtf8 {
 	#[inline]
 	pub const fn from_utf8(code_units: &[u8]) -> Option<&Self> {
@@ -62,5 +66,17 @@ impl StrUtf8 {
 		} else {
 			false
 		}
+	}
+}
+
+impl StringUtf8 {
+	#[inline]
+	pub const fn new() -> Self {
+		Self { inner: Vec::new() }
+	}
+
+	#[inline]
+	pub fn with_capacity(capacity: usize) -> Self {
+		Self { inner: Vec::with_capacity(capacity) }
 	}
 }

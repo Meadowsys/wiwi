@@ -10,6 +10,6 @@ mod utf8;
 mod utf16;
 mod utf32;
 
-pub use utf8::StrUtf8;
-pub use utf16::StrUtf16;
-pub use utf32::StrUtf32;
+pub use utf8::{ StrUtf8, StringUtf8 };
+pub use utf16::{ StrUtf16, StringUtf16 };
+pub use utf32::{ StrUtf32, StringUtf32 };

@@ -1,10 +1,13 @@
 use super::_internal;
-use std::marker::PhantomData;
 use std::mem::transmute;
 
 #[repr(transparent)]
 pub struct StrUtf32 {
 	inner: [u32]
+}
+
+pub struct StringUtf32 {
+	inner: Vec<u32>
 }
 
 impl StrUtf32 {
@@ -61,5 +64,17 @@ impl StrUtf32 {
 		} else {
 			false
 		}
+	}
+}
+
+impl StringUtf32 {
+	#[inline]
+	pub const fn new() -> Self {
+		Self { inner: Vec::new() }
+	}
+
+	#[inline]
+	pub fn with_capacity(capacity: usize) -> Self {
+		Self { inner: Vec::with_capacity(capacity) }
 	}
 }

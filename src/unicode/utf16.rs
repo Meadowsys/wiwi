@@ -8,6 +8,10 @@ pub struct StrUtf16 {
 	inner: [u16]
 }
 
+pub struct StringUtf16 {
+	inner: Vec<u16>
+}
+
 impl StrUtf16 {
 	#[inline]
 	pub const fn from_utf16(code_units: &[u16]) -> Option<&Self> {
@@ -120,5 +124,17 @@ impl StrUtf16 {
 		} else {
 			false
 		}
+	}
+}
+
+impl StringUtf16 {
+	#[inline]
+	pub const fn new() -> Self {
+		Self { inner: Vec::new() }
+	}
+
+	#[inline]
+	pub fn with_capacity(capacity: usize) -> Self {
+		Self { inner: Vec::with_capacity(capacity) }
 	}
 }
