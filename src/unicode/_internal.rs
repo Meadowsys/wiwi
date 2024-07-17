@@ -342,35 +342,26 @@ pub(super) const unsafe fn is_char_boundary_utf32_unchecked(utf32: &[u32], i: us
 	true
 }
 
-/// # Safety
-///
-/// The provided code unit slice must be valid UTF-8, and have a length greater
-/// than 0. If both of those preconditions are satisfied, it must mean the slice
-/// also has at least one UTF-8 character.
 #[inline]
-pub(super) const unsafe fn next_codepoint_utf8_unchecked(utf8: &[u8]) -> (u32, &[u8]) {
-	debug_assert!(!utf8.is_empty());
-
-	let ptr = utf8.as_ptr();
-	let first_cu = *ptr;
-
+pub(super) const unsafe fn next_codepoint_utf8_ptr_unchecked(front_ptr: *const u8) -> (u32, usize) {
+	let first_cu = *front_ptr;
 	let (cp, consumed) = match first_cu {
 		0x00..=0x7f => {
 			let cp = CodepointUtf8::One { value: first_cu };
 			(cp, 1)
 		}
 		0xc2..=0xdf => {
-			let values = [first_cu, *ptr.add(1)];
+			let values = [first_cu, *front_ptr.add(1)];
 			let cp = CodepointUtf8::Two { values };
 			(cp, 2)
 		}
 		0xe0..=0xef => {
-			let values = [first_cu, *ptr.add(1), *ptr.add(2)];
+			let values = [first_cu, *front_ptr.add(1), *front_ptr.add(2)];
 			let cp = CodepointUtf8::Three { values };
 			(cp, 3)
 		}
 		0xf0..=0xf4 => {
-			let values = [first_cu, *ptr.add(1), *ptr.add(2), *ptr.add(3)];
+			let values = [first_cu, *front_ptr.add(1), *front_ptr.add(2), *front_ptr.add(3)];
 			let cp = CodepointUtf8::Four { values };
 			(cp, 4)
 		}
@@ -378,30 +369,19 @@ pub(super) const unsafe fn next_codepoint_utf8_unchecked(utf8: &[u8]) -> (u32, &
 	};
 
 	let cp = utf8_to_codepoint_unchecked(cp);
-	// TODO: len can be unchecked sub
-	let rest = slice::from_raw_parts(ptr.add(consumed), utf8.len() - consumed);
-	(cp, rest)
+	(cp, consumed)
 }
 
-/// # Safety
-///
-/// The provided code unit slice must be valid UTF-16, and have a length greater
-/// than 0. If both of those preconditions are satisfied, it must mean the slice
-/// also has at least one UTF-16 character.
 #[inline]
-pub(super) const unsafe fn next_codepoint_utf16_unchecked(utf16: &[u16]) -> (u32, &[u16]) {
-	debug_assert!(!utf16.is_empty());
-
-	let ptr = utf16.as_ptr();
-	let first_cu = *ptr;
-
+pub(super) const unsafe fn next_codepoint_utf16_ptr_unchecked(front_ptr: *const u16) -> (u32, usize) {
+	let first_cu = *front_ptr;
 	let (cp, consumed) = match first_cu {
 		0x0000..=0xd7ff | 0xe000..=0xffff => {
 			let cp = CodepointUtf16::One { value: first_cu };
 			(cp, 1)
 		}
 		0xd800..=0xdbff => {
-			let values = [first_cu, *ptr.add(1)];
+			let values = [first_cu, *front_ptr.add(1)];
 			let cp = CodepointUtf16::Two { values };
 			(cp, 2)
 		}
@@ -409,23 +389,12 @@ pub(super) const unsafe fn next_codepoint_utf16_unchecked(utf16: &[u16]) -> (u32
 	};
 
 	let cp = utf16_to_codepoint_unchecked(cp);
-	// TODO: len can be unchecked sub
-	let rest = slice::from_raw_parts(ptr.add(consumed), utf16.len() - consumed);
-	(cp, rest)
+	(cp, consumed)
 }
 
-/// # Safety
-///
-/// The provided code unit slice must be valid UTF-32, and have a length greater
-/// than 0. If both of those preconditions are satisfied, it must mean the slice
-/// also has at least one UTF-32 character.
 #[inline]
-pub(super) const unsafe fn next_codepoint_utf32_unchecked(utf32: &[u32]) -> (u32, &[u32]) {
-	debug_assert!(!utf32.is_empty());
-
-	let ptr = utf32.as_ptr();
-	let first_cu = *ptr;
-
+pub(super) const unsafe fn next_codepoint_utf32_ptr_unchecked(front_ptr: *const u32) -> (u32, usize) {
+	let first_cu = *front_ptr;
 	let (cp, consumed) = match first_cu {
 		0x0000..=0xd7ff | 0xe000..=0x10ffff => {
 			let cp = CodepointUtf32::One { value: first_cu };
@@ -435,21 +404,16 @@ pub(super) const unsafe fn next_codepoint_utf32_unchecked(utf32: &[u32]) -> (u32
 	};
 
 	let cp = utf32_to_codepoint_unchecked(cp);
-	// TODO: len can be unchecked sub
-	let rest = slice::from_raw_parts(ptr.add(consumed), utf32.len() - consumed);
-	(cp, rest)
+	(cp, consumed)
 }
 
 #[inline]
-pub(super) const unsafe fn next_codepoint_back_utf8_unchecked(utf8: &[u8]) -> (u32, &[u8]) {
-	debug_assert!(!utf8.is_empty());
-
-	let mut ptr = utf8.as_ptr().add(utf8.len());
+pub(super) const unsafe fn next_codepoint_back_utf8_ptr_unchecked(mut back_ptr: *const u8) -> (u32, usize) {
 	macro_rules! next_cu_back {
 		() => {
 			{
-				ptr = ptr.sub(1);
-				*ptr
+				back_ptr = back_ptr.sub(1);
+				*back_ptr
 			}
 		}
 	}
@@ -487,21 +451,16 @@ pub(super) const unsafe fn next_codepoint_back_utf8_unchecked(utf8: &[u8]) -> (u
 	};
 
 	let cp = utf8_to_codepoint_unchecked(cp);
-	// TODO: len can be unchecked sub
-	let rest = slice::from_raw_parts(utf8.as_ptr(), utf8.len() - consumed);
-	(cp, rest)
+	(cp, consumed)
 }
 
 #[inline]
-pub(super) const unsafe fn next_codepoint_back_utf16_unchecked(utf16: &[u16]) -> (u32, &[u16]) {
-	debug_assert!(!utf16.is_empty());
-
-	let mut ptr = utf16.as_ptr().add(utf16.len());
+pub(super) const unsafe fn next_codepoint_back_utf16_ptr_unchecked(mut back_ptr: *const u16) -> (u32, usize) {
 	macro_rules! next_cu_back {
 		() => {
 			{
-				ptr = ptr.sub(1);
-				*ptr
+				back_ptr = back_ptr.sub(1);
+				*back_ptr
 			}
 		}
 	}
@@ -523,21 +482,16 @@ pub(super) const unsafe fn next_codepoint_back_utf16_unchecked(utf16: &[u16]) ->
 	};
 
 	let cp = utf16_to_codepoint_unchecked(cp);
-	// TODO: len can be unchecked sub
-	let rest = slice::from_raw_parts(utf16.as_ptr(), utf16.len() - consumed);
-	(cp, rest)
+	(cp, consumed)
 }
 
 #[inline]
-pub(super) const unsafe fn next_codepoint_back_utf32_unchecked(utf32: &[u32]) -> (u32, &[u32]) {
-	debug_assert!(!utf32.is_empty());
-
-	let mut ptr = utf32.as_ptr().add(utf32.len());
+pub(super) const unsafe fn next_codepoint_back_utf32_ptr_unchecked(mut back_ptr: *const u32) -> (u32, usize) {
 	macro_rules! next_cu_back {
 		() => {
 			{
-				ptr = ptr.sub(1);
-				*ptr
+				back_ptr = back_ptr.sub(1);
+				*back_ptr
 			}
 		}
 	}
@@ -551,9 +505,7 @@ pub(super) const unsafe fn next_codepoint_back_utf32_unchecked(utf32: &[u32]) ->
 	};
 
 	let cp = utf32_to_codepoint_unchecked(cp);
-	// TODO: len can be unchecked sub
-	let rest = slice::from_raw_parts(utf32.as_ptr(), utf32.len() - consumed);
-	(cp, rest)
+	(cp, consumed)
 }
 
 #[cfg(test)]
