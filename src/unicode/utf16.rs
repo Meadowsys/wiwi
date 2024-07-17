@@ -1,6 +1,7 @@
-use super::_internal::{ CodepointUtf16, validate_utf16 };
+use super::_internal;
 use std::borrow::Cow;
 use std::slice;
+use std::mem::transmute;
 
 #[repr(transparent)]
 pub struct StrUtf16 {
@@ -10,7 +11,7 @@ pub struct StrUtf16 {
 impl StrUtf16 {
 	#[inline]
 	pub const fn from_utf16(code_units: &[u16]) -> Option<&Self> {
-		if validate_utf16(code_units) {
+		if _internal::validate_utf16(code_units) {
 			// SAFETY: we just validated
 			Some(unsafe { Self::from_utf16_unchecked(code_units) })
 		} else {
@@ -20,7 +21,7 @@ impl StrUtf16 {
 
 	#[inline]
 	pub fn from_utf16_mut(code_units: &mut [u16]) -> Option<&mut Self> {
-		if validate_utf16(code_units) {
+		if _internal::validate_utf16(code_units) {
 			// SAFETY: we just validated
 			Some(unsafe { Self::from_utf16_unchecked_mut(code_units) })
 		} else {
@@ -31,23 +32,23 @@ impl StrUtf16 {
 	#[inline]
 	pub const unsafe fn from_utf16_unchecked(utf16: &[u16]) -> &Self {
 		// SAFETY: [u16] and Self have same layout
-		&*(utf16 as *const [u16] as *const Self)
+		transmute(utf16)
 	}
 
 	#[inline]
 	pub unsafe fn from_utf16_unchecked_mut(utf16: &mut [u16]) -> &mut Self {
 		// SAFETY: [u16] and Self have same layout
-		&mut *(utf16 as *mut [u16] as *mut Self)
+		transmute(utf16)
 	}
 
 	#[inline]
-	pub fn to_utf16_code_units(&self) -> &[u16] {
+	pub const fn to_utf16_code_units(&self) -> &[u16] {
 		// SAFETY: [u16] and Self have same layout
-		unsafe { &*(self as *const Self as *const [u16]) }
+		unsafe { transmute(self) }
 	}
 
 	#[inline]
-	pub fn to_utf16le_bytes(&self) -> Cow<[u8]> {
+	pub fn to_utf16le_bytes(&self) -> Cow<'_, [u8]> {
 		// TODO: this can be unchecked mul
 		let byte_len = self.inner.len() * 2;
 
@@ -74,7 +75,8 @@ impl StrUtf16 {
 		rv
 	}
 
-	pub fn to_utf16be_bytes(&self) -> Cow<[u8]> {
+	#[inline]
+	pub fn to_utf16be_bytes(&self) -> Cow<'_, [u8]> {
 		// TODO: this can be unchecked mul
 		let byte_len = self.inner.len() * 2;
 
@@ -99,5 +101,24 @@ impl StrUtf16 {
 		};
 
 		rv
+	}
+
+	#[inline]
+	pub const fn len_code_units(&self) -> usize {
+		self.to_utf16_code_units().len()
+	}
+
+	#[inline]
+	pub const fn is_empty(&self) -> bool {
+		self.len_code_units() == 0
+	}
+
+	#[inline]
+	pub const fn is_char_boundary(&self, index: usize) -> bool {
+		if index <= self.len_code_units() {
+			unsafe { _internal::is_char_boundary_utf16_unchecked(self.to_utf16_code_units(), index) }
+		} else {
+			false
+		}
 	}
 }
