@@ -347,6 +347,7 @@ pub(super) const unsafe fn is_char_boundary_utf32_unchecked(utf32: &[u32], i: us
 /// The provided code unit slice must be valid UTF-8, and have a length greater
 /// than 0. If both of those preconditions are satisfied, it must mean the slice
 /// also has at least one UTF-8 character.
+#[inline]
 pub(super) const unsafe fn next_codepoint_utf8_unchecked(utf8: &[u8]) -> (u32, &[u8]) {
 	debug_assert!(!utf8.is_empty());
 
@@ -387,6 +388,7 @@ pub(super) const unsafe fn next_codepoint_utf8_unchecked(utf8: &[u8]) -> (u32, &
 /// The provided code unit slice must be valid UTF-16, and have a length greater
 /// than 0. If both of those preconditions are satisfied, it must mean the slice
 /// also has at least one UTF-16 character.
+#[inline]
 pub(super) const unsafe fn next_codepoint_utf16_unchecked(utf16: &[u16]) -> (u32, &[u16]) {
 	debug_assert!(!utf16.is_empty());
 
@@ -417,6 +419,7 @@ pub(super) const unsafe fn next_codepoint_utf16_unchecked(utf16: &[u16]) -> (u32
 /// The provided code unit slice must be valid UTF-32, and have a length greater
 /// than 0. If both of those preconditions are satisfied, it must mean the slice
 /// also has at least one UTF-32 character.
+#[inline]
 pub(super) const unsafe fn next_codepoint_utf32_unchecked(utf32: &[u32]) -> (u32, &[u32]) {
 	debug_assert!(!utf32.is_empty());
 
@@ -434,6 +437,122 @@ pub(super) const unsafe fn next_codepoint_utf32_unchecked(utf32: &[u32]) -> (u32
 	let cp = utf32_to_codepoint_unchecked(cp);
 	// TODO: len can be unchecked sub
 	let rest = slice::from_raw_parts(ptr.add(consumed), utf32.len() - consumed);
+	(cp, rest)
+}
+
+#[inline]
+pub(super) const unsafe fn next_codepoint_back_utf8_unchecked(utf8: &[u8]) -> (u32, &[u8]) {
+	debug_assert!(!utf8.is_empty());
+
+	let mut ptr = utf8.as_ptr().add(utf8.len());
+	macro_rules! next_cu_back {
+		() => {
+			{
+				ptr = ptr.sub(1);
+				*ptr
+			}
+		}
+	}
+
+	let (cp, consumed) = match next_cu_back!() {
+		c1 @ 0x00..=0x7f => {
+			let cp = CodepointUtf8::One { value: c1 };
+			(cp, 1)
+		}
+		c1 @ 0x80..=0xbf => match next_cu_back!() {
+			c2 @ 0xc2..=0xdf => {
+				let values = [c2, c1];
+				let cp = CodepointUtf8::Two { values };
+				(cp, 2)
+			}
+			c2 @ 0x80..=0xbf => match next_cu_back!() {
+				c3 @ 0xe0..=0xef => {
+					let values = [c3, c2, c1];
+					let cp = CodepointUtf8::Three { values };
+					(cp, 3)
+				}
+				c3 @ 0x80..=0xbf => match next_cu_back!() {
+					c4 @ 0xf0..=0xf4 => {
+						let values = [c4, c3, c2, c1];
+						let cp = CodepointUtf8::Four { values };
+						(cp, 4)
+					}
+					_ => { hint::unreachable_unchecked() }
+				}
+				_ => { hint::unreachable_unchecked() }
+			}
+			_ => { hint::unreachable_unchecked() }
+		}
+		_ => { hint::unreachable_unchecked() }
+	};
+
+	let cp = utf8_to_codepoint_unchecked(cp);
+	// TODO: len can be unchecked sub
+	let rest = slice::from_raw_parts(utf8.as_ptr(), utf8.len() - consumed);
+	(cp, rest)
+}
+
+#[inline]
+pub(super) const unsafe fn next_codepoint_back_utf16_unchecked(utf16: &[u16]) -> (u32, &[u16]) {
+	debug_assert!(!utf16.is_empty());
+
+	let mut ptr = utf16.as_ptr().add(utf16.len());
+	macro_rules! next_cu_back {
+		() => {
+			{
+				ptr = ptr.sub(1);
+				*ptr
+			}
+		}
+	}
+
+	let (cp, consumed) = match next_cu_back!() {
+		c1 @ (0x0000..=0xd7ff | 0xe000..=0xffff) => {
+			let cp = CodepointUtf16::One { value: c1 };
+			(cp, 1)
+		}
+		c1 @ 0xdc00..=0xdfff => match next_cu_back!() {
+			c2 @ 0xd800..=0xdbff => {
+				let values = [c2, c1];
+				let cp = CodepointUtf16::Two { values };
+				(cp, 2)
+			}
+			_ => { hint::unreachable_unchecked() }
+		}
+		_ => { hint::unreachable_unchecked() }
+	};
+
+	let cp = utf16_to_codepoint_unchecked(cp);
+	// TODO: len can be unchecked sub
+	let rest = slice::from_raw_parts(utf16.as_ptr(), utf16.len() - consumed);
+	(cp, rest)
+}
+
+#[inline]
+pub(super) const unsafe fn next_codepoint_back_utf32_unchecked(utf32: &[u32]) -> (u32, &[u32]) {
+	debug_assert!(!utf32.is_empty());
+
+	let mut ptr = utf32.as_ptr().add(utf32.len());
+	macro_rules! next_cu_back {
+		() => {
+			{
+				ptr = ptr.sub(1);
+				*ptr
+			}
+		}
+	}
+
+	let (cp, consumed) = match next_cu_back!() {
+		cu @ (0x0000..=0xd7ff | 0xe000..=0x10ffff) => {
+			let cp = CodepointUtf32::One { value: cu };
+			(cp, 1)
+		}
+		_ => { hint::unreachable_unchecked() }
+	};
+
+	let cp = utf32_to_codepoint_unchecked(cp);
+	// TODO: len can be unchecked sub
+	let rest = slice::from_raw_parts(utf32.as_ptr(), utf32.len() - consumed);
 	(cp, rest)
 }
 
