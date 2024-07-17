@@ -1,5 +1,7 @@
 //! Internal implementations
 
+use std::{ hint, slice };
+
 #[derive(Debug, PartialEq, Eq)]
 pub(super) enum CodepointUtf8 {
 	One { value: u8 },
@@ -22,12 +24,13 @@ pub(super) enum CodepointUtf32 {
 /// Returns whether a codepoint is a valid unicode codepoint
 #[inline]
 pub(super) const fn validate_codepoint(c: u32) -> bool {
-	!((c > 0xd7ff && c < 0xe000) || c > 0x10ffff)
+	matches!(c, 0x0000..=0xd7ff | 0xe000..=0x10ffff)
 }
 
 /// # Safety
 ///
 /// `c` must be a valid unicode codepoint
+#[inline]
 pub(super) const unsafe fn codepoint_to_utf8_unchecked(c: u32) -> CodepointUtf8 {
 	use CodepointUtf8::*;
 
@@ -54,15 +57,16 @@ pub(super) const unsafe fn codepoint_to_utf8_unchecked(c: u32) -> CodepointUtf8 
 /// # Safety
 ///
 /// `c` must be a valid unicode codepoint
+#[inline]
 pub(super) const unsafe fn codepoint_to_utf16_unchecked(c: u32) -> CodepointUtf16 {
 	use CodepointUtf16::*;
 
 	if c & 0xffff == c {
 		One { value: c as _ }
 	} else {
-		let c_offset = (c - 0x10000) as u16;
-		let c1 = 0xd800 | (c_offset >> 10);
-		let c2 = 0xdc00 | (c_offset & 0x3ff);
+		let c_offset = c - 0x10000;
+		let c1 = 0xd800 | (c_offset >> 10) as u16;
+		let c2 = 0xdc00 | (c_offset as u16 & 0x3ff);
 		Two { values: [c1, c2] }
 	}
 }
@@ -73,6 +77,65 @@ pub(super) const unsafe fn codepoint_to_utf16_unchecked(c: u32) -> CodepointUtf1
 #[inline]
 pub(super) const unsafe fn codepoint_to_utf32_unchecked(c: u32) -> CodepointUtf32 {
 	CodepointUtf32::One { value: c }
+}
+
+/// # Safety
+///
+/// `utf8` must contain valid data for a UTF-8 codepoint. If it is returned from
+/// [`codepoint_to_utf8_unchecked`] (assuming its preconditions were met of
+/// course), it is valid.
+#[inline]
+pub(super) const unsafe fn utf8_to_codepoint_unchecked(utf8: CodepointUtf8) -> u32 {
+	match utf8 {
+		CodepointUtf8::One { value } => { value as _ }
+		CodepointUtf8::Two { values: [c1, c2] } => {
+			let c1 = ((c1 & 0x1f) as u32) << 6;
+			let c2 = (c2 & 0x3f) as u32;
+			c1 | c2
+		}
+		CodepointUtf8::Three { values: [c1, c2, c3] } => {
+			let c1 = ((c1 & 0xf) as u32) << 12;
+			let c2 = ((c2 & 0x3f) as u32) << 6;
+			let c3 = (c3 & 0x3f) as u32;
+			c1 | c2 | c3
+		}
+		CodepointUtf8::Four { values: [c1, c2, c3, c4] } => {
+			let c1 = ((c1 & 0x7) as u32) << 18;
+			let c2 = ((c2 & 0x3f) as u32) << 12;
+			let c3 = ((c3 & 0x3f) as u32) << 6;
+			let c4 = (c4 & 0x3f) as u32;
+			c1 | c2 | c3 | c4
+		}
+	}
+}
+
+/// # Safety
+///
+/// `utf16` must contain valid data for a UTF-16 codepoint. If it is returned from
+/// [`codepoint_to_utf16_unchecked`] (assuming its preconditions were met of
+/// course), it is valid.
+#[inline]
+pub(super) const unsafe fn utf16_to_codepoint_unchecked(utf16: CodepointUtf16) -> u32 {
+	match utf16 {
+		CodepointUtf16::One { value } => { value as _ }
+		CodepointUtf16::Two { values: [c1, c2] } => {
+			let c1 = ((c1 & 0x3ff) as u32) << 10;
+			let c2 = (c2 & 0x3ff) as u32;
+			(c1 | c2) + 0x10000
+		}
+	}
+}
+
+/// # Safety
+///
+/// `utf32` must contain valid data for a UTF-32 codepoint. If it is returned from
+/// [`codepoint_to_utf32_unchecked`] (assuming its preconditions were met of
+/// course), it is valid.
+#[inline]
+pub(super) const unsafe fn utf32_to_codepoint_unchecked(utf32: CodepointUtf32) -> u32 {
+	match utf32 {
+		CodepointUtf32::One { value } => { value }
+	}
 }
 
 #[inline]
@@ -241,6 +304,101 @@ pub(super) const fn validate_utf32(code_units: &[u32]) -> bool {
 	}
 
 	true
+}
+
+/// # Safety
+///
+/// The provided code unit slice must be valid UTF-8, and have a length greater
+/// than 0. If both of those preconditions are satisfied, it must mean the slice
+/// also has at least one UTF-8 character.
+pub(super) const unsafe fn next_codepoint_utf8_unchecked(utf8: &[u8]) -> (u32, &[u8]) {
+	debug_assert!(!utf8.is_empty());
+
+	let ptr = utf8.as_ptr();
+	let first_cu = *ptr;
+
+	let (cp, consumed) = match first_cu {
+		0x00..=0x7f => {
+			let cp = CodepointUtf8::One { value: first_cu };
+			(cp, 1)
+		}
+		0xc2..=0xdf => {
+			let values = [first_cu, *ptr.add(1)];
+			let cp = CodepointUtf8::Two { values };
+			(cp, 2)
+		}
+		0xe0..=0xef => {
+			let values = [first_cu, *ptr.add(1), *ptr.add(2)];
+			let cp = CodepointUtf8::Three { values };
+			(cp, 3)
+		}
+		0xf0..=0xf4 => {
+			let values = [first_cu, *ptr.add(1), *ptr.add(2), *ptr.add(3)];
+			let cp = CodepointUtf8::Four { values };
+			(cp, 4)
+		}
+		_ => { hint::unreachable_unchecked() }
+	};
+
+	let cp = utf8_to_codepoint_unchecked(cp);
+	// TODO: len can be unchecked sub
+	let rest = slice::from_raw_parts(ptr.add(consumed), utf8.len() - consumed);
+	(cp, rest)
+}
+
+/// # Safety
+///
+/// The provided code unit slice must be valid UTF-16, and have a length greater
+/// than 0. If both of those preconditions are satisfied, it must mean the slice
+/// also has at least one UTF-16 character.
+pub(super) const unsafe fn next_codepoint_utf16_unchecked(utf16: &[u16]) -> (u32, &[u16]) {
+	debug_assert!(!utf16.is_empty());
+
+	let ptr = utf16.as_ptr();
+	let first_cu = *ptr;
+
+	let (cp, consumed) = match first_cu {
+		0x0000..=0xd7ff | 0xe000..=0xffff => {
+			let cp = CodepointUtf16::One { value: first_cu };
+			(cp, 1)
+		}
+		0xd800..=0xdbff => {
+			let values = [first_cu, *ptr.add(1)];
+			let cp = CodepointUtf16::Two { values };
+			(cp, 2)
+		}
+		0xdc00..=0xdfff => { hint::unreachable_unchecked() }
+	};
+
+	let cp = utf16_to_codepoint_unchecked(cp);
+	// TODO: len can be unchecked sub
+	let rest = slice::from_raw_parts(ptr.add(consumed), utf16.len() - consumed);
+	(cp, rest)
+}
+
+/// # Safety
+///
+/// The provided code unit slice must be valid UTF-32, and have a length greater
+/// than 0. If both of those preconditions are satisfied, it must mean the slice
+/// also has at least one UTF-32 character.
+pub(super) const unsafe fn next_codepoint_utf32_unchecked(utf32: &[u32]) -> (u32, &[u32]) {
+	debug_assert!(!utf32.is_empty());
+
+	let ptr = utf32.as_ptr();
+	let first_cu = *ptr;
+
+	let (cp, consumed) = match first_cu {
+		0x0000..=0xd7ff | 0xe000..=0x10ffff => {
+			let cp = CodepointUtf32::One { value: first_cu };
+			(cp, 1)
+		}
+		_ => { hint::unreachable_unchecked() }
+	};
+
+	let cp = utf32_to_codepoint_unchecked(cp);
+	// TODO: len can be unchecked sub
+	let rest = slice::from_raw_parts(ptr.add(consumed), utf32.len() - consumed);
+	(cp, rest)
 }
 
 #[cfg(test)]
