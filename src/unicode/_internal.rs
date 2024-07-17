@@ -308,6 +308,42 @@ pub(super) const fn validate_utf32(code_units: &[u32]) -> bool {
 
 /// # Safety
 ///
+/// The provided code unit slice must be valid UTF-8, and the provided index
+/// must be less than or equal to `utf8.len()` (ie. in bounds).
+#[inline]
+pub(super) const unsafe fn is_char_boundary_utf8_unchecked(utf8: &[u8], i: usize) -> bool {
+	if i == 0 || i == utf8.len() { return true }
+
+	matches!(
+		*utf8.as_ptr().add(i),
+		0x00..=0x7f | 0xc2..=0xdf | 0xe0..=0xef | 0xf0..=0xf4
+	)
+}
+
+/// # Safety
+///
+/// The provided code unit slice must be valid UTF-16, and the provided index
+/// must be less than or equal to `utf16.len()` (ie. in bounds).
+#[inline]
+pub(super) const unsafe fn is_char_boundary_utf16_unchecked(utf16: &[u16], i: usize) -> bool {
+	if i == 0 || i == utf16.len() { return true }
+
+	// check that it's _not_ a trailing surrogate
+	!matches!(*utf16.as_ptr().add(i), 0xdc00..=0xdfff)
+}
+
+/// # Safety
+///
+/// The provided code unit slice must be valid UTF-32, and the provided index
+/// must be less than or equal to `utf32.len()` (ie. in bounds).
+#[inline]
+pub(super) const unsafe fn is_char_boundary_utf32_unchecked(utf32: &[u32], i: usize) -> bool {
+	// there are no 2+ unit sequences in UTF-32
+	true
+}
+
+/// # Safety
+///
 /// The provided code unit slice must be valid UTF-8, and have a length greater
 /// than 0. If both of those preconditions are satisfied, it must mean the slice
 /// also has at least one UTF-8 character.
