@@ -59,11 +59,7 @@ impl StrUtf32 {
 
 	#[inline]
 	pub const fn is_char_boundary(&self, index: usize) -> bool {
-		if index <= self.len_code_units() {
-			unsafe { _internal::is_char_boundary_utf32_unchecked(self.to_utf32_code_units(), index) }
-		} else {
-			false
-		}
+		unsafe { _internal::is_char_boundary_utf32_unchecked(self.to_utf32_code_units(), index) }
 	}
 }
 
