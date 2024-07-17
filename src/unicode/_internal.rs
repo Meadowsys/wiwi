@@ -343,6 +343,43 @@ pub(super) const unsafe fn utf32_to_codepoint_unchecked(utf32: CodepointUtf32) -
 
 /// # Safety
 ///
+/// The provided code unit slice must be valid UTF-8
+#[inline]
+pub(super) const unsafe fn is_char_boundary_utf8(utf8: &[u8], i: usize) -> bool {
+	if i > utf8.len() { return false }
+	if i == 0 || i == utf8.len() { return true }
+
+	matches!(
+		*utf8.as_ptr().add(i),
+		0x00..=0x7f | 0xc2..=0xdf | 0xe0..=0xef | 0xf0..=0xf4
+	)
+}
+
+/// # Safety
+///
+/// The provided code unit slice must be valid UTF-16
+#[inline]
+pub(super) const unsafe fn is_char_boundary_utf16(utf16: &[u16], i: usize) -> bool {
+	if i > utf16.len() { return false }
+	if i == 0 || i == utf16.len() { return true }
+
+	// check that it's _not_ a trailing surrogate
+	!matches!(*utf16.as_ptr().add(i), 0xdc00..=0xdfff)
+}
+
+/// # Safety
+///
+/// The provided code unit slice must be valid UTF-32
+#[inline]
+pub(super) const unsafe fn is_char_boundary_utf32(utf32: &[u32], i: usize) -> bool {
+	// there are no 2+ unit sequences in UTF-32
+	// so the only `false` condition is if i is OOB
+	// ie. if i is in bounds, this is true
+	i <= utf32.len()
+}
+
+/// # Safety
+///
 /// The provided code unit slice must be valid UTF-8, and the provided index
 /// must be less than or equal to `utf8.len()` (ie. in bounds).
 #[inline]
