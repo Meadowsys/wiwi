@@ -27,117 +27,6 @@ pub(super) const fn validate_codepoint(c: u32) -> bool {
 	matches!(c, 0x0000..=0xd7ff | 0xe000..=0x10ffff)
 }
 
-/// # Safety
-///
-/// `c` must be a valid unicode codepoint
-#[inline]
-pub(super) const unsafe fn codepoint_to_utf8_unchecked(c: u32) -> CodepointUtf8 {
-	use CodepointUtf8::*;
-
-	if c & 0x7f == c {
-		One { value: c as _ }
-	} else if c & 0x7ff == c {
-		let c1 = 0xc0 | (c >> 6) as u8;
-		let c2 = 0x80 | (c & 0x3f) as u8;
-		Two { values: [c1, c2] }
-	} else if c & 0xffff == c {
-		let c1 = 0xe0 | (c >> 12) as u8;
-		let c2 = 0x80 | ((c >> 6) & 0x3f) as u8;
-		let c3 = 0x80 | (c & 0x3f) as u8;
-		Three { values: [c1, c2, c3] }
-	} else {
-		let c1 = 0xf0 | (c >> 18) as u8;
-		let c2 = 0x80 | ((c >> 12) & 0x3f) as u8;
-		let c3 = 0x80 | ((c >> 6) & 0x3f) as u8;
-		let c4 = 0x80 | (c & 0x3f) as u8;
-		Four { values: [c1, c2, c3, c4] }
-	}
-}
-
-/// # Safety
-///
-/// `c` must be a valid unicode codepoint
-#[inline]
-pub(super) const unsafe fn codepoint_to_utf16_unchecked(c: u32) -> CodepointUtf16 {
-	use CodepointUtf16::*;
-
-	if c & 0xffff == c {
-		One { value: c as _ }
-	} else {
-		let c_offset = c - 0x10000;
-		let c1 = 0xd800 | (c_offset >> 10) as u16;
-		let c2 = 0xdc00 | (c_offset as u16 & 0x3ff);
-		Two { values: [c1, c2] }
-	}
-}
-
-/// # Safety
-///
-/// `c` must be a valid unicode codepoint
-#[inline]
-pub(super) const unsafe fn codepoint_to_utf32_unchecked(c: u32) -> CodepointUtf32 {
-	CodepointUtf32::One { value: c }
-}
-
-/// # Safety
-///
-/// `utf8` must contain valid data for a UTF-8 codepoint. If it is returned from
-/// [`codepoint_to_utf8_unchecked`] (assuming its preconditions were met of
-/// course), it is valid.
-#[inline]
-pub(super) const unsafe fn utf8_to_codepoint_unchecked(utf8: CodepointUtf8) -> u32 {
-	match utf8 {
-		CodepointUtf8::One { value } => { value as _ }
-		CodepointUtf8::Two { values: [c1, c2] } => {
-			let c1 = ((c1 & 0x1f) as u32) << 6;
-			let c2 = (c2 & 0x3f) as u32;
-			c1 | c2
-		}
-		CodepointUtf8::Three { values: [c1, c2, c3] } => {
-			let c1 = ((c1 & 0xf) as u32) << 12;
-			let c2 = ((c2 & 0x3f) as u32) << 6;
-			let c3 = (c3 & 0x3f) as u32;
-			c1 | c2 | c3
-		}
-		CodepointUtf8::Four { values: [c1, c2, c3, c4] } => {
-			let c1 = ((c1 & 0x7) as u32) << 18;
-			let c2 = ((c2 & 0x3f) as u32) << 12;
-			let c3 = ((c3 & 0x3f) as u32) << 6;
-			let c4 = (c4 & 0x3f) as u32;
-			c1 | c2 | c3 | c4
-		}
-	}
-}
-
-/// # Safety
-///
-/// `utf16` must contain valid data for a UTF-16 codepoint. If it is returned from
-/// [`codepoint_to_utf16_unchecked`] (assuming its preconditions were met of
-/// course), it is valid.
-#[inline]
-pub(super) const unsafe fn utf16_to_codepoint_unchecked(utf16: CodepointUtf16) -> u32 {
-	match utf16 {
-		CodepointUtf16::One { value } => { value as _ }
-		CodepointUtf16::Two { values: [c1, c2] } => {
-			let c1 = ((c1 & 0x3ff) as u32) << 10;
-			let c2 = (c2 & 0x3ff) as u32;
-			(c1 | c2) + 0x10000
-		}
-	}
-}
-
-/// # Safety
-///
-/// `utf32` must contain valid data for a UTF-32 codepoint. If it is returned from
-/// [`codepoint_to_utf32_unchecked`] (assuming its preconditions were met of
-/// course), it is valid.
-#[inline]
-pub(super) const unsafe fn utf32_to_codepoint_unchecked(utf32: CodepointUtf32) -> u32 {
-	match utf32 {
-		CodepointUtf32::One { value } => { value }
-	}
-}
-
 #[inline]
 pub(super) const fn validate_utf8(code_units: &[u8]) -> bool {
 	// table 3-7
@@ -304,6 +193,117 @@ pub(super) const fn validate_utf32(code_units: &[u32]) -> bool {
 	}
 
 	true
+}
+
+/// # Safety
+///
+/// `c` must be a valid unicode codepoint
+#[inline]
+pub(super) const unsafe fn codepoint_to_utf8_unchecked(c: u32) -> CodepointUtf8 {
+	use CodepointUtf8::*;
+
+	if c & 0x7f == c {
+		One { value: c as _ }
+	} else if c & 0x7ff == c {
+		let c1 = 0xc0 | (c >> 6) as u8;
+		let c2 = 0x80 | (c & 0x3f) as u8;
+		Two { values: [c1, c2] }
+	} else if c & 0xffff == c {
+		let c1 = 0xe0 | (c >> 12) as u8;
+		let c2 = 0x80 | ((c >> 6) & 0x3f) as u8;
+		let c3 = 0x80 | (c & 0x3f) as u8;
+		Three { values: [c1, c2, c3] }
+	} else {
+		let c1 = 0xf0 | (c >> 18) as u8;
+		let c2 = 0x80 | ((c >> 12) & 0x3f) as u8;
+		let c3 = 0x80 | ((c >> 6) & 0x3f) as u8;
+		let c4 = 0x80 | (c & 0x3f) as u8;
+		Four { values: [c1, c2, c3, c4] }
+	}
+}
+
+/// # Safety
+///
+/// `c` must be a valid unicode codepoint
+#[inline]
+pub(super) const unsafe fn codepoint_to_utf16_unchecked(c: u32) -> CodepointUtf16 {
+	use CodepointUtf16::*;
+
+	if c & 0xffff == c {
+		One { value: c as _ }
+	} else {
+		let c_offset = c - 0x10000;
+		let c1 = 0xd800 | (c_offset >> 10) as u16;
+		let c2 = 0xdc00 | (c_offset as u16 & 0x3ff);
+		Two { values: [c1, c2] }
+	}
+}
+
+/// # Safety
+///
+/// `c` must be a valid unicode codepoint
+#[inline]
+pub(super) const unsafe fn codepoint_to_utf32_unchecked(c: u32) -> CodepointUtf32 {
+	CodepointUtf32::One { value: c }
+}
+
+/// # Safety
+///
+/// `utf8` must contain valid data for a UTF-8 codepoint. If it is returned from
+/// [`codepoint_to_utf8_unchecked`] (assuming its preconditions were met of
+/// course), it is valid.
+#[inline]
+pub(super) const unsafe fn utf8_to_codepoint_unchecked(utf8: CodepointUtf8) -> u32 {
+	match utf8 {
+		CodepointUtf8::One { value } => { value as _ }
+		CodepointUtf8::Two { values: [c1, c2] } => {
+			let c1 = ((c1 & 0x1f) as u32) << 6;
+			let c2 = (c2 & 0x3f) as u32;
+			c1 | c2
+		}
+		CodepointUtf8::Three { values: [c1, c2, c3] } => {
+			let c1 = ((c1 & 0xf) as u32) << 12;
+			let c2 = ((c2 & 0x3f) as u32) << 6;
+			let c3 = (c3 & 0x3f) as u32;
+			c1 | c2 | c3
+		}
+		CodepointUtf8::Four { values: [c1, c2, c3, c4] } => {
+			let c1 = ((c1 & 0x7) as u32) << 18;
+			let c2 = ((c2 & 0x3f) as u32) << 12;
+			let c3 = ((c3 & 0x3f) as u32) << 6;
+			let c4 = (c4 & 0x3f) as u32;
+			c1 | c2 | c3 | c4
+		}
+	}
+}
+
+/// # Safety
+///
+/// `utf16` must contain valid data for a UTF-16 codepoint. If it is returned from
+/// [`codepoint_to_utf16_unchecked`] (assuming its preconditions were met of
+/// course), it is valid.
+#[inline]
+pub(super) const unsafe fn utf16_to_codepoint_unchecked(utf16: CodepointUtf16) -> u32 {
+	match utf16 {
+		CodepointUtf16::One { value } => { value as _ }
+		CodepointUtf16::Two { values: [c1, c2] } => {
+			let c1 = ((c1 & 0x3ff) as u32) << 10;
+			let c2 = (c2 & 0x3ff) as u32;
+			(c1 | c2) + 0x10000
+		}
+	}
+}
+
+/// # Safety
+///
+/// `utf32` must contain valid data for a UTF-32 codepoint. If it is returned from
+/// [`codepoint_to_utf32_unchecked`] (assuming its preconditions were met of
+/// course), it is valid.
+#[inline]
+pub(super) const unsafe fn utf32_to_codepoint_unchecked(utf32: CodepointUtf32) -> u32 {
+	match utf32 {
+		CodepointUtf32::One { value } => { value }
+	}
 }
 
 /// # Safety
