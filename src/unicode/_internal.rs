@@ -2,7 +2,7 @@
 
 use std::{ hint, slice };
 
-#[derive(Debug, PartialEq, Eq)]
+#[cfg_attr(test, derive(Debug, PartialEq, Eq))]
 pub(super) enum CodepointUtf8 {
 	One { value: u8 },
 	Two { values: [u8; 2] },
@@ -10,13 +10,13 @@ pub(super) enum CodepointUtf8 {
 	Four { values: [u8; 4] }
 }
 
-#[derive(Debug, PartialEq, Eq)]
+#[cfg_attr(test, derive(Debug, PartialEq, Eq))]
 pub(super) enum CodepointUtf16 {
 	One { value: u16 },
 	Two { values: [u16; 2] }
 }
 
-#[derive(Debug, PartialEq, Eq)]
+#[cfg_attr(test, derive(Debug, PartialEq, Eq))]
 pub(super) enum CodepointUtf32 {
 	One { value: u32 }
 }
