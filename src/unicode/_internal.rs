@@ -1,6 +1,8 @@
 //! Internal implementations
 
 use std::{ hint, slice };
+use std::marker::PhantomData;
+use std::ops::Range;
 
 #[cfg_attr(test, derive(Debug, PartialEq, Eq))]
 pub(super) enum CodepointUtf8 {
@@ -19,6 +21,24 @@ pub(super) enum CodepointUtf16 {
 #[cfg_attr(test, derive(Debug, PartialEq, Eq))]
 pub(super) enum CodepointUtf32 {
 	One { value: u32 }
+}
+
+pub(super) struct CharsUtf8Raw<'h> {
+	start: *const u8,
+	end: *const u8,
+	_marker: PhantomData<&'h [u8]>
+}
+
+pub(super) struct CharsUtf16Raw<'h> {
+	start: *const u16,
+	end: *const u16,
+	_marker: PhantomData<&'h [u16]>
+}
+
+pub(super) struct CharsUtf32Raw<'h> {
+	start: *const u32,
+	end: *const u32,
+	_marker: PhantomData<&'h [u32]>
 }
 
 /// Returns whether a codepoint is a valid unicode codepoint
@@ -569,6 +589,120 @@ pub(super) const unsafe fn next_codepoint_back_utf32_ptr_unchecked(mut back_ptr:
 
 	let cp = utf32_to_codepoint_unchecked(cp);
 	(cp, consumed)
+}
+
+#[inline]
+pub(super) unsafe fn new_raw_chars_iter_utf8(utf8: &[u8]) -> CharsUtf8Raw<'_> {
+	let Range { start, end } = utf8.as_ptr_range();
+	CharsUtf8Raw { start, end, _marker: PhantomData }
+}
+
+#[inline]
+pub(super) unsafe fn new_raw_chars_iter_utf16(utf16: &[u16]) -> CharsUtf16Raw<'_> {
+	let Range { start, end } = utf16.as_ptr_range();
+	CharsUtf16Raw { start, end, _marker: PhantomData }
+}
+
+#[inline]
+pub(super) unsafe fn new_raw_chars_iter_utf32(utf32: &[u32]) -> CharsUtf32Raw<'_> {
+	let Range { start, end } = utf32.as_ptr_range();
+	CharsUtf32Raw { start, end, _marker: PhantomData }
+}
+
+impl<'h> Iterator for CharsUtf8Raw<'h> {
+	type Item = u32;
+
+	#[inline]
+	fn next(&mut self) -> Option<u32> {
+		if self.start < self.end {
+			unsafe {
+				let (cp, consumed) = next_codepoint_utf8_ptr_unchecked(self.start);
+				self.start = self.start.add(consumed);
+				Some(cp)
+			}
+		} else {
+			None
+		}
+	}
+}
+
+impl<'h> Iterator for CharsUtf16Raw<'h> {
+	type Item = u32;
+
+	#[inline]
+	fn next(&mut self) -> Option<u32> {
+		if self.start < self.end {
+			unsafe {
+				let (cp, consumed) = next_codepoint_utf16_ptr_unchecked(self.start);
+				self.start = self.start.add(consumed);
+				Some(cp)
+			}
+		} else {
+			None
+		}
+	}
+}
+
+impl<'h> Iterator for CharsUtf32Raw<'h> {
+	type Item = u32;
+
+	#[inline]
+	fn next(&mut self) -> Option<u32> {
+		if self.start < self.end {
+			unsafe {
+				let (cp, consumed) = next_codepoint_utf32_ptr_unchecked(self.start);
+				self.start = self.start.add(consumed);
+				Some(cp)
+			}
+		} else {
+			None
+		}
+	}
+}
+
+impl<'h> DoubleEndedIterator for CharsUtf8Raw<'h> {
+	#[inline]
+	fn next_back(&mut self) -> Option<u32> {
+		if self.start < self.end {
+			unsafe {
+				let (cp, consumed) = next_codepoint_back_utf8_ptr_unchecked(self.end);
+				self.end = self.end.sub(consumed);
+				Some(cp)
+			}
+		} else {
+			None
+		}
+	}
+}
+
+impl<'h> DoubleEndedIterator for CharsUtf16Raw<'h> {
+	#[inline]
+	fn next_back(&mut self) -> Option<u32> {
+		if self.start < self.end {
+			unsafe {
+				let (cp, consumed) = next_codepoint_back_utf16_ptr_unchecked(self.end);
+				self.end = self.end.sub(consumed);
+				Some(cp)
+			}
+		} else {
+			None
+		}
+	}
+}
+
+impl<'h> DoubleEndedIterator for CharsUtf32Raw<'h> {
+	#[inline]
+	fn next_back(&mut self) -> Option<u32> {
+		if self.start < self.end {
+			unsafe {
+				let (cp, consumed) = next_codepoint_back_utf32_ptr_unchecked(self.end);
+				self.end = self.end.sub(consumed);
+				Some(cp)
+			}
+		} else {
+			None
+		}
+	}
 }
 
 #[cfg(test)]
