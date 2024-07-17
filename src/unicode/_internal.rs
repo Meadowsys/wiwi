@@ -41,6 +41,21 @@ pub(super) struct CharsUtf32Raw<'h> {
 	_marker: PhantomData<&'h [u32]>
 }
 
+pub(super) struct CharsIndicesUtf8Raw<'h> {
+	inner: CharsUtf8Raw<'h>,
+	offset_start: usize
+}
+
+pub(super) struct CharsIndicesUtf16Raw<'h> {
+	inner: CharsUtf16Raw<'h>,
+	offset_start: usize
+}
+
+pub(super) struct CharsIndicesUtf32Raw<'h> {
+	inner: CharsUtf32Raw<'h>,
+	offset_start: usize
+}
+
 /// Returns whether a codepoint is a valid unicode codepoint
 #[inline]
 pub(super) const fn validate_codepoint(c: u32) -> bool {
@@ -681,6 +696,108 @@ pub(super) fn chars_utf32_raw_next_back(chars: &mut CharsUtf32Raw) -> Option<u32
 			let (cp, consumed) = next_codepoint_back_utf32_ptr_unchecked(chars.end);
 			chars.end = chars.end.sub(consumed);
 			Some(cp)
+		}
+	} else {
+		None
+	}
+}
+
+#[inline]
+pub(super) fn chars_indices_utf8_raw_next(chars_indices: &mut CharsIndicesUtf8Raw) -> Option<(usize, u32)> {
+	if chars_indices.inner.start < chars_indices.inner.end {
+		unsafe {
+			let (cp, consumed) = next_codepoint_utf8_ptr_unchecked(chars_indices.inner.start);
+			chars_indices.inner.start = chars_indices.inner.start.add(consumed);
+
+			let i = chars_indices.offset_start;
+			chars_indices.offset_start += consumed;
+
+			Some((i, cp))
+		}
+	} else {
+		None
+	}
+}
+
+#[inline]
+pub(super) fn chars_indices_utf16_raw_next(chars_indices: &mut CharsIndicesUtf16Raw) -> Option<(usize, u32)> {
+	if chars_indices.inner.start < chars_indices.inner.end {
+		unsafe {
+			let (cp, consumed) = next_codepoint_utf16_ptr_unchecked(chars_indices.inner.start);
+			chars_indices.inner.start = chars_indices.inner.start.add(consumed);
+
+			let i = chars_indices.offset_start;
+			chars_indices.offset_start += consumed;
+
+			Some((i, cp))
+		}
+	} else {
+		None
+	}
+}
+
+#[inline]
+pub(super) fn chars_indices_utf32_raw_next(chars_indices: &mut CharsIndicesUtf32Raw) -> Option<(usize, u32)> {
+	if chars_indices.inner.start < chars_indices.inner.end {
+		unsafe {
+			let (cp, consumed) = next_codepoint_utf32_ptr_unchecked(chars_indices.inner.start);
+			chars_indices.inner.start = chars_indices.inner.start.add(consumed);
+
+			let i = chars_indices.offset_start;
+			chars_indices.offset_start += consumed;
+
+			Some((i, cp))
+		}
+	} else {
+		None
+	}
+}
+
+#[inline]
+pub(super) fn chars_indices_utf8_raw_next_back(chars_indices: &mut CharsIndicesUtf8Raw) -> Option<(usize, u32)> {
+	if chars_indices.inner.start < chars_indices.inner.end {
+		unsafe {
+			let (cp, consumed) = next_codepoint_back_utf8_ptr_unchecked(chars_indices.inner.end);
+			chars_indices.inner.end = chars_indices.inner.end.sub(consumed);
+
+			debug_assert!((chars_indices.inner.end as usize - chars_indices.inner.start as usize) % 8 == 0);
+			let i = chars_indices.offset_start + ((chars_indices.inner.end as usize - chars_indices.inner.start as usize) >> 3);
+
+			Some((i, cp))
+		}
+	} else {
+		None
+	}
+}
+
+#[inline]
+pub(super) fn chars_indices_utf16_raw_next_back(chars_indices: &mut CharsIndicesUtf16Raw) -> Option<(usize, u32)> {
+	if chars_indices.inner.start < chars_indices.inner.end {
+		unsafe {
+			let (cp, consumed) = next_codepoint_back_utf16_ptr_unchecked(chars_indices.inner.end);
+			chars_indices.inner.end = chars_indices.inner.end.sub(consumed);
+
+			debug_assert!((chars_indices.inner.end as usize - chars_indices.inner.start as usize) % 16 == 0);
+			let i = chars_indices.offset_start + ((chars_indices.inner.end as usize - chars_indices.inner.start as usize) >> 4);
+
+			Some((i, cp))
+		}
+	} else {
+		None
+	}
+}
+
+#[inline]
+pub(super) fn chars_indices_utf32_raw_next_back(chars_indices: &mut CharsIndicesUtf32Raw) -> Option<(usize, u32)> {
+	if chars_indices.inner.start < chars_indices.inner.end {
+		unsafe {
+			let (cp, consumed) = next_codepoint_back_utf32_ptr_unchecked(chars_indices.inner.end);
+			chars_indices.inner.end = chars_indices.inner.end.sub(consumed);
+
+			debug_assert!((chars_indices.inner.end as usize - chars_indices.inner.start as usize) % 32 == 0);
+			let i = chars_indices.offset_start + ((chars_indices.inner.end as usize - chars_indices.inner.start as usize) >> 5);
+
+			Some((i, cp))
 		}
 	} else {
 		None
