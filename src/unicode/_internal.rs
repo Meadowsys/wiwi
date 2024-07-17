@@ -592,116 +592,98 @@ pub(super) const unsafe fn next_codepoint_back_utf32_ptr_unchecked(mut back_ptr:
 }
 
 #[inline]
-pub(super) unsafe fn new_raw_chars_iter_utf8(utf8: &[u8]) -> CharsUtf8Raw<'_> {
+pub(super) unsafe fn new_chars_utf8_raw(utf8: &[u8]) -> CharsUtf8Raw<'_> {
 	let Range { start, end } = utf8.as_ptr_range();
 	CharsUtf8Raw { start, end, _marker: PhantomData }
 }
 
 #[inline]
-pub(super) unsafe fn new_raw_chars_iter_utf16(utf16: &[u16]) -> CharsUtf16Raw<'_> {
+pub(super) unsafe fn new_chars_utf16_raw(utf16: &[u16]) -> CharsUtf16Raw<'_> {
 	let Range { start, end } = utf16.as_ptr_range();
 	CharsUtf16Raw { start, end, _marker: PhantomData }
 }
 
 #[inline]
-pub(super) unsafe fn new_raw_chars_iter_utf32(utf32: &[u32]) -> CharsUtf32Raw<'_> {
+pub(super) unsafe fn new_chars_utf32_raw(utf32: &[u32]) -> CharsUtf32Raw<'_> {
 	let Range { start, end } = utf32.as_ptr_range();
 	CharsUtf32Raw { start, end, _marker: PhantomData }
 }
 
-impl<'h> Iterator for CharsUtf8Raw<'h> {
-	type Item = u32;
-
-	#[inline]
-	fn next(&mut self) -> Option<u32> {
-		if self.start < self.end {
-			unsafe {
-				let (cp, consumed) = next_codepoint_utf8_ptr_unchecked(self.start);
-				self.start = self.start.add(consumed);
-				Some(cp)
-			}
-		} else {
-			None
+#[inline]
+pub(super) fn chars_utf8_raw_next(chars: &mut CharsUtf8Raw) -> Option<u32> {
+	if chars.start < chars.end {
+		unsafe {
+			let (cp, consumed) = next_codepoint_utf8_ptr_unchecked(chars.start);
+			chars.start = chars.start.add(consumed);
+			Some(cp)
 		}
+	} else {
+		None
 	}
 }
 
-impl<'h> Iterator for CharsUtf16Raw<'h> {
-	type Item = u32;
-
-	#[inline]
-	fn next(&mut self) -> Option<u32> {
-		if self.start < self.end {
-			unsafe {
-				let (cp, consumed) = next_codepoint_utf16_ptr_unchecked(self.start);
-				self.start = self.start.add(consumed);
-				Some(cp)
-			}
-		} else {
-			None
+#[inline]
+pub(super) fn chars_utf16_raw_next(chars: &mut CharsUtf16Raw) -> Option<u32> {
+	if chars.start < chars.end {
+		unsafe {
+			let (cp, consumed) = next_codepoint_utf16_ptr_unchecked(chars.start);
+			chars.start = chars.start.add(consumed);
+			Some(cp)
 		}
+	} else {
+		None
 	}
 }
 
-impl<'h> Iterator for CharsUtf32Raw<'h> {
-	type Item = u32;
-
-	#[inline]
-	fn next(&mut self) -> Option<u32> {
-		if self.start < self.end {
-			unsafe {
-				let (cp, consumed) = next_codepoint_utf32_ptr_unchecked(self.start);
-				self.start = self.start.add(consumed);
-				Some(cp)
-			}
-		} else {
-			None
+#[inline]
+pub(super) fn chars_utf32_raw_next(chars: &mut CharsUtf32Raw) -> Option<u32> {
+	if chars.start < chars.end {
+		unsafe {
+			let (cp, consumed) = next_codepoint_utf32_ptr_unchecked(chars.start);
+			chars.start = chars.start.add(consumed);
+			Some(cp)
 		}
+	} else {
+		None
 	}
 }
 
-impl<'h> DoubleEndedIterator for CharsUtf8Raw<'h> {
-	#[inline]
-	fn next_back(&mut self) -> Option<u32> {
-		if self.start < self.end {
-			unsafe {
-				let (cp, consumed) = next_codepoint_back_utf8_ptr_unchecked(self.end);
-				self.end = self.end.sub(consumed);
-				Some(cp)
-			}
-		} else {
-			None
+#[inline]
+pub(super) fn chars_utf8_raw_next_back(chars: &mut CharsUtf8Raw) -> Option<u32> {
+	if chars.start < chars.end {
+		unsafe {
+			let (cp, consumed) = next_codepoint_back_utf8_ptr_unchecked(chars.end);
+			chars.end = chars.end.sub(consumed);
+			Some(cp)
 		}
+	} else {
+		None
 	}
 }
 
-impl<'h> DoubleEndedIterator for CharsUtf16Raw<'h> {
-	#[inline]
-	fn next_back(&mut self) -> Option<u32> {
-		if self.start < self.end {
-			unsafe {
-				let (cp, consumed) = next_codepoint_back_utf16_ptr_unchecked(self.end);
-				self.end = self.end.sub(consumed);
-				Some(cp)
-			}
-		} else {
-			None
+#[inline]
+pub(super) fn chars_utf16_raw_next_back(chars: &mut CharsUtf16Raw) -> Option<u32> {
+	if chars.start < chars.end {
+		unsafe {
+			let (cp, consumed) = next_codepoint_back_utf16_ptr_unchecked(chars.end);
+			chars.end = chars.end.sub(consumed);
+			Some(cp)
 		}
+	} else {
+		None
 	}
 }
 
-impl<'h> DoubleEndedIterator for CharsUtf32Raw<'h> {
-	#[inline]
-	fn next_back(&mut self) -> Option<u32> {
-		if self.start < self.end {
-			unsafe {
-				let (cp, consumed) = next_codepoint_back_utf32_ptr_unchecked(self.end);
-				self.end = self.end.sub(consumed);
-				Some(cp)
-			}
-		} else {
-			None
+#[inline]
+pub(super) fn chars_utf32_raw_next_back(chars: &mut CharsUtf32Raw) -> Option<u32> {
+	if chars.start < chars.end {
+		unsafe {
+			let (cp, consumed) = next_codepoint_back_utf32_ptr_unchecked(chars.end);
+			chars.end = chars.end.sub(consumed);
+			Some(cp)
 		}
+	} else {
+		None
 	}
 }
 
