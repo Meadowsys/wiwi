@@ -413,6 +413,12 @@
 <a href="#413" id="413">413</a>
 <a href="#414" id="414">414</a>
 <a href="#415" id="415">415</a>
+<a href="#416" id="416">416</a>
+<a href="#417" id="417">417</a>
+<a href="#418" id="418">418</a>
+<a href="#419" id="419">419</a>
+<a href="#420" id="420">420</a>
+<a href="#421" id="421">421</a>
 </pre></div><pre class="rust"><code><span class="kw">mod </span>traits;
 <span class="kw">pub use </span>traits::{ ChainHalf, NonChainHalf };
 
@@ -457,7 +463,8 @@
 				&lt;$(<span class="macro-nonterminal">$nonchain</span>)+ <span class="kw">as </span>::std::cmp::PartialEq&lt;$(<span class="macro-nonterminal">$nonchain</span>)+&gt;&gt;::eq(<span class="macro-nonterminal">$left_expr</span>(<span class="self">self</span>), <span class="macro-nonterminal">$right_expr</span>(other))
 			}
 
-			<span class="comment">// overriding this in case nonchain has overridden it
+			<span class="comment">// we override ne here since nonchain might have overridden ne,
+			// and we should use it if so
 			</span><span class="attr">#[allow(clippy::partialeq_ne_impl)]
 			#[inline]
 			</span><span class="kw">fn </span>ne(<span class="kw-2">&amp;</span><span class="self">self</span>, other: <span class="kw-2">&amp;</span>$(<span class="macro-nonterminal">$right</span>)+) -&gt; ::std::primitive::bool {
@@ -558,7 +565,12 @@
 			}
 		}
 
-		<span class="comment">// we follow whatever inner is doing (which _would_ include incorrect behaviour...)
+		<span class="comment">// we follow whatever inner is doing (which _would_ include incorrect behaviour...).
+		// Also this is false positive because despite us implementing traits for
+		// everything, the impls only apply if inner is that trait, then we delegate
+		// in. There are many types that are `Clone` but not `Copy` (it's literally
+		// in the design of the `Clone`/`Copy` API :p). So, even though we have an
+		// `impl Copy`, it doesn't necessarily mean we are _actually_ `Copy`.
 		</span><span class="attr">#[allow(clippy::non_canonical_clone_impl)]
 		</span><span class="kw">impl</span>$(&lt;$(<span class="macro-nonterminal">$generics_decl</span>)<span class="kw-2">*</span>&gt;)<span class="question-mark">? </span>::std::clone::Clone <span class="kw">for </span><span class="macro-nonterminal">$chainer</span>$(&lt;$(<span class="macro-nonterminal">$generics</span>)<span class="kw-2">*</span>&gt;)<span class="question-mark">?
 		</span><span class="kw">where

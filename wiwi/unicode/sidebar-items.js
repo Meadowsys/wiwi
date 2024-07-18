@@ -1,1 +1,1 @@
-window.SIDEBAR_ITEMS = {"struct":["StrUtf16","StrUtf32","StrUtf8"]};
+window.SIDEBAR_ITEMS = {"struct":["Char","CharsUtf16","CharsUtf8","StrUtf16","StrUtf32","StrUtf8","StringUtf16","StringUtf32","StringUtf8"]};

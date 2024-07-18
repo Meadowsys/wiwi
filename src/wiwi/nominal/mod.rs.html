@@ -941,8 +941,8 @@
 		<span class="comment">// &lt;T as PartialEq&gt;::eq(self.ref_inner(), other.ref_inner())
 	</span>}
 
-	<span class="comment">// we override ne here since T might have overridden ne, in which case this
-	// impl will correctly call it
+	<span class="comment">// we override ne here since T might have overridden ne,
+	// and we should use it if so
 	</span><span class="attr">#[allow(clippy::partialeq_ne_impl)]
 	#[inline]
 	</span><span class="kw">fn </span>ne(<span class="kw-2">&amp;</span><span class="self">self</span>, other: <span class="kw-2">&amp;</span>Nominal&lt;TR, MR&gt;) -&gt; bool {

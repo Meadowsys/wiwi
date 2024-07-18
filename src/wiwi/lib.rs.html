@@ -264,18 +264,18 @@
 #![cfg_attr(feature = <span class="string">"omega-tuples-of-doom"</span>, recursion_limit = <span class="string">"256"</span>)]
 
 </span><span class="comment">// TODO: review these
-</span><span class="attr">#![allow(
+</span><span class="attr">#![warn(
+	<span class="comment">// TODO: these following four should be deny,
+	// once all unsafe blocks are commented/fixed
+	</span>unsafe_op_in_unsafe_fn,
 	clippy::missing_safety_doc,
-	clippy::new_without_default,
-	clippy::should_implement_trait,
-	clippy::upper_case_acronyms,
-	dead_code,
-	unused_imports,
-	unused_macros,
-	unused_mut,
-	unused_variables
+	clippy::multiple_unsafe_ops_per_block,
+	clippy::undocumented_unsafe_blocks
 )]
-#![deny(unexpected_cfgs)]
+#![deny(
+	unexpected_cfgs,
+	clippy::mixed_attributes_style
+)]
 
 #![cfg_attr(docsrs, feature(doc_cfg))]
 

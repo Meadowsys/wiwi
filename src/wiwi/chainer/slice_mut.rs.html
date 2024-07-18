@@ -767,6 +767,54 @@
 <a href="#767" id="767">767</a>
 <a href="#768" id="768">768</a>
 <a href="#769" id="769">769</a>
+<a href="#770" id="770">770</a>
+<a href="#771" id="771">771</a>
+<a href="#772" id="772">772</a>
+<a href="#773" id="773">773</a>
+<a href="#774" id="774">774</a>
+<a href="#775" id="775">775</a>
+<a href="#776" id="776">776</a>
+<a href="#777" id="777">777</a>
+<a href="#778" id="778">778</a>
+<a href="#779" id="779">779</a>
+<a href="#780" id="780">780</a>
+<a href="#781" id="781">781</a>
+<a href="#782" id="782">782</a>
+<a href="#783" id="783">783</a>
+<a href="#784" id="784">784</a>
+<a href="#785" id="785">785</a>
+<a href="#786" id="786">786</a>
+<a href="#787" id="787">787</a>
+<a href="#788" id="788">788</a>
+<a href="#789" id="789">789</a>
+<a href="#790" id="790">790</a>
+<a href="#791" id="791">791</a>
+<a href="#792" id="792">792</a>
+<a href="#793" id="793">793</a>
+<a href="#794" id="794">794</a>
+<a href="#795" id="795">795</a>
+<a href="#796" id="796">796</a>
+<a href="#797" id="797">797</a>
+<a href="#798" id="798">798</a>
+<a href="#799" id="799">799</a>
+<a href="#800" id="800">800</a>
+<a href="#801" id="801">801</a>
+<a href="#802" id="802">802</a>
+<a href="#803" id="803">803</a>
+<a href="#804" id="804">804</a>
+<a href="#805" id="805">805</a>
+<a href="#806" id="806">806</a>
+<a href="#807" id="807">807</a>
+<a href="#808" id="808">808</a>
+<a href="#809" id="809">809</a>
+<a href="#810" id="810">810</a>
+<a href="#811" id="811">811</a>
+<a href="#812" id="812">812</a>
+<a href="#813" id="813">813</a>
+<a href="#814" id="814">814</a>
+<a href="#815" id="815">815</a>
+<a href="#816" id="816">816</a>
+<a href="#817" id="817">817</a>
 </pre></div><pre class="rust"><code><span class="kw">use super</span>::{ chainer, chain_fn, ChainHalf, NonChainHalf };
 <span class="kw">use </span>std::{ ptr, vec };
 <span class="kw">use </span>std::cmp::Ordering;
@@ -789,7 +837,10 @@
 
 	<span class="attr">#[inline]
 	</span><span class="kw">pub unsafe fn </span>from_raw_parts(data: <span class="kw-2">*mut </span>T, len: usize) -&gt; <span class="self">Self </span>{
-		slice::from_raw_parts_mut(data, len).into()
+		<span class="comment">// SAFETY: caller promises to uphold invariants of `slice::from_raw_parts_mut`
+		</span><span class="kw">let </span>slice = <span class="kw">unsafe </span>{ slice::from_raw_parts_mut(data, len) };
+
+		slice.into()
 	}
 
 	<span class="comment">// TODO: from_ptr_range nightly
@@ -800,7 +851,7 @@
 		as_chunks[<span class="kw">const </span>N: usize, CB](nc, cb: CB) <span class="kw">where </span>{
 			<span class="comment">// TODO: chainer?
 			</span>CB: FnOnce(<span class="kw-2">&amp;</span>[[T; N]], <span class="kw-2">&amp;</span>[T])
-		} =&gt; <span class="kw">unsafe </span>{
+		} =&gt; {
 			<span class="kw">let </span>len = nc.len();
 			<span class="kw">let </span>ptr = nc.as_ptr();
 
@@ -808,10 +859,18 @@
 			<span class="kw">let </span>partial = len % N;
 
 			<span class="kw">let </span>full_ptr = ptr.cast::&lt;[T; N]&gt;();
-			<span class="kw">let </span>partial_ptr = ptr.add(len - partial);
+			<span class="comment">// SAFETY: len % N will never return greater than `len` elements
+			// so the ptr sub is safe, and ptr will be valid for reads for
+			// `len % N` elements, which is what `partial` is
+			</span><span class="kw">let </span>partial_ptr = <span class="kw">unsafe </span>{ ptr.add(len - partial) };
 
-			<span class="kw">let </span>full_chunk = slice::from_raw_parts(full_ptr, full);
-			<span class="kw">let </span>partial_chunk = slice::from_raw_parts(partial_ptr, partial);
+			<span class="comment">// SAFETY: `full_ptr` casted from `T` to `[T; N]` will be valid for reads
+			// for `floor(N / len)` elements of `[T; N]`, which is what `full` is
+			</span><span class="kw">let </span>full_chunk = <span class="kw">unsafe </span>{ slice::from_raw_parts(full_ptr, full) };
+
+			<span class="comment">// SAFETY: as established in comment for `partial_ptr`, `partial_ptr`
+			// is valid for reads for `partial` elements
+			</span><span class="kw">let </span>partial_chunk = <span class="kw">unsafe </span>{ slice::from_raw_parts(partial_ptr, partial) };
 
 			cb(full_chunk, partial_chunk);
 		}
@@ -821,7 +880,7 @@
 		as_chunks_mut[<span class="kw">const </span>N: usize, CB](nc, cb: CB) <span class="kw">where </span>{
 			<span class="comment">// TODO: chainer?
 			</span>CB: FnOnce(<span class="kw-2">&amp;mut </span>[[T; N]], <span class="kw-2">&amp;mut </span>[T])
-		} =&gt; <span class="kw">unsafe </span>{
+		} =&gt; {
 			<span class="kw">let </span>len = nc.len();
 			<span class="kw">let </span>ptr = nc.as_mut_ptr();
 
@@ -829,10 +888,24 @@
 			<span class="kw">let </span>partial = len % N;
 
 			<span class="kw">let </span>full_ptr = ptr.cast::&lt;[T; N]&gt;();
-			<span class="kw">let </span>partial_ptr = ptr.add(len - partial);
+			<span class="comment">// SAFETY: len % N will never return greater than `len` elements
+			// so the ptr sub is safe, and ptr will be valid for reads for
+			// `len % N` elements, which is what `partial` is
+			</span><span class="kw">let </span>partial_ptr = <span class="kw">unsafe </span>{ ptr.add(len - partial) };
 
-			<span class="kw">let </span>full_chunk = slice::from_raw_parts_mut(full_ptr, full);
-			<span class="kw">let </span>partial_chunk = slice::from_raw_parts_mut(partial_ptr, partial);
+			<span class="comment">// SAFETY: `full_ptr` casted from `T` to `[T; N]` will be valid for
+			// read/write for `floor(len / N)` elements of `[T; N]`, which is what
+			// `full` is. The remainder amount is `len % N` elements, which is what
+			// `partial` is. We also logically "give" exclusive access to those
+			// `partial` elements to `partial_ptr`, keeping `full * N` (or,
+			// `floor(len / N)`) elements for this ptr, so we don't create
+			// overlapping mut refs that alias each other
+			</span><span class="kw">let </span>full_chunk = <span class="kw">unsafe </span>{ slice::from_raw_parts_mut(full_ptr, full) };
+
+			<span class="comment">// SAFETY: See previous comment. We logically "give" exclusive access
+			// to the last `partial` elements to `partial_ptr`, so `full_chunk`
+			// and `partial_chunk` don't alias overlapping regions
+			</span><span class="kw">let </span>partial_chunk = <span class="kw">unsafe </span>{ slice::from_raw_parts_mut(partial_ptr, partial) };
 
 			cb(full_chunk, partial_chunk);
 		}
@@ -846,7 +919,10 @@
 			<span class="kw">let </span>ptr = nc.as_ptr().cast::&lt;[T; N]&gt;();
 			<span class="kw">let </span>chunks = nc.len() / N;
 
-			<span class="kw">let </span>slice = slice::from_raw_parts(ptr, chunks);
+			<span class="comment">// SAFETY: `ptr`, casted from `T` to `[T; N]`, is valid for reads for
+			// `floor(len / N)` elements, and `chunks` is `len / N`
+			</span><span class="kw">let </span>slice = <span class="kw">unsafe </span>{ slice::from_raw_parts(ptr, chunks) };
+
 			cb(slice);
 		}
 	}
@@ -859,7 +935,9 @@
 			<span class="kw">let </span>ptr = nc.as_mut_ptr().cast::&lt;[T; N]&gt;();
 			<span class="kw">let </span>chunks = nc.len() / N;
 
-			<span class="kw">let </span>slice = slice::from_raw_parts_mut(ptr, chunks);
+			<span class="comment">// SAFETY: `ptr`, casted from `T` to `[T; N]`, is valid for read/write
+			// for `floor(len / N)` elements, and `chunks` is `len / N`
+			</span><span class="kw">let </span>slice = <span class="kw">unsafe </span>{ slice::from_raw_parts_mut(ptr, chunks) };
 			cb(slice);
 		}
 	}
@@ -1046,7 +1124,11 @@
 			I: SliceIndex&lt;[T]&gt;,
 			<span class="comment">// TODO: chainer?
 			</span>CB: FnOnce(<span class="kw-2">&amp;</span>I::Output)
-		} =&gt; cb(nc.get_unchecked(index))
+		} =&gt; {
+			<span class="comment">// SAFETY: caller promises `index` is in bounds
+			</span><span class="kw">let </span>val = <span class="kw">unsafe </span>{ nc.get_unchecked(index) };
+			cb(val);
+		}
 	}
 
 	<span class="macro">chain_fn!</span> {
@@ -1054,7 +1136,11 @@
 			I: SliceIndex&lt;[T]&gt;,
 			<span class="comment">// TODO: chainer?
 			</span>CB: FnOnce(<span class="kw-2">&amp;mut </span>I::Output)
-		} =&gt; cb(nc.get_unchecked_mut(index))
+		} =&gt; {
+			<span class="comment">// SAFETY: caller promises `index` is in bounds
+			</span><span class="kw">let </span>val = <span class="kw">unsafe </span>{ nc.get_unchecked_mut(index) };
+			cb(val);
+		}
 	}
 
 	<span class="macro">chain_fn!</span> {
@@ -1304,7 +1390,17 @@
 		<span class="kw">unsafe </span>swap_unchecked(nc, a: usize, b: usize) =&gt; {
 			<span class="comment">// TODO: replace with std impl once stabilised
 			</span><span class="kw">let </span>ptr = nc.as_mut_ptr();
-			ptr::swap(ptr.add(a), ptr.add(b));
+
+			<span class="comment">// SAFETY: caller guarantees `a` is in bounds, meaning `a_ptr` will
+			// be valid for read/write
+			</span><span class="kw">let </span>a_ptr = <span class="kw">unsafe </span>{ ptr.add(a) };
+
+			<span class="comment">// SAFETY: caller guarantees `b` is in bounds, meaning `b_ptr` will
+			// be valid for read/write
+			</span><span class="kw">let </span>b_ptr = <span class="kw">unsafe </span>{ ptr.add(b) };
+
+			<span class="comment">// SAFETY: `a_ptr` and `b_ptr` are both valid for reads/writes
+			</span><span class="kw">unsafe </span>{ ptr::swap(a_ptr, b_ptr) }
 		}
 	}
 

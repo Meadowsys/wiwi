@@ -26,6 +26,8 @@
 <a href="#26" id="26">26</a>
 <a href="#27" id="27">27</a>
 <a href="#28" id="28">28</a>
+<a href="#29" id="29">29</a>
+<a href="#30" id="30">30</a>
 </pre></div><pre class="rust"><code><span class="doccomment">//! h
 
 /// h
@@ -35,8 +37,9 @@
 }
 
 <span class="doccomment">/// H
-</span><span class="attr">#[allow(non_snake_case)] </span><span class="comment">// shut
-</span><span class="attr">#[inline]
+</span><span class="comment">// shut
+</span><span class="attr">#[allow(non_snake_case)]
+#[inline]
 </span><span class="kw">pub fn </span>H() -&gt; String {
 	<span class="string">"H"</span>.into()
 }
@@ -49,7 +52,8 @@
 	}
 
 	<span class="attr">#[test]
-	#[allow(non_snake_case)] </span><span class="comment">// shut
+	</span><span class="comment">// shut
+	</span><span class="attr">#[allow(non_snake_case)]
 	</span><span class="kw">pub fn </span>H() {
 		<span class="macro">assert_eq!</span>(<span class="kw">super</span>::H(), <span class="string">"H"</span>, <span class="string">"H should be H"</span>);
 	}

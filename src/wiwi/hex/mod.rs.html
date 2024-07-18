@@ -199,29 +199,29 @@
 </span><span class="kw">use </span><span class="kw">crate</span>::_internal::encoding_utils::UnsafeBufWriteGuard;
 <span class="kw">use </span>std::str;
 
-<span class="doccomment">/// Length of encoding table. Not actually used in encoding/decoding data.
+<span class="doccomment">/// Length of encoding table (not actually used in encoding/decoding data)
 </span><span class="kw">pub const </span>TABLE_ENCODER_LEN: usize = <span class="number">16</span>;
-<span class="doccomment">/// Encoding table of lowercased characters. Not actually used in encoding/decoding data.
+<span class="doccomment">/// Encoding table of lowercased characters (not actually used in encoding/decoding data)
 </span><span class="kw">pub const </span>TABLE_ENCODER_LOWER: [u8; TABLE_ENCODER_LEN] = <span class="kw-2">*</span><span class="string">b"0123456789abcdef"</span>;
-<span class="doccomment">/// Encoding table of uppercased characters. Not actually used in encoding/decoding data.
+<span class="doccomment">/// Encoding table of uppercased characters (not actually used in encoding/decoding data)
 </span><span class="kw">pub const </span>TABLE_ENCODER_UPPER: [u8; TABLE_ENCODER_LEN] = <span class="kw-2">*</span><span class="string">b"0123456789ABCDEF"</span>;
 
 <span class="kw">mod </span>encode;
 <span class="kw">mod </span>decode;
 
-<span class="doccomment">/// Encodes a slice of bytes into a String, using lowercase characters.
+<span class="doccomment">/// Encodes a slice of bytes into a String, using lowercase characters
 </span><span class="attr">#[inline]
 </span><span class="kw">pub fn </span>encode_hex(bytes: <span class="kw-2">&amp;</span>[u8]) -&gt; String {
 	_encode::&lt;<span class="bool-val">false</span>&gt;(bytes)
 }
 
-<span class="doccomment">/// Encodes a slice of bytes into a String, using uppercase characters.
+<span class="doccomment">/// Encodes a slice of bytes into a String, using uppercase characters
 </span><span class="attr">#[inline]
 </span><span class="kw">pub fn </span>encode_hex_upper(bytes: <span class="kw-2">&amp;</span>[u8]) -&gt; String {
 	_encode::&lt;<span class="bool-val">true</span>&gt;(bytes)
 }
 
-<span class="comment">// mut is used by cfg(target_arch) which might be inactive
+<span class="comment">// mut is used by cfg(target_arch) which is not necessarily cfg enabled
 </span><span class="attr">#[allow(unused_mut)]
 </span><span class="kw">fn </span>_encode&lt;<span class="kw">const </span>UPPER: bool&gt;(bytes: <span class="kw-2">&amp;</span>[u8]) -&gt; String {
 	<span class="kw">let </span>bytes_len = bytes.len();

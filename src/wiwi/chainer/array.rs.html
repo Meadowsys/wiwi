@@ -422,6 +422,19 @@
 <a href="#422" id="422">422</a>
 <a href="#423" id="423">423</a>
 <a href="#424" id="424">424</a>
+<a href="#425" id="425">425</a>
+<a href="#426" id="426">426</a>
+<a href="#427" id="427">427</a>
+<a href="#428" id="428">428</a>
+<a href="#429" id="429">429</a>
+<a href="#430" id="430">430</a>
+<a href="#431" id="431">431</a>
+<a href="#432" id="432">432</a>
+<a href="#433" id="433">433</a>
+<a href="#434" id="434">434</a>
+<a href="#435" id="435">435</a>
+<a href="#436" id="436">436</a>
+<a href="#437" id="437">437</a>
 </pre></div><pre class="rust"><code><span class="kw">use super</span>::{ chainer, chain_fn, ChainHalf, NonChainHalf };
 <span class="kw">use </span>std::mem::{ ManuallyDrop, MaybeUninit };
 <span class="kw">use </span>std::ptr;
@@ -436,20 +449,24 @@
 <span class="kw">impl</span>&lt;T, <span class="kw">const </span>N: usize&gt; ArrayChain&lt;T, N&gt; {
 	<span class="attr">#[inline]
 	</span><span class="kw">pub fn </span>new_uninit() -&gt; ArrayChain&lt;MaybeUninit&lt;T&gt;, N&gt; {
-		<span class="kw">unsafe </span>{
-			MaybeUninit::&lt;[MaybeUninit&lt;T&gt;; N]&gt;::uninit()
-				.assume_init()
-				.into()
-		}
+		<span class="kw">let </span>this = MaybeUninit::&lt;[MaybeUninit&lt;T&gt;; N]&gt;::uninit();
+
+		<span class="comment">// SAFETY: `MaybeUninit&lt;T&gt;` has no initialisation requirement, so
+		// uninitialised `[MaybeUninit&lt;T&gt;; N]` is valid
+		</span><span class="kw">let </span>this = <span class="kw">unsafe </span>{ this.assume_init() };
+
+		this.into()
 	}
 
 	<span class="attr">#[inline]
 	</span><span class="kw">pub fn </span>new_zeroed() -&gt; ArrayChain&lt;MaybeUninit&lt;T&gt;, N&gt; {
-		<span class="kw">unsafe </span>{
-			MaybeUninit::&lt;[MaybeUninit&lt;T&gt;; N]&gt;::zeroed()
-				.assume_init()
-				.into()
-		}
+		<span class="kw">let </span>this = MaybeUninit::&lt;[MaybeUninit&lt;T&gt;; N]&gt;::zeroed();
+
+		<span class="comment">// SAFETY: `MaybeUninit&lt;T&gt;` has no initialisation requirement, so
+		// zeroed `[MaybeUninit&lt;T&gt;; N]` is valid
+		</span><span class="kw">let </span>this = <span class="kw">unsafe </span>{ this.assume_init() };
+
+		this.into()
 	}
 }
 
@@ -476,7 +493,16 @@
 		// is unstable (it uses transmute_unchecked internally))
 		</span><span class="kw">let </span>me = ManuallyDrop::new(<span class="self">self</span>);
 		<span class="kw">let </span>ptr = me.as_nonchain().as_ptr().cast::&lt;[T; N]&gt;();
-		ptr::read(ptr).into()
+
+		<span class="comment">// SAFETY: this `ptr::read` call is valid because:
+		// - `me` is made to prevent double-dropping `self` after reading from the
+		//   ptr (...which is also prevented by MaybeUninit, thinking about it)
+		// - `ptr` points to / is obtained from the [MaybeUninit&lt;T&gt;; N] inside ArrayChain
+		// - `ptr`, type [MaybeUninit&lt;T&gt;; N] is cast to ptr of [T; N], which is
+		//   valid because MaybeUninit&lt;T&gt; has same layout as T, so [MaybeUninit&lt;T&gt;; N]
+		//   will have same layout as [T; N]
+		// - caller promises that all elements in the array are initialised `T`
+		</span><span class="kw">unsafe </span>{ ptr::read(ptr).into() }
 	}
 }
 

@@ -304,6 +304,23 @@
 <a href="#304" id="304">304</a>
 <a href="#305" id="305">305</a>
 <a href="#306" id="306">306</a>
+<a href="#307" id="307">307</a>
+<a href="#308" id="308">308</a>
+<a href="#309" id="309">309</a>
+<a href="#310" id="310">310</a>
+<a href="#311" id="311">311</a>
+<a href="#312" id="312">312</a>
+<a href="#313" id="313">313</a>
+<a href="#314" id="314">314</a>
+<a href="#315" id="315">315</a>
+<a href="#316" id="316">316</a>
+<a href="#317" id="317">317</a>
+<a href="#318" id="318">318</a>
+<a href="#319" id="319">319</a>
+<a href="#320" id="320">320</a>
+<a href="#321" id="321">321</a>
+<a href="#322" id="322">322</a>
+<a href="#323" id="323">323</a>
 </pre></div><pre class="rust"><code><span class="kw">use super</span>::{ chainer, chain_fn, ChainHalf, NonChainHalf, VecChain };
 <span class="kw">use </span>std::mem::MaybeUninit;
 
@@ -317,19 +334,29 @@
 <span class="kw">impl</span>&lt;T&gt; SliceBoxChain&lt;T&gt; {
 	<span class="attr">#[inline]
 	</span><span class="kw">pub fn </span>new_uninit(len: usize) -&gt; SliceBoxChain&lt;MaybeUninit&lt;T&gt;&gt; {
-		<span class="kw">unsafe </span>{
-			VecChain::with_capacity(len)
-				.set_len(len)
-				.into_nonchain()
-				.into_boxed_slice()
-				.into()
-		}
+		<span class="kw">let </span>uninit = VecChain::with_capacity(len);
+
+		<span class="comment">// SAFETY:
+		// - the call to `VecChain::with_capacity` allocates enough capacity
+		// - `MaybeUninit&lt;T&gt;` has no initialisation requirement, uninit is okay
+		</span><span class="kw">let </span>uninit = <span class="kw">unsafe </span>{ uninit.set_len(len) };
+
+		uninit
+			.into_nonchain()
+			.into_boxed_slice()
+			.into()
 	}
 
 	<span class="attr">#[inline]
 	</span><span class="kw">pub fn </span>new_zeroed(len: usize) -&gt; SliceBoxChain&lt;MaybeUninit&lt;T&gt;&gt; {
 		<span class="kw">let </span><span class="kw-2">mut </span>this = <span class="self">Self</span>::new_uninit(len);
-		<span class="kw">unsafe </span>{ this.as_nonchain_mut().as_mut_ptr().write_bytes(<span class="number">0</span>, len) }
+
+		<span class="comment">// SAFETY:
+		// - `Self::new_uninit` allocates capacity for at least `len` elements,
+		// so it is safe to write `len * size_of::&lt;T&gt;()` bytes
+		// - `MaybeUninit&lt;T&gt;` has no initialisation requirement
+		</span><span class="kw">unsafe </span>{ this.as_nonchain_mut().as_mut_ptr().write_bytes(<span class="number">0</span>, len) }
+
 		this
 	}
 }
@@ -351,8 +378,15 @@
 <span class="kw">impl</span>&lt;T&gt; SliceBoxChain&lt;MaybeUninit&lt;T&gt;&gt; {
 	<span class="attr">#[inline]
 	</span><span class="kw">pub unsafe fn </span>assume_init(<span class="self">self</span>) -&gt; SliceBoxChain&lt;T&gt; {
-		<span class="kw">let </span>raw = Box::into_raw(<span class="self">self</span>.into_nonchain());
-		Box::from_raw(raw <span class="kw">as </span><span class="kw-2">*mut </span>[<span class="kw">_</span>]).into()
+		<span class="kw">let </span>ptr = Box::into_raw(<span class="self">self</span>.into_nonchain());
+
+		<span class="comment">// SAFETY:
+		// - ptr was obtained from `Box::into_raw`
+		// - caller promises the all elements in slice are initialised `T`
+		// - [MaybeUninit&lt;T&gt;] and [T] have same layout
+		</span><span class="kw">let </span>this = <span class="kw">unsafe </span>{ Box::from_raw(ptr <span class="kw">as </span><span class="kw-2">*mut </span>[T]) };
+
+		this.into()
 	}
 }
 
