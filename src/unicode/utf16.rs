@@ -182,3 +182,10 @@ impl StringUtf16 {
 		Self { inner: Vec::with_capacity(capacity) }
 	}
 }
+
+impl Default for StringUtf16 {
+	#[inline]
+	fn default() -> Self {
+		Self::new()
+	}
+}

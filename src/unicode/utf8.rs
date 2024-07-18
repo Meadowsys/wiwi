@@ -76,3 +76,10 @@ impl StringUtf8 {
 		Self { inner: Vec::with_capacity(capacity) }
 	}
 }
+
+impl Default for StringUtf8 {
+	#[inline]
+	fn default() -> Self {
+		Self::new()
+	}
+}
