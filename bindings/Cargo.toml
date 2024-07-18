@@ -13,4 +13,8 @@ crate-type = ["staticlib"]
 
 [dependencies.wiwi]
 path = ".."
-features = ["z85"]
+
+[features]
+all = [
+	"wiwi/z85"
+]

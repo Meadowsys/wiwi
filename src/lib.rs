@@ -14,7 +14,17 @@
 	unused_mut,
 	unused_variables
 )]
-#![deny(unexpected_cfgs)]
+#![warn(
+	// TODO: these following three should be deny,
+	// once all unsafe blocks are commented/fixed
+	unsafe_op_in_unsafe_fn,
+	clippy::multiple_unsafe_ops_per_block,
+	clippy::undocumented_unsafe_blocks
+)]
+#![deny(
+	unexpected_cfgs,
+	clippy::mixed_attributes_style
+)]
 
 #![cfg_attr(docsrs, feature(doc_cfg))]
 

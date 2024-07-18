@@ -12,20 +12,24 @@ chainer! {
 impl<T, const N: usize> ArrayChain<T, N> {
 	#[inline]
 	pub fn new_uninit() -> ArrayChain<MaybeUninit<T>, N> {
-		unsafe {
-			MaybeUninit::<[MaybeUninit<T>; N]>::uninit()
-				.assume_init()
-				.into()
-		}
+		let this = MaybeUninit::<[MaybeUninit<T>; N]>::uninit();
+
+		// SAFETY: `MaybeUninit<T>` has no initialisation requirement, so
+		// uninitialised `[MaybeUninit<T>; N]` is valid
+		let this = unsafe { this.assume_init() };
+
+		this.into()
 	}
 
 	#[inline]
 	pub fn new_zeroed() -> ArrayChain<MaybeUninit<T>, N> {
-		unsafe {
-			MaybeUninit::<[MaybeUninit<T>; N]>::zeroed()
-				.assume_init()
-				.into()
-		}
+		let this = MaybeUninit::<[MaybeUninit<T>; N]>::zeroed();
+
+		// SAFETY: `MaybeUninit<T>` has no initialisation requirement, so
+		// zeroed `[MaybeUninit<T>; N]` is valid
+		let this = unsafe { this.assume_init() };
+
+		this.into()
 	}
 }
 
@@ -52,7 +56,16 @@ impl<T, const N: usize> ArrayChain<MaybeUninit<T>, N> {
 		// is unstable (it uses transmute_unchecked internally))
 		let me = ManuallyDrop::new(self);
 		let ptr = me.as_nonchain().as_ptr().cast::<[T; N]>();
-		ptr::read(ptr).into()
+
+		// SAFETY: this `ptr::read` call is valid because:
+		// - `me` is made to prevent double-dropping `self` after reading from the
+		//   ptr (...which is also prevented by MaybeUninit, thinking about it)
+		// - `ptr` points to / is obtained from the [MaybeUninit<T>; N] inside ArrayChain
+		// - `ptr`, type [MaybeUninit<T>; N] is cast to ptr of [T; N], which is
+		//   valid because MaybeUninit<T> has same layout as T, so [MaybeUninit<T>; N]
+		//   will have same layout as [T; N]
+		// - caller promises that all elements in the array are initialised `T`
+		unsafe { ptr::read(ptr).into() }
 	}
 }
 

@@ -17,7 +17,10 @@ impl<'h, T> SliceRefChain<'h, T> {
 
 	#[inline]
 	pub unsafe fn from_raw_parts(data: *const T, len: usize) -> Self {
-		slice::from_raw_parts(data, len).into()
+		// SAFETY: caller promises to uphold invariants of `slice::from_raw_parts`
+		let slice = unsafe { slice::from_raw_parts(data, len) };
+
+		slice.into()
 	}
 
 	// TODO: from_ptr_range nightly
@@ -39,8 +42,15 @@ impl<'h, T, const N: usize> SliceRefChain<'h, [T; N]> {
 			self.as_nonchain().len() * N
 		};
 
+		// ptr returned by `self.nc_ptr()` is valid for `self.len()` reads of `[T; N]`,
+		// so casting it to `T` will mean it is valid for `self.len() * N` reads of `T`.
+		// `len` var above is this multiplication amount
 		let ptr = self.nc_ptr().cast::<T>();
-		unsafe { slice::from_raw_parts(ptr, len).into() }
+
+		// SAFETY: `ptr` is valid for `len` reads (see comment above)
+		let slice = unsafe { slice::from_raw_parts(ptr, len) };
+
+		slice.into()
 	}
 }
 

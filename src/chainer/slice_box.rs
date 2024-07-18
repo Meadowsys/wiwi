@@ -11,19 +11,29 @@ chainer! {
 impl<T> SliceBoxChain<T> {
 	#[inline]
 	pub fn new_uninit(len: usize) -> SliceBoxChain<MaybeUninit<T>> {
-		unsafe {
-			VecChain::with_capacity(len)
-				.set_len(len)
-				.into_nonchain()
-				.into_boxed_slice()
-				.into()
-		}
+		let uninit = VecChain::with_capacity(len);
+
+		// SAFETY:
+		// - the call to `VecChain::with_capacity` allocates enough capacity
+		// - `MaybeUninit<T>` has no initialisation requirement, uninit is okay
+		let uninit = unsafe { uninit.set_len(len) };
+
+		uninit
+			.into_nonchain()
+			.into_boxed_slice()
+			.into()
 	}
 
 	#[inline]
 	pub fn new_zeroed(len: usize) -> SliceBoxChain<MaybeUninit<T>> {
 		let mut this = Self::new_uninit(len);
+
+		// SAFETY:
+		// - `Self::new_uninit` allocates capacity for at least `len` elements,
+		// so it is safe to write `len * size_of::<T>()` bytes
+		// - `MaybeUninit<T>` has no initialisation requirement
 		unsafe { this.as_nonchain_mut().as_mut_ptr().write_bytes(0, len) }
+
 		this
 	}
 }
@@ -45,8 +55,15 @@ impl SliceBoxChain<f64> {
 impl<T> SliceBoxChain<MaybeUninit<T>> {
 	#[inline]
 	pub unsafe fn assume_init(self) -> SliceBoxChain<T> {
-		let raw = Box::into_raw(self.into_nonchain());
-		Box::from_raw(raw as *mut [_]).into()
+		let ptr = Box::into_raw(self.into_nonchain());
+
+		// SAFETY:
+		// - ptr was obtained from `Box::into_raw`
+		// - caller promises the all elements in slice are initialised `T`
+		// - [MaybeUninit<T>] and [T] have same layout
+		let this = unsafe { Box::from_raw(ptr as *mut [T]) };
+
+		this.into()
 	}
 }
 

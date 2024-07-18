@@ -10,7 +10,7 @@ Currently, the only wiwi feature included is `z85`, and makes available only `Wi
 
 ## how to use
 
-You need to build the bindings lib first. You can do so by `cd`ing into the `bindings` dir, then running `cargo build --release --lib`, to build the static lib (it gets placed in the `target` dir in the root of the repo (workspace))
+You need to build the bindings lib first. You can do so by `cd`ing into the `bindings` dir, then running `cargo build --release --lib --features all`, to build the static lib (it gets placed in the `target` dir in the root of the repo (workspace))
 
 You then need to tell `ponyc` where to find the bindings package during compilation. You can do that in one of two ways:
 

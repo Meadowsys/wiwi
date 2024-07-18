@@ -20,7 +20,10 @@ impl<'h, T> SliceMutChain<'h, T> {
 
 	#[inline]
 	pub unsafe fn from_raw_parts(data: *mut T, len: usize) -> Self {
-		slice::from_raw_parts_mut(data, len).into()
+		// SAFETY: caller promises to uphold invariants of `slice::from_raw_parts_mut`
+		let slice = unsafe { slice::from_raw_parts_mut(data, len) };
+
+		slice.into()
 	}
 
 	// TODO: from_ptr_range nightly
@@ -31,7 +34,7 @@ impl<'h, T> SliceMutChain<'h, T> {
 		as_chunks[const N: usize, CB](nc, cb: CB) where {
 			// TODO: chainer?
 			CB: FnOnce(&[[T; N]], &[T])
-		} => unsafe {
+		} => {
 			let len = nc.len();
 			let ptr = nc.as_ptr();
 
@@ -39,10 +42,18 @@ impl<'h, T> SliceMutChain<'h, T> {
 			let partial = len % N;
 
 			let full_ptr = ptr.cast::<[T; N]>();
-			let partial_ptr = ptr.add(len - partial);
+			// SAFETY: len % N will never return greater than `len` elements
+			// so the ptr sub is safe, and ptr will be valid for reads for
+			// `len % N` elements, which is what `partial` is
+			let partial_ptr = unsafe { ptr.add(len - partial) };
 
-			let full_chunk = slice::from_raw_parts(full_ptr, full);
-			let partial_chunk = slice::from_raw_parts(partial_ptr, partial);
+			// SAFETY: `full_ptr` casted from `T` to `[T; N]` will be valid for reads
+			// for `floor(N / len)` elements of `[T; N]`, which is what `full` is
+			let full_chunk = unsafe { slice::from_raw_parts(full_ptr, full) };
+
+			// SAFETY: as established in comment for `partial_ptr`, `partial_ptr`
+			// is valid for reads for `partial` elements
+			let partial_chunk = unsafe { slice::from_raw_parts(partial_ptr, partial) };
 
 			cb(full_chunk, partial_chunk);
 		}
@@ -52,7 +63,7 @@ impl<'h, T> SliceMutChain<'h, T> {
 		as_chunks_mut[const N: usize, CB](nc, cb: CB) where {
 			// TODO: chainer?
 			CB: FnOnce(&mut [[T; N]], &mut [T])
-		} => unsafe {
+		} => {
 			let len = nc.len();
 			let ptr = nc.as_mut_ptr();
 
@@ -60,10 +71,24 @@ impl<'h, T> SliceMutChain<'h, T> {
 			let partial = len % N;
 
 			let full_ptr = ptr.cast::<[T; N]>();
-			let partial_ptr = ptr.add(len - partial);
+			// SAFETY: len % N will never return greater than `len` elements
+			// so the ptr sub is safe, and ptr will be valid for reads for
+			// `len % N` elements, which is what `partial` is
+			let partial_ptr = unsafe { ptr.add(len - partial) };
 
-			let full_chunk = slice::from_raw_parts_mut(full_ptr, full);
-			let partial_chunk = slice::from_raw_parts_mut(partial_ptr, partial);
+			// SAFETY: `full_ptr` casted from `T` to `[T; N]` will be valid for
+			// read/write for `floor(len / N)` elements of `[T; N]`, which is what
+			// `full` is. The remainder amount is `len % N` elements, which is what
+			// `partial` is. We also logically "give" exclusive access to those
+			// `partial` elements to `partial_ptr`, keeping `full * N` (or,
+			// `floor(len / N)`) elements for this ptr, so we don't create
+			// overlapping mut refs that alias each other
+			let full_chunk = unsafe { slice::from_raw_parts_mut(full_ptr, full) };
+
+			// SAFETY: See previous comment. We logically "give" exclusive access
+			// to the last `partial` elements to `partial_ptr`, so `full_chunk`
+			// and `partial_chunk` don't alias overlapping regions
+			let partial_chunk = unsafe { slice::from_raw_parts_mut(partial_ptr, partial) };
 
 			cb(full_chunk, partial_chunk);
 		}
@@ -77,7 +102,10 @@ impl<'h, T> SliceMutChain<'h, T> {
 			let ptr = nc.as_ptr().cast::<[T; N]>();
 			let chunks = nc.len() / N;
 
-			let slice = slice::from_raw_parts(ptr, chunks);
+			// SAFETY: `ptr`, casted from `T` to `[T; N]`, is valid for reads for
+			// `floor(len / N)` elements, and `chunks` is `len / N`
+			let slice = unsafe { slice::from_raw_parts(ptr, chunks) };
+
 			cb(slice);
 		}
 	}
@@ -90,7 +118,9 @@ impl<'h, T> SliceMutChain<'h, T> {
 			let ptr = nc.as_mut_ptr().cast::<[T; N]>();
 			let chunks = nc.len() / N;
 
-			let slice = slice::from_raw_parts_mut(ptr, chunks);
+			// SAFETY: `ptr`, casted from `T` to `[T; N]`, is valid for read/write
+			// for `floor(len / N)` elements, and `chunks` is `len / N`
+			let slice = unsafe { slice::from_raw_parts_mut(ptr, chunks) };
 			cb(slice);
 		}
 	}
@@ -277,7 +307,11 @@ impl<'h, T> SliceMutChain<'h, T> {
 			I: SliceIndex<[T]>,
 			// TODO: chainer?
 			CB: FnOnce(&I::Output)
-		} => cb(nc.get_unchecked(index))
+		} => {
+			// SAFETY: caller promises `index` is in bounds
+			let val = unsafe { nc.get_unchecked(index) };
+			cb(val);
+		}
 	}
 
 	chain_fn! {
@@ -285,7 +319,11 @@ impl<'h, T> SliceMutChain<'h, T> {
 			I: SliceIndex<[T]>,
 			// TODO: chainer?
 			CB: FnOnce(&mut I::Output)
-		} => cb(nc.get_unchecked_mut(index))
+		} => {
+			// SAFETY: caller promises `index` is in bounds
+			let val = unsafe { nc.get_unchecked_mut(index) };
+			cb(val);
+		}
 	}
 
 	chain_fn! {
@@ -535,7 +573,17 @@ impl<'h, T> SliceMutChain<'h, T> {
 		unsafe swap_unchecked(nc, a: usize, b: usize) => {
 			// TODO: replace with std impl once stabilised
 			let ptr = nc.as_mut_ptr();
-			ptr::swap(ptr.add(a), ptr.add(b));
+
+			// SAFETY: caller guarantees `a` is in bounds, meaning `a_ptr` will
+			// be valid for read/write
+			let a_ptr = unsafe { ptr.add(a) };
+
+			// SAFETY: caller guarantees `b` is in bounds, meaning `b_ptr` will
+			// be valid for read/write
+			let b_ptr = unsafe { ptr.add(b) };
+
+			// SAFETY: `a_ptr` and `b_ptr` are both valid for reads/writes
+			unsafe { ptr::swap(a_ptr, b_ptr) }
 		}
 	}
 

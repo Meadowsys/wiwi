@@ -1,13 +1,18 @@
+#[cfg(feature = "all")]
 use std::{ ptr, slice };
+#[cfg(feature = "all")]
 use std::mem::{ ManuallyDrop, MaybeUninit };
+#[cfg(feature = "all")]
 use wiwi::z85::{ decode_z85, encode_z85 };
 
+#[cfg(feature = "all")]
 #[repr(C)]
 struct Z85Input {
 	ptr: *const u8,
 	len: usize
 }
 
+#[cfg(feature = "all")]
 #[repr(C)]
 struct Z85Result {
 	ptr: *const u8,
@@ -15,6 +20,7 @@ struct Z85Result {
 	cap: usize
 }
 
+#[cfg(feature = "all")]
 #[no_mangle]
 extern "C" fn wiwi_z85_encode(input: &Z85Input, output: &mut MaybeUninit<Z85Result>) {
 	let bytes = unsafe { slice::from_raw_parts(input.ptr, input.len) };
@@ -29,6 +35,7 @@ extern "C" fn wiwi_z85_encode(input: &Z85Input, output: &mut MaybeUninit<Z85Resu
 	output.write(res);
 }
 
+#[cfg(feature = "all")]
 #[no_mangle]
 extern "C" fn wiwi_z85_decode(input: &Z85Input, output: &mut MaybeUninit<Z85Result>) {
 	let bytes = unsafe { slice::from_raw_parts(input.ptr, input.len) };
@@ -55,6 +62,7 @@ extern "C" fn wiwi_z85_decode(input: &Z85Input, output: &mut MaybeUninit<Z85Resu
 	output.write(res);
 }
 
+#[cfg(feature = "all")]
 #[no_mangle]
 extern "C" fn wiwi_z85_drop_result(res: &Z85Result) {
 	if !res.ptr.is_null() {

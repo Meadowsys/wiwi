@@ -730,7 +730,9 @@ impl<T> VecChain<T> {
 
 	chain_fn! {
 		unsafe set_len(nc, new_len: usize)
-			=> nc.set_len(new_len)
+			// SAFETY: caller promises that `new_len <= capacity` and
+			// `..new_len` elements are initialised
+			=> unsafe { nc.set_len(new_len) }
 	}
 
 	chain_fn! {
