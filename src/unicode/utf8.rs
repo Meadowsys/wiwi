@@ -190,7 +190,7 @@ impl<'h> Iterator for CharsUtf8<'h> {
 impl<'h> DoubleEndedIterator for CharsUtf8<'h> {
 	fn next_back(&mut self) -> Option<Char> {
 		_internal::chars_utf8_raw_next_back(&mut self.inner)
-			// SAFETY: `chars_utf8_raw_next` returns valid codepoints
+			// SAFETY: `chars_utf8_raw_next_back` returns valid codepoints
 			.map(|c| unsafe { Char::from_codepoint_unchecked(c) })
 	}
 }

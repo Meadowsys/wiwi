@@ -172,6 +172,11 @@ impl StrUtf16 {
 		// (well, `self` must be valid UTF-16)
 		unsafe { _internal::is_char_boundary_utf16_unchecked(self.to_utf16_code_units(), index) }
 	}
+
+	#[inline]
+	pub fn chars(&self) -> CharsUtf16<'_> {
+		CharsUtf16::new(self)
+	}
 }
 
 impl StringUtf16 {
@@ -225,5 +230,36 @@ impl FromIterator<Char> for StringUtf16 {
 		let mut this = Self::new();
 		iter.into_iter().for_each(|c| this.push_char(c));
 		this
+	}
+}
+
+pub struct CharsUtf16<'h> {
+	inner: _internal::CharsUtf16Raw<'h>
+}
+
+impl<'h> CharsUtf16<'h> {
+	fn new(s: &'h StrUtf16) -> Self {
+		// SAFETY: `to_utf16_code_units` returns valid UTF-16 codepoint slice
+		let inner = unsafe { _internal::new_chars_utf16_raw(s.to_utf16_code_units()) };
+		Self { inner }
+	}
+}
+
+impl<'h> Iterator for CharsUtf16<'h> {
+	type Item = Char;
+
+	#[inline]
+	fn next(&mut self) -> Option<Char> {
+		_internal::chars_utf16_raw_next(&mut self.inner)
+			// SAFETY: `chars_utf16_raw_next` returns valid codepoints
+			.map(|c| unsafe { Char::from_codepoint_unchecked(c) })
+	}
+}
+
+impl<'h> DoubleEndedIterator for CharsUtf16<'h> {
+	fn next_back(&mut self) -> Option<Char> {
+		_internal::chars_utf16_raw_next_back(&mut self.inner)
+			// SAFETY: `chars_utf16_raw_next_back` returns valid codepoints
+			.map(|c| unsafe { Char::from_codepoint_unchecked(c) })
 	}
 }
