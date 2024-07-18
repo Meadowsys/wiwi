@@ -3,29 +3,29 @@
 use crate::_internal::encoding_utils::UnsafeBufWriteGuard;
 use std::str;
 
-/// Length of encoding table. Not actually used in encoding/decoding data.
+/// Length of encoding table (not actually used in encoding/decoding data)
 pub const TABLE_ENCODER_LEN: usize = 16;
-/// Encoding table of lowercased characters. Not actually used in encoding/decoding data.
+/// Encoding table of lowercased characters (not actually used in encoding/decoding data)
 pub const TABLE_ENCODER_LOWER: [u8; TABLE_ENCODER_LEN] = *b"0123456789abcdef";
-/// Encoding table of uppercased characters. Not actually used in encoding/decoding data.
+/// Encoding table of uppercased characters (not actually used in encoding/decoding data)
 pub const TABLE_ENCODER_UPPER: [u8; TABLE_ENCODER_LEN] = *b"0123456789ABCDEF";
 
 mod encode;
 mod decode;
 
-/// Encodes a slice of bytes into a String, using lowercase characters.
+/// Encodes a slice of bytes into a String, using lowercase characters
 #[inline]
 pub fn encode_hex(bytes: &[u8]) -> String {
 	_encode::<false>(bytes)
 }
 
-/// Encodes a slice of bytes into a String, using uppercase characters.
+/// Encodes a slice of bytes into a String, using uppercase characters
 #[inline]
 pub fn encode_hex_upper(bytes: &[u8]) -> String {
 	_encode::<true>(bytes)
 }
 
-// mut is used by cfg(target_arch) which might be inactive
+// mut is used by cfg(target_arch) which is not necessarily cfg enabled
 #[allow(unused_mut)]
 fn _encode<const UPPER: bool>(bytes: &[u8]) -> String {
 	let bytes_len = bytes.len();

@@ -177,7 +177,12 @@ pub use with_cloned;
 macro_rules! _with_cloned_impl {
 	{ mut $($thing:ident),+ in $($stuff:tt)* } => {
 		{
-			$(#[allow(unused_mut)] let mut $thing = ::std::clone::Clone::clone(&$thing);)+
+			$(
+				// we only support specifying mut for all or nothing, so this is for
+				// when caller is using mut for some but not all vars need to be mut
+				#[allow(unused_mut)]
+				let mut $thing = ::std::clone::Clone::clone(&$thing);
+			)+
 			$($stuff)*
 		}
 	};

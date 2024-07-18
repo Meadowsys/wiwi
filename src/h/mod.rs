@@ -7,7 +7,8 @@ pub fn h() -> String {
 }
 
 /// H
-#[allow(non_snake_case)] // shut
+// shut
+#[allow(non_snake_case)]
 #[inline]
 pub fn H() -> String {
 	"H".into()
@@ -21,7 +22,8 @@ mod tests {
 	}
 
 	#[test]
-	#[allow(non_snake_case)] // shut
+	// shut
+	#[allow(non_snake_case)]
 	pub fn H() {
 		assert_eq!(super::H(), "H", "H should be H");
 	}

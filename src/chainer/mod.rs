@@ -42,7 +42,8 @@ macro_rules! chainer {
 				<$($nonchain)+ as ::std::cmp::PartialEq<$($nonchain)+>>::eq($left_expr(self), $right_expr(other))
 			}
 
-			// overriding this in case nonchain has overridden it
+			// we override ne here since nonchain might have overridden ne,
+			// and we should use it if so
 			#[allow(clippy::partialeq_ne_impl)]
 			#[inline]
 			fn ne(&self, other: &$($right)+) -> ::std::primitive::bool {
@@ -143,7 +144,12 @@ macro_rules! chainer {
 			}
 		}
 
-		// we follow whatever inner is doing (which _would_ include incorrect behaviour...)
+		// we follow whatever inner is doing (which _would_ include incorrect behaviour...).
+		// Also this is false positive because despite us implementing traits for
+		// everything, the impls only apply if inner is that trait, then we delegate
+		// in. There are many types that are `Clone` but not `Copy` (it's literally
+		// in the design of the `Clone`/`Copy` API :p). So, even though we have an
+		// `impl Copy`, it doesn't necessarily mean we are _actually_ `Copy`.
 		#[allow(clippy::non_canonical_clone_impl)]
 		impl$(<$($generics_decl)*>)? ::std::clone::Clone for $chainer$(<$($generics)*>)?
 		where

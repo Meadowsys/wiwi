@@ -404,7 +404,7 @@ pub mod solution_encoding {
 	#[inline]
 	pub fn encode_byte_array_checked(board: &[u8; 81]) -> Option<Encoded> {
 		for cell in *board {
-			// shut
+			// I cannot remember why I used manual compare over range compare, lol
 			#[allow(clippy::manual_range_contains)]
 			if cell < 1 || cell > 9 { return None }
 		}

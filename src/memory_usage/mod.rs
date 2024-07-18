@@ -127,6 +127,8 @@ macro_rules! impl_dyn_mem_usage_tuple {
 	};
 
 	{ @impl $($stuff:ident)+ } => {
+		// macro impl reuses idents that are used for generic param names for macro
+		// impl simplicity, those idents are PascalCase and trigger this lint
 		#[allow(non_snake_case)]
 		impl<$($stuff: Dynamic,)+> Dynamic for ($($stuff,)+) {
 			#[inline]
@@ -150,6 +152,8 @@ macro_rules! impl_dyn_mem_usage_tuple {
 	// actual impl
 	(@impl $($t:ident)+) => {
 		impl<$($t: Dynamic,)+> Dynamic for ($($t,)+) {
+			// macro impl reuses idents that are used for generic param names for macro
+			// impl simplicity, those idents are PascalCase and trigger this lint
 			#[allow(non_snake_case)]
 			fn calculate_memory_usage(&self) -> usize {
 				let ($($t,)*) = self;
@@ -158,6 +162,8 @@ macro_rules! impl_dyn_mem_usage_tuple {
 				usage
 			}
 
+			// macro impl reuses idents that are used for generic param names for macro
+			// impl simplicity, those idents are PascalCase and trigger this lint
 			#[allow(non_snake_case)]
 			fn calculate_values_usage(&self) -> usize {
 				let ($($t,)*) = self;

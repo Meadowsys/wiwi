@@ -440,8 +440,8 @@ impl<T: PartialEq<TR>, M, TR, MR> PartialEq<Nominal<TR, MR>> for Nominal<T, M> {
 		// <T as PartialEq>::eq(self.ref_inner(), other.ref_inner())
 	}
 
-	// we override ne here since T might have overridden ne, in which case this
-	// impl will correctly call it
+	// we override ne here since T might have overridden ne,
+	// and we should use it if so
 	#[allow(clippy::partialeq_ne_impl)]
 	#[inline]
 	fn ne(&self, other: &Nominal<TR, MR>) -> bool {
