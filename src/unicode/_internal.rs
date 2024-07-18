@@ -6,7 +6,7 @@ use std::ops::Range;
 
 #[cfg_attr(test, derive(Debug, PartialEq, Eq))]
 pub(super) enum CodepointUtf8 {
-	One { value: u8 },
+	One { values: [u8; 1] },
 	Two { values: [u8; 2] },
 	Three { values: [u8; 3] },
 	Four { values: [u8; 4] }
@@ -14,13 +14,13 @@ pub(super) enum CodepointUtf8 {
 
 #[cfg_attr(test, derive(Debug, PartialEq, Eq))]
 pub(super) enum CodepointUtf16 {
-	One { value: u16 },
+	One { values: [u16; 1] },
 	Two { values: [u16; 2] }
 }
 
 #[cfg_attr(test, derive(Debug, PartialEq, Eq))]
 pub(super) enum CodepointUtf32 {
-	One { value: u32 }
+	One { values: [u32; 1] }
 }
 
 pub(super) struct CharsUtf8Raw<'h> {
@@ -238,7 +238,7 @@ pub(super) const unsafe fn codepoint_to_utf8_unchecked(c: u32) -> CodepointUtf8 
 	use CodepointUtf8::*;
 
 	if c & 0x7f == c {
-		One { value: c as _ }
+		One { values: [c as _] }
 	} else if c & 0x7ff == c {
 		let c1 = 0xc0 | (c >> 6) as u8;
 		let c2 = 0x80 | (c & 0x3f) as u8;
@@ -265,7 +265,7 @@ pub(super) const unsafe fn codepoint_to_utf16_unchecked(c: u32) -> CodepointUtf1
 	use CodepointUtf16::*;
 
 	if c & 0xffff == c {
-		One { value: c as _ }
+		One { values: [c as _] }
 	} else {
 		let c_offset = c - 0x10000;
 		let c1 = 0xd800 | (c_offset >> 10) as u16;
@@ -279,7 +279,7 @@ pub(super) const unsafe fn codepoint_to_utf16_unchecked(c: u32) -> CodepointUtf1
 /// `c` must be a valid unicode codepoint
 #[inline]
 pub(super) const unsafe fn codepoint_to_utf32_unchecked(c: u32) -> CodepointUtf32 {
-	CodepointUtf32::One { value: c }
+	CodepointUtf32::One { values: [c] }
 }
 
 /// # Safety
@@ -290,7 +290,7 @@ pub(super) const unsafe fn codepoint_to_utf32_unchecked(c: u32) -> CodepointUtf3
 #[inline]
 pub(super) const unsafe fn utf8_to_codepoint_unchecked(utf8: CodepointUtf8) -> u32 {
 	match utf8 {
-		CodepointUtf8::One { value } => { value as _ }
+		CodepointUtf8::One { values: [c1] } => { c1 as _ }
 		CodepointUtf8::Two { values: [c1, c2] } => {
 			let c1 = ((c1 & 0x1f) as u32) << 6;
 			let c2 = (c2 & 0x3f) as u32;
@@ -320,7 +320,7 @@ pub(super) const unsafe fn utf8_to_codepoint_unchecked(utf8: CodepointUtf8) -> u
 #[inline]
 pub(super) const unsafe fn utf16_to_codepoint_unchecked(utf16: CodepointUtf16) -> u32 {
 	match utf16 {
-		CodepointUtf16::One { value } => { value as _ }
+		CodepointUtf16::One { values: [c1] } => { c1 as _ }
 		CodepointUtf16::Two { values: [c1, c2] } => {
 			let c1 = ((c1 & 0x3ff) as u32) << 10;
 			let c2 = (c2 & 0x3ff) as u32;
@@ -337,7 +337,7 @@ pub(super) const unsafe fn utf16_to_codepoint_unchecked(utf16: CodepointUtf16) -
 #[inline]
 pub(super) const unsafe fn utf32_to_codepoint_unchecked(utf32: CodepointUtf32) -> u32 {
 	match utf32 {
-		CodepointUtf32::One { value } => { value }
+		CodepointUtf32::One { values: [c1] } => { c1 }
 	}
 }
 
@@ -446,7 +446,7 @@ pub(super) const unsafe fn next_codepoint_utf8_ptr_unchecked(front_ptr: *const u
 	let first_cu = *front_ptr;
 	let (cp, consumed) = match first_cu {
 		0x00..=0x7f => {
-			let cp = CodepointUtf8::One { value: first_cu };
+			let cp = CodepointUtf8::One { values: [first_cu] };
 			(cp, 1)
 		}
 		0xc2..=0xdf => {
@@ -476,7 +476,7 @@ pub(super) const unsafe fn next_codepoint_utf16_ptr_unchecked(front_ptr: *const 
 	let first_cu = *front_ptr;
 	let (cp, consumed) = match first_cu {
 		0x0000..=0xd7ff | 0xe000..=0xffff => {
-			let cp = CodepointUtf16::One { value: first_cu };
+			let cp = CodepointUtf16::One { values: [first_cu] };
 			(cp, 1)
 		}
 		0xd800..=0xdbff => {
@@ -496,7 +496,7 @@ pub(super) const unsafe fn next_codepoint_utf32_ptr_unchecked(front_ptr: *const 
 	let first_cu = *front_ptr;
 	let (cp, consumed) = match first_cu {
 		0x0000..=0xd7ff | 0xe000..=0x10ffff => {
-			let cp = CodepointUtf32::One { value: first_cu };
+			let cp = CodepointUtf32::One { values: [first_cu] };
 			(cp, 1)
 		}
 		_ => { hint::unreachable_unchecked() }
@@ -519,7 +519,7 @@ pub(super) const unsafe fn next_codepoint_back_utf8_ptr_unchecked(mut back_ptr: 
 
 	let (cp, consumed) = match next_cu_back!() {
 		c1 @ 0x00..=0x7f => {
-			let cp = CodepointUtf8::One { value: c1 };
+			let cp = CodepointUtf8::One { values: [c1] };
 			(cp, 1)
 		}
 		c1 @ 0x80..=0xbf => match next_cu_back!() {
@@ -566,7 +566,7 @@ pub(super) const unsafe fn next_codepoint_back_utf16_ptr_unchecked(mut back_ptr:
 
 	let (cp, consumed) = match next_cu_back!() {
 		c1 @ (0x0000..=0xd7ff | 0xe000..=0xffff) => {
-			let cp = CodepointUtf16::One { value: c1 };
+			let cp = CodepointUtf16::One { values: [c1] };
 			(cp, 1)
 		}
 		c1 @ 0xdc00..=0xdfff => match next_cu_back!() {
@@ -597,7 +597,7 @@ pub(super) const unsafe fn next_codepoint_back_utf32_ptr_unchecked(mut back_ptr:
 
 	let (cp, consumed) = match next_cu_back!() {
 		cu @ (0x0000..=0xd7ff | 0xe000..=0x10ffff) => {
-			let cp = CodepointUtf32::One { value: cu };
+			let cp = CodepointUtf32::One { values: [cu] };
 			(cp, 1)
 		}
 		_ => { hint::unreachable_unchecked() }
@@ -818,11 +818,12 @@ mod tests {
 			fn make_codepoint_utf8(self) -> CodepointUtf8;
 		}
 
-		impl MkCodepointUtf8 for u8 {
+		impl MkCodepointUtf8 for [u8; 1] {
 			fn make_codepoint_utf8(self) -> CodepointUtf8 {
-				CodepointUtf8::One { value: self }
+				CodepointUtf8::One { values: self }
 			}
 		}
+
 		impl MkCodepointUtf8 for [u8; 2] {
 			fn make_codepoint_utf8(self) -> CodepointUtf8 {
 				CodepointUtf8::Two { values: self }
@@ -850,22 +851,22 @@ mod tests {
 			);
 		}
 
-		check(0x0000, 0x00);
-		check(0x007f, 0x7f);
-		check(0x0080, [0xc2, 0x80]);
-		check(0x07ff, [0xdf, 0xbf]);
-		check(0x0800, [0xe0, 0xa0, 0x80]);
-		check(0x0fff, [0xe0, 0xbf, 0xbf]);
-		check(0x1000, [0xe1, 0x80, 0x80]);
-		check(0xcfff, [0xec, 0xbf, 0xbf]);
-		check(0xd000, [0xed, 0x80, 0x80]);
-		check(0xd7ff, [0xed, 0x9f, 0xbf]);
-		check(0xe000, [0xee, 0x80, 0x80]);
-		check(0xffff, [0xef, 0xbf, 0xbf]);
-		check(0x10000, [0xf0, 0x90, 0x80, 0x80]);
-		check(0x3ffff, [0xf0, 0xbf, 0xbf, 0xbf]);
-		check(0x40000, [0xf1, 0x80, 0x80, 0x80]);
-		check(0xfffff, [0xf3, 0xbf, 0xbf, 0xbf]);
+		check(0x0000,   [0x00]);
+		check(0x007f,   [0x7f]);
+		check(0x0080,   [0xc2, 0x80]);
+		check(0x07ff,   [0xdf, 0xbf]);
+		check(0x0800,   [0xe0, 0xa0, 0x80]);
+		check(0x0fff,   [0xe0, 0xbf, 0xbf]);
+		check(0x1000,   [0xe1, 0x80, 0x80]);
+		check(0xcfff,   [0xec, 0xbf, 0xbf]);
+		check(0xd000,   [0xed, 0x80, 0x80]);
+		check(0xd7ff,   [0xed, 0x9f, 0xbf]);
+		check(0xe000,   [0xee, 0x80, 0x80]);
+		check(0xffff,   [0xef, 0xbf, 0xbf]);
+		check(0x10000,  [0xf0, 0x90, 0x80, 0x80]);
+		check(0x3ffff,  [0xf0, 0xbf, 0xbf, 0xbf]);
+		check(0x40000,  [0xf1, 0x80, 0x80, 0x80]);
+		check(0xfffff,  [0xf3, 0xbf, 0xbf, 0xbf]);
 		check(0x100000, [0xf4, 0x80, 0x80, 0x80]);
 		check(0x10ffff, [0xf4, 0x8f, 0xbf, 0xbf]);
 	}

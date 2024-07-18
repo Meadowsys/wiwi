@@ -6,6 +6,7 @@ pub struct Char {
 }
 
 impl Char {
+	#[inline]
 	pub unsafe fn from_codepoint_unchecked(c: u32) -> Char {
 		Char { inner: c }
 	}
@@ -19,7 +20,7 @@ impl fmt::Display for Char {
 		// SAFETY: Char is always valid unicode codepoint
 		match unsafe { _internal::codepoint_to_utf8_unchecked(self.inner) } {
 			// SAFETY: Char is always valid unicode codepoint, so its encoded output is valid UTF-8
-			One { value } => { f.write_str(unsafe { from_utf8_unchecked(&[value]) }) }
+			One { values } => { f.write_str(unsafe { from_utf8_unchecked(&values) }) }
 
 			// SAFETY: Char is always valid unicode codepoint, so its encoded output is valid UTF-8
 			Two { values } => { f.write_str(unsafe { from_utf8_unchecked(&values) }) }
