@@ -282,6 +282,31 @@ pub(super) const unsafe fn codepoint_to_utf32_unchecked(c: u32) -> CodepointUtf3
 	CodepointUtf32::One { values: [c] }
 }
 
+#[inline]
+pub(super) const fn codepoint_utf8_to_slice(c: &CodepointUtf8) -> &[u8] {
+	match c {
+		CodepointUtf8::One { values } => { values }
+		CodepointUtf8::Two { values } => { values }
+		CodepointUtf8::Three { values } => { values }
+		CodepointUtf8::Four { values } => { values }
+	}
+}
+
+#[inline]
+pub(super) const fn codepoint_utf16_to_slice(c: &CodepointUtf16) -> &[u16] {
+	match c {
+		CodepointUtf16::One { values } => { values }
+		CodepointUtf16::Two { values } => { values }
+	}
+}
+
+#[inline]
+pub(super) const fn codepoint_utf32_to_slice(c: &CodepointUtf32) -> &[u32] {
+	match c {
+		CodepointUtf32::One { values } => { values }
+	}
+}
+
 /// # Safety
 ///
 /// `utf8` must contain valid data for a UTF-8 codepoint. If it is returned from
