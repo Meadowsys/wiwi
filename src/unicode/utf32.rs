@@ -1,5 +1,6 @@
 use super::_internal;
 use std::mem::transmute;
+use std::ops::{ Deref, DerefMut };
 
 #[repr(transparent)]
 pub struct StrUtf32 {
@@ -82,5 +83,23 @@ impl Default for StringUtf32 {
 	#[inline]
 	fn default() -> Self {
 		Self::new()
+	}
+}
+
+impl Deref for StringUtf32 {
+	type Target = StrUtf32;
+
+	#[inline]
+	fn deref(&self) -> &StrUtf32 {
+		// SAFETY: `self` must contain valid UTF-32
+		unsafe { StrUtf32::from_utf32_unchecked(&self.inner) }
+	}
+}
+
+impl DerefMut for StringUtf32 {
+	#[inline]
+	fn deref_mut(&mut self) -> &mut StrUtf32 {
+		// SAFETY: `self` must contain valid UTF-32
+		unsafe { StrUtf32::from_utf32_unchecked_mut(&mut self.inner) }
 	}
 }

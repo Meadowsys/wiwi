@@ -1,5 +1,6 @@
 use super::_internal;
 use std::mem::transmute;
+use std::ops::{ Deref, DerefMut };
 
 #[repr(transparent)]
 pub struct StrUtf8 {
@@ -43,10 +44,46 @@ impl StrUtf8 {
 		unsafe { transmute(utf8) }
 	}
 
+	pub const fn from_std_str(s: &str) -> &Self {
+		// SAFETY: `str` also requires that itself contain only valid UTF-8
+		unsafe { Self::from_utf8_unchecked(s.as_bytes()) }
+	}
+
+	pub fn from_std_str_mut(s: &mut str) -> &mut Self {
+		// SAFETY: we're only going to expose this as `Self`, and `Self` has same
+		// invariant that it must contain valid UTF-8
+		let cu = unsafe { s.as_bytes_mut() };
+
+		// SAFETY: `str` also requires that itself contain only valid UTF-8
+		unsafe { Self::from_utf8_unchecked_mut(cu) }
+	}
+
 	#[inline]
 	pub const fn to_utf8_code_units(&self) -> &[u8] {
 		// SAFETY: [u8] and Self have same layout
 		unsafe { transmute(self) }
+	}
+
+	#[inline]
+	pub unsafe fn to_utf8_code_units_mut(&mut self) -> &mut [u8] {
+		// SAFETY: [u8] and Self have same layout
+		unsafe { transmute(self) }
+	}
+
+	#[inline]
+	pub const fn to_std_str(&self) -> &str {
+		// SAFETY: `self` must contain valid UTF-8
+		unsafe { std::str::from_utf8_unchecked(self.to_utf8_code_units()) }
+	}
+
+	#[inline]
+	pub fn to_std_str_mut(&mut self) -> &mut str {
+		// SAFETY: we're only going to expose this as `str`, and `str` also
+		// has invariant that it must contain valid UTF-8
+		let cu = unsafe { self.to_utf8_code_units_mut() };
+
+		// SAFETY: `self` must contain valid UTF-8
+		unsafe { std::str::from_utf8_unchecked_mut(cu) }
 	}
 
 	#[inline]
@@ -83,5 +120,23 @@ impl Default for StringUtf8 {
 	#[inline]
 	fn default() -> Self {
 		Self::new()
+	}
+}
+
+impl Deref for StringUtf8 {
+	type Target = StrUtf8;
+
+	#[inline]
+	fn deref(&self) -> &StrUtf8 {
+		// SAFETY: `self` must contain valid UTF-8
+		unsafe { StrUtf8::from_utf8_unchecked(&self.inner) }
+	}
+}
+
+impl DerefMut for StringUtf8 {
+	#[inline]
+	fn deref_mut(&mut self) -> &mut StrUtf8 {
+		// SAFETY: `self` must contain valid UTF-8
+		unsafe { StrUtf8::from_utf8_unchecked_mut(&mut self.inner) }
 	}
 }

@@ -1,7 +1,8 @@
 use super::_internal;
 use std::borrow::Cow;
-use std::slice;
 use std::mem::transmute;
+use std::ops::{ Deref, DerefMut };
+use std::slice;
 
 #[repr(transparent)]
 pub struct StrUtf16 {
@@ -189,5 +190,23 @@ impl Default for StringUtf16 {
 	#[inline]
 	fn default() -> Self {
 		Self::new()
+	}
+}
+
+impl Deref for StringUtf16 {
+	type Target = StrUtf16;
+
+	#[inline]
+	fn deref(&self) -> &StrUtf16 {
+		// SAFETY: `self` must contain valid UTF-16
+		unsafe { StrUtf16::from_utf16_unchecked(&self.inner) }
+	}
+}
+
+impl DerefMut for StringUtf16 {
+	#[inline]
+	fn deref_mut(&mut self) -> &mut StrUtf16 {
+		// SAFETY: `self` must contain valid UTF-16
+		unsafe { StrUtf16::from_utf16_unchecked_mut(&mut self.inner) }
 	}
 }
