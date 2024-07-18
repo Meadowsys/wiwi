@@ -1,6 +1,7 @@
 use super::_internal;
 use std::fmt;
 
+#[derive(Clone, Copy)]
 pub struct Char {
 	inner: u32
 }
@@ -9,6 +10,11 @@ impl Char {
 	#[inline]
 	pub unsafe fn from_codepoint_unchecked(c: u32) -> Char {
 		Char { inner: c }
+	}
+
+	#[inline]
+	pub fn to_u32(self) -> u32 {
+		self.inner
 	}
 }
 

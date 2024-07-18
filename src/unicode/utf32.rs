@@ -1,4 +1,4 @@
-use super::_internal;
+use super::{ _internal, Char };
 use std::mem::transmute;
 use std::ops::{ Deref, DerefMut };
 
@@ -78,6 +78,14 @@ impl StringUtf32 {
 	pub fn with_capacity(capacity: usize) -> Self {
 		Self { inner: Vec::with_capacity(capacity) }
 	}
+
+	#[inline]
+	pub fn push_char(&mut self, c: Char) {
+		// SAFETY: Char is always valid unicode codepoint
+		let cp = unsafe { _internal::codepoint_to_utf32_unchecked(c.to_u32()) };
+		let cp = _internal::codepoint_utf32_to_slice(&cp);
+		self.inner.extend_from_slice(cp);
+	}
 }
 
 impl Default for StringUtf32 {
@@ -102,5 +110,14 @@ impl DerefMut for StringUtf32 {
 	fn deref_mut(&mut self) -> &mut StrUtf32 {
 		// SAFETY: `self` must contain valid UTF-32
 		unsafe { StrUtf32::from_utf32_unchecked_mut(&mut self.inner) }
+	}
+}
+
+impl FromIterator<Char> for StringUtf32 {
+	#[inline]
+	fn from_iter<T: IntoIterator<Item = Char>>(iter: T) -> Self {
+		let mut this = Self::new();
+		iter.into_iter().for_each(|c| this.push_char(c));
+		this
 	}
 }
