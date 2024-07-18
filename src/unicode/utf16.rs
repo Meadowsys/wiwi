@@ -36,13 +36,13 @@ impl StrUtf16 {
 	#[inline]
 	pub const unsafe fn from_utf16_unchecked(utf16: &[u16]) -> &Self {
 		// SAFETY: [u16] and Self have same layout
-		transmute(utf16)
+		unsafe { transmute(utf16) }
 	}
 
 	#[inline]
 	pub unsafe fn from_utf16_unchecked_mut(utf16: &mut [u16]) -> &mut Self {
 		// SAFETY: [u16] and Self have same layout
-		transmute(utf16)
+		unsafe { transmute(utf16) }
 	}
 
 	#[inline]
@@ -167,6 +167,8 @@ impl StrUtf16 {
 
 	#[inline]
 	pub const fn is_char_boundary(&self, index: usize) -> bool {
+		// SAFETY: `to_utf16_code_units` returns valid UTF-16 code units
+		// (well, `self` must be valid UTF-16)
 		unsafe { _internal::is_char_boundary_utf16_unchecked(self.to_utf16_code_units(), index) }
 	}
 }

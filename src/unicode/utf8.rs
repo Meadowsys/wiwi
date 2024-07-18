@@ -34,13 +34,13 @@ impl StrUtf8 {
 	#[inline]
 	pub const unsafe fn from_utf8_unchecked(utf8: &[u8]) -> &Self {
 		// SAFETY: [u8] and Self have same layout
-		transmute(utf8)
+		unsafe { transmute(utf8) }
 	}
 
 	#[inline]
 	pub unsafe fn from_utf8_unchecked_mut(utf8: &mut [u8]) -> &mut Self {
 		// SAFETY: [u8] and Self have same layout
-		transmute(utf8)
+		unsafe { transmute(utf8) }
 	}
 
 	#[inline]
@@ -61,6 +61,8 @@ impl StrUtf8 {
 
 	#[inline]
 	pub const fn is_char_boundary(&self, index: usize) -> bool {
+		// SAFETY: `to_utf8_code_units` returns valid UTF-8 code units
+		// (well, `self` must be valid UTF-8)
 		unsafe { _internal::is_char_boundary_utf8_unchecked(self.to_utf8_code_units(), index) }
 	}
 }

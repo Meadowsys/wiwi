@@ -34,16 +34,17 @@ impl StrUtf32 {
 	#[inline]
 	pub const unsafe fn from_utf32_unchecked(utf32: &[u32]) -> &Self {
 		// SAFETY: [u32] and Self have same layout
-		transmute(utf32)
+		unsafe { transmute(utf32) }
 	}
 
 	#[inline]
 	pub unsafe fn from_utf32_unchecked_mut(utf32: &mut [u32]) -> &mut Self {
 		// SAFETY: [u32] and Self have same layout
-		transmute(utf32)
+		unsafe { transmute(utf32) }
 	}
 
 	pub const fn to_utf32_code_units(&self) -> &[u32] {
+		// SAFETY: [u32] and Self have same layout
 		unsafe { transmute(self) }
 	}
 
@@ -59,6 +60,8 @@ impl StrUtf32 {
 
 	#[inline]
 	pub const fn is_char_boundary(&self, index: usize) -> bool {
+		// SAFETY: `to_utf32_code_units` returns valid UTF-32 code units
+		// (well, `self` must be valid UTF-32)
 		unsafe { _internal::is_char_boundary_utf32_unchecked(self.to_utf32_code_units(), index) }
 	}
 }
