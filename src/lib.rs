@@ -3,21 +3,11 @@
 #![cfg_attr(feature = "omega-tuples-of-doom", recursion_limit = "256")]
 
 // TODO: review these
-#![allow(
-	clippy::missing_safety_doc,
-	clippy::new_without_default,
-	clippy::should_implement_trait,
-	clippy::upper_case_acronyms,
-	dead_code,
-	unused_imports,
-	unused_macros,
-	unused_mut,
-	unused_variables
-)]
 #![warn(
-	// TODO: these following three should be deny,
+	// TODO: these following four should be deny,
 	// once all unsafe blocks are commented/fixed
 	unsafe_op_in_unsafe_fn,
+	clippy::missing_safety_doc,
 	clippy::multiple_unsafe_ops_per_block,
 	clippy::undocumented_unsafe_blocks
 )]
