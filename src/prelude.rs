@@ -96,6 +96,7 @@ pub use crate::lazy_wrap::{
 
 #[cfg(feature = "rand")]
 pub use crate::rand::{
+	Randomisable,
 	ThreadLocalChaCha8Rng,
 	ThreadLocalChaCha12Rng,
 	ThreadLocalChaCha20Rng

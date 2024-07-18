@@ -3,10 +3,6 @@ use rand::rngs::{ OsRng, adapter::ReseedingRng };
 use rand_chacha::{ ChaCha8Core, ChaCha12Core, ChaCha20Core };
 use std::cell::RefCell;
 
-// pub struct ThreadLocalChaCha8Rng;
-// pub struct ThreadLocalChaCha12Rng;
-// pub struct ThreadLocalChaCha20Rng;
-
 macro_rules! decl_thread_local_rng {
 	($struct_name:ident $core:ident $reseeder:ident) => {
 		pub struct $struct_name;
@@ -18,6 +14,17 @@ macro_rules! decl_thread_local_rng {
 					let rng = ReseedingRng::new(rng, 16384, OsRng);
 					RefCell::new(rng)
 				};
+			}
+
+			impl $struct_name {
+				#[inline]
+				pub fn gen_rand<T: Randomisable>(&self) -> T {
+					RNG_STATIC.with_borrow_mut(|rng| T::gen_rand(rng))
+				}
+
+				pub fn fill<T: Randomisable>(&self, slice: &mut [T]) {
+					RNG_STATIC.with_borrow_mut(|rng| T::fill(rng, slice))
+				}
 			}
 
 			impl RngCore for $struct_name {
@@ -50,3 +57,166 @@ decl_thread_local_rng! { ThreadLocalChaCha12Rng ChaCha12Core OsRng }
 decl_thread_local_rng! { ThreadLocalChaCha20Rng ChaCha20Core OsRng }
 
 impl CryptoRng for ThreadLocalChaCha20Rng {}
+
+pub trait Randomisable: Sized {
+	fn gen_rand<R: RngCore>(rng: &mut R) -> Self;
+	fn fill<R: RngCore>(rng: &mut R, slice: &mut [Self]) {
+		for slot in slice {
+			*slot = Randomisable::gen_rand(rng);
+		}
+	}
+}
+
+macro_rules! impl_int_randomisable {
+	($($num:ident {
+		$gen_rand_rng:ident => $gen_rand_expr:expr
+		$(; ($fill_rng_rng:ident, $fill_rng_slice:ident) => $fill_expr:expr;)?
+	})*) => {
+		$(
+			impl Randomisable for $num {
+				#[inline]
+				fn gen_rand<R: RngCore>($gen_rand_rng: &mut R) -> $num {
+					$gen_rand_expr
+				}
+
+				$(
+					#[inline]
+					fn fill<R: RngCore>($fill_rng_rng: &mut R, $fill_rng_slice: &mut [$num]) {
+						$fill_expr
+					}
+				)?
+			}
+		)*
+	}
+}
+
+impl_int_randomisable! {
+	u64 { rng => rand_u64(rng) }
+	u128 { rng => rand_u128(rng) }
+	i64 { rng => rand_i64(rng) }
+	i128 { rng => rand_i128(rng) }
+
+	u8 {
+		rng => rand_u8(rng);
+		(rng, slice) => {
+			// SAFETY: u8 and u64 are plain old data types
+			let (prefix, middle, suffix) = unsafe { slice.align_to_mut::<u64>() };
+
+			prefix.iter_mut().for_each(|slot| *slot = rand_u8(rng));
+			middle.iter_mut().for_each(|slot| *slot = rand_u64(rng));
+			suffix.iter_mut().for_each(|slot| *slot = rand_u8(rng));
+		};
+	}
+
+	u16 {
+		rng => rand_u16(rng);
+		(rng, slice) => {
+			// SAFETY: u16 and u64 are plain old data types
+			let (prefix, middle, suffix) = unsafe { slice.align_to_mut::<u64>() };
+
+			prefix.iter_mut().for_each(|slot| *slot = rand_u16(rng));
+			middle.iter_mut().for_each(|slot| *slot = rand_u64(rng));
+			suffix.iter_mut().for_each(|slot| *slot = rand_u16(rng));
+		};
+	}
+
+	u32 {
+		rng => rand_u32(rng);
+		(rng, slice) => {
+			// SAFETY: u32 and u64 are plain old data types
+			let (prefix, middle, suffix) = unsafe { slice.align_to_mut::<u64>() };
+
+			prefix.iter_mut().for_each(|slot| *slot = rand_u32(rng));
+			middle.iter_mut().for_each(|slot| *slot = rand_u64(rng));
+			suffix.iter_mut().for_each(|slot| *slot = rand_u32(rng));
+		};
+	}
+
+	i8 {
+		rng => rand_i8(rng);
+		(rng, slice) => {
+			// SAFETY: i8 and i64 are plain old data types
+			let (prefix, middle, suffix) = unsafe { slice.align_to_mut::<i64>() };
+
+			prefix.iter_mut().for_each(|slot| *slot = rand_i8(rng));
+			middle.iter_mut().for_each(|slot| *slot = rand_i64(rng));
+			suffix.iter_mut().for_each(|slot| *slot = rand_i8(rng));
+		};
+	}
+
+	i16 {
+		rng => rand_i16(rng);
+		(rng, slice) => {
+			// SAFETY: i16 and i64 are plain old data types
+			let (prefix, middle, suffix) = unsafe { slice.align_to_mut::<i64>() };
+
+			prefix.iter_mut().for_each(|slot| *slot = rand_i16(rng));
+			middle.iter_mut().for_each(|slot| *slot = rand_i64(rng));
+			suffix.iter_mut().for_each(|slot| *slot = rand_i16(rng));
+		};
+	}
+
+	i32 {
+		rng => rand_i32(rng);
+		(rng, slice) => {
+			// SAFETY: i32 and i64 are plain old data types
+			let (prefix, middle, suffix) = unsafe { slice.align_to_mut::<i64>() };
+
+			prefix.iter_mut().for_each(|slot| *slot = rand_i32(rng));
+			middle.iter_mut().for_each(|slot| *slot = rand_i64(rng));
+			suffix.iter_mut().for_each(|slot| *slot = rand_i32(rng));
+		};
+	}
+}
+
+#[inline]
+fn rand_u8<R: RngCore>(rng: &mut R) -> u8 {
+	rand_u32(rng) as _
+}
+
+#[inline]
+fn rand_u16<R: RngCore>(rng: &mut R) -> u16 {
+	rand_u32(rng) as _
+}
+
+#[inline]
+fn rand_u32<R: RngCore>(rng: &mut R) -> u32 {
+	rng.next_u32()
+}
+
+#[inline]
+fn rand_u64<R: RngCore>(rng: &mut R) -> u64 {
+	rng.next_u64()
+}
+
+#[inline]
+fn rand_u128<R: RngCore>(rng: &mut R) -> u128 {
+	let upper = rng.next_u64() as u128;
+	let lower = rng.next_u64() as u128;
+	upper << 64 | lower
+}
+
+#[inline]
+fn rand_i8<R: RngCore>(rng: &mut R) -> i8 {
+	rand_u8(rng) as _
+}
+
+#[inline]
+fn rand_i16<R: RngCore>(rng: &mut R) -> i16 {
+	rand_u16(rng) as _
+}
+
+#[inline]
+fn rand_i32<R: RngCore>(rng: &mut R) -> i32 {
+	rand_u32(rng) as _
+}
+
+#[inline]
+fn rand_i64<R: RngCore>(rng: &mut R) -> i64 {
+	rand_u64(rng) as _
+}
+
+#[inline]
+fn rand_i128<R: RngCore>(rng: &mut R) -> i128 {
+	rand_u128(rng) as _
+}
