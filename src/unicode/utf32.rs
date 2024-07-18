@@ -44,6 +44,7 @@ impl StrUtf32 {
 		unsafe { transmute(utf32) }
 	}
 
+	#[inline]
 	pub const fn to_utf32_code_units(&self) -> &[u32] {
 		// SAFETY: [u32] and Self have same layout
 		unsafe { transmute(self) }

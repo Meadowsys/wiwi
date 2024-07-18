@@ -1,4 +1,4 @@
-use super::_internal;
+use super::{ _internal, Char };
 use std::mem::transmute;
 use std::ops::{ Deref, DerefMut };
 
@@ -102,6 +102,11 @@ impl StrUtf8 {
 		// (well, `self` must be valid UTF-8)
 		unsafe { _internal::is_char_boundary_utf8_unchecked(self.to_utf8_code_units(), index) }
 	}
+
+	#[inline]
+	pub fn chars(&self) -> CharsUtf8<'_> {
+		CharsUtf8::new(self)
+	}
 }
 
 impl StringUtf8 {
@@ -138,5 +143,37 @@ impl DerefMut for StringUtf8 {
 	fn deref_mut(&mut self) -> &mut StrUtf8 {
 		// SAFETY: `self` must contain valid UTF-8
 		unsafe { StrUtf8::from_utf8_unchecked_mut(&mut self.inner) }
+	}
+}
+
+pub struct CharsUtf8<'h> {
+	inner: _internal::CharsUtf8Raw<'h>
+}
+
+impl<'h> CharsUtf8<'h> {
+	#[inline]
+	fn new(s: &'h StrUtf8) -> Self {
+		// SAFETY: `to_utf8_code_units` returns valid UTF-8 codepoint slice
+		let inner = unsafe { _internal::new_chars_utf8_raw(s.to_utf8_code_units()) };
+		Self { inner }
+	}
+}
+
+impl<'h> Iterator for CharsUtf8<'h> {
+	type Item = Char;
+
+	#[inline]
+	fn next(&mut self) -> Option<Char> {
+		_internal::chars_utf8_raw_next(&mut self.inner)
+			// SAFETY: `chars_utf8_raw_next` returns valid codepoints
+			.map(|c| unsafe { Char::from_codepoint_unchecked(c) })
+	}
+}
+
+impl<'h> DoubleEndedIterator for CharsUtf8<'h> {
+	fn next_back(&mut self) -> Option<Char> {
+		_internal::chars_utf8_raw_next_back(&mut self.inner)
+			// SAFETY: `chars_utf8_raw_next` returns valid codepoints
+			.map(|c| unsafe { Char::from_codepoint_unchecked(c) })
 	}
 }
