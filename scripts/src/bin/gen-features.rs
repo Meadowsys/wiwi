@@ -21,6 +21,8 @@ fn main() {
 		"parking-lot 0.12.1"
 		"rand 0.8.5"
 		#[uses_underscore]
+		"rand-chacha 0.3.1"
+		#[uses_underscore]
 		"serde-json 1.0.116"
 		#[uses_underscore]
 		"spin-sleep 1.2.0"
@@ -136,6 +138,10 @@ fn main() {
 		#[unstable]
 		"path"
 		"UTF-8 only path manipulation utilities written from scratch"
+
+		"rand"
+		"RNG lib, building on top of `rand`"
+		dependencies: ["rand", "rand-chacha"]
 
 		#[unstable]
 		"serialiser-binary"

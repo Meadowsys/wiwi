@@ -26,6 +26,7 @@
 	not(feature = "nominal"),
 	not(feature = "num-traits-unstable"),
 	not(feature = "path-unstable"),
+	not(feature = "rand"),
 	not(feature = "serialiser-binary-unstable"),
 	not(feature = "serialiser-text-unstable"),
 	not(feature = "string-pool-unstable"),
@@ -92,6 +93,13 @@ pub use crate::lazy_wrap::{
 
 // TODO: lsl prelude
 // TODO: serialiser prelude
+
+#[cfg(feature = "rand")]
+pub use crate::rand::{
+	ThreadLocalChaCha8Rng,
+	ThreadLocalChaCha12Rng,
+	ThreadLocalChaCha20Rng
+};
 
 #[cfg(feature = "string-pool-unstable")]
 pub use crate::string_pool::String;

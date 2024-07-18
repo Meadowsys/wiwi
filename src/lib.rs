@@ -60,6 +60,7 @@
 #![cfg_attr(all(not(any(docsrs, kiwingay)), feature = "nominal"), doc = "- `nominal`")]
 #![cfg_attr(all(not(any(docsrs, kiwingay)), feature = "num-traits-unstable"), doc = "- `num-traits` (unstable)")]
 #![cfg_attr(all(not(any(docsrs, kiwingay)), feature = "path-unstable"), doc = "- `path` (unstable)")]
+#![cfg_attr(all(not(any(docsrs, kiwingay)), feature = "rand"), doc = "- `rand`")]
 #![cfg_attr(all(not(any(docsrs, kiwingay)), feature = "serialiser-binary-unstable"), doc = "- `serialiser-binary` (unstable)")]
 #![cfg_attr(all(not(any(docsrs, kiwingay)), feature = "serialiser-text-unstable"), doc = "- `serialiser-text` (unstable)")]
 #![cfg_attr(all(not(any(docsrs, kiwingay)), feature = "string-pool-unstable"), doc = "- `string-pool` (unstable)")]
@@ -92,6 +93,7 @@
 	not(feature = "nominal"),
 	not(feature = "num-traits-unstable"),
 	not(feature = "path-unstable"),
+	not(feature = "rand"),
 	not(feature = "serialiser-binary-unstable"),
 	not(feature = "serialiser-text-unstable"),
 	not(feature = "string-pool-unstable"),
@@ -229,6 +231,10 @@ pub mod num_traits;
 #[cfg(feature = "path-unstable")]
 #[cfg_attr(docsrs, doc(cfg(feature = "path-unstable")))]
 pub mod path;
+
+#[cfg(feature = "rand")]
+#[cfg_attr(docsrs, doc(cfg(feature = "rand")))]
+pub mod rand;
 
 #[cfg(feature = "serialiser-binary-unstable")]
 #[cfg_attr(docsrs, doc(cfg(feature = "serialiser-binary-unstable")))]
