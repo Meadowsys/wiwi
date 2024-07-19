@@ -145,6 +145,7 @@ impl<'de> Deserialize<'de> for SecretKey {
 #[cfg(feature = "serde")]
 struct SecretKeyVisitor;
 
+#[cfg(feature = "serde")]
 impl<'de> Visitor<'de> for SecretKeyVisitor {
 	type Value = SecretKey;
 
