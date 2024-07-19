@@ -175,6 +175,15 @@ pub use with_cloned;
 #[doc(hidden)]
 #[macro_export]
 macro_rules! _with_cloned_impl {
+	{ _ in $($stuff:tt)* } => {
+		{
+			// easier "removing" of the macro, eg. in case it's like, in some
+			// heavily nested code, cause agh that's pain to remove and sometimes
+			// you just want to keep prototyping or whatever you're doing :p
+			$($stuff)*
+		}
+	};
+
 	{ mut $($thing:ident),+ in $($stuff:tt)* } => {
 		{
 			$(
