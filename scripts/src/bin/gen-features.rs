@@ -22,6 +22,7 @@ fn main() {
 		"rand 0.8.5"
 		#[uses_underscore]
 		"rand-chacha 0.3.1"
+		"serde 1.0.204"
 		#[uses_underscore]
 		"serde-json 1.0.116"
 		#[uses_underscore]
@@ -198,6 +199,11 @@ fn main() {
 		"omega-tuples-of-doom"
 		"_Surely_, no one uses tuples with more than 32 elements in them... but we don't know everyone's use case, so this feature will enable implementations for tuples with up to 128 elements. _Hopefully_, that is enough for everything. :p"
 		features: ["large-tuples"]
+
+		#[addon]
+		"serde"
+		"adds integration with `serde` crate"
+		dependencies: ["serde"]
 
 		#[addon]
 		"serde-json"

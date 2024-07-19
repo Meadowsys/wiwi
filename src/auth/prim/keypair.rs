@@ -1,5 +1,12 @@
 use crate::auth::{ Result, RngSecure };
+use crate::z85::{ decode_z85, encode_z85 };
 use p384::ecdsa::signature::{ RandomizedSigner as _, Verifier as _ };
+#[cfg(feature = "serde")]
+use serde::{ Deserialize, Deserializer, Serialize, Serializer };
+#[cfg(feature = "serde")]
+use serde::de::Visitor;
+#[cfg(feature = "serde")]
+use std::fmt;
 
 pub struct Keypair {
 	public_key: PublicKey,
@@ -109,5 +116,50 @@ impl Signature {
 	#[inline]
 	pub fn verify(&self, bytes: &[u8], public_key: &PublicKey) -> bool {
 		public_key.verify(bytes, self)
+	}
+}
+
+#[cfg(feature = "serde")]
+impl Serialize for SecretKey {
+	fn serialize<S>(&self, serializer: S) -> Result<S::Ok, S::Error>
+	where
+		S: Serializer
+	{
+		let bytes = self.to_bytes()
+			.map_err(serde::ser::Error::custom)?;
+		let stringified = encode_z85(&bytes);
+		serializer.serialize_str(&stringified)
+	}
+}
+
+#[cfg(feature = "serde")]
+impl<'de> Deserialize<'de> for SecretKey {
+	fn deserialize<D>(deserializer: D) -> Result<Self, D::Error>
+	where
+		D: Deserializer<'de>
+	{
+		deserializer.deserialize_str(SecretKeyVisitor)
+	}
+}
+
+#[cfg(feature = "serde")]
+struct SecretKeyVisitor;
+
+impl<'de> Visitor<'de> for SecretKeyVisitor {
+	type Value = SecretKey;
+
+	fn expecting(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
+		f.write_str("a secret key, z85-encoded")
+	}
+
+	fn visit_str<E>(self, v: &str) -> Result<SecretKey, E>
+	where
+		E: serde::de::Error
+	{
+		let decoded = decode_z85(v.as_bytes())
+			.map_err(E::custom)?;
+		let key = SecretKey::from_bytes(&decoded)
+			.map_err(E::custom)?;
+		Ok(key)
 	}
 }
