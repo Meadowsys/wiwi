@@ -18,11 +18,11 @@ macro_rules! decl_thread_local_rng {
 
 			impl $struct_name {
 				#[inline]
-				pub fn gen_rand<T: Randomisable>(&self) -> T {
+				pub fn gen_rand<T: Randomisable>() -> T {
 					RNG_STATIC.with_borrow_mut(|rng| T::gen_rand(rng))
 				}
 
-				pub fn fill<T: Randomisable>(&self, slice: &mut [T]) {
+				pub fn fill<T: Randomisable>(slice: &mut [T]) {
 					RNG_STATIC.with_borrow_mut(|rng| T::fill(rng, slice))
 				}
 			}
