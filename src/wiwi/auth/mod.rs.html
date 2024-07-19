@@ -7,13 +7,13 @@
 <a href="#7" id="7">7</a>
 <a href="#8" id="8">8</a>
 <a href="#9" id="9">9</a>
-</pre></div><pre class="rust"><code><span class="kw">pub mod </span>error;
-<span class="kw">mod </span>nom;
-<span class="kw">mod </span>prim;
-<span class="kw">mod </span>util;
-<span class="kw">pub mod </span>flow;
+</pre></div><pre class="rust"><code><span class="kw">use </span><span class="kw">crate</span>::rand::{
+	ThreadLocalChaCha8Rng <span class="kw">as </span>RngFast,
+	ThreadLocalChaCha20Rng <span class="kw">as </span>RngSecure
+};
 
-<span class="kw">use </span>error::<span class="kw-2">*</span>;
-<span class="kw">use </span>nom::<span class="kw-2">*</span>;
-<span class="kw">use </span>prim::<span class="kw-2">*</span>;
+<span class="kw">mod </span>error;
+<span class="kw">pub mod </span>prim;
+
+<span class="kw">pub use </span>error::{ Error, <span class="prelude-ty">Result </span>};
 </code></pre></div></section></main></body></html>

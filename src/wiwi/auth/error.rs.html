@@ -22,27 +22,6 @@
 <a href="#22" id="22">22</a>
 <a href="#23" id="23">23</a>
 <a href="#24" id="24">24</a>
-<a href="#25" id="25">25</a>
-<a href="#26" id="26">26</a>
-<a href="#27" id="27">27</a>
-<a href="#28" id="28">28</a>
-<a href="#29" id="29">29</a>
-<a href="#30" id="30">30</a>
-<a href="#31" id="31">31</a>
-<a href="#32" id="32">32</a>
-<a href="#33" id="33">33</a>
-<a href="#34" id="34">34</a>
-<a href="#35" id="35">35</a>
-<a href="#36" id="36">36</a>
-<a href="#37" id="37">37</a>
-<a href="#38" id="38">38</a>
-<a href="#39" id="39">39</a>
-<a href="#40" id="40">40</a>
-<a href="#41" id="41">41</a>
-<a href="#42" id="42">42</a>
-<a href="#43" id="43">43</a>
-<a href="#44" id="44">44</a>
-<a href="#45" id="45">45</a>
 </pre></div><pre class="rust"><code><span class="kw">pub type </span><span class="prelude-ty">Result</span>&lt;T, E = Error&gt; = std::result::Result&lt;T, E&gt;;
 
 <span class="attr">#[derive(Debug, thiserror::Error)]
@@ -53,39 +32,18 @@
 
 <span class="attr">#[derive(Debug, thiserror::Error)]
 </span><span class="kw">enum </span>ErrorInner {
-	<span class="attr">#[error(<span class="string">"{0}"</span>)]
-	</span>Aead(chacha20poly1305::aead::Error),
-	<span class="attr">#[error(<span class="string">"{0}"</span>)]
-	</span>Argon2(argon2::Error),
-	<span class="attr">#[error(transparent)]
-	</span>P384PKCS8DER(<span class="attr">#[from] </span>p384::pkcs8::der::Error),
 	<span class="attr">#[error(transparent)]
 	</span>P384ECC(<span class="attr">#[from] </span>p384::elliptic_curve::Error),
-	<span class="comment">// #[error(transparent)]
-	// ParseInt(#[from] std::num::ParseIntError),
-	// #[error("error parsing KDF string")]
-	// ParseKdf,
-	</span><span class="attr">#[error(transparent)]
-	</span>TryIntoArray(<span class="attr">#[from] </span>std::array::TryFromSliceError),
-	<span class="comment">// #[error(transparent)]
-	// Z85Decode(#[from] crate::z85::DecodeError)
-</span>}
+	<span class="attr">#[error(transparent)]
+	</span>P384ECDSA(<span class="attr">#[from] </span>p384::ecdsa::Error),
+	<span class="attr">#[error(transparent)]
+	</span>P384PKCS8DER(<span class="attr">#[from] </span>p384::pkcs8::der::Error),
+}
 
 <span class="kw">impl</span>&lt;T: Into&lt;ErrorInner&gt;&gt; From&lt;T&gt; <span class="kw">for </span>Error {
-	<span class="kw">fn </span>from(inner: T) -&gt; <span class="self">Self </span>{
+	<span class="attr">#[inline]
+	</span><span class="kw">fn </span>from(inner: T) -&gt; <span class="self">Self </span>{
 		<span class="self">Self </span>{ inner: inner.into() }
-	}
-}
-
-<span class="kw">impl </span>From&lt;argon2::Error&gt; <span class="kw">for </span>ErrorInner {
-	<span class="kw">fn </span>from(error: argon2::Error) -&gt; <span class="self">Self </span>{
-		<span class="self">Self</span>::Argon2(error)
-	}
-}
-
-<span class="kw">impl </span>From&lt;chacha20poly1305::aead::Error&gt; <span class="kw">for </span>ErrorInner {
-	<span class="kw">fn </span>from(error: chacha20poly1305::aead::Error) -&gt; <span class="self">Self </span>{
-		<span class="self">Self</span>::Aead(error)
 	}
 }
 </code></pre></div></section></main></body></html>

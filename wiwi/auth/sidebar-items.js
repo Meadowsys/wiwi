@@ -1,1 +1,1 @@
-window.SIDEBAR_ITEMS = {"mod":["error","flow"]};
+window.SIDEBAR_ITEMS = {"mod":["prim"],"struct":["Error"],"type":["Result"]};

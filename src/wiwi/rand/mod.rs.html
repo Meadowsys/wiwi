@@ -240,11 +240,11 @@
 
 			<span class="kw">impl </span><span class="macro-nonterminal">$struct_name </span>{
 				<span class="attr">#[inline]
-				</span><span class="kw">pub fn </span>gen_rand&lt;T: Randomisable&gt;(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; T {
+				</span><span class="kw">pub fn </span>gen_rand&lt;T: Randomisable&gt;() -&gt; T {
 					RNG_STATIC.with_borrow_mut(|rng| T::gen_rand(rng))
 				}
 
-				<span class="kw">pub fn </span>fill&lt;T: Randomisable&gt;(<span class="kw-2">&amp;</span><span class="self">self</span>, slice: <span class="kw-2">&amp;mut </span>[T]) {
+				<span class="kw">pub fn </span>fill&lt;T: Randomisable&gt;(slice: <span class="kw-2">&amp;mut </span>[T]) {
 					RNG_STATIC.with_borrow_mut(|rng| T::fill(rng, slice))
 				}
 			}
