@@ -84,6 +84,7 @@ auth-unstable = [
 	"dep:rand",
 	"dep:thiserror",
 	"dep:zeroize",
+	"rand",
 	"z85"
 ]
 bitstream-unstable = [

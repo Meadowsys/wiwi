@@ -46,7 +46,7 @@ fn main() {
 		"auth"
 		"Some lower(ish) level utilities to aid in writing an authentication system, in which the client password is never sent across the wire. Quite heavily inspired by [Tuta's authentication/encryption system](https://tuta.com/nl/encryption)"
 		dependencies: ["argon2", "chacha20poly1305", "chrono", "p384", "rand", "thiserror", "zeroize"]
-		features: ["z85"]
+		features: ["rand", "z85"]
 
 		#[unstable]
 		"bitstream"
