@@ -1,7 +1,4 @@
-use crate::rand::{
-	ThreadLocalChaCha8Rng as RngFast,
-	ThreadLocalChaCha20Rng as RngSecure
-};
+use crate::rand::ThreadLocalChaCha20Rng as RngSecure;
 
 mod error;
 pub mod prim;
