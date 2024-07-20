@@ -220,6 +220,8 @@
 <a href="#220" id="220">220</a>
 <a href="#221" id="221">221</a>
 <a href="#222" id="222">222</a>
+<a href="#223" id="223">223</a>
+<a href="#224" id="224">224</a>
 </pre></div><pre class="rust"><code><span class="kw">use </span>rand::{ CryptoRng, Error, RngCore, SeedableRng };
 <span class="kw">use </span>rand::rngs::{ OsRng, adapter::ReseedingRng };
 <span class="kw">use </span>rand_chacha::{ ChaCha8Core, ChaCha12Core, ChaCha20Core };
@@ -282,7 +284,9 @@
 
 <span class="kw">pub trait </span>Randomisable: Sized {
 	<span class="kw">fn </span>gen_rand&lt;R: RngCore&gt;(rng: <span class="kw-2">&amp;mut </span>R) -&gt; <span class="self">Self</span>;
-	<span class="kw">fn </span>fill&lt;R: RngCore&gt;(rng: <span class="kw-2">&amp;mut </span>R, slice: <span class="kw-2">&amp;mut </span>[<span class="self">Self</span>]) {
+
+	<span class="attr">#[inline]
+	</span><span class="kw">fn </span>fill&lt;R: RngCore&gt;(rng: <span class="kw-2">&amp;mut </span>R, slice: <span class="kw-2">&amp;mut </span>[<span class="self">Self</span>]) {
 		<span class="kw">for </span>slot <span class="kw">in </span>slice {
 			<span class="kw-2">*</span>slot = Randomisable::gen_rand(rng);
 		}
