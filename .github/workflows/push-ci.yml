@@ -78,7 +78,6 @@ jobs:
   docs:
     needs:
     - test
-    - clippy
     - feature-check
     - verify-gen-features
     runs-on: ubuntu-24.04
