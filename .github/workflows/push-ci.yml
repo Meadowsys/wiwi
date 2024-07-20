@@ -10,7 +10,6 @@ env:
 
 jobs:
   test:
-    name: run
     runs-on: ${{ matrix.runs-on }}
 
     strategy:
@@ -77,7 +76,6 @@ jobs:
     uses: ./.github/workflows/verify-gen-features.yml
 
   docs:
-    name: run
     needs:
     - test
     - clippy
