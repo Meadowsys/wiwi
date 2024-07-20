@@ -1,6 +1,12 @@
 name: clippy
 on:
   workflow_call:
+    inputs:
+      error-on-warn:
+        description: If warnings should become errors (and fail CI)
+        default: true
+        type: boolean
+  workflow_dispatch:
 
 jobs:
   run:
@@ -15,4 +21,9 @@ jobs:
       run: rustc --version
 
     - name: run clippy
-      run: cargo clippy --verbose --features all-unstable,all-addons --deny warnings
+      run: |
+        if [ ${{ inputs.error-on-warn }} ]; then
+          cargo clippy --verbose --features all-unstable,all-addons --deny warnings
+        else
+          cargo clippy --verbose --features all-unstable,all-addons
+        fi
