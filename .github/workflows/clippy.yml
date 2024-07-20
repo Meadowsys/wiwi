@@ -23,7 +23,7 @@ jobs:
     - name: run clippy
       run: |
         if [ ${{ inputs.error-on-warn }} ]; then
-          cargo clippy --verbose --features all-unstable,all-addons --deny warnings
+          cargo clippy --verbose --features all-unstable,all-addons -- --deny warnings
         else
           cargo clippy --verbose --features all-unstable,all-addons
         fi
