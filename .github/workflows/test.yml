@@ -64,6 +64,9 @@ jobs:
         files: target/coverage/*.lcov
         token: ${{ secrets.CODECOV_TOKEN }}
 
+  clippy:
+    uses: ./.github/workflows/clippy.yml
+
   feature-check:
     uses: ./.github/workflows/feature-check.yml
 

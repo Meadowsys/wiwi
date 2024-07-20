@@ -34,6 +34,9 @@ jobs:
     - name: test in release
       run: cargo test --release --verbose --features all,all-addons
 
+  clippy:
+    uses: ./.github/workflows/clippy.yml
+
   feature-check:
     uses: ./.github/workflows/feature-check.yml
 
