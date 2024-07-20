@@ -231,7 +231,7 @@ pub fn decode_z85(mut bytes: &[u8]) -> Result<Vec<u8>, DecodeError> {
 	}
 
 	// SAFETY: We have consumed all the input bytes (calculated)
-	frames_iter.debug_assert_is_empty();
+	debug_assert!(frames_iter.to_slice().is_empty(), "all bytes were consumed");
 
 	// SAFETY: We have written the exact amount of bytes we preallocated (calculated)
 	Ok(unsafe { dest.into_full_vec() })
@@ -252,28 +252,73 @@ pub enum DecodeError {
 	FrameOverflow
 }
 
+/// Various details about a slice and it's encoded output bytes, including
+/// number of full frames, remainder, and how much capacity is needed to hold
+/// all the encoded bytes
+///
+/// # Safety
+///
+/// All fields on this struct are marked `pub`, meaning anyone is allowed to
+/// directly access and modify them. Don't accept any instances of this struct
+/// from nontrusted sources, nor construct instances from raw data taken from
+/// nontrusted sources.
+///
+/// On the contrary, you can trust and rely on the output directly from the
+/// [`for_input_len`](EncodedReprInfo::for_input_len) associated function,
+/// including in unsafe contexts. The body of this function is heavily
+/// documented.
 pub struct EncodedReprInfo {
+	/// The amount of _full_ frames (eg. amount of full chunks of 4 bytes)
 	pub frames: usize,
+	/// The amount of remainder bytes, strictly less than 4 (frame size)
 	pub remainder: usize,
+	/// The amount of capacity required to fit all the encoded data into
+	///
+	/// This is calculated by summing up the following values:
+	/// - Space needed for full frames is `frames * 5`, since every frame
+	///   is a chunk of 4 bytes that gets encoded into a frame of 5 bytes
+	/// - Space needed for remainder bytes:
+	///   - If no remainder, then 0. Simple enough :p
+	///     - This also implies that if the input does not need to be padded to
+	///       a len that is a multiple of 4, no padding is needed. In this case,
+	///       the numbers/calculations here are compliant with the [Z85 spec].
+	///   - If there is remainder, it is `5 + 1`. The remainder bytes
+	///     will be padded to a full frame of 4, then encoded as a full frame,
+	///     yielding 5. Then, one extra byte is added onto the end to encode the
+	///     amount of padding we have added (ex. 1 for 3 remainder bytes and 1
+	///     padding).
+	///
+	/// [Z85 spec]: https://rfc.zeromq.org/spec/32
 	pub needed_capacity: usize
 }
 
 impl EncodedReprInfo {
+	/// Calculates the values
+	///
+	/// See documentation on [`EncodedReprInfo`] and on the individual fields
+	/// for more information.
 	#[inline]
 	pub fn for_input_len(input_len: usize) -> Self {
-		// right shift 2 is same as integer divide by 4 (BINARY_FRAME_LEN)
+		// right shift 2 is same as integer divide by 4,
+		// to get the amount of full binary frames
 		let frames = input_len >> 2;
 
-		// binary AND with 0b11 (3) is the same as modulo 4 (BINARY_FRAME_LEN)
+		// binary AND with 0b11 (3) is the same as rem 4,
+		// to get the amount of remainder bytes
 		let remainder = input_len & 0b11;
 
 		let needed_capacity = if remainder == 0 {
-			frames * STRING_FRAME_LEN
+			// each frame of 4 is encoded to a frame of
+			// 5 bytes of output. No padding needed case
+			frames * 5
 		} else {
-			// `frames` is number of *whole* binary frames, so the remainder is not
-			// included in this. adding 1 to allocate space for a whole frame for it.
+			// `frames` is number of *whole* binary frames, so the remainder
+			// is not included in this. adding 1 to allocate space for one more
+			// frame containing the padded remainder
 			let capacity = (frames + 1) * STRING_FRAME_LEN;
-			// don't forget that last byte that encodes amount of padding
+
+			// adding 1 more byte for the last byte that
+			// encodes amount of padding added
 			capacity + 1
 		};
 

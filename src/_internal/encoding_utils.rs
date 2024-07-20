@@ -1,31 +1,93 @@
 use std::{ slice, ptr };
 
-/// In debug mode, keeps track of the amount of bytes written, and asserts
-/// preconditions like not writing over capacity and having all preallocated
-/// capacity filled. However, in release mode, its just a wrapper around a vec,
-/// its ptr, raw ptr operations ([`ptr::copy_nonoverlapping`] etc), and a method
-/// that unsafetly sets the len of the vec before unwrapping it.
-// Note. if this is dropped prematurely, the included vec will be dropped per its
-// regular drop rules, and `u8` doesn't have any special drop requirements, so
-// this is correct and won't resource leak.
+/// Helper for unsafe buffer operations, when the _exact_ total capacity needed
+/// is known ahead of time and requested up front
+///
+/// Calling [`Vec::extend_from_slice`] on a vec would be the equivalent safe
+/// version of this struct. The reason this struct exists then, is because
+/// anything that pushes to a vec checks to make sure there is enough capacity.
+/// That cost is probably negligible, but added up could be noticeable
+/// (especially in hot loops), and if you can guarantee you know / can calculate
+/// the exact amount you need, then allocate it all up front, you no longer need
+/// those checks, so why even bother running those checks?
+///
+/// With debug assertions enabled, this struct will keep track of the amount of
+/// bytes written and assert unsafe preconditions, like not overflowing the
+/// allocated capacity, as well as having all preallocated capacity filled.
+/// However, with debug assertions off (release mode has it off by default),
+/// these checks are not run (the `bytes_written` field that tracks it is
+/// gated behind `cfg(debug_assertions)`, so doesn't even exist!), and it becomes
+/// essentially just a wrapper around a vec, its ptr, raw ptr copying operations,
+/// and a method that unsafetly sets the len of the vec before unwrapping it.
+///
+/// Creating one of these structs is not unsafe, but you can't
+/// really do much with it in safe only code :p
 pub struct UnsafeBufWriteGuard {
+	/// The [`Vec`] that's being written to
+	///
+	/// Note: if `self` is prematurely dropped, this vec will be dropped by it's
+	/// normal drop implementation. Additionally, `u8` is plain old data, so
+	/// doesn't have any special drop behaviour (it's just bytes), so it's safe
+	/// that the length is still set to 0.
 	vec: Vec<u8>,
+	/// The pointer into the vec
+	///
+	/// This pointer is set to the start of the `vec` upon creation, and is
+	/// shifted forward with every write operation to it.
+	///
+	/// This pointer is guaranteed not to move throughout the lifespan of `self`,
+	/// because as far as the vec itself is aware, we request it to allocate some
+	/// memory, it gives us at least that much, then we are not touching it, until
+	/// `self` gets unwrapped using [`into_full_vec`](Self::into_full_vec). After
+	/// that, we will never use this pointer again. We are then (unsafely) setting
+	/// the len of the vec to the requested amount of capacity initially, which
+	/// the caller of that method promises is initialised, since it is a safety
+	/// invariant of [`into_full_vec`]. What happens to the vec after we hand it's
+	/// ownership back to caller, is no longer on us to handle. The pointer has
+	/// been dropped, and our job is done.
 	ptr: *mut u8,
+	/// The amount of capacity that the caller initially requested
+	///
+	/// # Safety
+	///
+	/// Previously, in the unwrapping operation, we used the value returned by
+	/// [`Vec::capacity`] to set the len of the vec. This is unsound, since
+	/// [`Vec::with_capacity`] is allowed to over allocate (but not under, so
+	/// we're safe there). Because of this fact, we must store the initial
+	/// requested capacity (that the caller promises to fill before taking the vec),
+	/// and use that value to set the len instead.
 	requested_capacity: usize,
+	/// In debug mode, tracks the amount of bytes written, and uses it to perform
+	/// assertions on preconditions. In release mode, this is not present
+	///
+	/// Because this value is not present, memory usage is theoretically reduced
+	/// by a word size. Unless you're relying on the size of `Self`, and/or having
+	/// this struct as a field of another struct where size matters, this field
+	/// not being present in release mode should not be an issue.
+	///
+	/// # Safety
+	///
+	/// You shouldn't be relying on the layout of this struct anyways.
 	#[cfg(debug_assertions)]
 	bytes_written: usize
 }
 
 impl UnsafeBufWriteGuard {
-	/// Create new [`UnsafeBufWriteGuard`] with specified capacity. The amount of
-	/// capacity specified must be _exactly_ calculated, and _all_ capacity allocated
-	/// here _must_ be used up before calling [`into_full_vec`][Self::into_full_vec].
-	#[inline(always)]
+	/// Create a new [`UnsafeBufWriteGuard`] with specified capacity
+	///
+	/// The amount of capacity specified must be _exactly_ calculated, and _all_
+	/// capacity allocated here _must_ be initialised before calling
+	/// [`into_full_vec`](Self::into_full_vec). See that function for more details
+	/// and safety notes.
+	///
+	/// The act of creating one of these structs is not unsafe, but you can't
+	/// really do much with it in safe only code :p
+	#[inline]
 	pub fn with_capacity(capacity: usize) -> Self {
 		let mut vec = Vec::with_capacity(capacity);
-		let ptr = vec.as_mut_ptr();
-
 		debug_assert!(vec.capacity() >= capacity);
+
+		let ptr = vec.as_mut_ptr();
 
 		Self {
 			vec,
@@ -36,143 +98,205 @@ impl UnsafeBufWriteGuard {
 		}
 	}
 
-	/// Writes an amount of bytes into self. Does the same as [`write_bytes`][Self::write_bytes]
-	/// functionality-wise, but maybe the constant param N will enable more
-	/// optimisations?
+	/// Writes an amount of bytes into `self`, determined by const param `N`
+	///
+	/// This does the same as [`write_bytes`](Self::write_bytes) in functionality,
+	/// but maybe the const generic param `N` will enable more optimisations?
 	///
 	/// # Safety
 	///
-	/// You must not write over the amount of capacity that you preallocated.
-	#[inline(always)]
+	/// You must not write, in total, more than the amount of capacity that you
+	/// requested when creating `self`.
+	#[inline]
 	pub unsafe fn write_bytes_const<const N: usize>(&mut self, src: *const u8) {
 		#[cfg(debug_assertions)] {
+			// this has to be behind cfg because self.bytes_written
+			// doesn't exist in not(debug_assertions)
 			self.bytes_written += N;
 			assert!(self.bytes_written <= self.requested_capacity)
 		}
 
-		ptr::copy_nonoverlapping(src, self.ptr, N);
-		self.ptr = self.ptr.add(N);
+		// SAFETY: caller promises not to write more bytes than they requested
+		// up front, which is what we also requested from the vec
+		unsafe { ptr::copy_nonoverlapping(src, self.ptr, N) }
+
+		// SAFETY: caller promises not to write more bytes than they requested
+		// up front. In the case of this invocation writing the exact amount to
+		// fill the remaining bytes, the pointer could be set to the end of the
+		// allocation, which is valid
+		unsafe { self.ptr = self.ptr.add(N) }
 	}
 
-	/// Writes an amount of bytes into self.
+	/// Writes an amount of bytes into `self`
 	///
 	/// # Safety
 	///
-	/// You must not write over the amount of capacity that you preallocated.
-	#[inline(always)]
+	/// You must not write, in total, more than the amount of capacity that you
+	/// requested when creating `self`.
+	#[inline]
 	pub unsafe fn write_bytes(&mut self, src: *const u8, n: usize) {
 		#[cfg(debug_assertions)] {
+			// this has to be behind cfg because self.bytes_written
+			// doesn't exist in not(debug_assertions)
 			self.bytes_written += n;
 			assert!(self.bytes_written <= self.requested_capacity)
 		}
 
-		ptr::copy_nonoverlapping(src, self.ptr, n);
-		self.ptr = self.ptr.add(n);
+		// SAFETY: caller promises not to write more bytes than they requested
+		// up front, which is what we also requested from the vec
+		unsafe { ptr::copy_nonoverlapping(src, self.ptr, n) }
+
+		// SAFETY: caller promises not to write more bytes than they requested
+		// up front. In the case of this invocation writing the exact amount to
+		// fill the remaining bytes, the pointer could be set to the end of the
+		// allocation, which is valid
+		unsafe { self.ptr = self.ptr.add(n) }
 	}
 
-	/// Make sure to also call `add_byte_count` function afterwards, to keep
-	/// proper track of the ptr inside. Calling this will yield a pointer
-	/// pointing at the start of the uninitialised chunk (ie. no need to
-	/// keep track of how many bytes have been written, and no need to call
-	/// `.add()` on the returned pointer.) It is necessary to call
-	/// [`add_byte_count`][Self::add_byte_count] after this, to make sure the pointer
-	/// stored internally is correct.
+	/// Get the pointer pointing to the start of the uninitialised memory in the
+	/// buffer (to operate on the raw pointer directly)
+	///
+	/// If/when you are done writing to the pointer, you should call
+	/// [`add_byte_count`](Self::add_byte_count). This offsets the internally
+	/// stored pointer by that amount. If you don't, calling any other write
+	/// function on this struct will clobber over what you just wrote.
+	///
 	///
 	/// # Safety
 	///
-	/// As with the rest of the write functions, you must not write over the
-	/// amount of capacity that you preallocated. Additionally, you must call
-	/// add_byte_count.
-	#[inline(always)]
+	/// As with the rest of the write functions, you must not write, in total,
+	/// more than the amount of capacity that you requested when creating `self`.
+	/// Additionally, you should call [`add_byte_count`](Self::add_byte_count).
+	///
+	/// This function is technically safe to call if you don't do anything with
+	/// the returned pointer. All pointer operations are unsafe already. `std`
+	/// has many `as_ptr` and `as_mut_ptr` APIs that aren't `unsafe`, but still,
+	/// this function is conservatively marked unsafe. Even though it probably
+	/// doesn't need to be.
+	#[inline]
 	pub unsafe fn as_mut_ptr(&mut self) -> *mut u8 {
 		self.ptr
 	}
 
-	/// Call this after writing to the pointer returned by [`as_mut_ptr`][Self::as_mut_ptr],
-	/// ensuring the pointer stored internally is still going to point at the
-	/// right spot (start of uninitialised chunk).
+	/// Declare that `n` bytes have been written
+	///
+	/// Call this after writing to the raw pointer (which you can get using
+	/// [`as_mut_ptr`](Self::as_mut_ptr)), ensuring the pointer stored internally
+	/// is still going to point at the start of the uninitialised chunk (or the end).
 	///
 	/// # Safety
 	///
-	/// You must have written to the amount of bytes that you are giving, otherwise
-	/// there will be uninitialised memory "holes" in the resulting vec.
-	#[inline(always)]
+	/// You must have written the amount of bytes that you say you have written,
+	/// and that you have not written too many bytes.
+	///
+	/// Calling this function without writing to the amount of memory you say you
+	/// did will leave uninitialised memory "holes", which will cause undefined
+	/// behaviour when you unwrap the vec.
+	#[inline]
 	pub unsafe fn add_byte_count(&mut self, n: usize) {
 		#[cfg(debug_assertions)] {
+			// this has to be behind cfg because self.bytes_written
+			// doesn't exist in not(debug_assertions)
 			self.bytes_written += n;
 			assert!(self.bytes_written <= self.requested_capacity)
 		}
 
-		self.ptr = self.ptr.add(n);
+		// SAFETY: caller promises to have written the amount
+		// of bytes that they say they did
+		unsafe { self.ptr = self.ptr.add(n) }
 	}
 
-	/// Returns the internal vec.
+	/// Declare that the amount of bytes requested up front, has been written to,
+	/// then unwraps and returns the internal vec
 	///
 	/// # Safety
 	///
-	/// By calling this, you assert that you have written to all the
-	/// bytes that you preallocated when creating this. If this still has
-	/// uninitialised bytes left at the end, the length will be set too far,
-	/// violating contract of [`Vec::set_len`].
-	#[inline(always)]
+	/// You must have written to all the bytes that you have requested up front.
+	/// Calling this function without doing so will leave a "tail" of uninitialised
+	/// bytes in the vec, causing undefined behaviour.
+	#[inline]
 	pub unsafe fn into_full_vec(mut self) -> Vec<u8> {
-		#[cfg(debug_assertions)]
-		assert!(self.bytes_written == self.requested_capacity);
+		#[cfg(debug_assertions)] {
+			// this has to be behind cfg because self.bytes_written
+			// doesn't exist in not(debug_assertions)
+			assert!(self.bytes_written == self.requested_capacity);
+		}
 
-		self.vec.set_len(self.requested_capacity);
+		// SAFETY: caller promises to have written to all
+		// the capacity they requested
+		unsafe { self.vec.set_len(self.requested_capacity) }
+
 		self.vec
 	}
 }
 
 /// Utility to emit fixed size (const) chunks, in an unchecked manner, from
-/// a slice. Contains assertions to assert preconditions in debug mode.
+/// a slice
+///
+/// Contains debug assertions to assert preconditions.
+// I cannot remember if I rely on this being repr(transparent) anywhere
 #[repr(transparent)]
 pub struct ChunkedSlice<'h, const N: usize> {
 	bytes: &'h [u8]
 }
 
 impl<'h, const N: usize> ChunkedSlice<'h, N> {
-	#[inline(always)]
+	/// Creates a new [`ChunkedSlice`] instance from the given
+	/// borrowed, byte slice
+	#[inline]
 	pub fn new(bytes: &'h [u8]) -> Self {
 		Self { bytes }
 	}
 
-	/// Takes N bytes off the front of the internal slice, returning that slice,
-	/// and saving the rest for future calls.
+	/// Removes, without checking, `N` bytes off the front of the internal slice,
+	/// then returns a reference to that slice
+	///
+	/// I believe the reason this function returns a reference rather than a
+	/// static array is performance? if I remember correctly, changing it to
+	/// return the array by value caused a not insignificant performance
+	/// regression in z85 encode speed. My not-very-educated guess is the
+	/// alignment? since references are aligned to word size, which the CPU likes,
+	/// while the byte array is only aligned to 1 ~vt
 	///
 	/// # Safety
 	///
-	/// `self.bytes` must have `N` or more bytes left in it,
-	/// otherwise invalid memory will be read from.
+	/// There must be at least `N` bytes left, otherwise a reference to invalid
+	/// memory will be created, causing undefined behaviour.
+	#[inline]
 	pub unsafe fn next_frame_unchecked(&mut self) -> &'h [u8; N] {
 		debug_assert!(self.bytes.len() >= N, "enough bytes left to form another whole frame");
 
 		let self_ptr = self.bytes.as_ptr();
 		let self_len = self.bytes.len();
 
-		// SAFETY: this is the fixed size slice that is returned. Caller asserts
-		// that self contains at least N bytes (and so the ptr created from self
-		// will be safe to read from).
-		let new_slice = &*(self_ptr.cast::<[u8; N]>());
+		// SAFETY: caller asserts there is at least `N` bytes left,
+		// so this reference will point to valid memory
+		let new_slice = unsafe { &*self_ptr.cast::<[u8; N]>() };
 
-		// SAFETY: see function doc comment. Caller asserts self has at least N bytes.
-		// `self_len - N` and `self_ptr.add(N)` is safe becaue we have at least N
-		// bytes, and is correct because we just took N bytes out above, and are
-		// returning reference to it.
-		self.bytes = slice::from_raw_parts(self_ptr.add(N), self_len - N);
+		// SAFETY: caller asserts there is at least `N` bytes left,
+		// so this ptr will still point in range
+		let self_ptr = unsafe { self_ptr.add(N) };
+
+		// SAFETY: caller asserts there is at least `N` bytes left,
+		// so the subtraction won't overflow (pointer is offset above)
+		self.bytes = unsafe { slice::from_raw_parts(self_ptr, self_len - N) };
 
 		new_slice
 	}
 
 	/// Consumes self, takes the remainder slice, copies it into a temporary
-	/// buffer of length `N`, and calls the provided function with this buffer.
-	/// Returns the amount of bytes in that buffer that aren't padding (ie. the
-	/// amount of bytes that are actual data bytes).
+	/// buffer of length `N`, and calls the provided closure with the temporary
+	/// buffer
+	///
+	/// This does _not_ indicate anywhere how many were padding bytes vs actual
+	/// data. In the few places that this utility struct is used, the remainder
+	/// has been calculated already, so the returned value goes unused.
 	///
 	/// # Safety
 	///
-	/// `self.bytes` must have N or less bytes left in it, otherwise invalid
-	/// memory (at the end of the temporary buffer created) will be written to.
+	/// There must be strictly N or less bytes left, otherwise invalid memory
+	/// (past the end of the temporary buffer created) will be written to.
+	#[inline]
 	pub unsafe fn with_remainder_unchecked<F>(self, mut f: F)
 	where
 		F: FnMut(&[u8; N])
@@ -189,19 +313,18 @@ impl<'h, const N: usize> ChunkedSlice<'h, N> {
 		// ptr to temp buffer
 		let slice_ptr = slice.as_mut_ptr();
 
-		// SAFETY: slice in self has less than N bytes remaining as guaranteed by
-		// caller; therefore, the amount of bytes copied will be the correct
-		// amount, and always fit in the temp buffer. We also read `len` from self,
-		// meaning we can always read `len` bytes from self.
-		ptr::copy_nonoverlapping(self_ptr, slice_ptr, len);
+		// SAFETY: caller promises that there is strictly less than N bytes
+		// remaining, so the amount of data copied will always be less than
+		// the temp buffer length. `len` comes from the same slice we are
+		// copying from, so we must be able to copy that much over
+		unsafe { ptr::copy_nonoverlapping(self_ptr, slice_ptr, len) }
 
 		f(&slice);
 	}
 
-	/// If debug assertions are enabled, this asserts that the slice contained in
-	/// `self` is empty (ie. len 0), and panics if not. Otherwise, this does nothing.
-	#[inline(always)]
-	pub fn debug_assert_is_empty(&self) {
-		debug_assert!(self.bytes.is_empty(), "all bytes were consumed");
+	/// Returns the slice left in `self`
+	#[inline]
+	pub fn to_slice(&self) -> &'h [u8] {
+		self.bytes
 	}
 }
