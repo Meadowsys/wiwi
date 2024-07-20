@@ -50,6 +50,8 @@ jobs:
     - test
     - feature-check
     - verify-gen-features
+    # TODO enable when existing warnings have been cleared
+    # - clippy
 
     steps:
     - name: checkout code

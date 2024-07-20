@@ -66,8 +66,6 @@ jobs:
 
   clippy:
     uses: ./.github/workflows/clippy.yml
-    with:
-      error-on-warn: false
 
   feature-check:
     uses: ./.github/workflows/feature-check.yml
@@ -80,6 +78,8 @@ jobs:
     - test
     - feature-check
     - verify-gen-features
+    # TODO enable when existing warnings have been cleared
+    # - clippy
     runs-on: ubuntu-24.04
 
     steps:
