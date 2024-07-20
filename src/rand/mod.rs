@@ -60,6 +60,8 @@ impl CryptoRng for ThreadLocalChaCha20Rng {}
 
 pub trait Randomisable: Sized {
 	fn gen_rand<R: RngCore>(rng: &mut R) -> Self;
+
+	#[inline]
 	fn fill<R: RngCore>(rng: &mut R, slice: &mut [Self]) {
 		for slot in slice {
 			*slot = Randomisable::gen_rand(rng);
