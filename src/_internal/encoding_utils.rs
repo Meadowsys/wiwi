@@ -251,12 +251,12 @@ impl<'h, const N: usize> ChunkedSlice<'h, N> {
 	/// Removes, without checking, `N` bytes off the front of the internal slice,
 	/// then returns a reference to that slice
 	///
-	/// I believe the reason this function returns a reference rather than a
-	/// static array is performance? if I remember correctly, changing it to
-	/// return the array by value caused a not insignificant performance
-	/// regression in z85 encode speed. My not-very-educated guess is the
-	/// alignment? since references are aligned to word size, which the CPU likes,
-	/// while the byte array is only aligned to 1 ~vt
+	/// I believe the reason this function returns a reference rather than an
+	/// array by value is performance? if I remember correctly, changing it to
+	/// return the array by value caused a quite heavy performance regression
+	/// in z85 encode speed. My not-very-educated guess is the alignment? since
+	/// references are aligned to word size, which the CPU likes, while the byte
+	/// array is only aligned to 1 ~vt
 	///
 	/// # Safety
 	///
@@ -297,9 +297,9 @@ impl<'h, const N: usize> ChunkedSlice<'h, N> {
 	/// There must be strictly N or less bytes left, otherwise invalid memory
 	/// (past the end of the temporary buffer created) will be written to.
 	#[inline]
-	pub unsafe fn with_remainder_unchecked<F>(self, mut f: F)
+	pub unsafe fn with_remainder_unchecked<F>(self, f: F)
 	where
-		F: FnMut(&[u8; N])
+		F: FnOnce(&[u8; N])
 	{
 		let len = self.bytes.len();
 
