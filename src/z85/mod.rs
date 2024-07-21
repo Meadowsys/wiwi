@@ -429,25 +429,46 @@ unsafe fn encode_frame(frame: &[u8; BINARY_FRAME_LEN], dest: &mut UnsafeBufWrite
 	debug_assert!(int % TABLE_ENCODER_LEN == int, "no remaining/unused byte information");
 	debug_assert!(int / TABLE_ENCODER_LEN == 0, "no remaining/unused byte information");
 
+	let table_ptr = TABLE_ENCODER.as_ptr();
+
+	/// # Safety
+	///
+	/// The value stored in the variable that's passed into this macro must be
+	/// within the range 0..=84, so that it can be used to index the encode table
+	macro_rules! encode_byte_unsafe {
+		($byte:ident) => {
+			{
+				// SAFETY: macro caller promises variable is within 0..=84,
+				// which can be safetly used to index encode table (len 85)
+				let byte_ptr = unsafe { table_ptr.add($byte) };
+
+				// SAFETY: as described above, the pointer is valid to read from
+				unsafe { *byte_ptr }
+			}
+		}
+	}
+
 	// SAFETY: these are calculated by modulo TABLE_ENCODER_LEN (85), which
 	// guarantees the numbers are 0 <= n < TABLE_ENCODER_LEN (85),
 	// and the length of TABLE_ENCODER is 85, so this won't overflow
-	let encoded_frame: [u8; STRING_FRAME_LEN] = unsafe { [
-		*TABLE_ENCODER.get_unchecked(byte1),
-		*TABLE_ENCODER.get_unchecked(byte2),
-		*TABLE_ENCODER.get_unchecked(byte3),
-		*TABLE_ENCODER.get_unchecked(byte4),
-		*TABLE_ENCODER.get_unchecked(byte5),
-	] };
+	let encoded_frame = [
+		// SAFETY: all the below macro invocations pass in variables whose value
+		// is calculating by rem 85. so they will always be strictly less than 85
+		encode_byte_unsafe!(byte1),
+		encode_byte_unsafe!(byte2),
+		encode_byte_unsafe!(byte3),
+		encode_byte_unsafe!(byte4),
+		encode_byte_unsafe!(byte5),
+	];
 
-	// SAFETY: internal function. caller guarantees past dest has at least
-	// `STRING_FRAME_LEN` bytes left.
-	dest.write_bytes_const::<STRING_FRAME_LEN>(encoded_frame.as_ptr());
+	// SAFETY: caller guarantees that `dest` has at least
+	// `STRING_FRAME_LEN` bytes left, and that writing this won't overflow.
+	unsafe { dest.write_bytes_const::<STRING_FRAME_LEN>(encoded_frame.as_ptr()) }
 }
 
 /// # Safety
 ///
-/// All allowed-by-type-system inputs are valid. However, marking this function
+/// All allowed-by-type-system inputs are sound. However, marking this function
 /// `unsafe` is not only consistent with [`encode_frame`], its also just more
 /// convenient :p. This is an internal function, so doesn't matter too much.
 unsafe fn decode_frame<F>(frame: &[u8; STRING_FRAME_LEN], f: F) -> Result<(), DecodeError>
@@ -455,29 +476,37 @@ where
 	F: FnOnce(&[u8; BINARY_FRAME_LEN])
 {
 	let [byte1, byte2, byte3, byte4, byte5] = *frame;
+	let table_ptr = TABLE_DECODER.as_ptr();
 
-	// SAFETY: 0 <= n < 256 is always true for a u8, and TABLE_DECODER is len 256,
-	// so this is safe.
+	macro_rules! decode_byte_unsafe {
+		($byte:ident) => {
+			// SAFETY: caller promises that `$byte` is within range 0..=255,
+			// and the decoding table is len 256, so this will not be out of bounds
+			let ptr = unsafe { table_ptr.add($byte.into_usize()) };
+
+			// SAFETY: as established above, the ptr is within
+			// bounds and safe to dereference
+			let Some($byte) = (unsafe { *ptr }) else {
+				return Err(DecodeError::InvalidChar)
+			};
+		}
+	}
+
+	// SAFETY: the byte values provided are bytes, so will guaranteed
+	// in the range 0..=255 (as larger values are not even representable)
 	// Additionally, if this comes back as Some from TABLE_DECODER, it is guaranteed
 	// to be 0 <= n <= 84, since there are no Some(n) values outside this range.
-	let Some(byte1) = *TABLE_DECODER.get_unchecked(byte1.into_usize()) else {
-		return Err(DecodeError::InvalidChar)
-	};
-	let Some(byte2) = *TABLE_DECODER.get_unchecked(byte2.into_usize()) else {
-		return Err(DecodeError::InvalidChar)
-	};
-	let Some(byte3) = *TABLE_DECODER.get_unchecked(byte3.into_usize()) else {
-		return Err(DecodeError::InvalidChar)
-	};
-	let Some(byte4) = *TABLE_DECODER.get_unchecked(byte4.into_usize()) else {
-		return Err(DecodeError::InvalidChar)
-	};
-	let Some(byte5) = *TABLE_DECODER.get_unchecked(byte5.into_usize()) else {
-		return Err(DecodeError::InvalidChar)
-	};
+	decode_byte_unsafe!(byte1);
+	decode_byte_unsafe!(byte2);
+	decode_byte_unsafe!(byte3);
+	decode_byte_unsafe!(byte4);
+	decode_byte_unsafe!(byte5);
 
-	// this can overflow a u32 (but not u64), so we decode in a u64 first,
-	// and then we check for overflow past u32's bits and error if so
+	// A string frame containing all valid z85 chars, can still overflow u32
+	// (u32 max is 4.294.967.295, but the result of this operation can be 4.437.053.124).
+	// However it cannot overflow u64 (u64 max is 18.446.744.073.709.551.616).
+	// So we decode in a u64 first, and then we check for overflow past u32's
+	// bits and error if so
 	let mut int = byte1.into_u64();
 
 	int *= TABLE_ENCODER_LEN.into_u64();
