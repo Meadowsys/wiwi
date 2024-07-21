@@ -4,6 +4,10 @@ use super::Mul;
 pub trait MulUnchecked: Mul {
 	/// Performs unchecked multiplication
 	///
+	/// # Safety
+	///
+	/// The result of the multiplication should not overflow.
+	///
 	/// # Examples
 	///
 	/// TODO

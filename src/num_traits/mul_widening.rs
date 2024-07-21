@@ -18,6 +18,9 @@ macro_rules! impl_num_trait_mul_widening {
 		impl MulWidening for $num {
 			#[inline]
 			fn mul_widening(self, rhs: $num) -> ($num, $num) {
+				// SAFETY: we widen the numbers (eg. u64 -> u128), then multiply,
+				// so they have twice the bit space to multiply into, should the
+				// original multiplication have overflowed
 				let widened = unsafe {
 					$wide::mul_unchecked(
 						<$num as Widening<$wide>>::widen(self),

@@ -1,6 +1,6 @@
 use super::Base;
 
-pub trait CountBits {
+pub trait CountBits: Base {
 	fn count_zeros(self) -> Self;
 	fn count_ones(self) -> Self;
 	fn leading_zeros(self) -> Self;

@@ -6,12 +6,6 @@
 //! Think the [`Add`](std::ops::Add) trait, except for things like
 //! [overflowing addition](AddOverflowing) as well
 
-use std::cmp::{ Eq, Ord, PartialEq, PartialOrd };
-use std::fmt::{ Debug, Display };
-use std::hash::Hash;
-use std::iter::{ Sum, Product };
-use std::ops;
-
 crate::export_all_submodules! {
 	base
 	// this doesn't need to be a "base"
