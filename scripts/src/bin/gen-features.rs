@@ -37,7 +37,7 @@ fn main() {
 	let _features = decl_features! {
 		#[unstable]
 		"aoc"
-		"Utilities specific for writing solutions for [Advent of Code](https://adventofcode.com)"
+		"utilities specific for writing solutions for [Advent of Code](https://adventofcode.com)"
 		features: ["iter"]
 
 		"augment-panic-hook"
@@ -45,7 +45,7 @@ fn main() {
 
 		#[unstable]
 		"auth"
-		"Some lower(ish) level utilities to aid in writing an authentication system, in which the client password is never sent across the wire. Quite heavily inspired by [Tuta's authentication/encryption system](https://tuta.com/nl/encryption)"
+		"some lower(ish) level utilities to aid in writing an authentication system, in which the client password is never sent across the wire. Quite heavily inspired by [Tuta's authentication/encryption system](https://tuta.com/nl/encryption)"
 		dependencies: ["argon2", "chacha20poly1305", "chrono", "p384", "rand", "thiserror", "zeroize"]
 		features: ["rand", "z85"]
 
@@ -63,11 +63,11 @@ fn main() {
 		"command line args parser"
 
 		"clock-timer"
-		"An interval tracking clock, yielding ticks at specified intervals and doing so for a specified duration"
+		"an interval tracking clock, yielding ticks at specified intervals and doing so for a specified duration"
 		dependencies: ["chrono", "tokio"]
 
 		"debounce"
-		"Delay calling a function until a certain time period has passed since the last time it was called"
+		"delay calling a function until a certain time period has passed since the last time it was called"
 		dependencies: ["chrono", "tokio"]
 		features: ["num-traits"]
 
@@ -82,7 +82,7 @@ fn main() {
 		"h"
 
 		"hex"
-		"Fast (faster than `hex` crate[^1]) implementation of hex encoding, supporting upper hex and lower hex"
+		"fast (faster than `hex` crate[^1]) implementation of hex encoding, supporting upper hex and lower hex"
 		dependencies: ["thiserror"]
 		features: ["num-traits"]
 
@@ -103,7 +103,7 @@ fn main() {
 		"iter stuff"
 
 		"lazy-wrap"
-		"Wrapper around an initialisation function to lazily initialise a value on first access (can be used in statics)"
+		"wrapper around an initialisation function to lazily initialise a value on first access (can be used in statics)"
 		dependencies: ["parking-lot"]
 
 		#[unstable]
@@ -119,7 +119,7 @@ fn main() {
 
 		#[unstable]
 		"memory-usage"
-		"Calculate actual memory usage of Rust structs, including derive macro for custom types"
+		"calculate actual memory usage of Rust structs, including derive macro for custom types"
 		dependencies: ["macro"]
 
 		#[unstable]
@@ -141,7 +141,7 @@ fn main() {
 		"UTF-8 only path manipulation utilities written from scratch"
 
 		"rand"
-		"RNG lib, building on top of `rand`"
+		"random number generator lib, building on top of `rand`"
 		dependencies: ["rand", "rand-chacha"]
 
 		#[unstable]
@@ -155,13 +155,13 @@ fn main() {
 
 		#[unstable]
 		"string-pool"
-		"Global immutable string pool and String type"
+		"global immutable string pool and String type"
 		dependencies: ["hashbrown"]
 		features: ["lazy-wrap"]
 
 		#[unstable]
 		"sudoku"
-		"Sudoku related... stuff"
+		"sudoku related... stuff"
 		features: ["chainer", "iter", "num-traits"]
 
 		#[unstable]
@@ -173,7 +173,7 @@ fn main() {
 		"easily execute code using clones of variables in a temporary scope (see the documentation on `with_cloned!`, I'm not sure how to best summarise ><)"
 
 		"z85"
-		"A fast (faster than `z85` crate[^2]) implementation of [ZeroMQ]'s [z85] format, a format to represent binary data as printable ASCII text. Think base64, but more efficient in encoded size. This implementation is not fully to spec, as it handles padding text to the correct length where the spec says the application code must handle it instead"
+		"a fast (faster than `z85` crate[^1]) implementation of [ZeroMQ]'s [z85] format, a format to represent binary data as printable ASCII text"
 		dependencies: ["thiserror"]
 		features: ["num-traits"]
 

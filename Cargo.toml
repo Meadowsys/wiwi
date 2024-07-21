@@ -208,7 +208,9 @@ required-features = [
 harness = false
 
 [profile.bench]
-lto = "thin"
+lto = true
+codegen-units = 1
+opt-level = 3
 
 [package.metadata.docs.rs]
 # https://docs.rs/about/metadata

@@ -21,16 +21,16 @@ There exist features `all` to enable all stable features, `all-unstable` to enab
 ### Stable features
 
 - **`augment-panic-hook`** - allows you to augment the current panic hook in a convenient way, running some code on panic, but still calling the existing hook afterwards
-- **`clock-timer`** - An interval tracking clock, yielding ticks at specified intervals and doing so for a specified duration
-- **`debounce`** - Delay calling a function until a certain time period has passed since the last time it was called
+- **`clock-timer`** - an interval tracking clock, yielding ticks at specified intervals and doing so for a specified duration
+- **`debounce`** - delay calling a function until a certain time period has passed since the last time it was called
 - **`export-all-submodules`** - convenience macro for declaring many private modules, then reexporting everything within them using a glob use statement
 - **`h`** - h
-- **`hex`** - Fast (faster than `hex` crate[^1]) implementation of hex encoding, supporting upper hex and lower hex
-- **`lazy-wrap`** - Wrapper around an initialisation function to lazily initialise a value on first access (can be used in statics)
+- **`hex`** - fast (faster than `hex` crate[^1]) implementation of hex encoding, supporting upper hex and lower hex
+- **`lazy-wrap`** - wrapper around an initialisation function to lazily initialise a value on first access (can be used in statics)
 - **`nominal`** - zero cost wrapper to put data in a newtype, taking advantage of nominal typing for increased safety
-- **`rand`** - RNG lib, building on top of `rand`
+- **`rand`** - random number generator lib, building on top of `rand`
 - **`with-cloned`** - easily execute code using clones of variables in a temporary scope (see the documentation on `with_cloned!`, I'm not sure how to best summarise ><)
-- **`z85`** - A fast (faster than `z85` crate[^2]) implementation of [ZeroMQ]'s [z85] format, a format to represent binary data as printable ASCII text. Think base64, but more efficient in encoded size. This implementation is not fully to spec, as it handles padding text to the correct length where the spec says the application code must handle it instead
+- **`z85`** - a fast (faster than `z85` crate[^1]) implementation of [ZeroMQ]'s [z85] format, a format to represent binary data as printable ASCII text
 
 ### Addon features
 
@@ -46,8 +46,8 @@ There exist features `all` to enable all stable features, `all-unstable` to enab
 
 reminder: **Unstable features are NOT covered by semver!**
 
-- **`aoc`** - Utilities specific for writing solutions for [Advent of Code](https://adventofcode.com)
-- **`auth`** - Some lower(ish) level utilities to aid in writing an authentication system, in which the client password is never sent across the wire. Quite heavily inspired by [Tuta's authentication/encryption system](https://tuta.com/nl/encryption)
+- **`aoc`** - utilities specific for writing solutions for [Advent of Code](https://adventofcode.com)
+- **`auth`** - some lower(ish) level utilities to aid in writing an authentication system, in which the client password is never sent across the wire. Quite heavily inspired by [Tuta's authentication/encryption system](https://tuta.com/nl/encryption)
 - **`bitstream`** - bit stream encoder/decoder
 - **`chainer`** - zero-cost wrappers that provide chaining APIs
 - **`cli`** - command line args parser
@@ -57,14 +57,14 @@ reminder: **Unstable features are NOT covered by semver!**
 - **`iter`** - iter stuff
 - **`lsl`** - experimental lib to help with writing Second Life scripts in Rust... because yes, I got fed up with it very quickly and immediately missed Rust lol >< It is really only built for a dedicated crate just to write the script, rather than as part of another lib/app
 - **`mcu`** - [material colour utilities](https://github.com/material-foundation/material-color-utilities), ported to rust
-- **`memory-usage`** - Calculate actual memory usage of Rust structs, including derive macro for custom types
+- **`memory-usage`** - calculate actual memory usage of Rust structs, including derive macro for custom types
 - **`minesweeper`** - core logic components for minesweeper games of arbitrary size
 - **`num-traits`** - traits for number types and number functionality
 - **`path`** - UTF-8 only path manipulation utilities written from scratch
 - **`serialiser-binary`** - self describing, stable (once finished) binary serialiser, aiming for small output size by exploiting common patterns in real world data
 - **`serialiser-text`** - self describing, stable (once finished) text serialiser, aiming for human readability, and ease of writing
-- **`string-pool`** - Global immutable string pool and String type
-- **`sudoku`** - Sudoku related... stuff
+- **`string-pool`** - global immutable string pool and String type
+- **`sudoku`** - sudoku related... stuff
 - **`unicode`** - implementation of the [Unicode](https://home.unicode.org) standard, including UTF-8, UTF-16, and UTF-32 strings
 
 <!-- ----- end autogenerated region ----- -->
@@ -76,5 +76,4 @@ This package will only _officially_ support macOS and Linux. Windows support wil
 [zeromq]: https://zeromq.org
 [z85]: https://rfc.zeromq.org/spec/32
 
-[^1]: Based on the benchmark available in this repo: wiwi is about 21.5x faster in encode, and 7.5x faster in decode. I want better benchmarks though. For now the `hex` crate also provides more flexibility, whereas `wiwi::hex` just exposes `encode_hex`, `encode_upper_hex`, and `decode_hex` functions.
-[^2]: Based on the benchmark available in this repo: wiwi is about 1.4x faster in encode, and 2.2x faster in decode. I want better benchmarks though. There is no functionality that the `z85` crate provides, that we don't also provide (`encode_z85` and `decode_z85` functions).
+[^1]: There is a benchmark available in `benches/hex-and-z85.rs`. I am not publishing numbers because I'm afraid of the accuracy of it, and worried the numbers may be misleading. But, I will say `wiwi` is quite _significantly_ faster than crates `hex` and `z85`, _especially_ `hex`.
