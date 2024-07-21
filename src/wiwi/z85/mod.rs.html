@@ -566,6 +566,114 @@
 <a href="#566" id="566">566</a>
 <a href="#567" id="567">567</a>
 <a href="#568" id="568">568</a>
+<a href="#569" id="569">569</a>
+<a href="#570" id="570">570</a>
+<a href="#571" id="571">571</a>
+<a href="#572" id="572">572</a>
+<a href="#573" id="573">573</a>
+<a href="#574" id="574">574</a>
+<a href="#575" id="575">575</a>
+<a href="#576" id="576">576</a>
+<a href="#577" id="577">577</a>
+<a href="#578" id="578">578</a>
+<a href="#579" id="579">579</a>
+<a href="#580" id="580">580</a>
+<a href="#581" id="581">581</a>
+<a href="#582" id="582">582</a>
+<a href="#583" id="583">583</a>
+<a href="#584" id="584">584</a>
+<a href="#585" id="585">585</a>
+<a href="#586" id="586">586</a>
+<a href="#587" id="587">587</a>
+<a href="#588" id="588">588</a>
+<a href="#589" id="589">589</a>
+<a href="#590" id="590">590</a>
+<a href="#591" id="591">591</a>
+<a href="#592" id="592">592</a>
+<a href="#593" id="593">593</a>
+<a href="#594" id="594">594</a>
+<a href="#595" id="595">595</a>
+<a href="#596" id="596">596</a>
+<a href="#597" id="597">597</a>
+<a href="#598" id="598">598</a>
+<a href="#599" id="599">599</a>
+<a href="#600" id="600">600</a>
+<a href="#601" id="601">601</a>
+<a href="#602" id="602">602</a>
+<a href="#603" id="603">603</a>
+<a href="#604" id="604">604</a>
+<a href="#605" id="605">605</a>
+<a href="#606" id="606">606</a>
+<a href="#607" id="607">607</a>
+<a href="#608" id="608">608</a>
+<a href="#609" id="609">609</a>
+<a href="#610" id="610">610</a>
+<a href="#611" id="611">611</a>
+<a href="#612" id="612">612</a>
+<a href="#613" id="613">613</a>
+<a href="#614" id="614">614</a>
+<a href="#615" id="615">615</a>
+<a href="#616" id="616">616</a>
+<a href="#617" id="617">617</a>
+<a href="#618" id="618">618</a>
+<a href="#619" id="619">619</a>
+<a href="#620" id="620">620</a>
+<a href="#621" id="621">621</a>
+<a href="#622" id="622">622</a>
+<a href="#623" id="623">623</a>
+<a href="#624" id="624">624</a>
+<a href="#625" id="625">625</a>
+<a href="#626" id="626">626</a>
+<a href="#627" id="627">627</a>
+<a href="#628" id="628">628</a>
+<a href="#629" id="629">629</a>
+<a href="#630" id="630">630</a>
+<a href="#631" id="631">631</a>
+<a href="#632" id="632">632</a>
+<a href="#633" id="633">633</a>
+<a href="#634" id="634">634</a>
+<a href="#635" id="635">635</a>
+<a href="#636" id="636">636</a>
+<a href="#637" id="637">637</a>
+<a href="#638" id="638">638</a>
+<a href="#639" id="639">639</a>
+<a href="#640" id="640">640</a>
+<a href="#641" id="641">641</a>
+<a href="#642" id="642">642</a>
+<a href="#643" id="643">643</a>
+<a href="#644" id="644">644</a>
+<a href="#645" id="645">645</a>
+<a href="#646" id="646">646</a>
+<a href="#647" id="647">647</a>
+<a href="#648" id="648">648</a>
+<a href="#649" id="649">649</a>
+<a href="#650" id="650">650</a>
+<a href="#651" id="651">651</a>
+<a href="#652" id="652">652</a>
+<a href="#653" id="653">653</a>
+<a href="#654" id="654">654</a>
+<a href="#655" id="655">655</a>
+<a href="#656" id="656">656</a>
+<a href="#657" id="657">657</a>
+<a href="#658" id="658">658</a>
+<a href="#659" id="659">659</a>
+<a href="#660" id="660">660</a>
+<a href="#661" id="661">661</a>
+<a href="#662" id="662">662</a>
+<a href="#663" id="663">663</a>
+<a href="#664" id="664">664</a>
+<a href="#665" id="665">665</a>
+<a href="#666" id="666">666</a>
+<a href="#667" id="667">667</a>
+<a href="#668" id="668">668</a>
+<a href="#669" id="669">669</a>
+<a href="#670" id="670">670</a>
+<a href="#671" id="671">671</a>
+<a href="#672" id="672">672</a>
+<a href="#673" id="673">673</a>
+<a href="#674" id="674">674</a>
+<a href="#675" id="675">675</a>
+<a href="#676" id="676">676</a>
 </pre></div><pre class="rust"><code><span class="doccomment">//! Fast and efficient implementation of Z85
 //!
 //! Includes nonstandard padding. The Z85 spec explicitly says that the application
@@ -593,40 +701,46 @@
 <span class="doccomment">/// Length of the encoding table (ie. number of different characters)
 </span><span class="kw">pub const </span>TABLE_ENCODER_LEN: usize = <span class="number">85</span>;
 <span class="doccomment">/// Table to map a number 0-84 to a Z85 character.
-</span><span class="kw">pub const </span>TABLE_ENCODER: [u8; TABLE_ENCODER_LEN] = <span class="kw-2">*</span><span class="string">b"0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ.-:+=^!/*?&amp;&lt;&gt;()[]{}@%$#"</span>;
-<span class="comment">//                                                    0123456789          0123456789          0123456789          0123456789          01234
-//                                                              0123456789          0123456789          0123456789          0123456789
-//                                                    0         10        20        30        40        50        60        70        80
+</span><span class="kw">pub static </span>TABLE_ENCODER: [u8; TABLE_ENCODER_LEN] = <span class="kw-2">*</span><span class="string">b"0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ.-:+=^!/*?&amp;&lt;&gt;()[]{}@%$#"</span>;
+<span class="comment">//                                                     0123456789          0123456789          0123456789          0123456789          01234
+//                                                               0123456789          0123456789          0123456789          0123456789
+//                                                     0         10        20        30        40        50        60        70        80
 
 </span><span class="doccomment">/// Length of the decoding table
 </span><span class="kw">pub const </span>TABLE_DECODER_LEN: usize = <span class="number">256</span>;
 
 <span class="doccomment">/// Table to map any byte to Option of a number 0-84.
 </span><span class="comment">// generated by script `generate-z85-table-decoder`
-</span><span class="kw">pub const </span>TABLE_DECODER: [<span class="prelude-ty">Option</span>&lt;u8&gt;; TABLE_DECODER_LEN] = [
-	<span class="prelude-val">None</span>,       <span class="prelude-val">None</span>,       <span class="prelude-val">None</span>,       <span class="prelude-val">None</span>,       <span class="prelude-val">None</span>,       <span class="prelude-val">None</span>,       <span class="prelude-val">None</span>,       <span class="prelude-val">None</span>,       <span class="prelude-val">None</span>,       <span class="prelude-val">None</span>,       <span class="prelude-val">None</span>,       <span class="prelude-val">None</span>,       <span class="prelude-val">None</span>,       <span class="prelude-val">None</span>,       <span class="prelude-val">None</span>,       <span class="prelude-val">None</span>,
-	<span class="prelude-val">None</span>,       <span class="prelude-val">None</span>,       <span class="prelude-val">None</span>,       <span class="prelude-val">None</span>,       <span class="prelude-val">None</span>,       <span class="prelude-val">None</span>,       <span class="prelude-val">None</span>,       <span class="prelude-val">None</span>,       <span class="prelude-val">None</span>,       <span class="prelude-val">None</span>,       <span class="prelude-val">None</span>,       <span class="prelude-val">None</span>,       <span class="prelude-val">None</span>,       <span class="prelude-val">None</span>,       <span class="prelude-val">None</span>,       <span class="prelude-val">None</span>,
-	<span class="prelude-val">None</span>,       <span class="prelude-val">Some</span>(<span class="number">0x44</span>), <span class="prelude-val">None</span>,       <span class="prelude-val">Some</span>(<span class="number">0x54</span>), <span class="prelude-val">Some</span>(<span class="number">0x53</span>), <span class="prelude-val">Some</span>(<span class="number">0x52</span>), <span class="prelude-val">Some</span>(<span class="number">0x48</span>), <span class="prelude-val">None</span>,       <span class="prelude-val">Some</span>(<span class="number">0x4b</span>), <span class="prelude-val">Some</span>(<span class="number">0x4c</span>), <span class="prelude-val">Some</span>(<span class="number">0x46</span>), <span class="prelude-val">Some</span>(<span class="number">0x41</span>), <span class="prelude-val">None</span>,       <span class="prelude-val">Some</span>(<span class="number">0x3f</span>), <span class="prelude-val">Some</span>(<span class="number">0x3e</span>), <span class="prelude-val">Some</span>(<span class="number">0x45</span>),
-	<span class="prelude-val">Some</span>(<span class="number">0x00</span>), <span class="prelude-val">Some</span>(<span class="number">0x01</span>), <span class="prelude-val">Some</span>(<span class="number">0x02</span>), <span class="prelude-val">Some</span>(<span class="number">0x03</span>), <span class="prelude-val">Some</span>(<span class="number">0x04</span>), <span class="prelude-val">Some</span>(<span class="number">0x05</span>), <span class="prelude-val">Some</span>(<span class="number">0x06</span>), <span class="prelude-val">Some</span>(<span class="number">0x07</span>), <span class="prelude-val">Some</span>(<span class="number">0x08</span>), <span class="prelude-val">Some</span>(<span class="number">0x09</span>), <span class="prelude-val">Some</span>(<span class="number">0x40</span>), <span class="prelude-val">None</span>,       <span class="prelude-val">Some</span>(<span class="number">0x49</span>), <span class="prelude-val">Some</span>(<span class="number">0x42</span>), <span class="prelude-val">Some</span>(<span class="number">0x4a</span>), <span class="prelude-val">Some</span>(<span class="number">0x47</span>),
-	<span class="prelude-val">Some</span>(<span class="number">0x51</span>), <span class="prelude-val">Some</span>(<span class="number">0x24</span>), <span class="prelude-val">Some</span>(<span class="number">0x25</span>), <span class="prelude-val">Some</span>(<span class="number">0x26</span>), <span class="prelude-val">Some</span>(<span class="number">0x27</span>), <span class="prelude-val">Some</span>(<span class="number">0x28</span>), <span class="prelude-val">Some</span>(<span class="number">0x29</span>), <span class="prelude-val">Some</span>(<span class="number">0x2a</span>), <span class="prelude-val">Some</span>(<span class="number">0x2b</span>), <span class="prelude-val">Some</span>(<span class="number">0x2c</span>), <span class="prelude-val">Some</span>(<span class="number">0x2d</span>), <span class="prelude-val">Some</span>(<span class="number">0x2e</span>), <span class="prelude-val">Some</span>(<span class="number">0x2f</span>), <span class="prelude-val">Some</span>(<span class="number">0x30</span>), <span class="prelude-val">Some</span>(<span class="number">0x31</span>), <span class="prelude-val">Some</span>(<span class="number">0x32</span>),
-	<span class="prelude-val">Some</span>(<span class="number">0x33</span>), <span class="prelude-val">Some</span>(<span class="number">0x34</span>), <span class="prelude-val">Some</span>(<span class="number">0x35</span>), <span class="prelude-val">Some</span>(<span class="number">0x36</span>), <span class="prelude-val">Some</span>(<span class="number">0x37</span>), <span class="prelude-val">Some</span>(<span class="number">0x38</span>), <span class="prelude-val">Some</span>(<span class="number">0x39</span>), <span class="prelude-val">Some</span>(<span class="number">0x3a</span>), <span class="prelude-val">Some</span>(<span class="number">0x3b</span>), <span class="prelude-val">Some</span>(<span class="number">0x3c</span>), <span class="prelude-val">Some</span>(<span class="number">0x3d</span>), <span class="prelude-val">Some</span>(<span class="number">0x4d</span>), <span class="prelude-val">None</span>,       <span class="prelude-val">Some</span>(<span class="number">0x4e</span>), <span class="prelude-val">Some</span>(<span class="number">0x43</span>), <span class="prelude-val">None</span>,
-	<span class="prelude-val">None</span>,       <span class="prelude-val">Some</span>(<span class="number">0x0a</span>), <span class="prelude-val">Some</span>(<span class="number">0x0b</span>), <span class="prelude-val">Some</span>(<span class="number">0x0c</span>), <span class="prelude-val">Some</span>(<span class="number">0x0d</span>), <span class="prelude-val">Some</span>(<span class="number">0x0e</span>), <span class="prelude-val">Some</span>(<span class="number">0x0f</span>), <span class="prelude-val">Some</span>(<span class="number">0x10</span>), <span class="prelude-val">Some</span>(<span class="number">0x11</span>), <span class="prelude-val">Some</span>(<span class="number">0x12</span>), <span class="prelude-val">Some</span>(<span class="number">0x13</span>), <span class="prelude-val">Some</span>(<span class="number">0x14</span>), <span class="prelude-val">Some</span>(<span class="number">0x15</span>), <span class="prelude-val">Some</span>(<span class="number">0x16</span>), <span class="prelude-val">Some</span>(<span class="number">0x17</span>), <span class="prelude-val">Some</span>(<span class="number">0x18</span>),
-	<span class="prelude-val">Some</span>(<span class="number">0x19</span>), <span class="prelude-val">Some</span>(<span class="number">0x1a</span>), <span class="prelude-val">Some</span>(<span class="number">0x1b</span>), <span class="prelude-val">Some</span>(<span class="number">0x1c</span>), <span class="prelude-val">Some</span>(<span class="number">0x1d</span>), <span class="prelude-val">Some</span>(<span class="number">0x1e</span>), <span class="prelude-val">Some</span>(<span class="number">0x1f</span>), <span class="prelude-val">Some</span>(<span class="number">0x20</span>), <span class="prelude-val">Some</span>(<span class="number">0x21</span>), <span class="prelude-val">Some</span>(<span class="number">0x22</span>), <span class="prelude-val">Some</span>(<span class="number">0x23</span>), <span class="prelude-val">Some</span>(<span class="number">0x4f</span>), <span class="prelude-val">None</span>,       <span class="prelude-val">Some</span>(<span class="number">0x50</span>), <span class="prelude-val">None</span>,       <span class="prelude-val">None</span>,
-	<span class="prelude-val">None</span>,       <span class="prelude-val">None</span>,       <span class="prelude-val">None</span>,       <span class="prelude-val">None</span>,       <span class="prelude-val">None</span>,       <span class="prelude-val">None</span>,       <span class="prelude-val">None</span>,       <span class="prelude-val">None</span>,       <span class="prelude-val">None</span>,       <span class="prelude-val">None</span>,       <span class="prelude-val">None</span>,       <span class="prelude-val">None</span>,       <span class="prelude-val">None</span>,       <span class="prelude-val">None</span>,       <span class="prelude-val">None</span>,       <span class="prelude-val">None</span>,
-	<span class="prelude-val">None</span>,       <span class="prelude-val">None</span>,       <span class="prelude-val">None</span>,       <span class="prelude-val">None</span>,       <span class="prelude-val">None</span>,       <span class="prelude-val">None</span>,       <span class="prelude-val">None</span>,       <span class="prelude-val">None</span>,       <span class="prelude-val">None</span>,       <span class="prelude-val">None</span>,       <span class="prelude-val">None</span>,       <span class="prelude-val">None</span>,       <span class="prelude-val">None</span>,       <span class="prelude-val">None</span>,       <span class="prelude-val">None</span>,       <span class="prelude-val">None</span>,
-	<span class="prelude-val">None</span>,       <span class="prelude-val">None</span>,       <span class="prelude-val">None</span>,       <span class="prelude-val">None</span>,       <span class="prelude-val">None</span>,       <span class="prelude-val">None</span>,       <span class="prelude-val">None</span>,       <span class="prelude-val">None</span>,       <span class="prelude-val">None</span>,       <span class="prelude-val">None</span>,       <span class="prelude-val">None</span>,       <span class="prelude-val">None</span>,       <span class="prelude-val">None</span>,       <span class="prelude-val">None</span>,       <span class="prelude-val">None</span>,       <span class="prelude-val">None</span>,
-	<span class="prelude-val">None</span>,       <span class="prelude-val">None</span>,       <span class="prelude-val">None</span>,       <span class="prelude-val">None</span>,       <span class="prelude-val">None</span>,       <span class="prelude-val">None</span>,       <span class="prelude-val">None</span>,       <span class="prelude-val">None</span>,       <span class="prelude-val">None</span>,       <span class="prelude-val">None</span>,       <span class="prelude-val">None</span>,       <span class="prelude-val">None</span>,       <span class="prelude-val">None</span>,       <span class="prelude-val">None</span>,       <span class="prelude-val">None</span>,       <span class="prelude-val">None</span>,
-	<span class="prelude-val">None</span>,       <span class="prelude-val">None</span>,       <span class="prelude-val">None</span>,       <span class="prelude-val">None</span>,       <span class="prelude-val">None</span>,       <span class="prelude-val">None</span>,       <span class="prelude-val">None</span>,       <span class="prelude-val">None</span>,       <span class="prelude-val">None</span>,       <span class="prelude-val">None</span>,       <span class="prelude-val">None</span>,       <span class="prelude-val">None</span>,       <span class="prelude-val">None</span>,       <span class="prelude-val">None</span>,       <span class="prelude-val">None</span>,       <span class="prelude-val">None</span>,
-	<span class="prelude-val">None</span>,       <span class="prelude-val">None</span>,       <span class="prelude-val">None</span>,       <span class="prelude-val">None</span>,       <span class="prelude-val">None</span>,       <span class="prelude-val">None</span>,       <span class="prelude-val">None</span>,       <span class="prelude-val">None</span>,       <span class="prelude-val">None</span>,       <span class="prelude-val">None</span>,       <span class="prelude-val">None</span>,       <span class="prelude-val">None</span>,       <span class="prelude-val">None</span>,       <span class="prelude-val">None</span>,       <span class="prelude-val">None</span>,       <span class="prelude-val">None</span>,
-	<span class="prelude-val">None</span>,       <span class="prelude-val">None</span>,       <span class="prelude-val">None</span>,       <span class="prelude-val">None</span>,       <span class="prelude-val">None</span>,       <span class="prelude-val">None</span>,       <span class="prelude-val">None</span>,       <span class="prelude-val">None</span>,       <span class="prelude-val">None</span>,       <span class="prelude-val">None</span>,       <span class="prelude-val">None</span>,       <span class="prelude-val">None</span>,       <span class="prelude-val">None</span>,       <span class="prelude-val">None</span>,       <span class="prelude-val">None</span>,       <span class="prelude-val">None</span>,
-	<span class="prelude-val">None</span>,       <span class="prelude-val">None</span>,       <span class="prelude-val">None</span>,       <span class="prelude-val">None</span>,       <span class="prelude-val">None</span>,       <span class="prelude-val">None</span>,       <span class="prelude-val">None</span>,       <span class="prelude-val">None</span>,       <span class="prelude-val">None</span>,       <span class="prelude-val">None</span>,       <span class="prelude-val">None</span>,       <span class="prelude-val">None</span>,       <span class="prelude-val">None</span>,       <span class="prelude-val">None</span>,       <span class="prelude-val">None</span>,       <span class="prelude-val">None
-</span>];
+// TODO: this can be size-optimised. Instead of Option, have u8::MAX
+// represent None. Should not have performance impact I think
+</span><span class="kw">pub static </span>TABLE_DECODER: [u8; <span class="number">256</span>] = [
+	NONE, NONE, NONE, NONE, NONE, NONE, NONE, NONE, NONE, NONE, NONE, NONE, NONE, NONE, NONE, NONE,
+	NONE, NONE, NONE, NONE, NONE, NONE, NONE, NONE, NONE, NONE, NONE, NONE, NONE, NONE, NONE, NONE,
 
-<span class="doccomment">/// One frame of this many bytes (4) from the binary data maps to one frame of
-/// [`STRING_FRAME_LEN`] bytes in encoded Z85 output.
+	NONE, <span class="number">0x44</span>, NONE, <span class="number">0x54</span>, <span class="number">0x53</span>, <span class="number">0x52</span>, <span class="number">0x48</span>, NONE, <span class="number">0x4b</span>, <span class="number">0x4c</span>, <span class="number">0x46</span>, <span class="number">0x41</span>, NONE, <span class="number">0x3f</span>, <span class="number">0x3e</span>, <span class="number">0x45</span>,
+	<span class="number">0x00</span>, <span class="number">0x01</span>, <span class="number">0x02</span>, <span class="number">0x03</span>, <span class="number">0x04</span>, <span class="number">0x05</span>, <span class="number">0x06</span>, <span class="number">0x07</span>, <span class="number">0x08</span>, <span class="number">0x09</span>, <span class="number">0x40</span>, NONE, <span class="number">0x49</span>, <span class="number">0x42</span>, <span class="number">0x4a</span>, <span class="number">0x47</span>,
+	<span class="number">0x51</span>, <span class="number">0x24</span>, <span class="number">0x25</span>, <span class="number">0x26</span>, <span class="number">0x27</span>, <span class="number">0x28</span>, <span class="number">0x29</span>, <span class="number">0x2a</span>, <span class="number">0x2b</span>, <span class="number">0x2c</span>, <span class="number">0x2d</span>, <span class="number">0x2e</span>, <span class="number">0x2f</span>, <span class="number">0x30</span>, <span class="number">0x31</span>, <span class="number">0x32</span>,
+	<span class="number">0x33</span>, <span class="number">0x34</span>, <span class="number">0x35</span>, <span class="number">0x36</span>, <span class="number">0x37</span>, <span class="number">0x38</span>, <span class="number">0x39</span>, <span class="number">0x3a</span>, <span class="number">0x3b</span>, <span class="number">0x3c</span>, <span class="number">0x3d</span>, <span class="number">0x4d</span>, NONE, <span class="number">0x4e</span>, <span class="number">0x43</span>, NONE,
+	NONE, <span class="number">0x0a</span>, <span class="number">0x0b</span>, <span class="number">0x0c</span>, <span class="number">0x0d</span>, <span class="number">0x0e</span>, <span class="number">0x0f</span>, <span class="number">0x10</span>, <span class="number">0x11</span>, <span class="number">0x12</span>, <span class="number">0x13</span>, <span class="number">0x14</span>, <span class="number">0x15</span>, <span class="number">0x16</span>, <span class="number">0x17</span>, <span class="number">0x18</span>,
+	<span class="number">0x19</span>, <span class="number">0x1a</span>, <span class="number">0x1b</span>, <span class="number">0x1c</span>, <span class="number">0x1d</span>, <span class="number">0x1e</span>, <span class="number">0x1f</span>, <span class="number">0x20</span>, <span class="number">0x21</span>, <span class="number">0x22</span>, <span class="number">0x23</span>, <span class="number">0x4f</span>, NONE, <span class="number">0x50</span>, NONE, NONE,
+
+	NONE, NONE, NONE, NONE, NONE, NONE, NONE, NONE, NONE, NONE, NONE, NONE, NONE, NONE, NONE, NONE,
+	NONE, NONE, NONE, NONE, NONE, NONE, NONE, NONE, NONE, NONE, NONE, NONE, NONE, NONE, NONE, NONE,
+	NONE, NONE, NONE, NONE, NONE, NONE, NONE, NONE, NONE, NONE, NONE, NONE, NONE, NONE, NONE, NONE,
+	NONE, NONE, NONE, NONE, NONE, NONE, NONE, NONE, NONE, NONE, NONE, NONE, NONE, NONE, NONE, NONE,
+	NONE, NONE, NONE, NONE, NONE, NONE, NONE, NONE, NONE, NONE, NONE, NONE, NONE, NONE, NONE, NONE,
+	NONE, NONE, NONE, NONE, NONE, NONE, NONE, NONE, NONE, NONE, NONE, NONE, NONE, NONE, NONE, NONE,
+	NONE, NONE, NONE, NONE, NONE, NONE, NONE, NONE, NONE, NONE, NONE, NONE, NONE, NONE, NONE, NONE,
+	NONE, NONE, NONE, NONE, NONE, NONE, NONE, NONE, NONE, NONE, NONE, NONE, NONE, NONE, NONE, NONE
+];
+<span class="kw">const </span>NONE: u8 = <span class="number">0xff</span>;
+
+<span class="doccomment">/// One frame of this many bytes (4) from the binary data encodes to
+/// one frame of 5 ([`STRING_FRAME_LEN`]) bytes of encoded Z85 output
 </span><span class="kw">pub const </span>BINARY_FRAME_LEN: usize = <span class="number">4</span>;
-<span class="doccomment">/// One frame of this many bytes (5) from the encoded Z85 data maps to one frame
-/// of [`BINARY_FRAME_LEN`] bytes (4) in binary data.
+
+<span class="doccomment">/// One frame of this many bytes (5) from the encoded Z85 data decodes
+/// to one frame of 4 ([`BINARY_FRAME_LEN`]) bytes of binary data.
 </span><span class="kw">pub const </span>STRING_FRAME_LEN: usize = <span class="number">5</span>;
 
 <span class="doccomment">/// Encodes a slice of bytes into a Z85 string, adding padding if necessary
@@ -637,54 +751,76 @@
 	</span><span class="kw">let </span>EncodedReprInfo {
 		frames,
 		remainder,
-		needed_capacity: capacity
+		needed_capacity
 	} = EncodedReprInfo::for_input_len(bytes.len());
 
 	<span class="kw">let </span><span class="kw-2">mut </span>frames_iter = ChunkedSlice::&lt;BINARY_FRAME_LEN&gt;::new(bytes);
-	<span class="kw">let </span><span class="kw-2">mut </span>dest = UnsafeBufWriteGuard::with_capacity(capacity);
 
-	<span class="kw">for _ in </span><span class="number">0</span>..frames {
-		<span class="comment">// SAFETY: the loop will loop `frames` times, each time taking out a frame's worth
-		// of bytes (`next_frame_unchecked`). this will consume all the bytes except
-		// amount stored in remainder. We also preallocated enough memory up front,
-		// so passing in &amp;mut dest is fine.
-		</span><span class="kw">unsafe </span>{
-			<span class="kw">let </span>frame = frames_iter.next_frame_unchecked();
-			encode_frame(frame, <span class="kw-2">&amp;mut </span>dest);
-		}
+	<span class="comment">// here we allocate enough capacity (calculated by `EncodedReprInfo`)
+	</span><span class="kw">let </span><span class="kw-2">mut </span>dest = UnsafeBufWriteGuard::with_capacity(needed_capacity);
+
+	<span class="comment">// this is the loop that encodes and writes all the chunks to output buffer
+	</span><span class="kw">for _ in </span><span class="number">0</span>..frames {
+		<span class="comment">// SAFETY: we loop `frames` times, which is calculated correctly
+		// by `EncodedReprInfo` (see its safety notes)
+		</span><span class="kw">let </span>frame = <span class="kw">unsafe </span>{ frames_iter.next_frame_unchecked() };
+
+		<span class="comment">// SAFETY: same as above, we will have enough bytes to write to,
+		// calculated by `EncodedReprInfo`
+		</span><span class="kw">unsafe </span>{ encode_frame(frame, <span class="kw-2">&amp;mut </span>dest) }
 	}
 
-	<span class="kw">if </span>remainder &gt; <span class="number">0 </span>{
-		<span class="kw">unsafe </span>{
-			<span class="comment">// SAFETY: this will only run if there is any remainder, which is correct.
-			// `remainder` contains a frame with static len 4 (as required by
-			// encode_frame too). We preallocated enough memory up front, so &amp;mut dest
-			// is good to use.
-			</span>frames_iter.with_remainder_unchecked(|remainder| {
-				encode_frame(remainder, <span class="kw-2">&amp;mut </span>dest);
-			});
+	<span class="comment">// this is where the remainder, if any, is encoded and stored
+	</span><span class="kw">if </span>remainder &gt; <span class="number">0 </span>{
+		{
+			<span class="comment">// Refactoring out the inner closure is to avoid an edge case in lints
+			// https://github.com/rust-lang/rust-clippy/issues/13134
+			</span><span class="kw">let </span>do_thing = |remainder: <span class="kw-2">&amp;</span><span class="kw">_</span>| {
+				<span class="comment">// SAFETY: we calculated and preallocated the correct amount up front.
+				// This closure is called only once, just after this declaration. I (vt)
+				// have been extra cautious and put it in its own scope lol
+				</span><span class="kw">unsafe </span>{ encode_frame(remainder, <span class="kw-2">&amp;mut </span>dest) }
+			};
 
-			<span class="comment">// amount of bytes that are padding (ie. doens't contain data)
-			</span><span class="kw">let </span>padding_len = BINARY_FRAME_LEN - remainder;
-
-			<span class="comment">// SAFETY: 0 &lt; padding_len &lt; 4 will always be true, because of calculation
-			// of remainder (bytes.len() % 4 will always be 0 &lt;= n &lt;= 3) which
-			// fits in TABLE_ENCODER_LEN (which is 85).
-			</span><span class="kw">let </span>padding_char = <span class="kw-2">*</span>TABLE_ENCODER.get_unchecked(padding_len);
-
-			<span class="comment">// SAFETY: we would have preallocated this one extra byte if remainder
-			// were needed.
-			</span>dest.write_bytes_const::&lt;<span class="number">1</span>&gt;(<span class="kw-2">&amp;</span>padding_char);
+			<span class="comment">// SAFETY: this will only run if there is any remainder (guarded by if statement)
+			// All the full frames have been consumed by the previous loop, so if we do have
+			// any remainder, it will be strictly under 4
+			// This triggers, even with unsafe block on `encode_frame`, and additionally
+			// the lint for unnecessary unsafe block triggers too. I think nested unsafe
+			// is edge case that the authors of this lint have not thought about, hmm...
+			</span><span class="kw">unsafe </span>{ frames_iter.with_remainder_unchecked(do_thing) }
 		}
+
+		<span class="comment">// remainder is amount of non padding bytes in the frame
+		</span><span class="kw">let </span>padding_len = <span class="number">4 </span>- remainder;
+
+		<span class="comment">// SAFETY: remainder will always be 1, 2, or 3 (both strictly less than 4
+		// as guaranteed by `EncodedReprInfo`, and greater than 0, by if condition),
+		// so the result of the subtraction above, will always be 3, 2, or 1, which
+		// is less than 85, so this will always be in bounds
+		</span><span class="kw">let </span>ptr = <span class="kw">unsafe </span>{ TABLE_ENCODER.as_ptr().add(padding_len) };
+
+		<span class="comment">// SAFETY: ptr is in bounds and valid (see above)
+		</span><span class="kw">let </span>padding_char = <span class="kw">unsafe </span>{ <span class="kw-2">*</span>ptr };
+
+		<span class="comment">// SAFETY: we calculated and preallocated the right amount, which if we
+		// are here, would be because we needed to encode remainder, and allocation
+		// calculation will have taken that into account would include this extra
+		// byte that is needed
+		</span><span class="kw">unsafe </span>{ dest.write_bytes_const::&lt;<span class="number">1</span>&gt;(<span class="kw-2">&amp;</span>padding_char) }
 	}
 
-	<span class="comment">// SAFETY: we preallocated an amount of memory up front, and written enough
-	// bytes already. this will always be safe
+	<span class="comment">// SAFETY: we calculated and requested the exact amount of memory we need,
+	// and have written to all of it in the loop and if statement above
 	</span><span class="kw">let </span>vec = <span class="kw">unsafe </span>{ dest.into_full_vec() };
 
-	<span class="comment">// SAFETY: we only are pushing in chars in the table, which are all valid ASCII.
-	</span><span class="macro">debug_assert!</span>(str::from_utf8(<span class="kw-2">&amp;</span>vec).is_ok(), <span class="string">"output bytes are valid utf-8"</span>);
-	<span class="kw">unsafe </span>{ String::from_utf8_unchecked(vec) }
+	<span class="comment">// SAFETY: throughout the encoding process, we only pushed characters from the
+	// encoding table, all of which are ASCII chars. If a string is valid ASCII,
+	// it is also valid UTF-8
+	</span><span class="kw">unsafe </span>{
+		<span class="macro">debug_assert!</span>(str::from_utf8(<span class="kw-2">&amp;</span>vec).is_ok(), <span class="string">"output bytes are valid utf-8"</span>);
+		String::from_utf8_unchecked(vec)
+	}
 }
 
 <span class="doccomment">/// Decodes a slice of a Z85 string back into the source bytes
@@ -715,46 +851,76 @@
 	</span><span class="kw">let </span>capacity = frames &lt;&lt; <span class="number">2</span>;
 
 	<span class="comment">// Match statement to check remainder for that extra padding encoding byte.
+	// Either, there is 1 trailing byte, that is stritly less than 4, that
+	// encodes the amount of padding added. Or, it's a different character that
+	// doesn't decode to 0..=3 or none at all (in which case, we exit early)
 	</span><span class="kw">let </span>(capacity, added_padding) = <span class="kw">match </span>remainder {
 		<span class="number">0 </span>=&gt; {
 			<span class="comment">// no padding was added
 			</span>(capacity, <span class="number">0usize</span>)
 		}
 		<span class="number">1 </span>=&gt; {
-			<span class="comment">// the singular padding byte (there will never be more than this, handled
-			// by below match case, returning error)
-			</span><span class="kw">let </span>added_padding = <span class="kw">unsafe </span>{
-				<span class="comment">// SAFETY: remainder is 1, so there will be at least 1 byte in the
-				// slice, because duh (well technically there will be at least 6
-				// bytes but at least 1 still holds). so this will not underflow
-				</span><span class="kw">let </span>one_shorter = bytes.len() - <span class="number">1</span>;
+			<span class="comment">// the singular trailing byte that encodes how much padding was added
 
-				<span class="kw">let </span>ptr = bytes.as_ptr();
-				<span class="comment">// this will be last byte in slice
-				</span><span class="kw">let </span>byte = <span class="kw-2">*</span>(ptr.add(one_shorter));
+			// remainder is 1, so there will be at least 1 byte in the
+			// slice, because duh (well technically there will be at least 6
+			// bytes as established earlier, but I can still safetly subtract 1).
+			// This will never overflow
+			// TODO: could be unchecked sub?
+			</span><span class="kw">let </span>one_shorter = bytes.len() - <span class="number">1</span>;
 
-				<span class="comment">// SAFETY: `one_shorter` is bytes.len() - 1, which as explained
-				// above is safe, so this will be too.
-				</span>bytes = slice::from_raw_parts(ptr, one_shorter);
+			<span class="comment">// le ptr to the input slice
+			</span><span class="kw">let </span>ptr = bytes.as_ptr();
 
-				<span class="comment">// SAFETY: 0 &lt;= n &lt; 256 is always true for a u8, and TABLE_DECODER is len 256,
-				// so this is safe
-				</span><span class="kw">let </span>decoded = <span class="kw-2">*</span>TABLE_DECODER.get_unchecked(byte.into_usize());
+			<span class="kw">let </span>byte = {
+				<span class="comment">// SAFETY: this points at the last byte, it is in bounds
+				</span><span class="kw">let </span>last_byte_ptr = <span class="kw">unsafe </span>{ ptr.add(one_shorter) };
 
-				<span class="kw">match </span>decoded.map(IntoUsizeLossless::into_usize) {
-					<span class="comment">// having that last byte as a 0 is not something we generate,
-					// as its just a waste of a perfectly good byte, but it doesn't
-					// break this system (added a unit test for it to make sure).
-					</span><span class="prelude-val">Some</span>(val) <span class="kw">if </span>val &lt; BINARY_FRAME_LEN =&gt; { val }
-					<span class="prelude-val">Some</span>(<span class="kw">_</span>) | <span class="prelude-val">None </span>=&gt; { <span class="kw">return </span><span class="prelude-val">Err</span>(DecodeError::InvalidChar) }
-				}
+				<span class="comment">// SAFETY: since the ptr is in bounds and points
+				// at last byte, it is safe to dereference
+				</span><span class="kw">unsafe </span>{ <span class="kw-2">*</span>last_byte_ptr }
 			};
 
-			<span class="comment">// if added_padding is 0, this returns
-			// the same values as the above.
+			<span class="comment">// SAFETY:
+			// - `ptr` points at the start of the input slice
+			// - it's established above that subtracting by 1
+			//   will not overflow, if we got into this match branch
+			// - `one_shorter` is one less than the len of the input slice
+			//    (which cannot won't overflow)
+			// this is just taking a subslice of the all the bytes except the last
+			</span>bytes = <span class="kw">unsafe </span>{ slice::from_raw_parts(ptr, one_shorter) };
+
+			<span class="kw">let </span>decoded = {
+				<span class="comment">// SAFETY: `byte` is of type u8, it's range is 0..=255, which will
+				// not overflow TABLE_DECODER, which is len 256
+				</span><span class="kw">let </span>table_ptr = <span class="kw">unsafe </span>{ TABLE_DECODER.as_ptr().add(byte.into_usize()) };
+
+				<span class="comment">// SAFETY: as established above, pointer above will not
+				// index past end of TABLE_DECODER
+				</span><span class="kw">unsafe </span>{ <span class="kw-2">*</span>table_ptr }
+			};
+
+			<span class="kw">let </span>decoded = decoded.into_usize();
+			<span class="kw">let </span>added_padding = <span class="kw">if </span>decoded &lt; BINARY_FRAME_LEN {
+				decoded
+			} <span class="kw">else </span>{
+				<span class="comment">// invalid char in this context (too large / does not exist)
+				// does not exist is 255 so it won't pass above check either
+				</span><span class="kw">return </span><span class="prelude-val">Err</span>(DecodeError::InvalidChar)
+			};
+
+			<span class="comment">// We established that if we got here, we need to decode at least 1
+			// full frame. `added_padding` is lte 3, which is less than the
+			// size of 1 full binary frame (4), so this won't overflow. If
+			// added_padding is 0 for some reason, this returns the same values
+			// as the 0 case (checked in unit test below)
+			// TODO: this can be unchecked sub
 			</span>(capacity - added_padding, added_padding)
 		}
-		_n =&gt; { <span class="kw">return </span><span class="prelude-val">Err</span>(DecodeError::InvalidLength) }
+		_n =&gt; {
+			<span class="comment">// 2 or 3 extra bytes at end of input, not valid in any scenario
+			</span><span class="kw">return </span><span class="prelude-val">Err</span>(DecodeError::InvalidLength)
+		}
 	};
 
 	<span class="comment">// because frames &gt;= 1, `excluding_last_frame` will be &gt;= 0 (ie. will not underflow).
@@ -763,40 +929,62 @@
 	<span class="kw">let </span><span class="kw-2">mut </span>frames_iter = ChunkedSlice::&lt;STRING_FRAME_LEN&gt;::new(bytes);
 	<span class="kw">let </span><span class="kw-2">mut </span>dest = UnsafeBufWriteGuard::with_capacity(capacity);
 
-	<span class="kw">for _ in </span><span class="number">0</span>..excluding_last_frame {
-		<span class="kw">unsafe </span>{
-			<span class="comment">// SAFETY: this loop loops `excluding_last_frame` times, ie. loops through
-			// every frame except the last. We've also preallocated enough capacity
-			// for the bytes we will write
-			</span><span class="kw">let </span>frame = frames_iter.next_frame_unchecked();
-			decode_frame(frame, |frame| dest.write_bytes_const::&lt;BINARY_FRAME_LEN&gt;(frame.as_ptr()))<span class="question-mark">?</span>;
-		}
+	<span class="comment">// this loop goes over and decodees all the string chunks to output buffer
+	</span><span class="kw">for _ in </span><span class="number">0</span>..excluding_last_frame {
+		<span class="comment">// SAFETY: this loop loops `excluding_last_frame` times, which is the
+		// amount of times it takes to loop through all the full chunks, except
+		// the last one
+		</span><span class="kw">let </span>frame = <span class="kw">unsafe </span>{ frames_iter.next_frame_unchecked() };
+
+		<span class="comment">// Refactoring out the inner closure is to avoid an edge case in lints
+		// https://github.com/rust-lang/rust-clippy/issues/13134
+		</span><span class="kw">let </span>do_thing = |frame: <span class="kw-2">&amp;</span>[<span class="kw">_</span>; <span class="number">4</span>]| {
+			<span class="comment">// SAFETY: we calculated/preallocated the exact amount of
+			// memory we need up front, and we only loop one less amount
+			// of times than the number of full frames, so we won't overflow
+			</span><span class="kw">unsafe </span>{ dest.write_bytes_const::&lt;BINARY_FRAME_LEN&gt;(frame.as_ptr()) }
+		};
+
+		<span class="comment">// SAFETY: uhm, conservatively marked unsafe yay? lol
+		// but as established above, we won't overflow
+		</span><span class="kw">unsafe </span>{ decode_frame(frame, do_thing)<span class="question-mark">? </span>}
 	}
 
-	<span class="comment">// this is the last frame, and this is where the padding is handled
-	</span><span class="kw">unsafe </span>{
-		<span class="kw">let </span>frame = frames_iter.next_frame_unchecked();
-		decode_frame(frame, |frame| {
-			<span class="comment">// - if 0 bytes of padding were added, this is whole frame and
-			//   added_padding would be 0
-			// - if 0 &lt; n &lt; 4 bytes of padding were added, this is correct
-			// - if 4 &lt;= n bytes of "padding" were added, this should have been
-			//   either be 0 or 0 &lt; n &lt; 4, ie. this case would not happen.
-			// this is checked up at the top, where the padding amount is decoded
+	<span class="comment">// this is the last frame, and this frame gets decoded a bit specially.
+	// We remove the amount of padding from the amount, so we can only write
+	// the amount of actual data bytes into the output. We are still able to
+	// preallocate exact capacity we need up front!
 
-			// This is the amount of bytes minus the padding bytes at the end.
-			// Because of all that explained above, this will also be in range of
-			// 0 &lt;= n &lt; BINARY_FRAME_LEN, ie. will not underflow. And because
-			// we are subtracting from BINARY_FRAME_LEN with a number 0 or more up to
-			// one before BINARY_FRAME_LEN, this will be 1 &lt;= n &lt;= BINARY_FRAME_LEN.
-			</span><span class="kw">let </span>non_padding_bytes = BINARY_FRAME_LEN - added_padding;
+	// SAFETY: we do have one last frame left. if there was 1 remainder it was
+	// decoded and removed from the end, if there was more remainder we returned
+	// an error already, and if it were 0 then.. well, we have a perfect frame left.
+	// After this, there will be no frames left.
+	</span><span class="kw">let </span>frame = <span class="kw">unsafe </span>{ frames_iter.next_frame_unchecked() };
 
-			<span class="comment">// SAFETY: this writes the amount of bytes that aren't padding bytes,
-			// into the buffer. We subtracted padding bytes from the number we write
-			// already, so we write the perfect amount left and never over or under.
-			</span>dest.write_bytes(frame.as_ptr(), non_padding_bytes);
-		})<span class="question-mark">?</span>;
-	}
+	<span class="comment">// This is the amount of bytes minus the padding bytes at the end, aka, the
+	// amount of actual data bytes that were encoded.
+	// - if 0 bytes of padding were added, this is whole frame and
+	//   added_padding would be 0
+	// - if 1 to 3 bytes of padding were added, this is correct, and would be
+	//   1 to 3
+	// - 4 or more here is not possible, since if it did, full frames would have
+	//   been counted towards full frame count and strict remainder would be here
+	//   (0..=3)
+
+	// Because of all that explained above, this will also be in range of
+	// 0 &lt;= n &lt; 4 (BINARY_FRAME_LEN), ie. will not overflow.
+	</span><span class="kw">let </span>non_padding_bytes = BINARY_FRAME_LEN - added_padding;
+
+	<span class="kw">let </span>do_thing = |frame: <span class="kw-2">&amp;</span>[<span class="kw">_</span>; <span class="number">4</span>]| {
+		<span class="comment">// SAFETY: this writes the actual data bytes into the buffer. We
+		// subtracted padding bytes from the number we write already, so we
+		// write the rest of the buffer the perfect amount left
+		</span><span class="kw">unsafe </span>{ dest.write_bytes(frame.as_ptr(), non_padding_bytes) }
+	};
+
+	<span class="comment">// SAFETY: conservatively marked unsafe function aha
+	// (reasoning for other invariants detailed out above)
+	</span><span class="kw">unsafe </span>{ decode_frame(frame, do_thing)<span class="question-mark">? </span>}
 
 	<span class="comment">// SAFETY: We have consumed all the input bytes (calculated)
 	</span><span class="macro">debug_assert!</span>(frames_iter.to_slice().is_empty(), <span class="string">"all bytes were consumed"</span>);
@@ -918,25 +1106,46 @@
 	<span class="macro">debug_assert!</span>(int % TABLE_ENCODER_LEN == int, <span class="string">"no remaining/unused byte information"</span>);
 	<span class="macro">debug_assert!</span>(int / TABLE_ENCODER_LEN == <span class="number">0</span>, <span class="string">"no remaining/unused byte information"</span>);
 
+	<span class="kw">let </span>table_ptr = TABLE_ENCODER.as_ptr();
+
+	<span class="doccomment">/// # Safety
+	///
+	/// The value stored in the variable that's passed into this macro must be
+	/// within the range 0..=84, so that it can be used to index the encode table
+	</span><span class="macro">macro_rules!</span> encode_byte_unsafe {
+		(<span class="macro-nonterminal">$byte</span>:ident) =&gt; {
+			{
+				<span class="comment">// SAFETY: macro caller promises variable is within 0..=84,
+				// which can be safetly used to index encode table (len 85)
+				</span><span class="kw">let </span>byte_ptr = <span class="kw">unsafe </span>{ table_ptr.add(<span class="macro-nonterminal">$byte</span>) };
+
+				<span class="comment">// SAFETY: as described above, the pointer is valid to read from
+				</span><span class="kw">unsafe </span>{ <span class="kw-2">*</span>byte_ptr }
+			}
+		}
+	}
+
 	<span class="comment">// SAFETY: these are calculated by modulo TABLE_ENCODER_LEN (85), which
 	// guarantees the numbers are 0 &lt;= n &lt; TABLE_ENCODER_LEN (85),
 	// and the length of TABLE_ENCODER is 85, so this won't overflow
-	</span><span class="kw">let </span>encoded_frame: [u8; STRING_FRAME_LEN] = <span class="kw">unsafe </span>{ [
-		<span class="kw-2">*</span>TABLE_ENCODER.get_unchecked(byte1),
-		<span class="kw-2">*</span>TABLE_ENCODER.get_unchecked(byte2),
-		<span class="kw-2">*</span>TABLE_ENCODER.get_unchecked(byte3),
-		<span class="kw-2">*</span>TABLE_ENCODER.get_unchecked(byte4),
-		<span class="kw-2">*</span>TABLE_ENCODER.get_unchecked(byte5),
-	] };
+	</span><span class="kw">let </span>encoded_frame = [
+		<span class="comment">// SAFETY: all the below macro invocations pass in variables whose value
+		// is calculating by rem 85. so they will always be strictly less than 85
+		</span><span class="macro">encode_byte_unsafe!</span>(byte1),
+		<span class="macro">encode_byte_unsafe!</span>(byte2),
+		<span class="macro">encode_byte_unsafe!</span>(byte3),
+		<span class="macro">encode_byte_unsafe!</span>(byte4),
+		<span class="macro">encode_byte_unsafe!</span>(byte5),
+	];
 
-	<span class="comment">// SAFETY: internal function. caller guarantees past dest has at least
-	// `STRING_FRAME_LEN` bytes left.
-	</span>dest.write_bytes_const::&lt;STRING_FRAME_LEN&gt;(encoded_frame.as_ptr());
+	<span class="comment">// SAFETY: caller guarantees that `dest` has at least
+	// `STRING_FRAME_LEN` bytes left, and that writing this won't overflow.
+	</span><span class="kw">unsafe </span>{ dest.write_bytes_const::&lt;STRING_FRAME_LEN&gt;(encoded_frame.as_ptr()) }
 }
 
 <span class="doccomment">/// # Safety
 ///
-/// All allowed-by-type-system inputs are valid. However, marking this function
+/// All allowed-by-type-system inputs are sound. However, marking this function
 /// `unsafe` is not only consistent with [`encode_frame`], its also just more
 /// convenient :p. This is an internal function, so doesn't matter too much.
 </span><span class="kw">unsafe fn </span>decode_frame&lt;F&gt;(frame: <span class="kw-2">&amp;</span>[u8; STRING_FRAME_LEN], f: F) -&gt; <span class="prelude-ty">Result</span>&lt;(), DecodeError&gt;
@@ -944,29 +1153,36 @@
 	</span>F: FnOnce(<span class="kw-2">&amp;</span>[u8; BINARY_FRAME_LEN])
 {
 	<span class="kw">let </span>[byte1, byte2, byte3, byte4, byte5] = <span class="kw-2">*</span>frame;
+	<span class="kw">let </span>table_ptr = TABLE_DECODER.as_ptr();
 
-	<span class="comment">// SAFETY: 0 &lt;= n &lt; 256 is always true for a u8, and TABLE_DECODER is len 256,
-	// so this is safe.
+	<span class="macro">macro_rules!</span> decode_byte_unsafe {
+		(<span class="macro-nonterminal">$byte</span>:ident) =&gt; {
+			<span class="comment">// SAFETY: caller promises that `$byte` is within range 0..=255,
+			// and the decoding table is len 256, so this will not be out of bounds
+			</span><span class="kw">let </span>ptr = <span class="kw">unsafe </span>{ table_ptr.add(<span class="macro-nonterminal">$byte</span>.into_usize()) };
+
+			<span class="comment">// SAFETY: as established above, the ptr is within
+			// bounds and safe to dereference
+			</span><span class="kw">let </span><span class="macro-nonterminal">$byte </span>= <span class="kw">unsafe </span>{ <span class="kw-2">*</span>ptr };
+			<span class="kw">if </span><span class="macro-nonterminal">$byte </span>== NONE { <span class="kw">return </span><span class="prelude-val">Err</span>(DecodeError::InvalidChar) }
+		}
+	}
+
+	<span class="comment">// SAFETY: the byte values provided are bytes, so will guaranteed
+	// in the range 0..=255 (as larger values are not even representable)
 	// Additionally, if this comes back as Some from TABLE_DECODER, it is guaranteed
 	// to be 0 &lt;= n &lt;= 84, since there are no Some(n) values outside this range.
-	</span><span class="kw">let </span><span class="prelude-val">Some</span>(byte1) = <span class="kw-2">*</span>TABLE_DECODER.get_unchecked(byte1.into_usize()) <span class="kw">else </span>{
-		<span class="kw">return </span><span class="prelude-val">Err</span>(DecodeError::InvalidChar)
-	};
-	<span class="kw">let </span><span class="prelude-val">Some</span>(byte2) = <span class="kw-2">*</span>TABLE_DECODER.get_unchecked(byte2.into_usize()) <span class="kw">else </span>{
-		<span class="kw">return </span><span class="prelude-val">Err</span>(DecodeError::InvalidChar)
-	};
-	<span class="kw">let </span><span class="prelude-val">Some</span>(byte3) = <span class="kw-2">*</span>TABLE_DECODER.get_unchecked(byte3.into_usize()) <span class="kw">else </span>{
-		<span class="kw">return </span><span class="prelude-val">Err</span>(DecodeError::InvalidChar)
-	};
-	<span class="kw">let </span><span class="prelude-val">Some</span>(byte4) = <span class="kw-2">*</span>TABLE_DECODER.get_unchecked(byte4.into_usize()) <span class="kw">else </span>{
-		<span class="kw">return </span><span class="prelude-val">Err</span>(DecodeError::InvalidChar)
-	};
-	<span class="kw">let </span><span class="prelude-val">Some</span>(byte5) = <span class="kw-2">*</span>TABLE_DECODER.get_unchecked(byte5.into_usize()) <span class="kw">else </span>{
-		<span class="kw">return </span><span class="prelude-val">Err</span>(DecodeError::InvalidChar)
-	};
+	</span><span class="macro">decode_byte_unsafe!</span>(byte1);
+	<span class="macro">decode_byte_unsafe!</span>(byte2);
+	<span class="macro">decode_byte_unsafe!</span>(byte3);
+	<span class="macro">decode_byte_unsafe!</span>(byte4);
+	<span class="macro">decode_byte_unsafe!</span>(byte5);
 
-	<span class="comment">// this can overflow a u32 (but not u64), so we decode in a u64 first,
-	// and then we check for overflow past u32's bits and error if so
+	<span class="comment">// A string frame containing all valid z85 chars, can still overflow u32
+	// (u32 max is 4.294.967.295, but the result of this operation can be 4.437.053.124).
+	// However it cannot overflow u64 (u64 max is 18.446.744.073.709.551.616).
+	// So we decode in a u64 first, and then we check for overflow past u32's
+	// bits and error if so
 	</span><span class="kw">let </span><span class="kw-2">mut </span>int = byte1.into_u64();
 
 	int <span class="kw-2">*</span>= TABLE_ENCODER_LEN.into_u64();
