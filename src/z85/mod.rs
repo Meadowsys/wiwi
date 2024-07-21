@@ -96,7 +96,7 @@ pub fn encode_z85(bytes: &[u8]) -> String {
 		{
 			// Refactoring out the inner closure is to avoid an edge case in lints
 			// https://github.com/rust-lang/rust-clippy/issues/13134
-			let with_remainder = |remainder: &_| {
+			let do_thing = |remainder: &_| {
 				// SAFETY: we calculated and preallocated the correct amount up front.
 				// This closure is called only once, just after this declaration. I (vt)
 				// have been extra cautious and put it in its own scope lol
@@ -109,7 +109,7 @@ pub fn encode_z85(bytes: &[u8]) -> String {
 			// This triggers, even with unsafe block on `encode_frame`, and additionally
 			// the lint for unnecessary unsafe block triggers too. I think nested unsafe
 			// is edge case that the authors of this lint have not thought about, hmm...
-			unsafe { frames_iter.with_remainder_unchecked(with_remainder) }
+			unsafe { frames_iter.with_remainder_unchecked(do_thing) }
 		}
 
 		// remainder is amount of non padding bytes in the frame
@@ -172,46 +172,78 @@ pub fn decode_z85(mut bytes: &[u8]) -> Result<Vec<u8>, DecodeError> {
 	let capacity = frames << 2;
 
 	// Match statement to check remainder for that extra padding encoding byte.
+	// Either, there is 1 trailing byte, that is stritly less than 4, that
+	// encodes the amount of padding added. Or, it's a different character that
+	// doesn't decode to 0..=3 or none at all (in which case, we exit early)
 	let (capacity, added_padding) = match remainder {
 		0 => {
 			// no padding was added
 			(capacity, 0usize)
 		}
 		1 => {
-			// the singular padding byte (there will never be more than this, handled
-			// by below match case, returning error)
-			let added_padding = unsafe {
-				// SAFETY: remainder is 1, so there will be at least 1 byte in the
-				// slice, because duh (well technically there will be at least 6
-				// bytes but at least 1 still holds). so this will not underflow
-				let one_shorter = bytes.len() - 1;
+			// the singular trailing byte that encodes how much padding was added
 
-				let ptr = bytes.as_ptr();
-				// this will be last byte in slice
-				let byte = *(ptr.add(one_shorter));
+			// remainder is 1, so there will be at least 1 byte in the
+			// slice, because duh (well technically there will be at least 6
+			// bytes as established earlier, but I can still safetly subtract 1).
+			// This will never overflow
+			// TODO: could be unchecked sub?
+			let one_shorter = bytes.len() - 1;
 
-				// SAFETY: `one_shorter` is bytes.len() - 1, which as explained
-				// above is safe, so this will be too.
-				bytes = slice::from_raw_parts(ptr, one_shorter);
+			// le ptr to the input slice
+			let ptr = bytes.as_ptr();
 
-				// SAFETY: 0 <= n < 256 is always true for a u8, and TABLE_DECODER is len 256,
-				// so this is safe
-				let decoded = *TABLE_DECODER.get_unchecked(byte.into_usize());
+			let byte = {
+				// SAFETY: this points at the last byte, it is in bounds
+				let last_byte_ptr = unsafe { ptr.add(one_shorter) };
 
-				match decoded.map(IntoUsizeLossless::into_usize) {
-					// having that last byte as a 0 is not something we generate,
-					// as its just a waste of a perfectly good byte, but it doesn't
-					// break this system (added a unit test for it to make sure).
-					Some(val) if val < BINARY_FRAME_LEN => { val }
-					Some(_) | None => { return Err(DecodeError::InvalidChar) }
+				// SAFETY: since the ptr is in bounds and points
+				// at last byte, it is safe to dereference
+				unsafe { *last_byte_ptr }
+			};
+
+			// SAFETY:
+			// - `ptr` points at the start of the input slice
+			// - it's established above that subtracting by 1
+			//   will not overflow, if we got into this match branch
+			// - `one_shorter` is one less than the len of the input slice
+			//    (which cannot won't overflow)
+			// this is just taking a subslice of the all the bytes except the last
+			bytes = unsafe { slice::from_raw_parts(ptr, one_shorter) };
+
+			let decoded = {
+				// SAFETY: `byte` is of type u8, it's range is 0..=255, which will
+				// not overflow TABLE_DECODER, which is len 256
+				let table_ptr = unsafe { TABLE_DECODER.as_ptr().add(byte.into_usize()) };
+
+				// SAFETY: as established above, pointer above will not
+				// index past end of TABLE_DECODER
+				unsafe { *table_ptr }
+			};
+
+			let added_padding = match decoded.map(IntoUsizeLossless::into_usize) {
+				Some(decoded) if decoded < BINARY_FRAME_LEN => {
+					// only 0, 1, 2, 3, are valid (if clause above)
+					decoded
+				}
+				Some(_) | None => {
+					// invalid char in this context (too large / does not exist)
+					return Err(DecodeError::InvalidChar)
 				}
 			};
 
-			// if added_padding is 0, this returns
-			// the same values as the above.
+			// We established that if we got here, we need to decode at least 1
+			// full frame. `added_padding` is lte 3, which is less than the
+			// size of 1 full binary frame (4), so this won't overflow. If
+			// added_padding is 0 for some reason, this returns the same values
+			// as the 0 case (checked in unit test below)
+			// TODO: this can be unchecked sub
 			(capacity - added_padding, added_padding)
 		}
-		_n => { return Err(DecodeError::InvalidLength) }
+		_n => {
+			// 2 or 3 extra bytes at end of input, not valid in any scenario
+			return Err(DecodeError::InvalidLength)
+		}
 	};
 
 	// because frames >= 1, `excluding_last_frame` will be >= 0 (ie. will not underflow).
@@ -220,40 +252,62 @@ pub fn decode_z85(mut bytes: &[u8]) -> Result<Vec<u8>, DecodeError> {
 	let mut frames_iter = ChunkedSlice::<STRING_FRAME_LEN>::new(bytes);
 	let mut dest = UnsafeBufWriteGuard::with_capacity(capacity);
 
+	// this loop goes over and decodees all the string chunks to output buffer
 	for _ in 0..excluding_last_frame {
-		unsafe {
-			// SAFETY: this loop loops `excluding_last_frame` times, ie. loops through
-			// every frame except the last. We've also preallocated enough capacity
-			// for the bytes we will write
-			let frame = frames_iter.next_frame_unchecked();
-			decode_frame(frame, |frame| dest.write_bytes_const::<BINARY_FRAME_LEN>(frame.as_ptr()))?;
-		}
+		// SAFETY: this loop loops `excluding_last_frame` times, which is the
+		// amount of times it takes to loop through all the full chunks, except
+		// the last one
+		let frame = unsafe { frames_iter.next_frame_unchecked() };
+
+		// Refactoring out the inner closure is to avoid an edge case in lints
+		// https://github.com/rust-lang/rust-clippy/issues/13134
+		let do_thing = |frame: &[_; 4]| {
+			// SAFETY: we calculated/preallocated the exact amount of
+			// memory we need up front, and we only loop one less amount
+			// of times than the number of full frames, so we won't overflow
+			unsafe { dest.write_bytes_const::<BINARY_FRAME_LEN>(frame.as_ptr()) }
+		};
+
+		// SAFETY: uhm, conservatively marked unsafe yay? lol
+		// but as established above, we won't overflow
+		unsafe { decode_frame(frame, do_thing)? }
 	}
 
-	// this is the last frame, and this is where the padding is handled
-	unsafe {
-		let frame = frames_iter.next_frame_unchecked();
-		decode_frame(frame, |frame| {
-			// - if 0 bytes of padding were added, this is whole frame and
-			//   added_padding would be 0
-			// - if 0 < n < 4 bytes of padding were added, this is correct
-			// - if 4 <= n bytes of "padding" were added, this should have been
-			//   either be 0 or 0 < n < 4, ie. this case would not happen.
-			// this is checked up at the top, where the padding amount is decoded
+	// this is the last frame, and this frame gets decoded a bit specially.
+	// We remove the amount of padding from the amount, so we can only write
+	// the amount of actual data bytes into the output. We are still able to
+	// preallocate exact capacity we need up front!
 
-			// This is the amount of bytes minus the padding bytes at the end.
-			// Because of all that explained above, this will also be in range of
-			// 0 <= n < BINARY_FRAME_LEN, ie. will not underflow. And because
-			// we are subtracting from BINARY_FRAME_LEN with a number 0 or more up to
-			// one before BINARY_FRAME_LEN, this will be 1 <= n <= BINARY_FRAME_LEN.
-			let non_padding_bytes = BINARY_FRAME_LEN - added_padding;
+	// SAFETY: we do have one last frame left. if there was 1 remainder it was
+	// decoded and removed from the end, if there was more remainder we returned
+	// an error already, and if it were 0 then.. well, we have a perfect frame left.
+	// After this, there will be no frames left.
+	let frame = unsafe { frames_iter.next_frame_unchecked() };
 
-			// SAFETY: this writes the amount of bytes that aren't padding bytes,
-			// into the buffer. We subtracted padding bytes from the number we write
-			// already, so we write the perfect amount left and never over or under.
-			dest.write_bytes(frame.as_ptr(), non_padding_bytes);
-		})?;
-	}
+	// This is the amount of bytes minus the padding bytes at the end, aka, the
+	// amount of actual data bytes that were encoded.
+	// - if 0 bytes of padding were added, this is whole frame and
+	//   added_padding would be 0
+	// - if 1 to 3 bytes of padding were added, this is correct, and would be
+	//   1 to 3
+	// - 4 or more here is not possible, since if it did, full frames would have
+	//   been counted towards full frame count and strict remainder would be here
+	//   (0..=3)
+
+	// Because of all that explained above, this will also be in range of
+	// 0 <= n < 4 (BINARY_FRAME_LEN), ie. will not overflow.
+	let non_padding_bytes = BINARY_FRAME_LEN - added_padding;
+
+	let do_thing = |frame: &[_; 4]| {
+		// SAFETY: this writes the actual data bytes into the buffer. We
+		// subtracted padding bytes from the number we write already, so we
+		// write the rest of the buffer the perfect amount left
+		unsafe { dest.write_bytes(frame.as_ptr(), non_padding_bytes) }
+	};
+
+	// SAFETY: conservatively marked unsafe function aha
+	// (reasoning for other invariants detailed out above)
+	unsafe { decode_frame(frame, do_thing)? }
 
 	// SAFETY: We have consumed all the input bytes (calculated)
 	debug_assert!(frames_iter.to_slice().is_empty(), "all bytes were consumed");
