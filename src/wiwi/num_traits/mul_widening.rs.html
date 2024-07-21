@@ -88,6 +88,9 @@
 <a href="#88" id="88">88</a>
 <a href="#89" id="89">89</a>
 <a href="#90" id="90">90</a>
+<a href="#91" id="91">91</a>
+<a href="#92" id="92">92</a>
+<a href="#93" id="93">93</a>
 </pre></div><pre class="rust"><code><span class="kw">use super</span>::{ Mul, MulUnchecked, Narrowing, Widening };
 
 <span class="doccomment">/// Widening multiplication
@@ -108,7 +111,10 @@
 		<span class="kw">impl </span>MulWidening <span class="kw">for </span><span class="macro-nonterminal">$num </span>{
 			<span class="attr">#[inline]
 			</span><span class="kw">fn </span>mul_widening(<span class="self">self</span>, rhs: <span class="macro-nonterminal">$num</span>) -&gt; (<span class="macro-nonterminal">$num</span>, <span class="macro-nonterminal">$num</span>) {
-				<span class="kw">let </span>widened = <span class="kw">unsafe </span>{
+				<span class="comment">// SAFETY: we widen the numbers (eg. u64 -&gt; u128), then multiply,
+				// so they have twice the bit space to multiply into, should the
+				// original multiplication have overflowed
+				</span><span class="kw">let </span>widened = <span class="kw">unsafe </span>{
 					<span class="macro-nonterminal">$wide::mul_unchecked</span>(
 						&lt;<span class="macro-nonterminal">$num </span><span class="kw">as </span>Widening&lt;<span class="macro-nonterminal">$wide</span>&gt;&gt;::widen(<span class="self">self</span>),
 						&lt;<span class="macro-nonterminal">$num </span><span class="kw">as </span>Widening&lt;<span class="macro-nonterminal">$wide</span>&gt;&gt;::widen(rhs)

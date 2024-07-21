@@ -53,7 +53,7 @@
 <a href="#53" id="53">53</a>
 </pre></div><pre class="rust"><code><span class="kw">use </span><span class="kw">super</span>::Base;
 
-<span class="kw">pub trait </span>CountBits {
+<span class="kw">pub trait </span>CountBits: Base {
 	<span class="kw">fn </span>count_zeros(<span class="self">self</span>) -&gt; <span class="self">Self</span>;
 	<span class="kw">fn </span>count_ones(<span class="self">self</span>) -&gt; <span class="self">Self</span>;
 	<span class="kw">fn </span>leading_zeros(<span class="self">self</span>) -&gt; <span class="self">Self</span>;
