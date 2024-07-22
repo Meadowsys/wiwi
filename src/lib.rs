@@ -47,12 +47,15 @@
 #![cfg_attr(all(not(any(docsrs, kiwingay)), feature = "debounce"), doc = "- `debounce`")]
 #![cfg_attr(all(not(any(docsrs, kiwingay)), feature = "defer-unstable"), doc = "- `defer` (unstable)")]
 #![cfg_attr(all(not(any(docsrs, kiwingay)), feature = "export-all-submodules"), doc = "- `export-all-submodules`")]
+#![cfg_attr(all(not(any(docsrs, kiwingay)), feature = "gpg-unstable"), doc = "- `gpg` (unstable)")]
 #![cfg_attr(all(not(any(docsrs, kiwingay)), feature = "h"), doc = "- `h`")]
 #![cfg_attr(all(not(any(docsrs, kiwingay)), feature = "hex"), doc = "- `hex`")]
 #![cfg_attr(all(not(any(docsrs, kiwingay)), feature = "id-unstable"), doc = "- `id` (unstable)")]
 #![cfg_attr(all(not(any(docsrs, kiwingay)), feature = "int-unstable"), doc = "- `int` (unstable)")]
 #![cfg_attr(all(not(any(docsrs, kiwingay)), feature = "iter-unstable"), doc = "- `iter` (unstable)")]
 #![cfg_attr(all(not(any(docsrs, kiwingay)), feature = "lazy-wrap"), doc = "- `lazy-wrap`")]
+#![cfg_attr(all(not(any(docsrs, kiwingay)), feature = "libassuan-unstable"), doc = "- `libassuan` (unstable)")]
+#![cfg_attr(all(not(any(docsrs, kiwingay)), feature = "libgpg-error-unstable"), doc = "- `libgpg-error` (unstable)")]
 #![cfg_attr(all(not(any(docsrs, kiwingay)), feature = "lsl-unstable"), doc = "- `lsl` (unstable)")]
 #![cfg_attr(all(not(any(docsrs, kiwingay)), feature = "mcu-unstable"), doc = "- `mcu` (unstable)")]
 #![cfg_attr(all(not(any(docsrs, kiwingay)), feature = "memory-usage-unstable"), doc = "- `memory-usage` (unstable)")]
@@ -81,12 +84,15 @@
 	not(feature = "debounce"),
 	not(feature = "defer-unstable"),
 	not(feature = "export-all-submodules"),
+	not(feature = "gpg-unstable"),
 	not(feature = "h"),
 	not(feature = "hex"),
 	not(feature = "id-unstable"),
 	not(feature = "int-unstable"),
 	not(feature = "iter-unstable"),
 	not(feature = "lazy-wrap"),
+	not(feature = "libassuan-unstable"),
+	not(feature = "libgpg-error-unstable"),
 	not(feature = "lsl-unstable"),
 	not(feature = "mcu-unstable"),
 	not(feature = "memory-usage-unstable"),
@@ -182,6 +188,10 @@ pub mod defer;
 #[cfg_attr(docsrs, doc(cfg(feature = "export-all-submodules")))]
 pub mod export_all_submodules;
 
+#[cfg(feature = "gpg-unstable")]
+#[cfg_attr(docsrs, doc(cfg(feature = "gpg-unstable")))]
+pub mod gpg;
+
 #[cfg(feature = "h")]
 #[cfg_attr(docsrs, doc(cfg(feature = "h")))]
 pub mod h;
@@ -205,6 +215,14 @@ pub mod iter;
 #[cfg(feature = "lazy-wrap")]
 #[cfg_attr(docsrs, doc(cfg(feature = "lazy-wrap")))]
 pub mod lazy_wrap;
+
+#[cfg(feature = "libassuan-unstable")]
+#[cfg_attr(docsrs, doc(cfg(feature = "libassuan-unstable")))]
+pub mod libassuan;
+
+#[cfg(feature = "libgpg-error-unstable")]
+#[cfg_attr(docsrs, doc(cfg(feature = "libgpg-error-unstable")))]
+pub mod libgpg_error;
 
 #[cfg(feature = "lsl-unstable")]
 #[cfg_attr(docsrs, doc(cfg(feature = "lsl-unstable")))]

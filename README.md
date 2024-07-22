@@ -52,9 +52,12 @@ reminder: **Unstable features are NOT covered by semver!**
 - **`chainer`** - zero-cost wrappers that provide chaining APIs
 - **`cli`** - command line args parser
 - **`defer`** - utilities for deferring running code
+- **`gpg`** - bindings to [GPGME](https://www.gnupg.org/software/gpgme), GnuPG's official C library
 - **`id`** - ID generator, with all IDs generated from one generater guaranteed to be monotonically increasing
 - **`int`** - bigint / uneven int types
 - **`iter`** - iter stuff
+- **`libassuan`** - bindings to [`libassuan`](https://www.gnupg.org/related_software/libassuan)
+- **`libgpg-error`** - bindings to [`libgpg-error`](https://www.gnupg.org/related_software/libgpg-error)
 - **`lsl`** - experimental lib to help with writing Second Life scripts in Rust... because yes, I got fed up with it very quickly and immediately missed Rust lol >< It is really only built for a dedicated crate just to write the script, rather than as part of another lib/app
 - **`mcu`** - [material colour utilities](https://github.com/material-foundation/material-color-utilities), ported to rust
 - **`memory-usage`** - calculate actual memory usage of Rust structs, including derive macro for custom types
