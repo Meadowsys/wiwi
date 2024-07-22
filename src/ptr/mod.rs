@@ -1,50 +1,41 @@
-pub trait PtrExt {
-	type Out;
-	fn ref_to_ptr(&self) -> *const Self::Out;
-	fn ref_to_ptr_mut(&mut self) -> *mut Self::Out;
+use std::ops::{ Deref, DerefMut };
+
+#[inline(always)]
+pub fn coerce_ptr<T: ?Sized>(thing: &T) -> *const T {
+	thing
 }
 
-impl<T> PtrExt for T {
-	type Out = T;
-
-	#[inline(always)]
-	fn ref_to_ptr(&self) -> *const T {
-		self
-	}
-
-	#[inline(always)]
-	fn ref_to_ptr_mut(&mut self) -> *mut T {
-		self
-	}
+#[inline(always)]
+pub fn coerce_ptr_mut<T: ?Sized>(thing: &mut T) -> *mut T {
+	thing
 }
 
-impl<T> PtrExt for [T] {
-	type Out = T;
-
-	#[inline(always)]
-	fn ref_to_ptr(&self) -> *const T {
-		self.as_ptr()
-	}
-
-	#[inline(always)]
-	fn ref_to_ptr_mut(&mut self) -> *mut T {
-		self.as_mut_ptr()
-	}
+#[inline(always)]
+pub fn coerce_slice_ptr<T>(thing: &[T]) -> *const T {
+	coerce_ptr(thing).cast()
 }
 
-pub trait PtrSliceExt {
-	fn slice_to_ptr(&self) -> *const Self;
-	fn slice_to_ptr_mut(&mut self) -> *mut Self;
+#[inline(always)]
+pub fn coerce_slice_ptr_mut<T>(thing: &mut [T]) -> *mut T {
+	coerce_ptr_mut(thing).cast()
 }
 
-impl<T> PtrSliceExt for [T] {
-	#[inline(always)]
-	fn slice_to_ptr(&self) -> *const [T] {
-		self
-	}
+#[inline(always)]
+pub unsafe fn reborrow<'h, T: ?Sized>(thing: *const T) -> &'h T {
+	unsafe { &*thing }
+}
 
-	#[inline(always)]
-	fn slice_to_ptr_mut(&mut self) -> *mut [T] {
-		self
-	}
+#[inline(always)]
+pub unsafe fn reborrow_mut<'h, T: ?Sized>(thing: *mut T) -> &'h mut T {
+	unsafe { &mut *thing }
+}
+
+#[inline(always)]
+pub unsafe fn deref_ptr<T: Deref>(thing: *const T) -> *const T::Target {
+	unsafe { &**thing }
+}
+
+#[inline(always)]
+pub unsafe fn deref_ptr_mut<T: DerefMut>(thing: *mut T) -> *mut T::Target {
+	unsafe { &mut **thing }
 }

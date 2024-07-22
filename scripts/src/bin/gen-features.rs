@@ -140,6 +140,10 @@ fn main() {
 		"path"
 		"UTF-8 only path manipulation utilities written from scratch"
 
+		#[unstable]
+		"ptr"
+		"small utility functions for references and pointers"
+
 		"rand"
 		"random number generator lib, building on top of `rand`"
 		dependencies: ["rand", "rand-chacha"]
