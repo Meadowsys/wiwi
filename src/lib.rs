@@ -4,8 +4,7 @@
 
 // TODO: review these
 #![warn(
-	// TODO: these following four should be deny,
-	// once all unsafe blocks are commented/fixed
+	missing_docs,
 	unsafe_op_in_unsafe_fn,
 	clippy::missing_safety_doc,
 	clippy::multiple_unsafe_ops_per_block,
