@@ -271,15 +271,25 @@
 <a href="#271" id="271">271</a>
 <a href="#272" id="272">272</a>
 <a href="#273" id="273">273</a>
+<a href="#274" id="274">274</a>
+<a href="#275" id="275">275</a>
+<a href="#276" id="276">276</a>
+<a href="#277" id="277">277</a>
+<a href="#278" id="278">278</a>
+<a href="#279" id="279">279</a>
+<a href="#280" id="280">280</a>
+<a href="#281" id="281">281</a>
+<a href="#282" id="282">282</a>
+<a href="#283" id="283">283</a>
+<a href="#284" id="284">284</a>
 </pre></div><pre class="rust"><code><span class="attr">#![cfg_attr(feature = <span class="string">"nightly"</span>, feature(cfg_overflow_checks))]
 
 #![cfg_attr(feature = <span class="string">"omega-tuples-of-doom"</span>, recursion_limit = <span class="string">"256"</span>)]
 
 </span><span class="comment">// TODO: review these
 </span><span class="attr">#![warn(
-	<span class="comment">// TODO: these following four should be deny,
-	// once all unsafe blocks are commented/fixed
-	</span>unsafe_op_in_unsafe_fn,
+	missing_docs,
+	unsafe_op_in_unsafe_fn,
 	clippy::missing_safety_doc,
 	clippy::multiple_unsafe_ops_per_block,
 	clippy::undocumented_unsafe_blocks
@@ -320,12 +330,15 @@
 #![cfg_attr(all(not(any(docsrs, kiwingay)), feature = <span class="string">"debounce"</span>), doc = <span class="string">"- `debounce`"</span>)]
 #![cfg_attr(all(not(any(docsrs, kiwingay)), feature = <span class="string">"defer-unstable"</span>), doc = <span class="string">"- `defer` (unstable)"</span>)]
 #![cfg_attr(all(not(any(docsrs, kiwingay)), feature = <span class="string">"export-all-submodules"</span>), doc = <span class="string">"- `export-all-submodules`"</span>)]
+#![cfg_attr(all(not(any(docsrs, kiwingay)), feature = <span class="string">"gpg-unstable"</span>), doc = <span class="string">"- `gpg` (unstable)"</span>)]
 #![cfg_attr(all(not(any(docsrs, kiwingay)), feature = <span class="string">"h"</span>), doc = <span class="string">"- `h`"</span>)]
 #![cfg_attr(all(not(any(docsrs, kiwingay)), feature = <span class="string">"hex"</span>), doc = <span class="string">"- `hex`"</span>)]
 #![cfg_attr(all(not(any(docsrs, kiwingay)), feature = <span class="string">"id-unstable"</span>), doc = <span class="string">"- `id` (unstable)"</span>)]
 #![cfg_attr(all(not(any(docsrs, kiwingay)), feature = <span class="string">"int-unstable"</span>), doc = <span class="string">"- `int` (unstable)"</span>)]
 #![cfg_attr(all(not(any(docsrs, kiwingay)), feature = <span class="string">"iter-unstable"</span>), doc = <span class="string">"- `iter` (unstable)"</span>)]
 #![cfg_attr(all(not(any(docsrs, kiwingay)), feature = <span class="string">"lazy-wrap"</span>), doc = <span class="string">"- `lazy-wrap`"</span>)]
+#![cfg_attr(all(not(any(docsrs, kiwingay)), feature = <span class="string">"libassuan-unstable"</span>), doc = <span class="string">"- `libassuan` (unstable)"</span>)]
+#![cfg_attr(all(not(any(docsrs, kiwingay)), feature = <span class="string">"libgpg-error-unstable"</span>), doc = <span class="string">"- `libgpg-error` (unstable)"</span>)]
 #![cfg_attr(all(not(any(docsrs, kiwingay)), feature = <span class="string">"lsl-unstable"</span>), doc = <span class="string">"- `lsl` (unstable)"</span>)]
 #![cfg_attr(all(not(any(docsrs, kiwingay)), feature = <span class="string">"mcu-unstable"</span>), doc = <span class="string">"- `mcu` (unstable)"</span>)]
 #![cfg_attr(all(not(any(docsrs, kiwingay)), feature = <span class="string">"memory-usage-unstable"</span>), doc = <span class="string">"- `memory-usage` (unstable)"</span>)]
@@ -333,7 +346,6 @@
 #![cfg_attr(all(not(any(docsrs, kiwingay)), feature = <span class="string">"nominal"</span>), doc = <span class="string">"- `nominal`"</span>)]
 #![cfg_attr(all(not(any(docsrs, kiwingay)), feature = <span class="string">"num-traits-unstable"</span>), doc = <span class="string">"- `num-traits` (unstable)"</span>)]
 #![cfg_attr(all(not(any(docsrs, kiwingay)), feature = <span class="string">"path-unstable"</span>), doc = <span class="string">"- `path` (unstable)"</span>)]
-#![cfg_attr(all(not(any(docsrs, kiwingay)), feature = <span class="string">"ptr-unstable"</span>), doc = <span class="string">"- `ptr` (unstable)"</span>)]
 #![cfg_attr(all(not(any(docsrs, kiwingay)), feature = <span class="string">"rand"</span>), doc = <span class="string">"- `rand`"</span>)]
 #![cfg_attr(all(not(any(docsrs, kiwingay)), feature = <span class="string">"serialiser-binary-unstable"</span>), doc = <span class="string">"- `serialiser-binary` (unstable)"</span>)]
 #![cfg_attr(all(not(any(docsrs, kiwingay)), feature = <span class="string">"serialiser-text-unstable"</span>), doc = <span class="string">"- `serialiser-text` (unstable)"</span>)]
@@ -354,12 +366,15 @@
 	not(feature = <span class="string">"debounce"</span>),
 	not(feature = <span class="string">"defer-unstable"</span>),
 	not(feature = <span class="string">"export-all-submodules"</span>),
+	not(feature = <span class="string">"gpg-unstable"</span>),
 	not(feature = <span class="string">"h"</span>),
 	not(feature = <span class="string">"hex"</span>),
 	not(feature = <span class="string">"id-unstable"</span>),
 	not(feature = <span class="string">"int-unstable"</span>),
 	not(feature = <span class="string">"iter-unstable"</span>),
 	not(feature = <span class="string">"lazy-wrap"</span>),
+	not(feature = <span class="string">"libassuan-unstable"</span>),
+	not(feature = <span class="string">"libgpg-error-unstable"</span>),
 	not(feature = <span class="string">"lsl-unstable"</span>),
 	not(feature = <span class="string">"mcu-unstable"</span>),
 	not(feature = <span class="string">"memory-usage-unstable"</span>),
@@ -367,7 +382,6 @@
 	not(feature = <span class="string">"nominal"</span>),
 	not(feature = <span class="string">"num-traits-unstable"</span>),
 	not(feature = <span class="string">"path-unstable"</span>),
-	not(feature = <span class="string">"ptr-unstable"</span>),
 	not(feature = <span class="string">"rand"</span>),
 	not(feature = <span class="string">"serialiser-binary-unstable"</span>),
 	not(feature = <span class="string">"serialiser-text-unstable"</span>),
@@ -455,6 +469,10 @@
 #[cfg_attr(docsrs, doc(cfg(feature = <span class="string">"export-all-submodules"</span>)))]
 </span><span class="kw">pub mod </span>export_all_submodules;
 
+<span class="attr">#[cfg(feature = <span class="string">"gpg-unstable"</span>)]
+#[cfg_attr(docsrs, doc(cfg(feature = <span class="string">"gpg-unstable"</span>)))]
+</span><span class="kw">pub mod </span>gpg;
+
 <span class="attr">#[cfg(feature = <span class="string">"h"</span>)]
 #[cfg_attr(docsrs, doc(cfg(feature = <span class="string">"h"</span>)))]
 </span><span class="kw">pub mod </span>h;
@@ -478,6 +496,14 @@
 <span class="attr">#[cfg(feature = <span class="string">"lazy-wrap"</span>)]
 #[cfg_attr(docsrs, doc(cfg(feature = <span class="string">"lazy-wrap"</span>)))]
 </span><span class="kw">pub mod </span>lazy_wrap;
+
+<span class="attr">#[cfg(feature = <span class="string">"libassuan-unstable"</span>)]
+#[cfg_attr(docsrs, doc(cfg(feature = <span class="string">"libassuan-unstable"</span>)))]
+</span><span class="kw">pub mod </span>libassuan;
+
+<span class="attr">#[cfg(feature = <span class="string">"libgpg-error-unstable"</span>)]
+#[cfg_attr(docsrs, doc(cfg(feature = <span class="string">"libgpg-error-unstable"</span>)))]
+</span><span class="kw">pub mod </span>libgpg_error;
 
 <span class="attr">#[cfg(feature = <span class="string">"lsl-unstable"</span>)]
 #[cfg_attr(docsrs, doc(cfg(feature = <span class="string">"lsl-unstable"</span>)))]
@@ -506,10 +532,6 @@
 <span class="attr">#[cfg(feature = <span class="string">"path-unstable"</span>)]
 #[cfg_attr(docsrs, doc(cfg(feature = <span class="string">"path-unstable"</span>)))]
 </span><span class="kw">pub mod </span>path;
-
-<span class="attr">#[cfg(feature = <span class="string">"ptr-unstable"</span>)]
-#[cfg_attr(docsrs, doc(cfg(feature = <span class="string">"ptr-unstable"</span>)))]
-</span><span class="kw">pub mod </span>ptr;
 
 <span class="attr">#[cfg(feature = <span class="string">"rand"</span>)]
 #[cfg_attr(docsrs, doc(cfg(feature = <span class="string">"rand"</span>)))]

@@ -189,11 +189,6 @@
 <a href="#189" id="189">189</a>
 <a href="#190" id="190">190</a>
 <a href="#191" id="191">191</a>
-<a href="#192" id="192">192</a>
-<a href="#193" id="193">193</a>
-<a href="#194" id="194">194</a>
-<a href="#195" id="195">195</a>
-<a href="#196" id="196">196</a>
 </pre></div><pre class="rust"><code><span class="doccomment">//! Fast and efficient implementation of hex encoding.
 
 </span><span class="kw">use </span><span class="kw">crate</span>::_internal::encoding_utils::UnsafeBufWriteGuard;
@@ -221,59 +216,54 @@
 	_encode::&lt;<span class="bool-val">true</span>&gt;(bytes)
 }
 
-<span class="comment">// mut is used by cfg(target_arch) which is not necessarily cfg enabled
-</span><span class="attr">#[allow(unused_mut)]
+<span class="doccomment">/// Inner function with const generic `UPPER`
+</span><span class="comment">// // mut is used by cfg(target_arch) which is not necessarily cfg enabled
+// #[allow(unused_mut)]
 </span><span class="kw">fn </span>_encode&lt;<span class="kw">const </span>UPPER: bool&gt;(bytes: <span class="kw-2">&amp;</span>[u8]) -&gt; String {
-	<span class="kw">let </span>bytes_len = bytes.len();
-	<span class="kw">let </span>capacity = bytes_len * <span class="number">2</span>;
+	<span class="macro">debug_assert!</span>(bytes.len() &gt;&gt; (usize::BITS - <span class="number">1</span>) == <span class="number">0</span>, <span class="string">"size overflow"</span>);
 
-	<span class="kw">let </span><span class="kw-2">mut </span>bytes_ptr = bytes.as_ptr();
+	<span class="kw">let </span>len = bytes.len();
+	<span class="comment">// shl 1 is same as multiplying by 2
+	</span><span class="kw">let </span>capacity = len &lt;&lt; <span class="number">1</span>;
+	<span class="kw">let </span>ptr = bytes.as_ptr();
 	<span class="kw">let </span><span class="kw-2">mut </span>dest = UnsafeBufWriteGuard::with_capacity(capacity);
-	<span class="kw">let </span><span class="kw-2">mut </span>rounds = bytes_len;
 
-	<span class="comment">// #[cfg(target_arch = "aarch64")] {
-	// 	if std::arch::is_aarch64_feature_detected!("neon") {
-	// 		// we handle the big chunks, but leave enough info for the below generic
-	// 		// to continue the uneven chunks
-	// 		// divide by 16
-	// 		let neon_rounds = rounds &gt;&gt; 4;
-	// 		// mod 16
-	// 		let remainder = bytes_len &amp; 0b1111;
-	//
-	// 		bytes_ptr = unsafe { encode::neon_uint8x16::&lt;UPPER&gt;(bytes_ptr, dest.as_mut_ptr(), neon_rounds) };
-	//
-	// 		// multiply by 32
-	// 		// multiply by num rounds (^) times two, which is shift one more
-	// 		let amount_written = neon_rounds &lt;&lt; 5;
-	// 		rounds = remainder;
-	// 		unsafe { dest.add_byte_count(amount_written) }
-	// 	}
-	// }
+	<span class="comment">// SAFETY: we obtained `ptr` and `len` from `bytes`, so `ptr` is valid for `len`
+	// reads, and we calculated and requested `dest` to allocate `len * 2` bytes
+	</span><span class="kw">unsafe </span>{ encode::generic::&lt;UPPER&gt;(ptr, <span class="kw-2">&amp;mut </span>dest, len) };
 
-	</span><span class="kw">unsafe </span>{ encode::generic::&lt;UPPER&gt;(bytes_ptr, <span class="kw-2">&amp;mut </span>dest, rounds) };
+	<span class="comment">// SAFETY: we wrote into all the space we requested (`len * 2`)
+	</span><span class="kw">let </span>vec = <span class="kw">unsafe </span>{ dest.into_full_vec() };
 
-	<span class="kw">let </span>vec = <span class="kw">unsafe </span>{ dest.into_full_vec() };
-	<span class="macro">debug_assert!</span>(str::from_utf8(<span class="kw-2">&amp;</span>vec).is_ok(), <span class="string">"output bytes are valid utf-8"</span>);
-	<span class="kw">unsafe </span>{ String::from_utf8_unchecked(vec) }
+	<span class="comment">// SAFETY: `encode::generic` will only ever write the ASCII chars `0-9`, `a-f`,
+	// and `A-F` into vec. ASCII is valid UTF-8
+	</span><span class="kw">unsafe </span>{
+		<span class="macro">debug_assert!</span>(str::from_utf8(<span class="kw-2">&amp;</span>vec).is_ok(), <span class="string">"output bytes are valid utf-8"</span>);
+		String::from_utf8_unchecked(vec)
+	}
 }
 
 <span class="doccomment">/// Decodes a slice of hex bytes into a byte vector. This function handles and
 /// supports both uppercase and lowercase characters.
 </span><span class="kw">pub fn </span>decode_hex(bytes: <span class="kw-2">&amp;</span>[u8]) -&gt; <span class="prelude-ty">Result</span>&lt;Vec&lt;u8&gt;, DecodeError&gt; {
-	<span class="comment">// AND 0b1 is chopping off all the other bits; last bit will
-	// always be 0 or 1, depending on odd or even
-	</span><span class="kw">if </span>bytes.len() &amp; <span class="number">0b1 </span>!= <span class="number">0 </span>{ <span class="kw">return </span><span class="prelude-val">Err</span>(DecodeError::InvalidLength) }
+	<span class="kw">let </span>len = bytes.len();
+
+	<span class="comment">// `AND 0b1` is chopping off all the other bits
+	// if the last bit is 1 then it's odd, which is invalid
+	</span><span class="kw">if </span>len &amp; <span class="number">0b1 </span>!= <span class="number">0 </span>{ <span class="kw">return </span><span class="prelude-val">Err</span>(DecodeError::InvalidLength) }
 
 	<span class="comment">// shr 1 is same as div 2
-	</span><span class="kw">let </span>capacity = bytes.len() &gt;&gt; <span class="number">1</span>;
+	</span><span class="kw">let </span>capacity = len &gt;&gt; <span class="number">1</span>;
 	<span class="kw">let </span><span class="kw-2">mut </span>dest = UnsafeBufWriteGuard::with_capacity(capacity);
-	<span class="comment">// num rounds is same as capacity, since each round outputs one byte.
+	<span class="kw">let </span>ptr = bytes.as_ptr();
 
-	</span><span class="kw">let </span>bytes_ptr = bytes.as_ptr();
+	<span class="comment">// SAFETY: ptr is readable for `capacity * 2` bytes (since `capacity` is
+	// `len / 2` and `ptr` is readable for `len` bytes), and we requested `capacity`
+	// bytes in `dest`
+	</span><span class="kw">unsafe </span>{ decode::generic(ptr, <span class="kw-2">&amp;mut </span>dest, capacity)<span class="question-mark">? </span>}
 
-	<span class="kw">unsafe </span>{ decode::generic(bytes_ptr, <span class="kw-2">&amp;mut </span>dest, capacity)<span class="question-mark">? </span>}
-
-	<span class="prelude-val">Ok</span>(<span class="kw">unsafe </span>{ dest.into_full_vec() })
+	<span class="comment">// SAFETY: we wrote into all the space we requested (`len / 2`)
+	</span><span class="prelude-val">Ok</span>(<span class="kw">unsafe </span>{ dest.into_full_vec() })
 }
 
 <span class="doccomment">/// Errors that can be encountered on decoding data (encoding data does not error)
