@@ -265,6 +265,12 @@
 <a href="#265" id="265">265</a>
 <a href="#266" id="266">266</a>
 <a href="#267" id="267">267</a>
+<a href="#268" id="268">268</a>
+<a href="#269" id="269">269</a>
+<a href="#270" id="270">270</a>
+<a href="#271" id="271">271</a>
+<a href="#272" id="272">272</a>
+<a href="#273" id="273">273</a>
 </pre></div><pre class="rust"><code><span class="attr">#![cfg_attr(feature = <span class="string">"nightly"</span>, feature(cfg_overflow_checks))]
 
 #![cfg_attr(feature = <span class="string">"omega-tuples-of-doom"</span>, recursion_limit = <span class="string">"256"</span>)]
@@ -327,6 +333,7 @@
 #![cfg_attr(all(not(any(docsrs, kiwingay)), feature = <span class="string">"nominal"</span>), doc = <span class="string">"- `nominal`"</span>)]
 #![cfg_attr(all(not(any(docsrs, kiwingay)), feature = <span class="string">"num-traits-unstable"</span>), doc = <span class="string">"- `num-traits` (unstable)"</span>)]
 #![cfg_attr(all(not(any(docsrs, kiwingay)), feature = <span class="string">"path-unstable"</span>), doc = <span class="string">"- `path` (unstable)"</span>)]
+#![cfg_attr(all(not(any(docsrs, kiwingay)), feature = <span class="string">"ptr-unstable"</span>), doc = <span class="string">"- `ptr` (unstable)"</span>)]
 #![cfg_attr(all(not(any(docsrs, kiwingay)), feature = <span class="string">"rand"</span>), doc = <span class="string">"- `rand`"</span>)]
 #![cfg_attr(all(not(any(docsrs, kiwingay)), feature = <span class="string">"serialiser-binary-unstable"</span>), doc = <span class="string">"- `serialiser-binary` (unstable)"</span>)]
 #![cfg_attr(all(not(any(docsrs, kiwingay)), feature = <span class="string">"serialiser-text-unstable"</span>), doc = <span class="string">"- `serialiser-text` (unstable)"</span>)]
@@ -360,6 +367,7 @@
 	not(feature = <span class="string">"nominal"</span>),
 	not(feature = <span class="string">"num-traits-unstable"</span>),
 	not(feature = <span class="string">"path-unstable"</span>),
+	not(feature = <span class="string">"ptr-unstable"</span>),
 	not(feature = <span class="string">"rand"</span>),
 	not(feature = <span class="string">"serialiser-binary-unstable"</span>),
 	not(feature = <span class="string">"serialiser-text-unstable"</span>),
@@ -498,6 +506,10 @@
 <span class="attr">#[cfg(feature = <span class="string">"path-unstable"</span>)]
 #[cfg_attr(docsrs, doc(cfg(feature = <span class="string">"path-unstable"</span>)))]
 </span><span class="kw">pub mod </span>path;
+
+<span class="attr">#[cfg(feature = <span class="string">"ptr-unstable"</span>)]
+#[cfg_attr(docsrs, doc(cfg(feature = <span class="string">"ptr-unstable"</span>)))]
+</span><span class="kw">pub mod </span>ptr;
 
 <span class="attr">#[cfg(feature = <span class="string">"rand"</span>)]
 #[cfg_attr(docsrs, doc(cfg(feature = <span class="string">"rand"</span>)))]
