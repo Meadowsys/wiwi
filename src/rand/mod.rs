@@ -4,7 +4,11 @@ use rand_chacha::{ ChaCha8Core, ChaCha12Core, ChaCha20Core };
 use std::cell::RefCell;
 
 macro_rules! decl_thread_local_rng {
-	($struct_name:ident $core:ident $reseeder:ident) => {
+	{
+		$(#[$struct_meta:meta])*
+		$struct_name:ident $core:ident $reseeder:ident
+	} => {
+		$(#[$struct_meta])*
 		pub struct $struct_name;
 
 		const _: () = {
@@ -52,9 +56,23 @@ macro_rules! decl_thread_local_rng {
 	}
 }
 
-decl_thread_local_rng! { ThreadLocalChaCha8Rng ChaCha8Core OsRng }
-decl_thread_local_rng! { ThreadLocalChaCha12Rng ChaCha12Core OsRng }
-decl_thread_local_rng! { ThreadLocalChaCha20Rng ChaCha20Core OsRng }
+decl_thread_local_rng! {
+	/// ChaCha8 thread local random number generator, seeding and reseeding
+	/// using the OS-provided randomness source every 16KiB of output
+	ThreadLocalChaCha8Rng ChaCha8Core OsRng
+}
+
+decl_thread_local_rng! {
+	/// ChaCha12 thread local random number generator, seeding and reseeding
+	/// using the OS-provided randomness source every 16KiB of output
+	ThreadLocalChaCha12Rng ChaCha12Core OsRng
+}
+
+decl_thread_local_rng! {
+	/// ChaCha20 thread local random number generator, seeding and reseeding
+	/// using the OS-provided randomness source every 16KiB of output
+	ThreadLocalChaCha20Rng ChaCha20Core OsRng
+}
 
 impl CryptoRng for ThreadLocalChaCha20Rng {}
 

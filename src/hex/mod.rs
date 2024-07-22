@@ -25,58 +25,53 @@ pub fn encode_hex_upper(bytes: &[u8]) -> String {
 	_encode::<true>(bytes)
 }
 
-// mut is used by cfg(target_arch) which is not necessarily cfg enabled
-#[allow(unused_mut)]
+/// Inner function with const generic `UPPER`
+// // mut is used by cfg(target_arch) which is not necessarily cfg enabled
+// #[allow(unused_mut)]
 fn _encode<const UPPER: bool>(bytes: &[u8]) -> String {
-	let bytes_len = bytes.len();
-	let capacity = bytes_len * 2;
+	debug_assert!(bytes.len() >> (usize::BITS - 1) == 0, "size overflow");
 
-	let mut bytes_ptr = bytes.as_ptr();
+	let len = bytes.len();
+	// shl 1 is same as multiplying by 2
+	let capacity = len << 1;
+	let ptr = bytes.as_ptr();
 	let mut dest = UnsafeBufWriteGuard::with_capacity(capacity);
-	let mut rounds = bytes_len;
 
-	// #[cfg(target_arch = "aarch64")] {
-	// 	if std::arch::is_aarch64_feature_detected!("neon") {
-	// 		// we handle the big chunks, but leave enough info for the below generic
-	// 		// to continue the uneven chunks
-	// 		// divide by 16
-	// 		let neon_rounds = rounds >> 4;
-	// 		// mod 16
-	// 		let remainder = bytes_len & 0b1111;
-	//
-	// 		bytes_ptr = unsafe { encode::neon_uint8x16::<UPPER>(bytes_ptr, dest.as_mut_ptr(), neon_rounds) };
-	//
-	// 		// multiply by 32
-	// 		// multiply by num rounds (^) times two, which is shift one more
-	// 		let amount_written = neon_rounds << 5;
-	// 		rounds = remainder;
-	// 		unsafe { dest.add_byte_count(amount_written) }
-	// 	}
-	// }
+	// SAFETY: we obtained `ptr` and `len` from `bytes`, so `ptr` is valid for `len`
+	// reads, and we calculated and requested `dest` to allocate `len * 2` bytes
+	unsafe { encode::generic::<UPPER>(ptr, &mut dest, len) };
 
-	unsafe { encode::generic::<UPPER>(bytes_ptr, &mut dest, rounds) };
-
+	// SAFETY: we wrote into all the space we requested (`len * 2`)
 	let vec = unsafe { dest.into_full_vec() };
-	debug_assert!(str::from_utf8(&vec).is_ok(), "output bytes are valid utf-8");
-	unsafe { String::from_utf8_unchecked(vec) }
+
+	// SAFETY: `encode::generic` will only ever write the ASCII chars `0-9`, `a-f`,
+	// and `A-F` into vec. ASCII is valid UTF-8
+	unsafe {
+		debug_assert!(str::from_utf8(&vec).is_ok(), "output bytes are valid utf-8");
+		String::from_utf8_unchecked(vec)
+	}
 }
 
 /// Decodes a slice of hex bytes into a byte vector. This function handles and
 /// supports both uppercase and lowercase characters.
 pub fn decode_hex(bytes: &[u8]) -> Result<Vec<u8>, DecodeError> {
-	// AND 0b1 is chopping off all the other bits; last bit will
-	// always be 0 or 1, depending on odd or even
-	if bytes.len() & 0b1 != 0 { return Err(DecodeError::InvalidLength) }
+	let len = bytes.len();
+
+	// `AND 0b1` is chopping off all the other bits
+	// if the last bit is 1 then it's odd, which is invalid
+	if len & 0b1 != 0 { return Err(DecodeError::InvalidLength) }
 
 	// shr 1 is same as div 2
-	let capacity = bytes.len() >> 1;
+	let capacity = len >> 1;
 	let mut dest = UnsafeBufWriteGuard::with_capacity(capacity);
-	// num rounds is same as capacity, since each round outputs one byte.
+	let ptr = bytes.as_ptr();
 
-	let bytes_ptr = bytes.as_ptr();
+	// SAFETY: ptr is readable for `capacity * 2` bytes (since `capacity` is
+	// `len / 2` and `ptr` is readable for `len` bytes), and we requested `capacity`
+	// bytes in `dest`
+	unsafe { decode::generic(ptr, &mut dest, capacity)? }
 
-	unsafe { decode::generic(bytes_ptr, &mut dest, capacity)? }
-
+	// SAFETY: we wrote into all the space we requested (`len / 2`)
 	Ok(unsafe { dest.into_full_vec() })
 }
 
