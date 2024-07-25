@@ -1,5 +1,5 @@
 use crate::num_traits::*;
-use rand::{ Rng, rngs::ThreadRng, thread_rng };
+use crate::rand::ThreadLocalChaCha8Rng;
 use std::time::{ SystemTime, UNIX_EPOCH };
 use std::num::NonZeroU64;
 
@@ -74,7 +74,7 @@ impl IDGenerator {
 
 		(self.count < MAX_COUNT).then(|| {
 			let now = self.last_generated_time << TIMESTAMP_SHIFT;
-			let random = (thread_rng().gen::<u8>() & RANDOM_COMPONENT_MASK).into_u64();
+			let random = (ThreadLocalChaCha8Rng::gen_rand::<u8>() & RANDOM_COMPONENT_MASK).into_u64();
 
 			// guaranteed to fit within 14 bits, as checked by
 			// bool statement before this closure

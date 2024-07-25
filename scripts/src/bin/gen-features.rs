@@ -94,8 +94,7 @@ fn main() {
 		#[unstable]
 		"id"
 		"ID generator, with all IDs generated from one generater guaranteed to be monotonically increasing"
-		dependencies: ["rand"]
-		features: ["num-traits"]
+		features: ["num-traits", "rand"]
 
 		#[unstable]
 		"int"

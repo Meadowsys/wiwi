@@ -114,8 +114,8 @@ hex = [
 	"num-traits-unstable"
 ]
 id-unstable = [
-	"dep:rand",
-	"num-traits-unstable"
+	"num-traits-unstable",
+	"rand"
 ]
 int-unstable = [
 	"wiwiwiwiwi/int",
