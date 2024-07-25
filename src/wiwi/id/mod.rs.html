@@ -259,7 +259,7 @@
 <a href="#259" id="259">259</a>
 <a href="#260" id="260">260</a>
 </pre></div><pre class="rust"><code><span class="kw">use </span><span class="kw">crate</span>::num_traits::<span class="kw-2">*</span>;
-<span class="kw">use </span>rand::{ Rng, rngs::ThreadRng, thread_rng };
+<span class="kw">use </span><span class="kw">crate</span>::rand::ThreadLocalChaCha8Rng;
 <span class="kw">use </span>std::time::{ SystemTime, UNIX_EPOCH };
 <span class="kw">use </span>std::num::NonZeroU64;
 
@@ -334,7 +334,7 @@
 
 		(<span class="self">self</span>.count &lt; MAX_COUNT).then(|| {
 			<span class="kw">let </span>now = <span class="self">self</span>.last_generated_time &lt;&lt; TIMESTAMP_SHIFT;
-			<span class="kw">let </span>random = (thread_rng().gen::&lt;u8&gt;() &amp; RANDOM_COMPONENT_MASK).into_u64();
+			<span class="kw">let </span>random = (ThreadLocalChaCha8Rng::gen_rand::&lt;u8&gt;() &amp; RANDOM_COMPONENT_MASK).into_u64();
 
 			<span class="comment">// guaranteed to fit within 14 bits, as checked by
 			// bool statement before this closure
