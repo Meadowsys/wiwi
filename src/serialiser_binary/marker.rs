@@ -4,7 +4,7 @@ consts! {
 	const type u8
 
 	/// Marker constants
-	mod markers
+	pub mod markers
 
 	MARKER_SMALLINT_RANGE_START = 0x00
 	MARKER_SMALLINT_RANGE_END = 0x7f

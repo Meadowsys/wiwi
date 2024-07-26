@@ -36,7 +36,7 @@ consts! {
 	///    found: "a negative integer",
 	/// }
 	/// ```
-	mod expected
+	pub mod expected
 
 	// DESC_EXPECTED_SMALLINT_UNSIGNED = "a positive smallint"
 	// DESC_EXPECTED_SMALLINT_SIGNED = "a signed smallint"
@@ -59,7 +59,7 @@ consts! {
 	///    found: "a negative integer",
 	/// }
 	/// ```
-	mod found
+	pub mod found
 
 	// DESC_FOUND_SMALLINT = "a smallint"
 	// DESC_FOUND_SMALLINT_NEGATIVE = "a negative smallint"
