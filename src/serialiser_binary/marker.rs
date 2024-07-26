@@ -53,6 +53,7 @@ consts! {
 	MARKER_F128 = 0xa5
 	/// Reserved for currently unimplemented IEEE754-2008 binary256 type
 	MARKER_F256 = 0xa6
+
 	MARKER_NULL = 0xa7
 
 	MARKER_STRING_8 = 0xa8
@@ -81,8 +82,9 @@ consts! {
 	MARKER_UNASSIGNED_B9 = 0xb9
 	MARKER_UNASSIGNED_BA = 0xba
 	MARKER_UNASSIGNED_BB = 0xbb
-	MARKER_2_BYTE_1 = 0xbc
-	MARKER_2_BYTE_2 = 0xbd
+
+	MARKER_2_BYTE_SECTION_1 = 0xbc
+	MARKER_2_BYTE_SECTION_2 = 0xbd
 	MARKER_3_BYTE = 0xbe
 	MARKER_4_BYTE = 0xbf
 
