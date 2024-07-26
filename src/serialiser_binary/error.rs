@@ -23,53 +23,49 @@ impl ErrorHalf {
 	}
 }
 
-/// error messages for the `expected` part of errors
-///
-/// For example:
-///
-/// ```ignore
-/// Error {
-///    expected: "an unsigned integer, up to 24 bits",
-///    found: "a negative integer",
-/// }
-/// ```
-pub mod expected {
-	use super::*;
+consts! {
+	static type &'static str
 
-	consts! {
-		static type &'static str
+	/// error messages for the `expected` part of errors
+	///
+	/// For example:
+	///
+	/// ```ignore
+	/// Error {
+	///    expected: "an unsigned integer, up to 24 bits",
+	///    found: "a negative integer",
+	/// }
+	/// ```
+	mod expected
 
-		// DESC_EXPECTED_SMALLINT_UNSIGNED = "a positive smallint"
-		// DESC_EXPECTED_SMALLINT_SIGNED = "a signed smallint"
+	// DESC_EXPECTED_SMALLINT_UNSIGNED = "a positive smallint"
+	// DESC_EXPECTED_SMALLINT_SIGNED = "a signed smallint"
 
-		// DESC_EXPECTED_U8 = "an unsigned integer, up to 8 bits"
-		// DESC_EXPECTED_I8 = "a signed integer, up to 8 bits"
-		// ...
-	}
+	// DESC_EXPECTED_U8 = "an unsigned integer, up to 8 bits"
+	// DESC_EXPECTED_I8 = "a signed integer, up to 8 bits"
+	// ...
 }
 
-/// error messages for the `found` part of errors
-///
-/// For example:
-///
-/// ```ignore
-/// Error {
-///    expected: "an unsigned integer, up to 24 bits",
-///    found: "a negative integer",
-/// }
-/// ```
-pub mod found {
-	use super::*;
+consts! {
+	static type &'static str
 
-	consts! {
-		static type &'static str
+	/// error messages for the `found` part of errors
+	///
+	/// For example:
+	///
+	/// ```ignore
+	/// Error {
+	///    expected: "an unsigned integer, up to 24 bits",
+	///    found: "a negative integer",
+	/// }
+	/// ```
+	mod found
 
-		// DESC_FOUND_SMALLINT = "a smallint"
-		// DESC_FOUND_SMALLINT_NEGATIVE = "a negative smallint"
+	// DESC_FOUND_SMALLINT = "a smallint"
+	// DESC_FOUND_SMALLINT_NEGATIVE = "a negative smallint"
 
-		// DESC_FOUND_INT_NEGATIVE = "a negative integer"
-		// DESC_FOUND_INT_TOO_LARGE_U8 = "an integer that overflows unsigned 8 bits"
-		// DESC_FOUND_INT_TOO_LARGE_I8 = "an integer that overflows signed 8 bits"
-		// ...
-	}
+	// DESC_FOUND_INT_NEGATIVE = "a negative integer"
+	// DESC_FOUND_INT_TOO_LARGE_U8 = "an integer that overflows unsigned 8 bits"
+	// DESC_FOUND_INT_TOO_LARGE_I8 = "an integer that overflows signed 8 bits"
+	// ...
 }
