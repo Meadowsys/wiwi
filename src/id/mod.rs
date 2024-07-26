@@ -47,6 +47,8 @@ pub struct GeneratedID {
 
 impl IDGenerator {
 	#[inline]
+	// no
+	#[allow(clippy::new_without_default)]
 	pub fn new() -> Self {
 		// if, _somehow_, the first ID is indeed generated at UNIX time 0,
 		// this initial count value of 1 will mean that ID is not zero. However,
@@ -60,6 +62,8 @@ impl IDGenerator {
 	}
 
 	#[inline]
+	// no
+	#[allow(clippy::should_implement_trait)]
 	pub fn next(&mut self) -> Option<GeneratedID> {
 		let now = SystemTime::now()
 			.duration_since(UNIX_EPOCH)
@@ -150,7 +154,7 @@ impl GeneratedID {
 		// (2 ^ 64) / (62 ^ 11) roughly equals 0.35, which,
 		// output here will always be 11 or less chars
 		let mut string = String::with_capacity(11);
-		let mut string_vec = unsafe { string.as_mut_vec() };
+		let string_vec = unsafe { string.as_mut_vec() };
 		let mut val = self.unsigned.get();
 
 		while val > 0 {
