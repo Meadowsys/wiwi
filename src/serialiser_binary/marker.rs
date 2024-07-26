@@ -1,18 +1,8 @@
-macro_rules! markers {
-	{ $(
-		$(#[$meta:meta])*
-		$name:ident = $value:expr
-	)* } => {
-		$(
-			// TODO: remove this lol
-			$(#[$meta])*
-			#[allow(dead_code)]
-			pub const $name: u8 = $value;
-		)*
-	}
-}
+use super::consts;
 
-markers! {
+consts! {
+	const type u8
+
 	MARKER_SMALLINT_RANGE_START = 0x00
 	MARKER_SMALLINT_RANGE_END = 0x7f
 
