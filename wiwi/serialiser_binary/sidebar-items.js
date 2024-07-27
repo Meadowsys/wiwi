@@ -1,1 +1,1 @@
-window.SIDEBAR_ITEMS = {};
+window.SIDEBAR_ITEMS = {"fn":["deserialise","serialise"],"struct":["BoolSerialiser","Error","I128Serialiser","I16Serialiser","I32Serialiser","I64Serialiser","I8Serialiser","InputSliceBuffer","OutputVecBuffer","U128Serialiser","U16Serialiser","U32Serialiser","U64Serialiser","U8Serialiser"],"trait":["Deserialise","Input","Output","Serialise","Serialiser"],"type":["ISizeSerialiser","Result","USizeSerialiser"]};
