@@ -19,9 +19,11 @@ pub use error::{ Error, Result };
 
 #[inline]
 pub fn serialise<T: Serialise>(item: &T) -> Vec<u8> {
-	let mut serialiser = item.build_serialiser();
-	let capacity = unsafe { serialiser.calc_needed_capacity() };
+	let serialiser = item.build_serialiser();
+
+	let capacity = unsafe { serialiser.needed_capacity() };
 	let mut out = OutputVecBuffer::with_capacity(capacity);
+
 	unsafe { serialiser.serialise(&mut out) }
 	out.into_vec()
 }
@@ -45,29 +47,31 @@ pub fn deserialise<'h, T: Deserialise<'h>>(bytes: &[u8]) -> Result<T, T::Error> 
 
 pub trait Serialise: Sized {
 	type Serialiser<'h>: Serialiser<'h> where Self: 'h;
+
+	/// Gather all data required for serialisation, and store them in this
+	/// serialiser struct
 	fn build_serialiser(&self) -> Self::Serialiser<'_>;
 }
 
 pub trait Serialiser<'h>: Sized {
-	/// Calculate the amount of bytes this item will take up when serialised
-	///
-	/// This method takes `&mut self` as receiver so the serialiser
+	/// Get the amount of bytes this item will take up when serialised
 	///
 	/// # Safety
 	///
 	/// Unsafe code is allowed to rely on this for soundness. If you cannot
 	/// precisely determine amount needed, you should (and must for soundness
 	/// reasons) provide the upper bound.
-	///
-	/// You must call this method once before calling `serialise`.
-	unsafe fn calc_needed_capacity(&mut self) -> usize;
+	unsafe fn needed_capacity(&self) -> usize;
 
 	/// Serialise `self` into the provided output buffer
 	///
 	/// # Safety
 	///
-	/// You must call `calc_needed_capacity` once before this.
-	unsafe fn serialise<O: Output>(&self, buf: &mut O);
+	/// The provided output `buf` must have at least the amount of free bytes
+	/// available to write to as `needed_capacity` returns (ie. calling
+	/// `needed_capacity`, then calling `reserve` on `buf` with the value returned
+	/// from `needed_capacity`, satisfies this precondition).
+	unsafe fn serialise<O: Output>(self, buf: &mut O);
 }
 
 pub trait Deserialise<'h>: Sized {

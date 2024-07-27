@@ -39,12 +39,12 @@ pub struct BoolSerialiser {
 
 impl<'h> Serialiser<'h> for BoolSerialiser {
 	#[inline]
-	unsafe fn calc_needed_capacity(&mut self) -> usize {
+	unsafe fn needed_capacity(&self) -> usize {
 		1
 	}
 
 	#[inline]
-	unsafe fn serialise<O: Output>(&self, buf: &mut O) {
+	unsafe fn serialise<O: Output>(self, buf: &mut O) {
 		// - false is 0xa0, true is 0xa1
 		// - false casts to integer 0, true to 1
 
