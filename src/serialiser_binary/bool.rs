@@ -1,22 +1,35 @@
-use super::{ Deserialise, Error, Input, Output, Result, Serialise, use_some };
+use super::{ Deserialise, Error, Input, Output, Result, Serialise, Serialiser, use_some };
 use super::error::expected;
 use super::error::expected::*;
 use super::marker::markers::*;
 
+pub struct BoolSerialiser {
+	value: bool
+}
+
 impl Serialise for bool {
+	type Serialiser<'h> = BoolSerialiser;
+
 	#[inline]
-	unsafe fn calc_needed_capacity(&self) -> usize {
+	fn build_serialiser(&self) -> BoolSerialiser {
+		BoolSerialiser { value: *self }
+	}
+}
+
+impl<'h> Serialiser<'h> for BoolSerialiser {
+	#[inline]
+	unsafe fn calc_needed_capacity(&mut self) -> usize {
 		1
 	}
 
 	#[inline]
-	fn serialise<O: Output>(&self, buf: &mut O) {
+	unsafe fn serialise<O: Output>(&self, buf: &mut O) {
 		// - false is 0xa0, true is 0xa1
-		// - true casts to integer 1
+		// - false casts to integer 0, true to 1
 
 		// SAFETY: provided buffer is guaranteed by caller to have reserved
-		// at least 1 more byte, as returned by `calc_needed_capacity`
-		unsafe { buf.write_byte(*self as u8 + 0xa0) }
+		// at least the amount returned by `calc_needed_capacity` (1)
+		unsafe { buf.write_byte(self.value as u8 + 0xa0) }
 	}
 }
 

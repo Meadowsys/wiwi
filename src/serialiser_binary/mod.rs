@@ -16,11 +16,10 @@ pub use error::{ Error, Result };
 
 #[inline]
 pub fn serialise<T: Serialise>(item: &T) -> Vec<u8> {
-	// SAFETY: `calc_needed_capacity` has no invariants, it's unsafe to make
-	// implementor assert they've followed preconditions relied on for soundness
-	let capacity = unsafe { item.calc_needed_capacity() };
+	let mut serialiser = item.build_serialiser();
+	let capacity = unsafe { serialiser.calc_needed_capacity() };
 	let mut out = OutputVecBuffer::with_capacity(capacity);
-	item.serialise(&mut out);
+	unsafe { serialiser.serialise(&mut out) }
 	out.into_vec()
 }
 
@@ -42,17 +41,30 @@ pub fn deserialise<'h, T: Deserialise<'h>>(bytes: &[u8]) -> Result<T, T::Error> 
 }
 
 pub trait Serialise: Sized {
+	type Serialiser<'h>: Serialiser<'h> where Self: 'h;
+	fn build_serialiser(&self) -> Self::Serialiser<'_>;
+}
+
+pub trait Serialiser<'h>: Sized {
 	/// Calculate the amount of bytes this item will take up when serialised
+	///
+	/// This method takes `&mut self` as receiver so the serialiser
 	///
 	/// # Safety
 	///
 	/// Unsafe code is allowed to rely on this for soundness. If you cannot
 	/// precisely determine amount needed, you should (and must for soundness
-	/// reasons) err on the larger side.
-	unsafe fn calc_needed_capacity(&self) -> usize;
+	/// reasons) provide the upper bound.
+	///
+	/// You must call this method once before calling `serialise`.
+	unsafe fn calc_needed_capacity(&mut self) -> usize;
 
-	// Serialise `self` into the provided output buffer
-	fn serialise<O: Output>(&self, buf: &mut O);
+	/// Serialise `self` into the provided output buffer
+	///
+	/// # Safety
+	///
+	/// You must call `calc_needed_capacity` once before this.
+	unsafe fn serialise<O: Output>(&self, buf: &mut O);
 }
 
 pub trait Deserialise<'h>: Sized {
