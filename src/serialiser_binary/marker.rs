@@ -42,8 +42,16 @@ consts! {
 	MARKER_U128 = 0x9e
 	MARKER_I128 = 0x9f
 
-	MARKER_BOOL_TRUE = 0xa0
-	MARKER_BOOL_FALSE = 0xa1
+	MARKER_BOOL_FALSE = 0xa0
+	MARKER_BOOL_TRUE = 0xa1
+
+	/// The upper bits that are the same across all `bool` markers, shifted down
+	/// by 1 (0x50)
+	///
+	/// No other marker has this property, so checking
+	/// `byte >> 1 == MARKER_BOOL_UPPER_BITS_COMMON` is sufficient to determine
+	/// if a byte represents a bool value.
+	MARKER_BOOL_UPPER_BITS_COMMON = MARKER_BOOL_FALSE >> 1
 
 	/// Reserved for currently unimplemented IEEE754-2008 binary16 type
 	MARKER_F16 = 0xa2
