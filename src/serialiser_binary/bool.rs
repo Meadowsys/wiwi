@@ -1,7 +1,7 @@
-use super::error::{ Error, Result, expected };
+use super::{ Deserialise, Error, Input, Output, Result, Serialise, use_some };
+use super::error::expected;
 use super::error::expected::*;
 use super::marker::markers::*;
-use super::{ Deserialise, Input, Output, Serialise, use_ok, use_some };
 
 impl Serialise for bool {
 	#[inline]
