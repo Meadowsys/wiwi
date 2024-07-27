@@ -1,3 +1,134 @@
+use super::{ Deserialise, Error, Input, Output, Result, Serialise };
+use super::error::expected;
+use super::error::expected::*;
+use super::error::found::*;
+use super::marker::markers::*;
+use std::mem::MaybeUninit;
+
+pub struct U8Serialiser {
+	inner: u8,
+	is_small: MaybeUninit<bool>
+}
+
+pub struct U16Serialiser {
+	inner: SerialiserInner16,
+	/// Count of bytes to serialise in
+	///
+	/// If this is 0, that means smallint
+	/// (only serialise the first byte)
+	byte_count: MaybeUninit<u8>
+}
+
+pub struct U32Serialiser {
+	inner: SerialiserInner32,
+	/// Count of bytes to serialise in
+	///
+	/// If this is 0, that means smallint
+	/// (only serialise the first byte)
+	byte_count: MaybeUninit<u8>
+}
+
+pub struct U64Serialiser {
+	inner: SerialiserInner64,
+	/// Count of bytes to serialise in
+	///
+	/// If this is 0, that means smallint
+	/// (only serialise the first byte)
+	byte_count: MaybeUninit<u8>
+}
+
+pub struct U128Serialiser {
+	inner: SerialiserInner128,
+	/// Count of bytes to serialise in
+	///
+	/// If this is 0, that means smallint
+	/// (only serialise the first byte)
+	byte_count: MaybeUninit<u8>
+}
+
+#[cfg(target_pointer_width = "64")]
+pub type USizeSerialiser = U64Serialiser;
+
+#[cfg(target_pointer_width = "32")]
+pub type USizeSerialiser = U32Serialiser;
+
+#[cfg(target_pointer_width = "16")]
+pub type USizeSerialiser = U16Serialiser;
+
+pub struct I8Serialiser {
+	inner: u8,
+	is_small: MaybeUninit<bool>
+}
+
+pub struct I16Serialiser {
+	inner: SerialiserInner16,
+	/// Count of bytes to serialise in
+	///
+	/// If this is 0, that means smallint
+	/// (only serialise the first byte)
+	byte_count: MaybeUninit<u8>
+}
+
+pub struct I32Serialiser {
+	inner: SerialiserInner32,
+	/// Count of bytes to serialise in
+	///
+	/// If this is 0, that means smallint
+	/// (only serialise the first byte)
+	byte_count: MaybeUninit<u8>
+}
+
+pub struct I64Serialiser {
+	inner: SerialiserInner64,
+	/// Count of bytes to serialise in
+	///
+	/// If this is 0, that means smallint
+	/// (only serialise the first byte)
+	byte_count: MaybeUninit<u8>
+}
+
+pub struct I128Serialiser {
+	inner: SerialiserInner128,
+	/// Count of bytes to serialise in
+	///
+	/// If this is 0, that means smallint
+	/// (only serialise the first byte)
+	byte_count: MaybeUninit<u8>
+}
+
+#[cfg(target_pointer_width = "64")]
+pub type ISizeSerialiser = I64Serialiser;
+
+#[cfg(target_pointer_width = "32")]
+pub type ISizeSerialiser = I32Serialiser;
+
+#[cfg(target_pointer_width = "16")]
+pub type ISizeSerialiser = I16Serialiser;
+
+union SerialiserInner16 {
+	unsigned: u16,
+	signed: i16,
+	le_bytes: [u8; 2]
+}
+
+union SerialiserInner32 {
+	unsigned: u32,
+	signed: i32,
+	le_bytes: [u8; 4]
+}
+
+union SerialiserInner64 {
+	unsigned: u64,
+	signed: i64,
+	le_bytes: [u8; 8]
+}
+
+union SerialiserInner128 {
+	unsigned: u128,
+	signed: i128,
+	le_bytes: [u8; 16]
+}
+
 #[inline]
 fn get_byte_count_unsigned_le<const BYTES: usize>(bytes: [u8; BYTES]) -> u8 {
 	let ptr = bytes.as_ptr();

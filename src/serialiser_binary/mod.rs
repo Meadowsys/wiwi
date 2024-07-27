@@ -13,6 +13,8 @@ mod marker;
 mod bool;
 mod number;
 
+pub use self::bool::*;
+pub use self::number::*;
 pub use error::{ Error, Result };
 
 #[inline]
