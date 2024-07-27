@@ -11,6 +11,7 @@ mod error;
 mod marker;
 
 mod bool;
+mod number;
 
 pub use error::{ Error, Result };
 
