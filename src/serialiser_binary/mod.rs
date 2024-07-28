@@ -119,13 +119,33 @@ pub trait Output {
 	unsafe fn write_byte(&mut self, byte: u8);
 }
 
-pub trait Input<'h> {
-	fn read_bytes_ptr(&mut self, bytes: usize) -> Option<*const u8>;
+impl Output for Vec<u8> {
+	#[inline]
+	fn reserve(&mut self, bytes: usize) {
+		self.reserve(bytes);
+	}
 
 	#[inline]
-	fn read_bytes_ptr_const<const BYTES: usize>(&mut self) -> Option<*const u8> {
-		self.read_bytes_ptr(BYTES)
+	unsafe fn write_bytes(&mut self, bytes: &[u8]) {
+		let len = self.len();
+		let ptr = self.as_mut_ptr().add(len);
+
+		ptr::copy_nonoverlapping(bytes.as_ptr(), ptr, bytes.len());
+		self.set_len(len + bytes.len())
 	}
+
+	#[inline]
+	unsafe fn write_byte(&mut self, byte: u8) {
+		let len = self.len();
+		let ptr = self.as_mut_ptr().add(len);
+
+		ptr::write(ptr, byte);
+		self.set_len(len + 1);
+	}
+}
+
+pub trait Input<'h> {
+	fn read_bytes_ptr(&mut self, bytes: usize) -> Option<*const u8>;
 
 	#[inline]
 	fn read_bytes(&mut self, bytes: usize) -> Option<&'h [u8]> {
@@ -138,20 +158,9 @@ pub trait Input<'h> {
 	}
 
 	#[inline]
-	fn read_bytes_const<const BYTES: usize>(&mut self) -> Option<&'h [u8; BYTES]> {
-		Some(use_some!(
-			self.read_bytes(BYTES),
-			// SAFETY: `read_bytes` returns either None or Some(&[u8]) with length
-			// equal to what we asked for (`N`). So, pointer returned is valid for
-			// `N` reads
-			bytes => unsafe { &*bytes.as_ptr().cast() }
-		))
-	}
-
-	#[inline]
 	fn read_byte(&mut self) -> Option<u8> {
 		Some(use_some!(
-			self.read_bytes_ptr_const::<1>(),
+			self.read_bytes_ptr(1),
 			// SAFETY: ptr returned by `read_bytes_ptr_const` is
 			// guaranteed to be readable for at least 1 byte
 			byte => unsafe { *byte }
