@@ -1,5 +1,4 @@
 use std::fmt::{ self, Debug, Display };
-use std::marker::PhantomData;
 use std::mem::ManuallyDrop;
 use std::ops::{ Deref, DerefMut };
 use std::thread::panicking;
@@ -256,6 +255,18 @@ where
 		let value = ManuallyDrop::new(should_run_value);
 		let f = ManuallyDrop::new(should_run);
 		self._replace_when(when::RuntimeFn { value, f })
+	}
+
+	/// Consumes and returns back the value and the function
+	#[inline]
+	pub fn into_inner(self) -> (T, F) {
+		let mut me = ManuallyDrop::new(self);
+
+		let value = unsafe { ManuallyDrop::take(&mut me.value) };
+		let _when = unsafe { ManuallyDrop::take(&mut me.when) };
+		let f = unsafe { ManuallyDrop::take(&mut me.f) };
+
+		(value, f)
 	}
 }
 
