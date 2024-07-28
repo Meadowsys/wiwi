@@ -42,6 +42,9 @@ consts! {
 	MARKER_U128 = 0x9e
 	MARKER_I128 = 0x9f
 
+	/// For single type arrays of bools, this serves as the marker for the
+	/// bool type
+	MARKER_BOOL = 0xa0
 	MARKER_BOOL_FALSE = 0xa0
 	MARKER_BOOL_TRUE = 0xa1
 
