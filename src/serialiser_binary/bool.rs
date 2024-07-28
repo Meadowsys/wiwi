@@ -8,7 +8,35 @@ impl Serialise for bool {
 
 	#[inline]
 	fn build_serialiser(&self) -> BoolSerialiser {
-		BoolSerialiser { value: *self }
+		BoolSerialiser::new(*self)
+	}
+}
+
+pub struct BoolSerialiser {
+	value: bool
+}
+
+impl BoolSerialiser {
+	#[inline]
+	fn new(val: bool) -> Self {
+		Self { value: val }
+	}
+}
+
+impl<'h> Serialiser<'h> for BoolSerialiser {
+	#[inline]
+	unsafe fn needed_capacity(&self) -> usize {
+		1
+	}
+
+	#[inline]
+	unsafe fn serialise<O: Output>(self, buf: &mut O) {
+		// - false is 0xa0, true is 0xa1
+		// - false casts to integer 0, true to 1
+
+		// SAFETY: provided buffer is guaranteed by caller to have reserved
+		// at least the amount returned by `calc_needed_capacity` (1)
+		unsafe { buf.write_byte(self.value as u8 + 0xa0) }
 	}
 }
 
@@ -30,26 +58,5 @@ impl<'h> Deserialise<'h> for bool {
 				.found_nothing()
 				.wrap_in_err()
 		))
-	}
-}
-
-pub struct BoolSerialiser {
-	value: bool
-}
-
-impl<'h> Serialiser<'h> for BoolSerialiser {
-	#[inline]
-	unsafe fn needed_capacity(&self) -> usize {
-		1
-	}
-
-	#[inline]
-	unsafe fn serialise<O: Output>(self, buf: &mut O) {
-		// - false is 0xa0, true is 0xa1
-		// - false casts to integer 0, true to 1
-
-		// SAFETY: provided buffer is guaranteed by caller to have reserved
-		// at least the amount returned by `calc_needed_capacity` (1)
-		unsafe { buf.write_byte(self.value as u8 + 0xa0) }
 	}
 }
