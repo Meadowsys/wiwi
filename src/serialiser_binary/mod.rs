@@ -16,8 +16,21 @@ mod marker;
 mod bool;
 mod number;
 
-pub use self::bool::*;
-pub use self::number::*;
+pub use self::bool::BoolSerialiser;
+pub use self::number::{
+	U8Serialiser,
+	U16Serialiser,
+	U32Serialiser,
+	U64Serialiser,
+	U128Serialiser,
+	USizeSerialiser,
+	I8Serialiser,
+	I16Serialiser,
+	I32Serialiser,
+	I64Serialiser,
+	I128Serialiser,
+	ISizeSerialiser
+};
 pub use error::{ Error, Result };
 
 #[inline]
