@@ -21,15 +21,6 @@ impl Serialise for String {
 	}
 }
 
-impl Serialise for Cow<'_, str> {
-	type Serialiser<'h> = StrSerialiser<'h> where Self: 'h;
-
-	#[inline]
-	fn build_serialiser(&self) -> StrSerialiser<'_> {
-		StrSerialiser::new(self)
-	}
-}
-
 pub struct StrSerialiser<'h> {
 	val: &'h str,
 	/// If `val.len() > u8::MAX`, this will be `Some`, containing
