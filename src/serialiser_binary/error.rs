@@ -210,6 +210,7 @@ consts! {
 	DESC_EXPECTED_F64 = "a floating point number, 64 bit"
 
 	DESC_EXPECTED_STR = "an utf-8 encoded string"
+	DESC_EXPECTED_ARRAY = "an array"
 }
 
 consts! {

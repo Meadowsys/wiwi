@@ -80,8 +80,9 @@ impl<'h> Deserialise<'h> for &'h str {
 			MARKER_STR_8 => {
 				use_ok!(
 					buf.read_byte(),
+					len => len.into_usize(),
 					#err err => err.expected(DESC_EXPECTED_STR).wrap()
-				).into_usize()
+				)
 			}
 			MARKER_STR_XL => {
 				use_ok!(

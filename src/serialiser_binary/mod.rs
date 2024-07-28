@@ -13,6 +13,7 @@ use std::marker::PhantomData;
 pub mod error;
 mod marker;
 
+mod array;
 mod bool;
 mod cow;
 mod number;
@@ -265,14 +266,25 @@ impl<'h> Input<'h> for InputSliceBuffer<'h> {
 			error::found_eof().wrap()
 		} else {
 			let ptr = self.ptr;
+
 			self.remaining -= bytes;
 			self.ptr = unsafe { self.ptr.add(bytes) };
+
 			Ok(ptr)
 		}
 	}
 }
 
 macro_rules! use_marker {
+	(#foreign $buf:ident) => {
+		use_ok!(
+			$buf.read_byte(),
+			#err err => err.expected(
+				$crate::serialiser_binary::error::expected::DESC_EXPECTED_MARKER
+			).wrap_foreign()
+		)
+	};
+
 	($buf:ident) => {
 		use_ok!(
 			$buf.read_byte(),
@@ -280,7 +292,7 @@ macro_rules! use_marker {
 				$crate::serialiser_binary::error::expected::DESC_EXPECTED_MARKER
 			).wrap()
 		)
-	}
+	};
 }
 use use_marker;
 
