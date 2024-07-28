@@ -123,15 +123,6 @@ consts! {
 	static type &'static str
 
 	/// error messages for the `expected` part of errors
-	///
-	/// For example:
-	///
-	/// ```ignore
-	/// Error {
-	///    expected: "an unsigned integer, up to 24 bits",
-	///    found: "a negative integer",
-	/// }
-	/// ```
 	pub mod expected
 
 	// keep order the same as in the `marker` module
@@ -217,15 +208,6 @@ consts! {
 	static type &'static str
 
 	/// error messages for the `found` part of errors
-	///
-	/// For example:
-	///
-	/// ```ignore
-	/// Error {
-	///    expected: "an unsigned integer, up to 24 bits",
-	///    found: "a negative integer",
-	/// }
-	/// ```
 	pub mod found
 
 	// keep order the same as in the `marker` module
