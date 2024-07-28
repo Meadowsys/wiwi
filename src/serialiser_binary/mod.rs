@@ -16,6 +16,7 @@ mod marker;
 mod array;
 mod bool;
 mod cow;
+mod option;
 mod number;
 mod string;
 
