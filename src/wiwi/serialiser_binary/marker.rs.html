@@ -99,7 +99,45 @@
 <a href="#99" id="99">99</a>
 <a href="#100" id="100">100</a>
 <a href="#101" id="101">101</a>
+<a href="#102" id="102">102</a>
+<a href="#103" id="103">103</a>
+<a href="#104" id="104">104</a>
+<a href="#105" id="105">105</a>
+<a href="#106" id="106">106</a>
+<a href="#107" id="107">107</a>
+<a href="#108" id="108">108</a>
+<a href="#109" id="109">109</a>
+<a href="#110" id="110">110</a>
+<a href="#111" id="111">111</a>
+<a href="#112" id="112">112</a>
+<a href="#113" id="113">113</a>
+<a href="#114" id="114">114</a>
+<a href="#115" id="115">115</a>
+<a href="#116" id="116">116</a>
+<a href="#117" id="117">117</a>
+<a href="#118" id="118">118</a>
+<a href="#119" id="119">119</a>
+<a href="#120" id="120">120</a>
+<a href="#121" id="121">121</a>
+<a href="#122" id="122">122</a>
+<a href="#123" id="123">123</a>
+<a href="#124" id="124">124</a>
+<a href="#125" id="125">125</a>
+<a href="#126" id="126">126</a>
+<a href="#127" id="127">127</a>
+<a href="#128" id="128">128</a>
+<a href="#129" id="129">129</a>
 </pre></div><pre class="rust"><code><span class="kw">use </span><span class="kw">super</span>::consts;
+
+<span class="macro">macro_rules!</span> unsigned_smallint_range {
+	() =&gt; { <span class="number">0x00</span>..=<span class="number">0x7f </span>}
+}
+<span class="kw">pub</span>(<span class="kw">crate</span>) <span class="kw">use </span>unsigned_smallint_range;
+
+<span class="macro">macro_rules!</span> signed_smallint_range {
+	() =&gt; { <span class="macro">unsigned_smallint_range!</span>() | <span class="number">0xc0</span>..=<span class="number">0xff </span>}
+}
+<span class="kw">pub</span>(<span class="kw">crate</span>) <span class="kw">use </span>signed_smallint_range;
 
 <span class="macro">consts!</span> {
 	<span class="kw">const type </span>u8
@@ -112,37 +150,55 @@
 
 	</span>MARKER_U8 = <span class="number">0x80
 	</span>MARKER_I8 = <span class="number">0x81
+
 	</span>MARKER_U16 = <span class="number">0x82
 	</span>MARKER_I16 = <span class="number">0x83
+
 	</span>MARKER_U24 = <span class="number">0x84
 	</span>MARKER_I24 = <span class="number">0x85
+
 	</span>MARKER_U32 = <span class="number">0x86
 	</span>MARKER_I32 = <span class="number">0x87
+
 	</span>MARKER_U40 = <span class="number">0x88
 	</span>MARKER_I40 = <span class="number">0x89
+
 	</span>MARKER_U48 = <span class="number">0x8a
 	</span>MARKER_I48 = <span class="number">0x8b
+
 	</span>MARKER_U56 = <span class="number">0x8c
 	</span>MARKER_I56 = <span class="number">0x8d
+
 	</span>MARKER_U64 = <span class="number">0x8e
 	</span>MARKER_I64 = <span class="number">0x8f
+
 	</span>MARKER_U72 = <span class="number">0x90
 	</span>MARKER_I72 = <span class="number">0x91
+
 	</span>MARKER_U80 = <span class="number">0x92
 	</span>MARKER_I80 = <span class="number">0x93
+
 	</span>MARKER_U88 = <span class="number">0x94
 	</span>MARKER_I88 = <span class="number">0x95
+
 	</span>MARKER_U96 = <span class="number">0x96
 	</span>MARKER_I96 = <span class="number">0x97
+
 	</span>MARKER_U104 = <span class="number">0x98
 	</span>MARKER_I104 = <span class="number">0x99
+
 	</span>MARKER_U112 = <span class="number">0x9a
 	</span>MARKER_I112 = <span class="number">0x9b
+
 	</span>MARKER_U120 = <span class="number">0x9c
 	</span>MARKER_I120 = <span class="number">0x9d
+
 	</span>MARKER_U128 = <span class="number">0x9e
 	</span>MARKER_I128 = <span class="number">0x9f
 
+	</span><span class="doccomment">/// For single type arrays of bools, this serves as the marker for the
+	/// bool type
+	</span>MARKER_BOOL = <span class="number">0xa0
 	</span>MARKER_BOOL_FALSE = <span class="number">0xa0
 	</span>MARKER_BOOL_TRUE = <span class="number">0xa1
 
@@ -165,8 +221,8 @@
 
 	</span>MARKER_NULL = <span class="number">0xa7
 
-	</span>MARKER_STRING_8 = <span class="number">0xa8
-	</span>MARKER_STRING_XL = <span class="number">0xa9
+	</span>MARKER_STR_8 = <span class="number">0xa8
+	</span>MARKER_STR_XL = <span class="number">0xa9
 
 	</span>MARKER_ARRAY_8 = <span class="number">0xaa
 	</span>MARKER_ARRAY_XL = <span class="number">0xab

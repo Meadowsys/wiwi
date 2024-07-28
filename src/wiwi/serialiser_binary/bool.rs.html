@@ -53,7 +53,12 @@
 <a href="#53" id="53">53</a>
 <a href="#54" id="54">54</a>
 <a href="#55" id="55">55</a>
-</pre></div><pre class="rust"><code><span class="kw">use super</span>::{ Deserialise, Error, Input, Output, <span class="prelude-ty">Result</span>, Serialise, Serialiser, use_some };
+<a href="#56" id="56">56</a>
+<a href="#57" id="57">57</a>
+<a href="#58" id="58">58</a>
+<a href="#59" id="59">59</a>
+<a href="#60" id="60">60</a>
+</pre></div><pre class="rust"><code><span class="kw">use super</span>::{ Deserialise, Error, Input, Output, <span class="prelude-ty">Result</span>, Serialise, Serialiser, use_ok, use_some };
 <span class="kw">use </span><span class="kw">super</span>::error::expected;
 <span class="kw">use </span><span class="kw">super</span>::error::expected::<span class="kw-2">*</span>;
 <span class="kw">use </span><span class="kw">super</span>::marker::markers::<span class="kw-2">*</span>;
@@ -63,38 +68,24 @@
 
 	<span class="attr">#[inline]
 	</span><span class="kw">fn </span>build_serialiser(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; BoolSerialiser {
-		BoolSerialiser { value: <span class="kw-2">*</span><span class="self">self </span>}
-	}
-}
-
-<span class="kw">impl</span>&lt;<span class="lifetime">'h</span>&gt; Deserialise&lt;<span class="lifetime">'h</span>&gt; <span class="kw">for </span>bool {
-	<span class="kw">type </span>Error = Error;
-
-	<span class="attr">#[inline]
-	</span><span class="kw">fn </span>deserialise&lt;I: Input&lt;<span class="lifetime">'h</span>&gt;&gt;(buf: <span class="kw-2">&amp;mut </span>I) -&gt; <span class="prelude-ty">Result</span>&lt;bool&gt; {
-		<span class="prelude-val">Ok</span>(<span class="macro">use_some!</span>(
-			buf.read_byte(),
-			byte =&gt; <span class="kw">if </span>byte &gt;&gt; <span class="number">1 </span>== MARKER_BOOL_UPPER_BITS_COMMON {
-				byte &amp; <span class="number">0b1 </span>!= <span class="number">0
-			</span>} <span class="kw">else </span>{
-				<span class="kw">return </span>expected(DESC_EXPECTED_BOOL)
-					.found_something()
-					.wrap_in_err()
-			},
-			none =&gt; expected(DESC_EXPECTED_BOOL)
-				.found_nothing()
-				.wrap_in_err()
-		))
+		BoolSerialiser::new(<span class="kw-2">*</span><span class="self">self</span>)
 	}
 }
 
 <span class="kw">pub struct </span>BoolSerialiser {
-	value: bool
+	val: bool
+}
+
+<span class="kw">impl </span>BoolSerialiser {
+	<span class="attr">#[inline]
+	</span><span class="kw">fn </span>new(val: bool) -&gt; <span class="self">Self </span>{
+		<span class="self">Self </span>{ val }
+	}
 }
 
 <span class="kw">impl</span>&lt;<span class="lifetime">'h</span>&gt; Serialiser&lt;<span class="lifetime">'h</span>&gt; <span class="kw">for </span>BoolSerialiser {
 	<span class="attr">#[inline]
-	</span><span class="kw">unsafe fn </span>calc_needed_capacity(<span class="kw-2">&amp;mut </span><span class="self">self</span>) -&gt; usize {
+	</span><span class="kw">unsafe fn </span>needed_capacity(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; usize {
 		<span class="number">1
 	</span>}
 
@@ -105,7 +96,26 @@
 
 		// SAFETY: provided buffer is guaranteed by caller to have reserved
 		// at least the amount returned by `calc_needed_capacity` (1)
-		</span><span class="kw">unsafe </span>{ buf.write_byte(<span class="self">self</span>.value <span class="kw">as </span>u8 + <span class="number">0xa0</span>) }
+		</span><span class="kw">unsafe </span>{ buf.write_byte(<span class="self">self</span>.val <span class="kw">as </span>u8 + <span class="number">0xa0</span>) }
+	}
+}
+
+<span class="kw">impl</span>&lt;<span class="lifetime">'h</span>&gt; Deserialise&lt;<span class="lifetime">'h</span>&gt; <span class="kw">for </span>bool {
+	<span class="kw">type </span>Error = Error;
+
+	<span class="attr">#[inline]
+	</span><span class="kw">fn </span>deserialise&lt;I: Input&lt;<span class="lifetime">'h</span>&gt;&gt;(buf: <span class="kw-2">&amp;mut </span>I) -&gt; <span class="prelude-ty">Result</span>&lt;bool&gt; {
+		<span class="prelude-val">Ok</span>(<span class="macro">use_ok!</span>(
+			buf.read_byte(),
+			byte =&gt; <span class="kw">if </span>byte &gt;&gt; <span class="number">1 </span>== MARKER_BOOL_UPPER_BITS_COMMON {
+				byte &amp; <span class="number">0b1 </span>!= <span class="number">0
+			</span>} <span class="kw">else </span>{
+				<span class="kw">return </span>expected(DESC_EXPECTED_BOOL)
+					.found_something_else()
+					.wrap()
+			},
+			#err err =&gt; err.expected(DESC_EXPECTED_BOOL).wrap()
+		))
 	}
 }
 </code></pre></div></section></main></body></html>

@@ -282,6 +282,7 @@
 <a href="#282" id="282">282</a>
 <a href="#283" id="283">283</a>
 <a href="#284" id="284">284</a>
+<a href="#285" id="285">285</a>
 </pre></div><pre class="rust"><code><span class="attr">#![cfg_attr(feature = <span class="string">"nightly"</span>, feature(cfg_overflow_checks))]
 
 #![cfg_attr(feature = <span class="string">"omega-tuples-of-doom"</span>, recursion_limit = <span class="string">"256"</span>)]
@@ -296,7 +297,8 @@
 )]
 #![deny(
 	unexpected_cfgs,
-	clippy::mixed_attributes_style
+	clippy::mixed_attributes_style,
+	clippy::unnecessary_safety_comment
 )]
 
 #![cfg_attr(docsrs, feature(doc_cfg))]
