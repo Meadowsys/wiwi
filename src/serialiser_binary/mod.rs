@@ -10,7 +10,7 @@
 use std::{ ptr, slice };
 use std::marker::PhantomData;
 
-mod error;
+pub mod error;
 mod marker;
 
 mod bool;
@@ -32,7 +32,7 @@ pub use self::number::{
 	I128Serialiser,
 	ISizeSerialiser
 };
-pub use self::error::{ Error, ErrorExpected, ErrorFound, expected, found, found_eof, found_something_else, Result };
+pub use self::error::{ Error, Result };
 
 #[inline]
 pub fn serialise<T>(item: &T) -> Vec<u8>
@@ -159,10 +159,10 @@ impl Output for Vec<u8> {
 }
 
 pub trait Input<'h> {
-	fn read_bytes_ptr(&mut self, bytes: usize) -> Result<*const u8, ErrorFound>;
+	fn read_bytes_ptr(&mut self, bytes: usize) -> Result<*const u8, error::ErrorFound>;
 
 	#[inline]
-	fn read_bytes(&mut self, bytes: usize) -> Result<&'h [u8], ErrorFound> {
+	fn read_bytes(&mut self, bytes: usize) -> Result<&'h [u8], error::ErrorFound> {
 		Ok(use_ok!(
 			self.read_bytes_ptr(bytes),
 			// SAFETY: if this returned `Some` then the ptr is valid for `bytes` reads
@@ -173,7 +173,7 @@ pub trait Input<'h> {
 	}
 
 	#[inline]
-	fn read_byte(&mut self) -> Result<u8, ErrorFound> {
+	fn read_byte(&mut self) -> Result<u8, error::ErrorFound> {
 		Ok(use_ok!(
 			self.read_bytes_ptr(1),
 			// SAFETY: ptr returned by `read_bytes_ptr` is
@@ -184,7 +184,7 @@ pub trait Input<'h> {
 	}
 
 	#[inline]
-	fn read_bytes_const<const BYTES: usize>(&mut self) -> Result<&'h [u8; BYTES], ErrorFound> {
+	fn read_bytes_const<const BYTES: usize>(&mut self) -> Result<&'h [u8; BYTES], error::ErrorFound> {
 		Ok(use_ok!(
 			self.read_bytes(BYTES),
 			bytes => unsafe { &*bytes.as_ptr().cast::<[u8; BYTES]>() },
@@ -259,9 +259,9 @@ impl<'h> InputSliceBuffer<'h> {
 }
 
 impl<'h> Input<'h> for InputSliceBuffer<'h> {
-	fn read_bytes_ptr(&mut self, bytes: usize) -> Result<*const u8, ErrorFound> {
+	fn read_bytes_ptr(&mut self, bytes: usize) -> Result<*const u8, error::ErrorFound> {
 		if self.remaining < bytes {
-			found_eof().wrap()
+			error::found_eof().wrap()
 		} else {
 			let ptr = self.ptr;
 			self.remaining -= bytes;
@@ -276,7 +276,7 @@ macro_rules! use_marker {
 		use_ok!(
 			$buf.read_byte(),
 			#err err => err.expected(
-				$crate::serialiser_binary::expected::DESC_EXPECTED_MARKER
+				$crate::serialiser_binary::error::expected::DESC_EXPECTED_MARKER
 			).wrap()
 		)
 	}

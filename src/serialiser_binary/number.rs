@@ -1,6 +1,6 @@
 use crate::num_traits::*;
-use super::{ Deserialise, Error, ErrorFound, Input, Output, Result, Serialise, Serialiser, use_marker, use_ok };
-use super::error::expected;
+use super::{ Deserialise, Error, Input, Output, Result, Serialise, Serialiser, use_marker, use_ok };
+use super::error::{ ErrorFound, expected, found_something_else };
 use super::error::expected::*;
 use super::error::found::*;
 use super::marker::{ signed_smallint_range, unsigned_smallint_range };
@@ -1089,7 +1089,7 @@ fn try_next_bytes_from_le<'h, const IN_BYTES: usize, const EXTENDED_BYTES: usize
 	let TryNextBytesFromLeParams { buf, extend, from_le_bytes, try_into } = params;
 	Ok(use_ok!(
 		unsafe { try_into(from_le_bytes(extend(*use_ok!(buf.read_bytes_const::<IN_BYTES>())))) },
-		#err _err => super::found_something_else().wrap()
+		#err _err => found_something_else().wrap()
 	))
 }
 
