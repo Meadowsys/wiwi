@@ -16,105 +16,6 @@ impl Serialise for u8 {
 	}
 }
 
-impl Serialise for u16 {
-	type Serialiser<'h> = U16Serialiser;
-
-	#[inline]
-	fn build_serialiser(&self) -> U16Serialiser {
-		U16Serialiser::new(*self)
-	}
-}
-
-impl Serialise for u32 {
-	type Serialiser<'h> = U32Serialiser;
-
-	#[inline]
-	fn build_serialiser(&self) -> U32Serialiser {
-		U32Serialiser::new(*self)
-	}
-}
-
-impl Serialise for u64 {
-	type Serialiser<'h> = U64Serialiser;
-
-	#[inline]
-	fn build_serialiser(&self) -> U64Serialiser {
-		U64Serialiser::new(*self)
-	}
-}
-
-impl Serialise for u128 {
-	type Serialiser<'h> = U128Serialiser;
-
-	#[inline]
-	fn build_serialiser(&self) -> U128Serialiser {
-		U128Serialiser::new(*self)
-	}
-}
-
-impl Serialise for usize {
-	type Serialiser<'h> = USizeSerialiser;
-
-	#[inline]
-	fn build_serialiser(&self) -> USizeSerialiser {
-		USizeSerialiser::new(*self)
-	}
-}
-
-impl Serialise for i8 {
-	type Serialiser<'h> = I8Serialiser;
-
-	#[inline]
-	fn build_serialiser(&self) -> I8Serialiser {
-		I8Serialiser::new(*self)
-	}
-}
-
-impl Serialise for i16 {
-	type Serialiser<'h> = I16Serialiser;
-
-	#[inline]
-	fn build_serialiser(&self) -> I16Serialiser {
-		I16Serialiser::new(*self)
-	}
-}
-
-impl Serialise for i32 {
-	type Serialiser<'h> = I32Serialiser;
-
-	#[inline]
-	fn build_serialiser(&self) -> I32Serialiser {
-		I32Serialiser::new(*self)
-	}
-}
-
-impl Serialise for i64 {
-	type Serialiser<'h> = I64Serialiser;
-
-	#[inline]
-	fn build_serialiser(&self) -> I64Serialiser {
-		I64Serialiser::new(*self)
-	}
-}
-
-impl Serialise for i128 {
-	type Serialiser<'h> = I128Serialiser;
-
-	#[inline]
-	fn build_serialiser(&self) -> I128Serialiser {
-		I128Serialiser::new(*self)
-	}
-}
-
-impl Serialise for isize {
-	type Serialiser<'h> = ISizeSerialiser;
-
-	#[inline]
-	fn build_serialiser(&self) -> ISizeSerialiser {
-		ISizeSerialiser::new(*self)
-	}
-}
-
 pub struct U8Serialiser {
 	byte: u8,
 	needs_marker: bool
@@ -140,6 +41,15 @@ impl<'h> Serialiser<'h> for U8Serialiser {
 	unsafe fn serialise<O: Output>(self, buf: &mut O) {
 		if self.needs_marker { buf.write_byte(MARKER_U8) }
 		buf.write_byte(self.byte)
+	}
+}
+
+impl Serialise for u16 {
+	type Serialiser<'h> = U16Serialiser;
+
+	#[inline]
+	fn build_serialiser(&self) -> U16Serialiser {
+		U16Serialiser::new(*self)
 	}
 }
 
@@ -182,6 +92,15 @@ impl<'h> Serialiser<'h> for U16Serialiser {
 	}
 }
 
+impl Serialise for u32 {
+	type Serialiser<'h> = U32Serialiser;
+
+	#[inline]
+	fn build_serialiser(&self) -> U32Serialiser {
+		U32Serialiser::new(*self)
+	}
+}
+
 pub struct U32Serialiser {
 	le_bytes: [u8; 4],
 	byte_count: u8
@@ -218,6 +137,15 @@ impl<'h> Serialiser<'h> for U32Serialiser {
 			buf.write_byte(marker);
 			buf.write_bytes(&self.le_bytes[..self.byte_count.into_usize()]);
 		}
+	}
+}
+
+impl Serialise for u64 {
+	type Serialiser<'h> = U64Serialiser;
+
+	#[inline]
+	fn build_serialiser(&self) -> U64Serialiser {
+		U64Serialiser::new(*self)
 	}
 }
 
@@ -260,6 +188,15 @@ impl<'h> Serialiser<'h> for U64Serialiser {
 	}
 }
 
+impl Serialise for u128 {
+	type Serialiser<'h> = U128Serialiser;
+
+	#[inline]
+	fn build_serialiser(&self) -> U128Serialiser {
+		U128Serialiser::new(*self)
+	}
+}
+
 pub struct U128Serialiser {
 	le_bytes: [u8; 16],
 	byte_count: u8
@@ -296,6 +233,15 @@ impl<'h> Serialiser<'h> for U128Serialiser {
 			buf.write_byte(marker);
 			buf.write_bytes(&self.le_bytes[..self.byte_count.into_usize()]);
 		}
+	}
+}
+
+impl Serialise for usize {
+	type Serialiser<'h> = USizeSerialiser;
+
+	#[inline]
+	fn build_serialiser(&self) -> USizeSerialiser {
+		USizeSerialiser::new(*self)
 	}
 }
 
@@ -341,6 +287,15 @@ impl<'h> Serialiser<'h> for USizeSerialiser {
 	}
 }
 
+impl Serialise for i8 {
+	type Serialiser<'h> = I8Serialiser;
+
+	#[inline]
+	fn build_serialiser(&self) -> I8Serialiser {
+		I8Serialiser::new(*self)
+	}
+}
+
 pub struct I8Serialiser {
 	byte: u8,
 	needs_marker: bool
@@ -371,6 +326,15 @@ impl<'h> Serialiser<'h> for I8Serialiser {
 	unsafe fn serialise<O: Output>(self, buf: &mut O) {
 		if self.needs_marker { buf.write_byte(MARKER_I8) }
 		buf.write_byte(self.byte)
+	}
+}
+
+impl Serialise for i16 {
+	type Serialiser<'h> = I16Serialiser;
+
+	#[inline]
+	fn build_serialiser(&self) -> I16Serialiser {
+		I16Serialiser::new(*self)
 	}
 }
 
@@ -418,6 +382,15 @@ impl<'h> Serialiser<'h> for I16Serialiser {
 	}
 }
 
+impl Serialise for i32 {
+	type Serialiser<'h> = I32Serialiser;
+
+	#[inline]
+	fn build_serialiser(&self) -> I32Serialiser {
+		I32Serialiser::new(*self)
+	}
+}
+
 pub struct I32Serialiser {
 	le_bytes: [u8; 4],
 	byte_count: u8
@@ -458,6 +431,15 @@ impl<'h> Serialiser<'h> for I32Serialiser {
 			buf.write_byte(marker);
 			buf.write_bytes(&self.le_bytes[..self.byte_count.into_usize()]);
 		}
+	}
+}
+
+impl Serialise for i64 {
+	type Serialiser<'h> = I64Serialiser;
+
+	#[inline]
+	fn build_serialiser(&self) -> I64Serialiser {
+		I64Serialiser::new(*self)
 	}
 }
 
@@ -505,6 +487,15 @@ impl<'h> Serialiser<'h> for I64Serialiser {
 	}
 }
 
+impl Serialise for i128 {
+	type Serialiser<'h> = I128Serialiser;
+
+	#[inline]
+	fn build_serialiser(&self) -> I128Serialiser {
+		I128Serialiser::new(*self)
+	}
+}
+
 pub struct I128Serialiser {
 	le_bytes: [u8; 16],
 	byte_count: u8
@@ -546,6 +537,15 @@ impl<'h> Serialiser<'h> for I128Serialiser {
 			buf.write_byte(marker);
 			buf.write_bytes(&self.le_bytes[..self.byte_count.into_usize()]);
 		}
+	}
+}
+
+impl Serialise for isize {
+	type Serialiser<'h> = ISizeSerialiser;
+
+	#[inline]
+	fn build_serialiser(&self) -> ISizeSerialiser {
+		ISizeSerialiser::new(*self)
 	}
 }
 
