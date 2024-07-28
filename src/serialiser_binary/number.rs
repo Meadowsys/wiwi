@@ -1020,37 +1020,37 @@ macro_rules! read_int_extending_fn_impl {
 
 read_int_extending_fn_impl! {
 	read_u24_to_u32 3 zero_extend_array_le u32 DESC_EXPECTED_U24
-	read_i24_to_i32 3 zero_extend_array_le i32 DESC_EXPECTED_I24
+	read_i24_to_i32 3 sign_extend_array_le i32 DESC_EXPECTED_I24
 
 	read_u40_to_u64 5 zero_extend_array_le u64 DESC_EXPECTED_U40
-	read_i40_to_i64 5 zero_extend_array_le i64 DESC_EXPECTED_I40
+	read_i40_to_i64 5 sign_extend_array_le i64 DESC_EXPECTED_I40
 
 	read_u48_to_u64 6 zero_extend_array_le u64 DESC_EXPECTED_U48
-	read_i48_to_i64 6 zero_extend_array_le i64 DESC_EXPECTED_I48
+	read_i48_to_i64 6 sign_extend_array_le i64 DESC_EXPECTED_I48
 
 	read_u56_to_u64 7 zero_extend_array_le u64 DESC_EXPECTED_U56
-	read_i56_to_i64 7 zero_extend_array_le i64 DESC_EXPECTED_I56
+	read_i56_to_i64 7 sign_extend_array_le i64 DESC_EXPECTED_I56
 
 	read_u72_to_u128 9 zero_extend_array_le u128 DESC_EXPECTED_U72
-	read_i72_to_i128 9 zero_extend_array_le i128 DESC_EXPECTED_I72
+	read_i72_to_i128 9 sign_extend_array_le i128 DESC_EXPECTED_I72
 
 	read_u80_to_u128 10 zero_extend_array_le u128 DESC_EXPECTED_U80
-	read_i80_to_i128 10 zero_extend_array_le i128 DESC_EXPECTED_I80
+	read_i80_to_i128 10 sign_extend_array_le i128 DESC_EXPECTED_I80
 
 	read_u88_to_u128 11 zero_extend_array_le u128 DESC_EXPECTED_U88
-	read_i88_to_i128 11 zero_extend_array_le i128 DESC_EXPECTED_I88
+	read_i88_to_i128 11 sign_extend_array_le i128 DESC_EXPECTED_I88
 
 	read_u96_to_u128 12 zero_extend_array_le u128 DESC_EXPECTED_U96
-	read_i96_to_i128 12 zero_extend_array_le i128 DESC_EXPECTED_I96
+	read_i96_to_i128 12 sign_extend_array_le i128 DESC_EXPECTED_I96
 
 	read_u104_to_u128 13 zero_extend_array_le u128 DESC_EXPECTED_U104
-	read_i104_to_i128 13 zero_extend_array_le i128 DESC_EXPECTED_I104
+	read_i104_to_i128 13 sign_extend_array_le i128 DESC_EXPECTED_I104
 
 	read_u112_to_u128 14 zero_extend_array_le u128 DESC_EXPECTED_U112
-	read_i112_to_i128 14 zero_extend_array_le i128 DESC_EXPECTED_I112
+	read_i112_to_i128 14 sign_extend_array_le i128 DESC_EXPECTED_I112
 
 	read_u120_to_u128 15 zero_extend_array_le u128 DESC_EXPECTED_U120
-	read_i120_to_i128 15 zero_extend_array_le i128 DESC_EXPECTED_I120
+	read_i120_to_i128 15 sign_extend_array_le i128 DESC_EXPECTED_I120
 }
 
 #[inline]
