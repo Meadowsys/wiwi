@@ -13,37 +13,11 @@
 use super::internal_prelude::*;
 use std::borrow::Cow;
 
-impl<T> Serialise for Cow<'_, T>
-where
-	T: Serialise + ToOwned + ?Sized
-{
-	type Serialiser<'h> = CowSerialiser<T::Serialiser<'h>> where Self: 'h;
+impl<T: Serialise + ToOwned + ?Sized> Serialise for Cow<'_, T> {
+	type Serialiser<'h> = T::Serialiser<'h> where Self: 'h;
 
 	#[inline]
-	fn build_serialiser(&self) -> CowSerialiser<T::Serialiser<'_>> {
-		CowSerialiser::new(T::build_serialiser(self))
-	}
-}
-
-pub struct CowSerialiser<T> {
-	inner: T
-}
-
-impl<T> CowSerialiser<T> {
-	#[inline]
-	fn new(ser: T) -> Self {
-		Self { inner: ser }
-	}
-}
-
-impl<'h, T: Serialiser<'h>> Serialiser<'h> for CowSerialiser<T> {
-	#[inline]
-	unsafe fn needed_capacity(&self) -> usize {
-		self.inner.needed_capacity()
-	}
-
-	#[inline]
-	unsafe fn serialise<O: Output>(&self, buf: &mut O) {
-		self.inner.serialise(buf)
+	fn build_serialiser(&self) -> T::Serialiser<'_> {
+		(**self).build_serialiser()
 	}
 }
