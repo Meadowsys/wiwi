@@ -1,10 +1,10 @@
 use crate::num_traits::*;
-use super::{ Deserialise, Error, Input, Output, Result, Serialise, Serialiser };
+use super::{ Deserialise, Error, Input, Output, Result, Serialise, Serialiser, use_some };
 use super::error::expected;
 use super::error::expected::*;
 use super::error::found::*;
 use super::marker::markers::*;
-use std::{ hint, slice };
+use std::{ hint, ptr };
 use std::mem::MaybeUninit;
 
 impl Serialise for u8 {
@@ -65,7 +65,7 @@ impl U16Serialiser {
 		let byte_count = if val <= MARKER_SMALLINT_RANGE_END.into_u16() {
 			0
 		} else {
-			get_byte_count_unsigned_le(le_bytes)
+			unsafe { get_byte_count_unsigned_le(le_bytes) }
 		};
 
 		Self { le_bytes, byte_count }
@@ -113,7 +113,7 @@ impl U32Serialiser {
 		let byte_count = if val <= MARKER_SMALLINT_RANGE_END.into_u32() {
 			0
 		} else {
-			get_byte_count_unsigned_le(le_bytes)
+			unsafe { get_byte_count_unsigned_le(le_bytes) }
 		};
 
 		Self { le_bytes, byte_count }
@@ -161,7 +161,7 @@ impl U64Serialiser {
 		let byte_count = if val <= MARKER_SMALLINT_RANGE_END.into_u64() {
 			0
 		} else {
-			get_byte_count_unsigned_le(le_bytes)
+			unsafe { get_byte_count_unsigned_le(le_bytes) }
 		};
 
 		Self { le_bytes, byte_count }
@@ -209,7 +209,7 @@ impl U128Serialiser {
 		let byte_count = if val <= MARKER_SMALLINT_RANGE_END.into_u128() {
 			0
 		} else {
-			get_byte_count_unsigned_le(le_bytes)
+			unsafe { get_byte_count_unsigned_le(le_bytes) }
 		};
 
 		Self { le_bytes, byte_count }
@@ -307,7 +307,6 @@ impl I8Serialiser {
 		Self {
 			byte: val.into_u8_lossy(),
 			needs_marker: {
-				// let lower = val >= MARKER_SMALLINT_NEGATIVE_RANGE_START.into_i8_lossy();
 				let lower = val < MARKER_SMALLINT_NEGATIVE_RANGE_START.into_i8_lossy();
 				let upper = val > MARKER_SMALLINT_RANGE_END.into_i8_lossy();
 				lower && upper
@@ -354,7 +353,7 @@ impl I16Serialiser {
 			if lower && upper {
 				0
 			} else {
-				get_byte_count_signed_le(le_bytes)
+				unsafe { get_byte_count_signed_le(le_bytes) }
 			}
 		};
 
@@ -407,7 +406,7 @@ impl I32Serialiser {
 			if lower && upper {
 				0
 			} else {
-				get_byte_count_signed_le(le_bytes)
+				unsafe { get_byte_count_signed_le(le_bytes) }
 			}
 		};
 		Self { le_bytes, byte_count }
@@ -459,7 +458,7 @@ impl I64Serialiser {
 			if lower && upper {
 				0
 			} else {
-				get_byte_count_signed_le(le_bytes)
+				unsafe { get_byte_count_signed_le(le_bytes) }
 			}
 		};
 
@@ -512,7 +511,7 @@ impl I128Serialiser {
 			if lower && upper {
 				0
 			} else {
-				get_byte_count_signed_le(le_bytes)
+				unsafe { get_byte_count_signed_le(le_bytes) }
 			}
 		};
 
@@ -593,7 +592,7 @@ impl<'h> Serialiser<'h> for ISizeSerialiser {
 }
 
 #[inline]
-fn get_byte_count_unsigned_le<const BYTES: usize>(bytes: [u8; BYTES]) -> u8 {
+unsafe fn get_byte_count_unsigned_le<const BYTES: usize>(bytes: [u8; BYTES]) -> u8 {
 	let ptr = bytes.as_ptr();
 
 	for i in (1..BYTES).rev() {
@@ -615,7 +614,7 @@ fn get_byte_count_unsigned_le<const BYTES: usize>(bytes: [u8; BYTES]) -> u8 {
 }
 
 #[inline]
-fn get_byte_count_signed_le<const BYTES: usize>(bytes: [u8; BYTES]) -> u8 {
+unsafe fn get_byte_count_signed_le<const BYTES: usize>(bytes: [u8; BYTES]) -> u8 {
 	debug_assert!(BYTES > 0);
 
 	let ptr = bytes.as_ptr();
@@ -669,4 +668,46 @@ fn get_byte_count_signed_le<const BYTES: usize>(bytes: [u8; BYTES]) -> u8 {
 
 	// everything is empty? just return the minimum
 	1
+}
+
+#[inline]
+unsafe fn zero_extend_array_le<
+	const IN_BYTES: usize,
+	const OUT_BYTES: usize
+>(bytes: [u8; IN_BYTES]) -> [u8; OUT_BYTES] {
+	debug_assert!(IN_BYTES < OUT_BYTES);
+
+	let mut out = MaybeUninit::<[u8; OUT_BYTES]>::uninit();
+
+	ptr::copy_nonoverlapping(bytes.as_ptr(), out.as_mut_ptr().cast::<u8>(), IN_BYTES);
+	ptr::write_bytes(out.as_mut_ptr().cast::<u8>().add(IN_BYTES), 0, OUT_BYTES - IN_BYTES);
+
+	out.assume_init()
+}
+
+#[inline]
+unsafe fn sign_extend_array_le<
+	const IN_BYTES: usize,
+	const OUT_BYTES: usize
+>(bytes: [u8; IN_BYTES]) -> [u8; OUT_BYTES] {
+	debug_assert!(IN_BYTES < OUT_BYTES);
+
+	let sign = bytes[IN_BYTES - 1] >> 7;
+	let fill_byte = if sign == 0 { 0 } else { u8::MAX };
+
+	let mut out = MaybeUninit::<[u8; OUT_BYTES]>::uninit();
+
+	ptr::copy_nonoverlapping(bytes.as_ptr(), out.as_mut_ptr().cast::<u8>(), IN_BYTES);
+	ptr::write_bytes(out.as_mut_ptr().cast::<u8>().add(IN_BYTES), fill_byte, OUT_BYTES - IN_BYTES);
+
+	out.assume_init()
+}
+
+#[inline]
+fn next_bytes_from_le<'h, T, I: Input<'h>, const READ_BYTES: usize, const OUT_BYTES: usize>(
+	buf: &mut I,
+	f: fn([u8; OUT_BYTES]) -> T,
+	f_extend: unsafe fn([u8; READ_BYTES]) -> [u8; OUT_BYTES]
+) -> Option<T> {
+	unsafe { Some(f(f_extend(*use_some!(buf.read_bytes_const::<READ_BYTES>())))) }
 }

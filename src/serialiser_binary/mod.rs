@@ -174,9 +174,17 @@ pub trait Input<'h> {
 	fn read_byte(&mut self) -> Option<u8> {
 		Some(use_some!(
 			self.read_bytes_ptr(1),
-			// SAFETY: ptr returned by `read_bytes_ptr_const` is
+			// SAFETY: ptr returned by `read_bytes_ptr` is
 			// guaranteed to be readable for at least 1 byte
 			byte => unsafe { *byte }
+		))
+	}
+
+	#[inline]
+	fn read_bytes_const<const BYTES: usize>(&mut self) -> Option<&'h [u8; BYTES]> {
+		Some(use_some!(
+			self.read_bytes(BYTES),
+			bytes => unsafe { &*bytes.as_ptr().cast::<[u8; BYTES]>() }
 		))
 	}
 }
@@ -267,6 +275,13 @@ macro_rules! use_ok {
 		}
 	};
 
+	($result:expr, #err $err:ident => $err_op:expr) => {
+		match $result {
+			Ok(val) => { val }
+			Err($err) => { return $err_op }
+		}
+	};
+
 	($result:expr, $val:ident => $op:expr) => {
 		match $result {
 			Ok($val) => { $op }
@@ -274,7 +289,7 @@ macro_rules! use_ok {
 		}
 	};
 
-	($result:expr, $val:ident => $op:expr, $err:ident => $err_op:expr) => {
+	($result:expr, $val:ident => $op:expr, #err $err:ident => $err_op:expr) => {
 		match $result {
 			Ok($val) => { $op }
 			Err($err) => { return $err_op }
@@ -291,6 +306,13 @@ macro_rules! use_some {
 		}
 	};
 
+	($option:expr, #none => $none_op:expr) => {
+		match $option {
+			Some(val) => { val }
+			None => { return $none_op }
+		}
+	};
+
 	($option:expr, $val:ident => $op:expr) => {
 		match $option {
 			Some($val) => { $op }
@@ -298,7 +320,7 @@ macro_rules! use_some {
 		}
 	};
 
-	($option:expr, $val:ident => $op:expr, none => $none_op:expr) => {
+	($option:expr, $val:ident => $op:expr, #none => $none_op:expr) => {
 		match $option {
 			Some($val) => { $op }
 			None => { return $none_op }

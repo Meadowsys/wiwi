@@ -1,5 +1,15 @@
 use super::consts;
 
+macro_rules! unsigned_smallint_range {
+	() => { 0x00..=0x7f }
+}
+pub(crate) use unsigned_smallint_range;
+
+macro_rules! signed_smallint_range {
+	() => { -64..=0x7f }
+}
+pub(crate) use signed_smallint_range;
+
 consts! {
 	const type u8
 

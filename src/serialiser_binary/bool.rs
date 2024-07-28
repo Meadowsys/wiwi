@@ -51,11 +51,11 @@ impl<'h> Deserialise<'h> for bool {
 				byte & 0b1 != 0
 			} else {
 				return expected(DESC_EXPECTED_BOOL)
-					.found_something()
+					.found_something_else()
 					.wrap_in_err()
 			},
-			none => expected(DESC_EXPECTED_BOOL)
-				.found_nothing()
+			#none => expected(DESC_EXPECTED_BOOL)
+				.found_eof()
 				.wrap_in_err()
 		))
 	}

@@ -27,16 +27,16 @@ impl ErrorHalf {
 	}
 
 	#[inline(always)]
-	pub(crate) fn found_something(self) -> Error {
+	pub(crate) fn found_something_else(self) -> Error {
 		let ErrorHalf { expected } = self;
 		let found = found::DESC_FOUND_SOMETHING_ELSE;
 		Error { expected, found }
 	}
 
 	#[inline(always)]
-	pub(crate) fn found_nothing(self) -> Error {
+	pub(crate) fn found_eof(self) -> Error {
 		let ErrorHalf { expected } = self;
-		let found = found::DESC_FOUND_NOTHING;
+		let found = found::DESC_FOUND_EOF;
 		Error { expected, found }
 	}
 }
@@ -86,6 +86,7 @@ consts! {
 
 	// keep order the same as in the `marker` module
 
+	DESC_EXPECTED_MARKER = "a marker"
 	DESC_EXPECTED_EOF = "eof"
 
 	// DESC_EXPECTED_SMALLINT_UNSIGNED = "a positive smallint"
@@ -94,6 +95,22 @@ consts! {
 	// DESC_EXPECTED_U8 = "an unsigned integer, up to 8 bits"
 	// DESC_EXPECTED_I8 = "a signed integer, up to 8 bits"
 	// ...
+	// DESC_EXPECTED_INT_8 = "an integer, up to 8 bits"
+	// DESC_EXPECTED_INT_16 = "an integer, up to 16 bits"
+	// DESC_EXPECTED_INT_24 = "an integer, up to 24 bits"
+	// DESC_EXPECTED_INT_32 = "an integer, up to 32 bits"
+	// DESC_EXPECTED_INT_40 = "an integer, up to 40 bits"
+	// DESC_EXPECTED_INT_48 = "an integer, up to 48 bits"
+	// DESC_EXPECTED_INT_56 = "an integer, up to 56 bits"
+	// DESC_EXPECTED_INT_64 = "an integer, up to 64 bits"
+	// DESC_EXPECTED_INT_72 = "an integer, up to 72 bits"
+	// DESC_EXPECTED_INT_80 = "an integer, up to 80 bits"
+	// DESC_EXPECTED_INT_88 = "an integer, up to 88 bits"
+	// DESC_EXPECTED_INT_96 = "an integer, up to 96 bits"
+	// DESC_EXPECTED_INT_104 = "an integer, up to 104 bits"
+	// DESC_EXPECTED_INT_112 = "an integer, up to 112 bits"
+	// DESC_EXPECTED_INT_120 = "an integer, up to 120 bits"
+	// DESC_EXPECTED_INT_128 = "an integer, up to 128 bits"
 
 	DESC_EXPECTED_BOOL = "a bool"
 }
@@ -115,8 +132,9 @@ consts! {
 
 	// keep order the same as in the `marker` module
 
+	DESC_FOUND_EOF = "eof"
+
 	DESC_FOUND_SOMETHING_ELSE = "something else"
-	DESC_FOUND_NOTHING = "nothing"
 	DESC_FOUND_TRAILING_BYTES = "trailing bytes"
 
 	// DESC_FOUND_SMALLINT = "a smallint"
