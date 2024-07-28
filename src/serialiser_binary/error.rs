@@ -5,8 +5,8 @@ pub type Result<T, E = Error> = std::result::Result<T, E>;
 
 #[derive(Clone, Debug)]
 pub struct Error {
-	expected: &'static str,
-	found: &'static str
+	pub expected: &'static str,
+	pub found: &'static str
 }
 
 impl Error {
@@ -21,6 +21,18 @@ impl Error {
 		Error: Into<E>
 	{
 		Err(self.into())
+	}
+
+	#[inline(always)]
+	pub fn expected(mut self, expected: &'static str) -> Self {
+		self.expected = expected;
+		self
+	}
+
+	#[inline(always)]
+	pub fn found(mut self, found: &'static str) -> Self {
+		self.found = found;
+		self
 	}
 }
 
@@ -178,10 +190,26 @@ consts! {
 	DESC_EXPECTED_U128 = "an unsigned integer, 128 bit"
 	DESC_EXPECTED_I128 = "a signed integer, 128 bit"
 
+	#[cfg(target_pointer_width = "64")]
+	DESC_EXPECTED_USIZE = "an unsigned integer, word sized (64 bit)"
+	#[cfg(target_pointer_width = "32")]
+	DESC_EXPECTED_USIZE = "an unsigned integer, word sized (32 bit)"
+	#[cfg(target_pointer_width = "16")]
+	DESC_EXPECTED_USIZE = "an unsigned integer, word sized (16 bit)"
+
+	#[cfg(target_pointer_width = "64")]
+	DESC_EXPECTED_ISIZE = "a signed integer, word sized (64 bit)"
+	#[cfg(target_pointer_width = "32")]
+	DESC_EXPECTED_ISIZE = "a signed integer, word sized (32 bit)"
+	#[cfg(target_pointer_width = "16")]
+	DESC_EXPECTED_ISIZE = "a signed integer, word sized (16 bit)"
+
 	DESC_EXPECTED_BOOL = "a bool"
 
 	DESC_EXPECTED_F32 = "a floating point number, 32 bit"
 	DESC_EXPECTED_F64 = "a floating point number, 64 bit"
+
+	DESC_EXPECTED_STR = "an utf-8 encoded string"
 }
 
 consts! {
@@ -203,9 +231,10 @@ consts! {
 
 	DESC_FOUND_EOF = "eof"
 
-	DESC_FOUND_OVERFLOWING_INT = "an overflowing integer"
 	DESC_FOUND_SOMETHING_ELSE = "something else"
 	DESC_FOUND_TRAILING_BYTES = "trailing bytes"
+
+	DESC_FOUND_OVERFLOWING_INT = "an overflowing integer"
 
 	// DESC_FOUND_SMALLINT = "a smallint"
 	// DESC_FOUND_SMALLINT_NEGATIVE = "a negative smallint"
@@ -214,4 +243,6 @@ consts! {
 	// DESC_FOUND_INT_TOO_LARGE_U8 = "an integer that overflows unsigned 8 bits"
 	// DESC_FOUND_INT_TOO_LARGE_I8 = "an integer that overflows signed 8 bits"
 	// ...
+
+	DESC_FOUND_INVALID_UTF_8 = "invalid utf-8"
 }

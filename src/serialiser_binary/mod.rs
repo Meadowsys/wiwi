@@ -15,6 +15,7 @@ mod marker;
 
 mod bool;
 mod number;
+mod string;
 
 pub use self::bool::BoolSerialiser;
 pub use self::number::{
@@ -270,6 +271,18 @@ impl<'h> Input<'h> for InputSliceBuffer<'h> {
 	}
 }
 
+macro_rules! use_marker {
+	($buf:ident) => {
+		use_ok!(
+			$buf.read_byte(),
+			#err err => err.expected(
+				$crate::serialiser_binary::expected::DESC_EXPECTED_MARKER
+			).wrap()
+		)
+	}
+}
+use use_marker;
+
 macro_rules! use_ok {
 	($result:expr) => {
 		match $result {
@@ -339,14 +352,14 @@ macro_rules! consts {
 		$mod_vis:vis mod $mod_name:ident
 		$((
 			$(#[$meta:meta])*
-			$name:ident, $value:expr, $($type:tt)+
+			$name:ident, $val:expr, $($type:tt)+
 		))*
 	} => {
 		$(#[$mod_meta])*
 		$mod_vis mod $mod_name {
 			$(
 				$(#[$meta])*
-				pub const $name: $($type)+ = $value;
+				pub const $name: $($type)+ = $val;
 			)*
 		}
 	};
@@ -357,14 +370,14 @@ macro_rules! consts {
 		$mod_vis:vis mod $mod_name:ident
 		$((
 			$(#[$meta:meta])*
-			$name:ident, $value:expr, $($type:tt)+
+			$name:ident, $val:expr, $($type:tt)+
 		))*
 	} => {
 		$(#[$mod_meta])*
 		$mod_vis mod $mod_name {
 			$(
 				$(#[$meta])*
-				pub static $name: $($type)+ = $value;
+				pub static $name: $($type)+ = $val;
 			)*
 		}
 	};
@@ -373,13 +386,13 @@ macro_rules! consts {
 		const type u8
 		$(#[$mod_meta:meta])*
 		$mod_vis:vis mod $mod_name:ident
-		$($(#[$meta:meta])* $name:ident = $value:expr)*
+		$($(#[$meta:meta])* $name:ident = $val:expr)*
 	} => {
 		consts! {
 			@impl(const)
 			$(#[$mod_meta])*
 			$mod_vis mod $mod_name
-			$(($(#[$meta])* $name, $value, u8))*
+			$(($(#[$meta])* $name, $val, u8))*
 		}
 	};
 
@@ -387,13 +400,13 @@ macro_rules! consts {
 		static type &'static str
 		$(#[$mod_meta:meta])*
 		$mod_vis:vis mod $mod_name:ident
-		$($(#[$meta:meta])* $name:ident = $value:expr)*
+		$($(#[$meta:meta])* $name:ident = $val:expr)*
 	} => {
 		consts! {
 			@impl(static)
 			$(#[$mod_meta])*
 			$mod_vis mod $mod_name
-			$(($(#[$meta])* $name, $value, &'static str))*
+			$(($(#[$meta])* $name, $val, &'static str))*
 		}
 	};
 }

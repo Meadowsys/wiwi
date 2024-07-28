@@ -13,13 +13,13 @@ impl Serialise for bool {
 }
 
 pub struct BoolSerialiser {
-	value: bool
+	val: bool
 }
 
 impl BoolSerialiser {
 	#[inline]
 	fn new(val: bool) -> Self {
-		Self { value: val }
+		Self { val }
 	}
 }
 
@@ -36,7 +36,7 @@ impl<'h> Serialiser<'h> for BoolSerialiser {
 
 		// SAFETY: provided buffer is guaranteed by caller to have reserved
 		// at least the amount returned by `calc_needed_capacity` (1)
-		unsafe { buf.write_byte(self.value as u8 + 0xa0) }
+		unsafe { buf.write_byte(self.val as u8 + 0xa0) }
 	}
 }
 

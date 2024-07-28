@@ -1,5 +1,5 @@
 use crate::num_traits::*;
-use super::{ Deserialise, Error, ErrorFound, Input, Output, Result, Serialise, Serialiser, use_ok };
+use super::{ Deserialise, Error, ErrorFound, Input, Output, Result, Serialise, Serialiser, use_marker, use_ok };
 use super::error::expected;
 use super::error::expected::*;
 use super::error::found::*;
@@ -24,7 +24,7 @@ pub struct U8Serialiser {
 
 impl U8Serialiser {
 	#[inline]
-	fn new(val: u8) -> Self {
+	pub fn new(val: u8) -> Self {
 		Self {
 			byte: val,
 			needs_marker: val > MARKER_SMALLINT_RANGE_END
@@ -68,7 +68,7 @@ pub struct U16Serialiser {
 
 impl U16Serialiser {
 	#[inline]
-	fn new(val: u16) -> Self {
+	pub fn new(val: u16) -> Self {
 		let le_bytes = val.to_le_bytes();
 		let byte_count = if val <= MARKER_SMALLINT_RANGE_END.into_u16() {
 			0
@@ -123,7 +123,7 @@ pub struct U32Serialiser {
 
 impl U32Serialiser {
 	#[inline]
-	fn new(val: u32) -> Self {
+	pub fn new(val: u32) -> Self {
 		let le_bytes = val.to_le_bytes();
 		let byte_count = if val <= MARKER_SMALLINT_RANGE_END.into_u32() {
 			0
@@ -178,7 +178,7 @@ pub struct U64Serialiser {
 
 impl U64Serialiser {
 	#[inline]
-	fn new(val: u64) -> Self {
+	pub fn new(val: u64) -> Self {
 		let le_bytes = val.to_le_bytes();
 		let byte_count = if val <= MARKER_SMALLINT_RANGE_END.into_u64() {
 			0
@@ -233,7 +233,7 @@ pub struct U128Serialiser {
 
 impl U128Serialiser {
 	#[inline]
-	fn new(val: u128) -> Self {
+	pub fn new(val: u128) -> Self {
 		let le_bytes = val.to_le_bytes();
 		let byte_count = if val <= MARKER_SMALLINT_RANGE_END.into_u128() {
 			0
@@ -298,7 +298,7 @@ pub struct USizeSerialiser {
 
 impl USizeSerialiser {
 	#[inline]
-	fn new(val: usize) -> Self {
+	pub fn new(val: usize) -> Self {
 		#[cfg(target_pointer_width = "64")]
 		let inner = U64Serialiser::new(val.into_u64());
 
@@ -335,7 +335,11 @@ impl<'h> Deserialise<'h> for usize {
 		#[cfg(target_pointer_width = "16")]
 		let val = u16::deserialise(buf);
 
-		Ok(use_ok!(val, val => val.into_usize()))
+		Ok(use_ok!(
+			val,
+			val => val.into_usize(),
+			#err err => err.expected(DESC_EXPECTED_USIZE).wrap()
+		))
 	}
 }
 
@@ -355,7 +359,7 @@ pub struct I8Serialiser {
 
 impl I8Serialiser {
 	#[inline]
-	fn new(val: i8) -> Self {
+	pub fn new(val: i8) -> Self {
 		Self {
 			byte: val.into_u8_lossy(),
 			needs_marker: {
@@ -403,7 +407,7 @@ pub struct I16Serialiser {
 
 impl I16Serialiser {
 	#[inline]
-	fn new(val: i16) -> Self {
+	pub fn new(val: i16) -> Self {
 		let le_bytes = val.to_le_bytes();
 		let byte_count = {
 			let lower = val >= MARKER_SMALLINT_NEGATIVE_RANGE_START.into_i8_lossy().into_i16();
@@ -463,7 +467,7 @@ pub struct I32Serialiser {
 
 impl I32Serialiser {
 	#[inline]
-	fn new(val: i32) -> Self {
+	pub fn new(val: i32) -> Self {
 		let le_bytes = val.to_le_bytes();
 		let byte_count = {
 			let lower = val >= MARKER_SMALLINT_NEGATIVE_RANGE_START.into_i8_lossy().into_i32();
@@ -522,7 +526,7 @@ pub struct I64Serialiser {
 
 impl I64Serialiser {
 	#[inline]
-	fn new(val: i64) -> Self {
+	pub fn new(val: i64) -> Self {
 		let le_bytes = val.to_le_bytes();
 		let byte_count = {
 			let lower = val >= MARKER_SMALLINT_NEGATIVE_RANGE_START.into_i8_lossy().into_i64();
@@ -582,7 +586,7 @@ pub struct I128Serialiser {
 
 impl I128Serialiser {
 	#[inline]
-	fn new(val: i128) -> Self {
+	pub fn new(val: i128) -> Self {
 		let le_bytes = val.to_le_bytes();
 		let byte_count = {
 			let lower = val >= MARKER_SMALLINT_NEGATIVE_RANGE_START.into_i8_lossy().into_i128();
@@ -652,7 +656,7 @@ pub struct ISizeSerialiser {
 
 impl ISizeSerialiser {
 	#[inline]
-	fn new(val: isize) -> Self {
+	pub fn new(val: isize) -> Self {
 		#[cfg(target_pointer_width = "64")]
 		let inner = I64Serialiser::new(val.into_i64());
 
@@ -690,7 +694,11 @@ impl<'h> Deserialise<'h> for isize {
 		#[cfg(target_pointer_width = "16")]
 		let val = i16::deserialise(buf);
 
-		Ok(use_ok!(val, val => val.into_isize()))
+		Ok(use_ok!(
+			val,
+			val => val.into_isize(),
+			#err err => err.expected(DESC_EXPECTED_ISIZE).wrap()
+		))
 	}
 }
 
@@ -704,13 +712,13 @@ impl Serialise for f32 {
 }
 
 pub struct F32Serialiser {
-	value: f32
+	val: f32
 }
 
 impl F32Serialiser {
 	#[inline]
-	fn new(value: f32) -> Self {
-		Self { value }
+	pub fn new(val: f32) -> Self {
+		Self { val }
 	}
 }
 
@@ -723,7 +731,7 @@ impl<'h> Serialiser<'h> for F32Serialiser {
 	#[inline]
 	unsafe fn serialise<O: Output>(&self, buf: &mut O) {
 		buf.write_byte(MARKER_F32);
-		buf.write_bytes(&self.value.to_le_bytes());
+		buf.write_bytes(&self.val.to_le_bytes());
 	}
 }
 
@@ -732,10 +740,7 @@ impl<'h> Deserialise<'h> for f32 {
 
 	#[inline]
 	fn deserialise<I: Input<'h>>(buf: &mut I) -> Result<f32> {
-		let marker = use_ok!(
-			buf.read_byte(),
-			#err err => err.expected(DESC_EXPECTED_MARKER).wrap()
-		);
+		let marker = use_marker!(buf);
 
 		match marker {
 			MARKER_F32 => {
@@ -760,13 +765,13 @@ impl Serialise for f64 {
 }
 
 pub struct F64Serialiser {
-	value: f64
+	val: f64
 }
 
 impl F64Serialiser {
 	#[inline]
-	fn new(value: f64) -> Self {
-		Self { value }
+	pub fn new(val: f64) -> Self {
+		Self { val }
 	}
 }
 
@@ -779,7 +784,7 @@ impl<'h> Serialiser<'h> for F64Serialiser {
 	#[inline]
 	unsafe fn serialise<O: Output>(&self, buf: &mut O) {
 		buf.write_byte(MARKER_F64);
-		buf.write_bytes(&self.value.to_le_bytes());
+		buf.write_bytes(&self.val.to_le_bytes());
 	}
 }
 
@@ -788,10 +793,7 @@ impl<'h> Deserialise<'h> for f64 {
 
 	#[inline]
 	fn deserialise<I: Input<'h>>(buf: &mut I) -> Result<f64> {
-		let marker = use_ok!(
-			buf.read_byte(),
-			#err err => err.expected(DESC_EXPECTED_MARKER).wrap()
-		);
+		let marker = use_marker!(buf);
 
 		match marker {
 			MARKER_F32 => {
@@ -903,10 +905,7 @@ macro_rules! gen_int_deserialise {
 			type Error = Error;
 
 			fn deserialise<I: Input<'h>>(buf: &mut I) -> Result<$int> {
-				let marker = use_ok!(
-					buf.read_byte(),
-					#err err => err.expected(DESC_EXPECTED_MARKER).wrap()
-				);
+				let marker = use_marker!(buf);
 
 				match marker {
 					$smallint @ $smallint_macro!() => { Ok($smallint_cast) }
