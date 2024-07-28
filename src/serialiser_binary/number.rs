@@ -737,6 +737,34 @@ unsafe fn get_byte_count_signed_le<const BYTES: usize>(bytes: [u8; BYTES]) -> u8
 }
 
 #[inline]
+fn next_bytes_from_le<'h, const IN_BYTES: usize, const OUT_BYTES: usize, T, I: Input<'h>>(
+	buf: &mut I,
+	extend: unsafe fn([u8; IN_BYTES]) -> [u8; OUT_BYTES],
+	from_le_bytes: fn([u8; OUT_BYTES]) -> T
+) -> Result<T, ErrorFound> {
+	debug_assert!(IN_BYTES < OUT_BYTES);
+	unsafe { Ok(from_le_bytes(extend(*use_ok!(buf.read_bytes_const::<IN_BYTES>())))) }
+}
+
+struct TryNextBytesFromLeParams<'h, const IN_BYTES: usize, const EXTENDED_BYTES: usize, const OUT_BYTES: usize, T, E, I, TIntermediate> {
+	buf: &'h mut I,
+	extend: unsafe fn([u8; IN_BYTES]) -> [u8; EXTENDED_BYTES],
+	from_le_bytes: fn([u8; EXTENDED_BYTES]) -> TIntermediate,
+	try_into: fn(TIntermediate) -> Result<T, E>
+}
+
+#[inline]
+fn try_next_bytes_from_le<'h, const IN_BYTES: usize, const EXTENDED_BYTES: usize, const OUT_BYTES: usize, T, E, I: Input<'h>, TIntermediate>(
+	params: TryNextBytesFromLeParams<'h, IN_BYTES, EXTENDED_BYTES, OUT_BYTES, T, E, I, TIntermediate>
+) -> Result<T, ErrorFound> {
+	let TryNextBytesFromLeParams { buf, extend, from_le_bytes, try_into } = params;
+	Ok(use_ok!(
+		unsafe { try_into(from_le_bytes(extend(*use_ok!(buf.read_bytes_const::<IN_BYTES>())))) },
+		#err _err => super::found_something_else().wrap()
+	))
+}
+
+#[inline]
 unsafe fn zero_extend_array_le<
 	const IN_BYTES: usize,
 	const OUT_BYTES: usize
@@ -767,13 +795,4 @@ unsafe fn sign_extend_array_le<
 	ptr::write_bytes(out.as_mut_ptr().cast::<u8>().add(IN_BYTES), fill_byte, OUT_BYTES - IN_BYTES);
 
 	out.assume_init()
-}
-
-#[inline]
-fn next_bytes_from_le<'h, T, I: Input<'h>, const READ_BYTES: usize, const OUT_BYTES: usize>(
-	buf: &mut I,
-	f: fn([u8; OUT_BYTES]) -> T,
-	f_extend: unsafe fn([u8; READ_BYTES]) -> [u8; OUT_BYTES]
-) -> Option<T> {
-	unsafe { Some(f(f_extend(*use_some!(buf.read_bytes_const::<READ_BYTES>())))) }
 }
