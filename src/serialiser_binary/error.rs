@@ -132,25 +132,56 @@ consts! {
 
 	DESC_EXPECTED_U8 = "an unsigned integer, 8 bit"
 	DESC_EXPECTED_I8 = "a signed integer, 8 bit"
-	// ...
-	// DESC_EXPECTED_INT_8 = "an integer, up to 8 bits"
-	// DESC_EXPECTED_INT_16 = "an integer, up to 16 bits"
-	// DESC_EXPECTED_INT_24 = "an integer, up to 24 bits"
-	// DESC_EXPECTED_INT_32 = "an integer, up to 32 bits"
-	// DESC_EXPECTED_INT_40 = "an integer, up to 40 bits"
-	// DESC_EXPECTED_INT_48 = "an integer, up to 48 bits"
-	// DESC_EXPECTED_INT_56 = "an integer, up to 56 bits"
-	// DESC_EXPECTED_INT_64 = "an integer, up to 64 bits"
-	// DESC_EXPECTED_INT_72 = "an integer, up to 72 bits"
-	// DESC_EXPECTED_INT_80 = "an integer, up to 80 bits"
-	// DESC_EXPECTED_INT_88 = "an integer, up to 88 bits"
-	// DESC_EXPECTED_INT_96 = "an integer, up to 96 bits"
-	// DESC_EXPECTED_INT_104 = "an integer, up to 104 bits"
-	// DESC_EXPECTED_INT_112 = "an integer, up to 112 bits"
-	// DESC_EXPECTED_INT_120 = "an integer, up to 120 bits"
-	// DESC_EXPECTED_INT_128 = "an integer, up to 128 bits"
+
+	DESC_EXPECTED_U16 = "an unsigned integer, 16 bit"
+	DESC_EXPECTED_I16 = "a signed integer, 16 bit"
+
+	DESC_EXPECTED_U24 = "an unsigned integer, 24 bit"
+	DESC_EXPECTED_I24 = "a signed integer, 24 bit"
+
+	DESC_EXPECTED_U32 = "an unsigned integer, 32 bit"
+	DESC_EXPECTED_I32 = "a signed integer, 32 bit"
+
+	DESC_EXPECTED_U40 = "an unsigned integer, 40 bit"
+	DESC_EXPECTED_I40 = "a signed integer, 40 bit"
+
+	DESC_EXPECTED_U48 = "an unsigned integer, 48 bit"
+	DESC_EXPECTED_I48 = "a signed integer, 48 bit"
+
+	DESC_EXPECTED_U56 = "an unsigned integer, 56 bit"
+	DESC_EXPECTED_I56 = "a signed integer, 56 bit"
+
+	DESC_EXPECTED_U64 = "an unsigned integer, 64 bit"
+	DESC_EXPECTED_I64 = "a signed integer, 64 bit"
+
+	DESC_EXPECTED_U72 = "an unsigned integer, 72 bit"
+	DESC_EXPECTED_I72 = "a signed integer, 72 bit"
+
+	DESC_EXPECTED_U80 = "an unsigned integer, 80 bit"
+	DESC_EXPECTED_I80 = "a signed integer, 80 bit"
+
+	DESC_EXPECTED_U88 = "an unsigned integer, 88 bit"
+	DESC_EXPECTED_I88 = "a signed integer, 88 bit"
+
+	DESC_EXPECTED_U96 = "an unsigned integer, 96 bit"
+	DESC_EXPECTED_I96 = "a signed integer, 96 bit"
+
+	DESC_EXPECTED_U104 = "an unsigned integer, 104 bit"
+	DESC_EXPECTED_I104 = "a signed integer, 104 bit"
+
+	DESC_EXPECTED_U112 = "an unsigned integer, 112 bit"
+	DESC_EXPECTED_I112 = "a signed integer, 112 bit"
+
+	DESC_EXPECTED_U120 = "an unsigned integer, 120 bit"
+	DESC_EXPECTED_I120 = "a signed integer, 120 bit"
+
+	DESC_EXPECTED_U128 = "an unsigned integer, 128 bit"
+	DESC_EXPECTED_I128 = "a signed integer, 128 bit"
 
 	DESC_EXPECTED_BOOL = "a bool"
+
+	DESC_EXPECTED_F32 = "a floating point number, 32 bit"
+	DESC_EXPECTED_F64 = "a floating point number, 64 bit"
 }
 
 consts! {
@@ -172,6 +203,7 @@ consts! {
 
 	DESC_FOUND_EOF = "eof"
 
+	DESC_FOUND_OVERFLOWING_INT = "an overflowing integer"
 	DESC_FOUND_SOMETHING_ELSE = "something else"
 	DESC_FOUND_TRAILING_BYTES = "trailing bytes"
 

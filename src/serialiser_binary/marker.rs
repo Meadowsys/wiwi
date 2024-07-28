@@ -6,7 +6,7 @@ macro_rules! unsigned_smallint_range {
 pub(crate) use unsigned_smallint_range;
 
 macro_rules! signed_smallint_range {
-	() => { -64..=0x7f }
+	() => { unsigned_smallint_range!() | 0xc0..=0xff }
 }
 pub(crate) use signed_smallint_range;
 
@@ -21,34 +21,49 @@ consts! {
 
 	MARKER_U8 = 0x80
 	MARKER_I8 = 0x81
+
 	MARKER_U16 = 0x82
 	MARKER_I16 = 0x83
+
 	MARKER_U24 = 0x84
 	MARKER_I24 = 0x85
+
 	MARKER_U32 = 0x86
 	MARKER_I32 = 0x87
+
 	MARKER_U40 = 0x88
 	MARKER_I40 = 0x89
+
 	MARKER_U48 = 0x8a
 	MARKER_I48 = 0x8b
+
 	MARKER_U56 = 0x8c
 	MARKER_I56 = 0x8d
+
 	MARKER_U64 = 0x8e
 	MARKER_I64 = 0x8f
+
 	MARKER_U72 = 0x90
 	MARKER_I72 = 0x91
+
 	MARKER_U80 = 0x92
 	MARKER_I80 = 0x93
+
 	MARKER_U88 = 0x94
 	MARKER_I88 = 0x95
+
 	MARKER_U96 = 0x96
 	MARKER_I96 = 0x97
+
 	MARKER_U104 = 0x98
 	MARKER_I104 = 0x99
+
 	MARKER_U112 = 0x9a
 	MARKER_I112 = 0x9b
+
 	MARKER_U120 = 0x9c
 	MARKER_I120 = 0x9d
+
 	MARKER_U128 = 0x9e
 	MARKER_I128 = 0x9f
 
