@@ -224,7 +224,7 @@ impl<'h> OutputVecBuffer<'h> {
 impl<'h> Output for OutputVecBuffer<'h> {
 	#[inline]
 	fn reserve(&mut self, bytes: usize) {
-		self.vec.reserve(bytes);
+		self.vec.reserve_exact(bytes);
 
 		let len = self.vec.len();
 		let ptr = self.vec.as_mut_ptr();

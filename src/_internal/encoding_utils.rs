@@ -84,7 +84,9 @@ impl UnsafeBufWriteGuard {
 	/// really do much with it in safe only code :p
 	#[inline]
 	pub fn with_capacity(capacity: usize) -> Self {
-		let mut vec = Vec::with_capacity(capacity);
+		let mut vec = Vec::new();
+		vec.reserve_exact(capacity);
+
 		debug_assert!(vec.capacity() >= capacity);
 
 		let ptr = vec.as_mut_ptr();
