@@ -20,7 +20,11 @@ mod option;
 mod number;
 mod string;
 
+pub use self::error::{ Error, Result };
+
+pub use self::array::SliceSerialiser;
 pub use self::bool::BoolSerialiser;
+pub use self::option::OptionSerialiser;
 pub use self::number::{
 	U8Serialiser,
 	U16Serialiser,
@@ -35,7 +39,7 @@ pub use self::number::{
 	I128Serialiser,
 	ISizeSerialiser
 };
-pub use self::error::{ Error, Result };
+pub use self::string::StrSerialiser;
 
 #[inline]
 pub fn serialise<T>(item: &T) -> Vec<u8>
