@@ -30,7 +30,7 @@ impl<'h> Serialiser<'h> for BoolSerialiser {
 	}
 
 	#[inline]
-	unsafe fn serialise<O: Output>(self, buf: &mut O) {
+	unsafe fn serialise<O: Output>(&self, buf: &mut O) {
 		// - false is 0xa0, true is 0xa1
 		// - false casts to integer 0, true to 1
 

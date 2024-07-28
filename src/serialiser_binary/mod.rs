@@ -21,7 +21,7 @@ pub use self::number::*;
 pub use error::{ Error, Result };
 
 #[inline]
-pub fn serialise<T: Serialise>(item: &T) -> Vec<u8> {
+pub fn serialise<T: Serialise + ?Sized>(item: &T) -> Vec<u8> {
 	let serialiser = item.build_serialiser();
 
 	let capacity = unsafe { serialiser.needed_capacity() };
@@ -48,7 +48,7 @@ pub fn deserialise<'h, T: Deserialise<'h>>(bytes: &[u8]) -> Result<T, T::Error> 
 	))
 }
 
-pub trait Serialise: Sized {
+pub trait Serialise {
 	type Serialiser<'h>: Serialiser<'h> where Self: 'h;
 
 	/// Gather all data required for serialisation, and store them in this
@@ -56,7 +56,7 @@ pub trait Serialise: Sized {
 	fn build_serialiser(&self) -> Self::Serialiser<'_>;
 }
 
-pub trait Serialiser<'h>: Sized {
+pub trait Serialiser<'h> {
 	/// Get the amount of bytes this item will take up when serialised
 	///
 	/// # Safety
@@ -74,7 +74,7 @@ pub trait Serialiser<'h>: Sized {
 	/// available to write to as `needed_capacity` returns (ie. calling
 	/// `needed_capacity`, then calling `reserve` on `buf` with the value returned
 	/// from `needed_capacity`, satisfies this precondition).
-	unsafe fn serialise<O: Output>(self, buf: &mut O);
+	unsafe fn serialise<O: Output>(&self, buf: &mut O);
 }
 
 pub trait Deserialise<'h>: Sized {

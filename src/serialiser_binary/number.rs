@@ -38,7 +38,7 @@ impl<'h> Serialiser<'h> for U8Serialiser {
 	}
 
 	#[inline]
-	unsafe fn serialise<O: Output>(self, buf: &mut O) {
+	unsafe fn serialise<O: Output>(&self, buf: &mut O) {
 		if self.needs_marker { buf.write_byte(MARKER_U8) }
 		buf.write_byte(self.byte)
 	}
@@ -79,7 +79,7 @@ impl<'h> Serialiser<'h> for U16Serialiser {
 	}
 
 	#[inline]
-	unsafe fn serialise<O: Output>(self, buf: &mut O) {
+	unsafe fn serialise<O: Output>(&self, buf: &mut O) {
 		if self.byte_count > 2 { hint::unreachable_unchecked() }
 
 		if self.byte_count == 0 {
@@ -127,7 +127,7 @@ impl<'h> Serialiser<'h> for U32Serialiser {
 	}
 
 	#[inline]
-	unsafe fn serialise<O: Output>(self, buf: &mut O) {
+	unsafe fn serialise<O: Output>(&self, buf: &mut O) {
 		if self.byte_count > 4 { hint::unreachable_unchecked() }
 
 		if self.byte_count == 0 {
@@ -175,7 +175,7 @@ impl<'h> Serialiser<'h> for U64Serialiser {
 	}
 
 	#[inline]
-	unsafe fn serialise<O: Output>(self, buf: &mut O) {
+	unsafe fn serialise<O: Output>(&self, buf: &mut O) {
 		if self.byte_count > 8 { hint::unreachable_unchecked() }
 
 		if self.byte_count == 0 {
@@ -223,7 +223,7 @@ impl<'h> Serialiser<'h> for U128Serialiser {
 	}
 
 	#[inline]
-	unsafe fn serialise<O: Output>(self, buf: &mut O) {
+	unsafe fn serialise<O: Output>(&self, buf: &mut O) {
 		if self.byte_count > 16 { hint::unreachable_unchecked() }
 
 		if self.byte_count == 0 {
@@ -282,7 +282,7 @@ impl<'h> Serialiser<'h> for USizeSerialiser {
 		self.inner.needed_capacity()
 	}
 
-	unsafe fn serialise<O: Output>(self, buf: &mut O) {
+	unsafe fn serialise<O: Output>(&self, buf: &mut O) {
 		self.inner.serialise(buf)
 	}
 }
@@ -323,7 +323,7 @@ impl<'h> Serialiser<'h> for I8Serialiser {
 	}
 
 	#[inline]
-	unsafe fn serialise<O: Output>(self, buf: &mut O) {
+	unsafe fn serialise<O: Output>(&self, buf: &mut O) {
 		if self.needs_marker { buf.write_byte(MARKER_I8) }
 		buf.write_byte(self.byte)
 	}
@@ -369,7 +369,7 @@ impl<'h> Serialiser<'h> for I16Serialiser {
 	}
 
 	#[inline]
-	unsafe fn serialise<O: Output>(self, buf: &mut O) {
+	unsafe fn serialise<O: Output>(&self, buf: &mut O) {
 		if self.byte_count > 2 { hint::unreachable_unchecked() }
 
 		if self.byte_count == 0 {
@@ -421,7 +421,7 @@ impl<'h> Serialiser<'h> for I32Serialiser {
 	}
 
 	#[inline]
-	unsafe fn serialise<O: Output>(self, buf: &mut O) {
+	unsafe fn serialise<O: Output>(&self, buf: &mut O) {
 		if self.byte_count > 4 { hint::unreachable_unchecked() }
 
 		if self.byte_count == 0 {
@@ -474,7 +474,7 @@ impl<'h> Serialiser<'h> for I64Serialiser {
 	}
 
 	#[inline]
-	unsafe fn serialise<O: Output>(self, buf: &mut O) {
+	unsafe fn serialise<O: Output>(&self, buf: &mut O) {
 		if self.byte_count > 8 { hint::unreachable_unchecked() }
 
 		if self.byte_count == 0 {
@@ -527,7 +527,7 @@ impl<'h> Serialiser<'h> for I128Serialiser {
 	}
 
 	#[inline]
-	unsafe fn serialise<O: Output>(self, buf: &mut O) {
+	unsafe fn serialise<O: Output>(&self, buf: &mut O) {
 		if self.byte_count > 16 { hint::unreachable_unchecked() }
 
 		if self.byte_count == 0 {
@@ -587,7 +587,7 @@ impl<'h> Serialiser<'h> for ISizeSerialiser {
 	}
 
 	#[inline]
-	unsafe fn serialise<O: Output>(self, buf: &mut O) {
+	unsafe fn serialise<O: Output>(&self, buf: &mut O) {
 		self.inner.serialise(buf)
 	}
 }
