@@ -9,48 +9,14 @@ pub struct Error {
 	found: &'static str
 }
 
-#[repr(transparent)]
-pub struct ErrorHalf {
-	expected: &'static str
-}
-
-#[inline(always)]
-pub(crate) fn expected(expected: &'static str) -> ErrorHalf {
-	ErrorHalf { expected }
-}
-
-impl ErrorHalf {
-	#[inline(always)]
-	pub(crate) fn found(self, found: &'static str) -> Error {
-		let ErrorHalf { expected } = self;
-		Error { expected, found }
-	}
-
-	#[inline(always)]
-	pub(crate) fn found_something_else(self) -> Error {
-		let ErrorHalf { expected } = self;
-		let found = found::DESC_FOUND_SOMETHING_ELSE;
-		Error { expected, found }
-	}
-
-	#[inline(always)]
-	pub(crate) fn found_eof(self) -> Error {
-		let ErrorHalf { expected } = self;
-		let found = found::DESC_FOUND_EOF;
-		Error { expected, found }
-	}
-}
-
-impl std::error::Error for Error {}
-
 impl Error {
 	#[inline(always)]
-	pub(crate) fn wrap_in_err<T>(self) -> Result<T> {
+	pub fn wrap<T>(self) -> Result<T> {
 		Err(self)
 	}
 
 	#[inline(always)]
-	pub(crate) fn wrap_in_foreign_err<T, E>(self) -> Result<T, E>
+	pub fn wrap_foreign<T, E>(self) -> Result<T, E>
 	where
 		Error: Into<E>
 	{
@@ -66,6 +32,78 @@ impl fmt::Display for Error {
 		use_ok!(f.write_str(self.found));
 
 		Ok(())
+	}
+}
+
+impl std::error::Error for Error {}
+
+#[repr(transparent)]
+pub struct ErrorExpected {
+	expected: &'static str
+}
+
+#[inline(always)]
+pub fn expected(expected: &'static str) -> ErrorExpected {
+	ErrorExpected { expected }
+}
+
+impl ErrorExpected {
+	#[inline(always)]
+	pub fn found(self, found: &'static str) -> Error {
+		let ErrorExpected { expected } = self;
+		Error { expected, found }
+	}
+
+	#[inline(always)]
+	pub fn found_something_else(self) -> Error {
+		let ErrorExpected { expected } = self;
+		let found = found::DESC_FOUND_SOMETHING_ELSE;
+		Error { expected, found }
+	}
+
+	#[inline(always)]
+	pub fn found_eof(self) -> Error {
+		let ErrorExpected { expected } = self;
+		let found = found::DESC_FOUND_EOF;
+		Error { expected, found }
+	}
+
+	#[inline(always)]
+	pub fn wrap<T>(self) -> Result<T, Self> {
+		Err(self)
+	}
+}
+
+#[repr(transparent)]
+pub struct ErrorFound {
+	found: &'static str
+}
+
+#[inline(always)]
+pub fn found(found: &'static str) -> ErrorFound {
+	ErrorFound { found }
+}
+
+#[inline(always)]
+pub fn found_something_else() -> ErrorFound {
+	ErrorFound { found: found::DESC_FOUND_SOMETHING_ELSE }
+}
+
+#[inline(always)]
+pub fn found_eof() -> ErrorFound {
+	ErrorFound { found: found::DESC_FOUND_EOF }
+}
+
+impl ErrorFound {
+	#[inline(always)]
+	pub fn expected(self, expected: &'static str) -> Error {
+		let ErrorFound { found } = self;
+		Error { expected, found }
+	}
+
+	#[inline(always)]
+	pub fn wrap<T>(self) -> Result<T, Self> {
+		Err(self)
 	}
 }
 
@@ -92,8 +130,8 @@ consts! {
 	// DESC_EXPECTED_SMALLINT_UNSIGNED = "a positive smallint"
 	// DESC_EXPECTED_SMALLINT_SIGNED = "a signed smallint"
 
-	// DESC_EXPECTED_U8 = "an unsigned integer, up to 8 bits"
-	// DESC_EXPECTED_I8 = "a signed integer, up to 8 bits"
+	DESC_EXPECTED_U8 = "an unsigned integer, 8 bit"
+	DESC_EXPECTED_I8 = "a signed integer, 8 bit"
 	// ...
 	// DESC_EXPECTED_INT_8 = "an integer, up to 8 bits"
 	// DESC_EXPECTED_INT_16 = "an integer, up to 16 bits"

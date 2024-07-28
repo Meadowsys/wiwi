@@ -1,4 +1,4 @@
-use super::{ Deserialise, Error, Input, Output, Result, Serialise, Serialiser, use_some };
+use super::{ Deserialise, Error, Input, Output, Result, Serialise, Serialiser, use_ok, use_some };
 use super::error::expected;
 use super::error::expected::*;
 use super::marker::markers::*;
@@ -45,18 +45,16 @@ impl<'h> Deserialise<'h> for bool {
 
 	#[inline]
 	fn deserialise<I: Input<'h>>(buf: &mut I) -> Result<bool> {
-		Ok(use_some!(
+		Ok(use_ok!(
 			buf.read_byte(),
 			byte => if byte >> 1 == MARKER_BOOL_UPPER_BITS_COMMON {
 				byte & 0b1 != 0
 			} else {
 				return expected(DESC_EXPECTED_BOOL)
 					.found_something_else()
-					.wrap_in_err()
+					.wrap()
 			},
-			#none => expected(DESC_EXPECTED_BOOL)
-				.found_eof()
-				.wrap_in_err()
+			#err err => err.expected(DESC_EXPECTED_BOOL).wrap()
 		))
 	}
 }

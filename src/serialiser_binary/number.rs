@@ -1,5 +1,5 @@
 use crate::num_traits::*;
-use super::{ Deserialise, Error, Input, Output, Result, Serialise, Serialiser, use_some };
+use super::{ Deserialise, Error, ErrorFound, Input, Output, Result, Serialise, Serialiser, use_ok, use_some };
 use super::error::expected;
 use super::error::expected::*;
 use super::error::found::*;

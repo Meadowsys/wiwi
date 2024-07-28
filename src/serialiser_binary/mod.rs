@@ -31,7 +31,7 @@ pub use self::number::{
 	I128Serialiser,
 	ISizeSerialiser
 };
-pub use error::{ Error, Result };
+pub use self::error::{ Error, ErrorExpected, ErrorFound, expected, found, found_eof, found_something_else, Result };
 
 #[inline]
 pub fn serialise<T>(item: &T) -> Vec<u8>
@@ -71,7 +71,7 @@ where
 			} else {
 				return error::expected(error::expected::DESC_EXPECTED_EOF)
 					.found(error::found::DESC_FOUND_TRAILING_BYTES)
-					.wrap_in_foreign_err()
+					.wrap_foreign()
 			}
 		}
 	))
@@ -158,33 +158,36 @@ impl Output for Vec<u8> {
 }
 
 pub trait Input<'h> {
-	fn read_bytes_ptr(&mut self, bytes: usize) -> Option<*const u8>;
+	fn read_bytes_ptr(&mut self, bytes: usize) -> Result<*const u8, ErrorFound>;
 
 	#[inline]
-	fn read_bytes(&mut self, bytes: usize) -> Option<&'h [u8]> {
-		Some(use_some!(
+	fn read_bytes(&mut self, bytes: usize) -> Result<&'h [u8], ErrorFound> {
+		Ok(use_ok!(
 			self.read_bytes_ptr(bytes),
 			// SAFETY: if this returned `Some` then the ptr is valid for `bytes` reads
 			// so is safe to create slice here
-			ptr => unsafe { slice::from_raw_parts(ptr, bytes) }
+			ptr => unsafe { slice::from_raw_parts(ptr, bytes) },
+			#err err => err.wrap()
 		))
 	}
 
 	#[inline]
-	fn read_byte(&mut self) -> Option<u8> {
-		Some(use_some!(
+	fn read_byte(&mut self) -> Result<u8, ErrorFound> {
+		Ok(use_ok!(
 			self.read_bytes_ptr(1),
 			// SAFETY: ptr returned by `read_bytes_ptr` is
 			// guaranteed to be readable for at least 1 byte
-			byte => unsafe { *byte }
+			byte => unsafe { *byte },
+			#err err => err.wrap()
 		))
 	}
 
 	#[inline]
-	fn read_bytes_const<const BYTES: usize>(&mut self) -> Option<&'h [u8; BYTES]> {
-		Some(use_some!(
+	fn read_bytes_const<const BYTES: usize>(&mut self) -> Result<&'h [u8; BYTES], ErrorFound> {
+		Ok(use_ok!(
 			self.read_bytes(BYTES),
-			bytes => unsafe { &*bytes.as_ptr().cast::<[u8; BYTES]>() }
+			bytes => unsafe { &*bytes.as_ptr().cast::<[u8; BYTES]>() },
+			#err err => err.wrap()
 		))
 	}
 }
@@ -255,14 +258,14 @@ impl<'h> InputSliceBuffer<'h> {
 }
 
 impl<'h> Input<'h> for InputSliceBuffer<'h> {
-	fn read_bytes_ptr(&mut self, bytes: usize) -> Option<*const u8> {
+	fn read_bytes_ptr(&mut self, bytes: usize) -> Result<*const u8, ErrorFound> {
 		if self.remaining < bytes {
-			None
+			found_eof().wrap()
 		} else {
 			let ptr = self.ptr;
 			self.remaining -= bytes;
 			self.ptr = unsafe { self.ptr.add(bytes) };
-			Some(ptr)
+			Ok(ptr)
 		}
 	}
 }
