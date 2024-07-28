@@ -1,10 +1,4 @@
-use crate::num_traits::*;
-use super::{ Deserialise, Error, Input, Output, Result, Serialise, Serialiser, use_marker, use_ok };
-use super::error::{ ErrorFound, expected, found_something_else };
-use super::error::expected::*;
-use super::error::found::*;
-use super::marker::{ signed_smallint_range, unsigned_smallint_range };
-use super::marker::markers::*;
+use super::internal_prelude::*;
 use std::{ hint, ptr };
 use std::mem::MaybeUninit;
 

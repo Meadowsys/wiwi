@@ -411,3 +411,32 @@ macro_rules! consts {
 	};
 }
 use consts;
+
+#[allow(unused_imports)]
+mod internal_prelude {
+	pub(super) use crate::num_traits::*;
+	pub(super) use super::{
+		Deserialise,
+		Input,
+		Output,
+		Serialise,
+		Serialiser,
+		use_marker,
+		use_ok,
+		use_some
+	};
+	pub(super) use super::error::{
+		Error,
+		ErrorExpected,
+		ErrorFound,
+		Result,
+		expected,
+		found,
+		found_eof,
+		found_something_else
+	};
+	pub(super) use super::error::expected::*;
+	pub(super) use super::error::found::*;
+	pub(super) use super::marker::*;
+	pub(super) use super::marker::markers::*;
+}
