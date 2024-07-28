@@ -321,13 +321,13 @@ impl<'h> Deserialise<'h> for usize {
 	type Error = Error;
 
 	#[inline]
-	fn deserialise<I: Input<'h>>(buf: &mut I) -> Result<usize> {
+	fn deserialise_with_marker<I: Input<'h>>(buf: &mut I, marker: u8) -> Result<usize> {
 		#[cfg(target_pointer_width = "64")]
-		let val = u64::deserialise(buf);
+		let val = u64::deserialise_with_marker(buf, marker);
 		#[cfg(target_pointer_width = "32")]
-		let val = u32::deserialise(buf);
+		let val = u32::deserialise_with_marker(buf, marker);
 		#[cfg(target_pointer_width = "16")]
-		let val = u16::deserialise(buf);
+		let val = u16::deserialise_with_marker(buf, marker);
 
 		Ok(use_ok!(
 			val,
@@ -680,13 +680,13 @@ impl<'h> Deserialise<'h> for isize {
 	type Error = Error;
 
 	#[inline]
-	fn deserialise<I: Input<'h>>(buf: &mut I) -> Result<isize> {
+	fn deserialise_with_marker<I: Input<'h>>(buf: &mut I, marker: u8) -> Result<isize> {
 		#[cfg(target_pointer_width = "64")]
-		let val = i64::deserialise(buf);
+		let val = i64::deserialise_with_marker(buf, marker);
 		#[cfg(target_pointer_width = "32")]
-		let val = i32::deserialise(buf);
+		let val = i32::deserialise_with_marker(buf, marker);
 		#[cfg(target_pointer_width = "16")]
-		let val = i16::deserialise(buf);
+		let val = i16::deserialise_with_marker(buf, marker);
 
 		Ok(use_ok!(
 			val,
@@ -733,9 +733,7 @@ impl<'h> Deserialise<'h> for f32 {
 	type Error = Error;
 
 	#[inline]
-	fn deserialise<I: Input<'h>>(buf: &mut I) -> Result<f32> {
-		let marker = use_marker!(buf);
-
+	fn deserialise_with_marker<I: Input<'h>>(buf: &mut I, marker: u8) -> Result<f32> {
 		match marker {
 			MARKER_F32 => {
 				Ok(use_ok!(
@@ -786,9 +784,7 @@ impl<'h> Deserialise<'h> for f64 {
 	type Error = Error;
 
 	#[inline]
-	fn deserialise<I: Input<'h>>(buf: &mut I) -> Result<f64> {
-		let marker = use_marker!(buf);
-
+	fn deserialise_with_marker<I: Input<'h>>(buf: &mut I, marker: u8) -> Result<f64> {
 		match marker {
 			MARKER_F32 => {
 				Ok(use_ok!(
@@ -898,9 +894,7 @@ macro_rules! gen_int_deserialise {
 		impl<'h> Deserialise<'h> for $int {
 			type Error = Error;
 
-			fn deserialise<I: Input<'h>>(buf: &mut I) -> Result<$int> {
-				let marker = use_marker!(buf);
-
+			fn deserialise_with_marker<I: Input<'h>>(buf: &mut I, marker: u8) -> Result<$int> {
 				match marker {
 					$smallint @ $smallint_macro!() => { Ok($smallint_cast) }
 

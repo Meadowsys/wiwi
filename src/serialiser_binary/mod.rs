@@ -112,7 +112,19 @@ pub trait Serialiser<'h> {
 pub trait Deserialise<'h>: Sized {
 	type Error: std::error::Error + From<Error>;
 
-	fn deserialise<I: Input<'h>>(buf: &mut I) -> Result<Self, Self::Error>;
+	#[inline]
+	fn deserialise<I: Input<'h>>(buf: &mut I) -> Result<Self, Self::Error> {
+		let marker = use_ok!(
+			buf.read_byte(),
+			#err err => err.expected(
+				error::expected::DESC_EXPECTED_MARKER
+			).wrap_foreign()
+		);
+
+		Self::deserialise_with_marker(buf, marker)
+	}
+
+	fn deserialise_with_marker<I: Input<'h>>(buf: &mut I, marker: u8) -> Result<Self, Self::Error>;
 }
 
 pub trait Output {
@@ -275,27 +287,6 @@ impl<'h> Input<'h> for InputSliceBuffer<'h> {
 	}
 }
 
-macro_rules! use_marker {
-	(#foreign $buf:ident) => {
-		use_ok!(
-			$buf.read_byte(),
-			#err err => err.expected(
-				$crate::serialiser_binary::error::expected::DESC_EXPECTED_MARKER
-			).wrap_foreign()
-		)
-	};
-
-	($buf:ident) => {
-		use_ok!(
-			$buf.read_byte(),
-			#err err => err.expected(
-				$crate::serialiser_binary::error::expected::DESC_EXPECTED_MARKER
-			).wrap()
-		)
-	};
-}
-use use_marker;
-
 macro_rules! use_ok {
 	($result:expr) => {
 		match $result {
@@ -434,7 +425,6 @@ mod internal_prelude {
 		Output,
 		Serialise,
 		Serialiser,
-		use_marker,
 		use_ok,
 		use_some
 	};

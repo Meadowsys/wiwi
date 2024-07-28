@@ -41,17 +41,13 @@ impl<'h> Deserialise<'h> for bool {
 	type Error = Error;
 
 	#[inline]
-	fn deserialise<I: Input<'h>>(buf: &mut I) -> Result<bool> {
-		Ok(use_ok!(
-			buf.read_byte(),
-			byte => if byte >> 1 == MARKER_BOOL_UPPER_BITS_COMMON {
-				byte & 0b1 != 0
-			} else {
-				return expected(DESC_EXPECTED_BOOL)
-					.found_something_else()
-					.wrap()
-			},
-			#err err => err.expected(DESC_EXPECTED_BOOL).wrap()
-		))
+	fn deserialise_with_marker<I: Input<'h>>(_buf: &mut I, marker: u8) -> Result<bool> {
+		if marker >> 1 == MARKER_BOOL_UPPER_BITS_COMMON {
+			Ok(marker & 0b1 != 0)
+		} else {
+			return expected(DESC_EXPECTED_BOOL)
+				.found_something_else()
+				.wrap()
+		}
 	}
 }

@@ -86,9 +86,7 @@ impl<'h, T: Deserialise<'h> + 'h> Deserialise<'h> for Vec<T> {
 	type Error = T::Error;
 
 	#[inline]
-	fn deserialise<I: Input<'h>>(buf: &mut I) -> Result<Vec<T>, T::Error> {
-		let marker = use_marker!(#foreign buf);
-
+	fn deserialise_with_marker<I: Input<'h>>(buf: &mut I, marker: u8) -> Result<Vec<T>, T::Error> {
 		let len = match marker {
 			MARKER_ARRAY_8 => {
 				use_ok!(

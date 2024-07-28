@@ -73,9 +73,7 @@ impl<'h> Deserialise<'h> for &'h str {
 	type Error = Error;
 
 	#[inline]
-	fn deserialise<I: Input<'h>>(buf: &mut I) -> Result<&'h str> {
-		let marker = use_marker!(buf);
-
+	fn deserialise_with_marker<I: Input<'h>>(buf: &mut I, marker: u8) -> Result<&'h str> {
 		let len = match marker {
 			MARKER_STR_8 => {
 				use_ok!(
@@ -117,9 +115,9 @@ impl<'h> Deserialise<'h> for String {
 	type Error = Error;
 
 	#[inline]
-	fn deserialise<I: Input<'h>>(buf: &mut I) -> Result<String> {
+	fn deserialise_with_marker<I: Input<'h>>(buf: &mut I, marker: u8) -> Result<String> {
 		Ok(use_ok!(
-			<&str>::deserialise(buf),
+			<&str>::deserialise_with_marker(buf, marker),
 			str => String::from(str)
 		))
 	}
@@ -129,9 +127,9 @@ impl<'h> Deserialise<'h> for Cow<'h, str> {
 	type Error = Error;
 
 	#[inline]
-	fn deserialise<I: Input<'h>>(buf: &mut I) -> Result<Cow<'h, str>> {
+	fn deserialise_with_marker<I: Input<'h>>(buf: &mut I, marker: u8) -> Result<Cow<'h, str>> {
 		Ok(use_ok!(
-			<&str>::deserialise(buf),
+			<&str>::deserialise_with_marker(buf, marker),
 			str => Cow::Borrowed(str)
 		))
 	}
