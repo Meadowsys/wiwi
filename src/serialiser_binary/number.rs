@@ -591,6 +591,72 @@ impl<'h> Serialiser<'h> for ISizeSerialiser {
 	}
 }
 
+impl Serialise for f32 {
+	type Serialiser<'h> = F32Serialiser;
+
+	#[inline]
+	fn build_serialiser(&self) -> F32Serialiser {
+		F32Serialiser::new(*self)
+	}
+}
+
+pub struct F32Serialiser {
+	value: f32
+}
+
+impl F32Serialiser {
+	#[inline]
+	fn new(value: f32) -> Self {
+		Self { value }
+	}
+}
+
+impl<'h> Serialiser<'h> for F32Serialiser {
+	#[inline]
+	unsafe fn needed_capacity(&self) -> usize {
+		5
+	}
+
+	#[inline]
+	unsafe fn serialise<O: Output>(&self, buf: &mut O) {
+		buf.write_byte(MARKER_F32);
+		buf.write_bytes(&self.value.to_le_bytes());
+	}
+}
+
+impl Serialise for f64 {
+	type Serialiser<'h> = F64Serialiser;
+
+	#[inline]
+	fn build_serialiser(&self) -> F64Serialiser {
+		F64Serialiser::new(*self)
+	}
+}
+
+pub struct F64Serialiser {
+	value: f64
+}
+
+impl F64Serialiser {
+	#[inline]
+	fn new(value: f64) -> Self {
+		Self { value }
+	}
+}
+
+impl<'h> Serialiser<'h> for F64Serialiser {
+	#[inline]
+	unsafe fn needed_capacity(&self) -> usize {
+		9
+	}
+
+	#[inline]
+	unsafe fn serialise<O: Output>(&self, buf: &mut O) {
+		buf.write_byte(MARKER_F64);
+		buf.write_bytes(&self.value.to_le_bytes());
+	}
+}
+
 #[inline]
 unsafe fn get_byte_count_unsigned_le<const BYTES: usize>(bytes: [u8; BYTES]) -> u8 {
 	let ptr = bytes.as_ptr();
