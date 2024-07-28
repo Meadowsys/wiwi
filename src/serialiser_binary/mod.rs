@@ -288,6 +288,24 @@ impl<'h> Input<'h> for InputSliceBuffer<'h> {
 	}
 }
 
+impl<T: Serialise + ?Sized> Serialise for &T {
+	type Serialiser<'h> = T::Serialiser<'h> where Self: 'h;
+
+	#[inline]
+	fn build_serialiser(&self) -> T::Serialiser<'_> {
+		(**self).build_serialiser()
+	}
+}
+
+impl<T: Serialise + ?Sized> Serialise for &mut T {
+	type Serialiser<'h> = T::Serialiser<'h> where Self: 'h;
+
+	#[inline]
+	fn build_serialiser(&self) -> T::Serialiser<'_> {
+		(**self).build_serialiser()
+	}
+}
+
 macro_rules! use_ok {
 	($result:expr) => {
 		match $result {
