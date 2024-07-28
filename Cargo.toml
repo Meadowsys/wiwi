@@ -155,7 +155,8 @@ rand = [
 	"dep:rand_chacha"
 ]
 serialiser-binary-unstable = [
-	"dep:ordered-float"
+	"dep:ordered-float",
+	"num-traits-unstable"
 ]
 serialiser-text-unstable = []
 string-pool-unstable = [

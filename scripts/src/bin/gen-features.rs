@@ -160,6 +160,7 @@ fn main() {
 		"serialiser-binary"
 		"self describing, stable (once finished) binary serialiser, aiming for small output size by exploiting common patterns in real world data"
 		dependencies: ["ordered-float"]
+		features: ["num-traits"]
 
 		#[unstable]
 		"serialiser-text"

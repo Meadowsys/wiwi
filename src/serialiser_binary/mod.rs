@@ -1,7 +1,10 @@
-// TODO: this should be removed
+// TODO: remove this
 #![allow(
 	dead_code,
-	missing_docs
+	missing_docs,
+	unsafe_op_in_unsafe_fn,
+	clippy::missing_safety_doc,
+	clippy::undocumented_unsafe_blocks
 )]
 
 use std::{ ptr, slice };
@@ -186,6 +189,7 @@ impl Output for OutputVecBuffer {
 
 		let vec_len = self.vec.len();
 		self.vec.set_len(vec_len + 1);
+		self.ptr = self.ptr.add(1);
 	}
 }
 

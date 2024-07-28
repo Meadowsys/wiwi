@@ -12,7 +12,8 @@
 )]
 #![deny(
 	unexpected_cfgs,
-	clippy::mixed_attributes_style
+	clippy::mixed_attributes_style,
+	clippy::unnecessary_safety_comment
 )]
 
 #![cfg_attr(docsrs, feature(doc_cfg))]

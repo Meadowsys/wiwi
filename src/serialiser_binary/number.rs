@@ -1,132 +1,595 @@
-use super::{ Deserialise, Error, Input, Output, Result, Serialise };
+use crate::num_traits::*;
+use super::{ Deserialise, Error, Input, Output, Result, Serialise, Serialiser };
 use super::error::expected;
 use super::error::expected::*;
 use super::error::found::*;
 use super::marker::markers::*;
+use std::{ hint, slice };
 use std::mem::MaybeUninit;
 
+impl Serialise for u8 {
+	type Serialiser<'h> = U8Serialiser;
+
+	#[inline]
+	fn build_serialiser(&self) -> U8Serialiser {
+		U8Serialiser::new(*self)
+	}
+}
+
+impl Serialise for u16 {
+	type Serialiser<'h> = U16Serialiser;
+
+	#[inline]
+	fn build_serialiser(&self) -> U16Serialiser {
+		U16Serialiser::new(*self)
+	}
+}
+
+impl Serialise for u32 {
+	type Serialiser<'h> = U32Serialiser;
+
+	#[inline]
+	fn build_serialiser(&self) -> U32Serialiser {
+		U32Serialiser::new(*self)
+	}
+}
+
+impl Serialise for u64 {
+	type Serialiser<'h> = U64Serialiser;
+
+	#[inline]
+	fn build_serialiser(&self) -> U64Serialiser {
+		U64Serialiser::new(*self)
+	}
+}
+
+impl Serialise for u128 {
+	type Serialiser<'h> = U128Serialiser;
+
+	#[inline]
+	fn build_serialiser(&self) -> U128Serialiser {
+		U128Serialiser::new(*self)
+	}
+}
+
+impl Serialise for usize {
+	type Serialiser<'h> = USizeSerialiser;
+
+	#[inline]
+	fn build_serialiser(&self) -> USizeSerialiser {
+		USizeSerialiser::new(*self)
+	}
+}
+
+impl Serialise for i8 {
+	type Serialiser<'h> = I8Serialiser;
+
+	#[inline]
+	fn build_serialiser(&self) -> I8Serialiser {
+		I8Serialiser::new(*self)
+	}
+}
+
+impl Serialise for i16 {
+	type Serialiser<'h> = I16Serialiser;
+
+	#[inline]
+	fn build_serialiser(&self) -> I16Serialiser {
+		I16Serialiser::new(*self)
+	}
+}
+
+impl Serialise for i32 {
+	type Serialiser<'h> = I32Serialiser;
+
+	#[inline]
+	fn build_serialiser(&self) -> I32Serialiser {
+		I32Serialiser::new(*self)
+	}
+}
+
+impl Serialise for i64 {
+	type Serialiser<'h> = I64Serialiser;
+
+	#[inline]
+	fn build_serialiser(&self) -> I64Serialiser {
+		I64Serialiser::new(*self)
+	}
+}
+
+impl Serialise for i128 {
+	type Serialiser<'h> = I128Serialiser;
+
+	#[inline]
+	fn build_serialiser(&self) -> I128Serialiser {
+		I128Serialiser::new(*self)
+	}
+}
+
+impl Serialise for isize {
+	type Serialiser<'h> = ISizeSerialiser;
+
+	#[inline]
+	fn build_serialiser(&self) -> ISizeSerialiser {
+		ISizeSerialiser::new(*self)
+	}
+}
+
 pub struct U8Serialiser {
-	inner: u8,
-	is_small: MaybeUninit<bool>
+	byte: u8,
+	needs_marker: bool
+}
+
+impl U8Serialiser {
+	#[inline]
+	fn new(val: u8) -> Self {
+		Self {
+			byte: val,
+			needs_marker: val > MARKER_SMALLINT_RANGE_END
+		}
+	}
+}
+
+impl<'h> Serialiser<'h> for U8Serialiser {
+	#[inline]
+	unsafe fn needed_capacity(&self) -> usize {
+		self.needs_marker as usize + 1
+	}
+
+	#[inline]
+	unsafe fn serialise<O: Output>(self, buf: &mut O) {
+		if self.needs_marker { buf.write_byte(MARKER_U8) }
+		buf.write_byte(self.byte)
+	}
 }
 
 pub struct U16Serialiser {
-	inner: SerialiserInner16,
-	/// Count of bytes to serialise in
-	///
-	/// If this is 0, that means smallint
-	/// (only serialise the first byte)
-	byte_count: MaybeUninit<u8>
+	le_bytes: [u8; 2],
+	byte_count: u8
+}
+
+impl U16Serialiser {
+	#[inline]
+	fn new(val: u16) -> Self {
+		let le_bytes = val.to_le_bytes();
+		let byte_count = if val <= MARKER_SMALLINT_RANGE_END.into_u16() {
+			0
+		} else {
+			get_byte_count_unsigned_le(le_bytes)
+		};
+
+		Self { le_bytes, byte_count }
+	}
+}
+
+impl<'h> Serialiser<'h> for U16Serialiser {
+	#[inline]
+	unsafe fn needed_capacity(&self) -> usize {
+		self.byte_count.into_usize() + 1
+	}
+
+	#[inline]
+	unsafe fn serialise<O: Output>(self, buf: &mut O) {
+		if self.byte_count > 2 { hint::unreachable_unchecked() }
+
+		if self.byte_count == 0 {
+			buf.write_byte(self.le_bytes[0]);
+		} else {
+			let marker = ((self.byte_count - 1) << 1) | 0x80;
+			buf.write_byte(marker);
+			buf.write_bytes(&self.le_bytes[..self.byte_count.into_usize()]);
+		}
+	}
 }
 
 pub struct U32Serialiser {
-	inner: SerialiserInner32,
-	/// Count of bytes to serialise in
-	///
-	/// If this is 0, that means smallint
-	/// (only serialise the first byte)
-	byte_count: MaybeUninit<u8>
+	le_bytes: [u8; 4],
+	byte_count: u8
+}
+
+impl U32Serialiser {
+	#[inline]
+	fn new(val: u32) -> Self {
+		let le_bytes = val.to_le_bytes();
+		let byte_count = if val <= MARKER_SMALLINT_RANGE_END.into_u32() {
+			0
+		} else {
+			get_byte_count_unsigned_le(le_bytes)
+		};
+
+		Self { le_bytes, byte_count }
+	}
+}
+
+impl<'h> Serialiser<'h> for U32Serialiser {
+	#[inline]
+	unsafe fn needed_capacity(&self) -> usize {
+		self.byte_count.into_usize() + 1
+	}
+
+	#[inline]
+	unsafe fn serialise<O: Output>(self, buf: &mut O) {
+		if self.byte_count > 4 { hint::unreachable_unchecked() }
+
+		if self.byte_count == 0 {
+			buf.write_byte(self.le_bytes[0]);
+		} else {
+			let marker = ((self.byte_count - 1) << 1) | 0x80;
+			buf.write_byte(marker);
+			buf.write_bytes(&self.le_bytes[..self.byte_count.into_usize()]);
+		}
+	}
 }
 
 pub struct U64Serialiser {
-	inner: SerialiserInner64,
-	/// Count of bytes to serialise in
-	///
-	/// If this is 0, that means smallint
-	/// (only serialise the first byte)
-	byte_count: MaybeUninit<u8>
+	le_bytes: [u8; 8],
+	byte_count: u8
+}
+
+impl U64Serialiser {
+	#[inline]
+	fn new(val: u64) -> Self {
+		let le_bytes = val.to_le_bytes();
+		let byte_count = if val <= MARKER_SMALLINT_RANGE_END.into_u64() {
+			0
+		} else {
+			get_byte_count_unsigned_le(le_bytes)
+		};
+
+		Self { le_bytes, byte_count }
+	}
+}
+
+impl<'h> Serialiser<'h> for U64Serialiser {
+	#[inline]
+	unsafe fn needed_capacity(&self) -> usize {
+		self.byte_count.into_usize() + 1
+	}
+
+	#[inline]
+	unsafe fn serialise<O: Output>(self, buf: &mut O) {
+		if self.byte_count > 8 { hint::unreachable_unchecked() }
+
+		if self.byte_count == 0 {
+			buf.write_byte(self.le_bytes[0]);
+		} else {
+			let marker = ((self.byte_count - 1) << 1) | 0x80;
+			buf.write_byte(marker);
+			buf.write_bytes(&self.le_bytes[..self.byte_count.into_usize()]);
+		}
+	}
 }
 
 pub struct U128Serialiser {
-	inner: SerialiserInner128,
-	/// Count of bytes to serialise in
-	///
-	/// If this is 0, that means smallint
-	/// (only serialise the first byte)
-	byte_count: MaybeUninit<u8>
+	le_bytes: [u8; 16],
+	byte_count: u8
+}
+
+impl U128Serialiser {
+	#[inline]
+	fn new(val: u128) -> Self {
+		let le_bytes = val.to_le_bytes();
+		let byte_count = if val <= MARKER_SMALLINT_RANGE_END.into_u128() {
+			0
+		} else {
+			get_byte_count_unsigned_le(le_bytes)
+		};
+
+		Self { le_bytes, byte_count }
+	}
+}
+
+impl<'h> Serialiser<'h> for U128Serialiser {
+	#[inline]
+	unsafe fn needed_capacity(&self) -> usize {
+		self.byte_count.into_usize() + 1
+	}
+
+	#[inline]
+	unsafe fn serialise<O: Output>(self, buf: &mut O) {
+		if self.byte_count > 16 { hint::unreachable_unchecked() }
+
+		if self.byte_count == 0 {
+			buf.write_byte(self.le_bytes[0]);
+		} else {
+			let marker = ((self.byte_count - 1) << 1) | 0x80;
+			buf.write_byte(marker);
+			buf.write_bytes(&self.le_bytes[..self.byte_count.into_usize()]);
+		}
+	}
 }
 
 #[cfg(target_pointer_width = "64")]
-pub type USizeSerialiser = U64Serialiser;
+pub struct USizeSerialiser {
+	inner: U64Serialiser
+}
 
 #[cfg(target_pointer_width = "32")]
-pub type USizeSerialiser = U32Serialiser;
+pub struct USizeSerialiser {
+	inner: U32Serialiser
+}
 
 #[cfg(target_pointer_width = "16")]
-pub type USizeSerialiser = U16Serialiser;
+pub struct USizeSerialiser {
+	inner: U16Serialiser
+}
+
+impl USizeSerialiser {
+	#[inline]
+	fn new(val: usize) -> Self {
+		#[cfg(target_pointer_width = "64")]
+		let inner = U64Serialiser::new(val.into_u64());
+
+		#[cfg(target_pointer_width = "32")]
+		let inner = U32Serialiser::new(val.into_u32());
+
+		#[cfg(target_pointer_width = "16")]
+		let inner = U16Serialiser::new(val.into_u16());
+
+		Self { inner }
+	}
+}
+
+impl<'h> Serialiser<'h> for USizeSerialiser {
+	#[inline]
+	unsafe fn needed_capacity(&self) -> usize {
+		self.inner.needed_capacity()
+	}
+
+	unsafe fn serialise<O: Output>(self, buf: &mut O) {
+		self.inner.serialise(buf)
+	}
+}
 
 pub struct I8Serialiser {
-	inner: u8,
-	is_small: MaybeUninit<bool>
+	byte: u8,
+	needs_marker: bool
+}
+
+impl I8Serialiser {
+	#[inline]
+	fn new(val: i8) -> Self {
+		Self {
+			byte: val.into_u8_lossy(),
+			needs_marker: {
+				// let lower = val >= MARKER_SMALLINT_NEGATIVE_RANGE_START.into_i8_lossy();
+				let lower = val < MARKER_SMALLINT_NEGATIVE_RANGE_START.into_i8_lossy();
+				let upper = val > MARKER_SMALLINT_RANGE_END.into_i8_lossy();
+				lower && upper
+			}
+		}
+	}
+}
+
+impl<'h> Serialiser<'h> for I8Serialiser {
+	#[inline]
+	unsafe fn needed_capacity(&self) -> usize {
+		self.needs_marker as usize + 1
+	}
+
+	#[inline]
+	unsafe fn serialise<O: Output>(self, buf: &mut O) {
+		if self.needs_marker { buf.write_byte(MARKER_I8) }
+		buf.write_byte(self.byte)
+	}
 }
 
 pub struct I16Serialiser {
-	inner: SerialiserInner16,
-	/// Count of bytes to serialise in
-	///
-	/// If this is 0, that means smallint
-	/// (only serialise the first byte)
-	byte_count: MaybeUninit<u8>
+	le_bytes: [u8; 2],
+	byte_count: u8
+}
+
+impl I16Serialiser {
+	#[inline]
+	fn new(val: i16) -> Self {
+		let le_bytes = val.to_le_bytes();
+		let byte_count = {
+			let lower = val >= MARKER_SMALLINT_NEGATIVE_RANGE_START.into_i8_lossy().into_i16();
+			let upper = val <= MARKER_SMALLINT_RANGE_END.into_i16();
+
+			if lower && upper {
+				0
+			} else {
+				get_byte_count_signed_le(le_bytes)
+			}
+		};
+
+		Self { le_bytes, byte_count }
+	}
+}
+
+impl<'h> Serialiser<'h> for I16Serialiser {
+	#[inline]
+	unsafe fn needed_capacity(&self) -> usize {
+		self.byte_count.into_usize() + 1
+	}
+
+	#[inline]
+	unsafe fn serialise<O: Output>(self, buf: &mut O) {
+		if self.byte_count > 2 { hint::unreachable_unchecked() }
+
+		if self.byte_count == 0 {
+			buf.write_byte(self.le_bytes[0]);
+		} else {
+			let marker = ((self.byte_count - 1) << 1) | 0x81;
+			buf.write_byte(marker);
+			buf.write_bytes(&self.le_bytes[..self.byte_count.into_usize()]);
+		}
+	}
 }
 
 pub struct I32Serialiser {
-	inner: SerialiserInner32,
-	/// Count of bytes to serialise in
-	///
-	/// If this is 0, that means smallint
-	/// (only serialise the first byte)
-	byte_count: MaybeUninit<u8>
+	le_bytes: [u8; 4],
+	byte_count: u8
+}
+
+impl I32Serialiser {
+	#[inline]
+	fn new(val: i32) -> Self {
+		let le_bytes = val.to_le_bytes();
+		let byte_count = {
+			let lower = val >= MARKER_SMALLINT_NEGATIVE_RANGE_START.into_i8_lossy().into_i32();
+			let upper = val <= MARKER_SMALLINT_RANGE_END.into_i32();
+
+			if lower && upper {
+				0
+			} else {
+				get_byte_count_signed_le(le_bytes)
+			}
+		};
+		Self { le_bytes, byte_count }
+	}
+}
+
+impl<'h> Serialiser<'h> for I32Serialiser {
+	#[inline]
+	unsafe fn needed_capacity(&self) -> usize {
+		self.byte_count.into_usize() + 1
+	}
+
+	#[inline]
+	unsafe fn serialise<O: Output>(self, buf: &mut O) {
+		if self.byte_count > 4 { hint::unreachable_unchecked() }
+
+		if self.byte_count == 0 {
+			buf.write_byte(self.le_bytes[0]);
+		} else {
+			let marker = ((self.byte_count - 1) << 1) | 0x81;
+			buf.write_byte(marker);
+			buf.write_bytes(&self.le_bytes[..self.byte_count.into_usize()]);
+		}
+	}
 }
 
 pub struct I64Serialiser {
-	inner: SerialiserInner64,
-	/// Count of bytes to serialise in
-	///
-	/// If this is 0, that means smallint
-	/// (only serialise the first byte)
-	byte_count: MaybeUninit<u8>
+	le_bytes: [u8; 8],
+	byte_count: u8
+}
+
+impl I64Serialiser {
+	#[inline]
+	fn new(val: i64) -> Self {
+		let le_bytes = val.to_le_bytes();
+		let byte_count = {
+			let lower = val >= MARKER_SMALLINT_NEGATIVE_RANGE_START.into_i8_lossy().into_i64();
+			let upper = val <= MARKER_SMALLINT_RANGE_END.into_i64();
+
+			if lower && upper {
+				0
+			} else {
+				get_byte_count_signed_le(le_bytes)
+			}
+		};
+
+		Self { le_bytes, byte_count }
+	}
+}
+
+impl<'h> Serialiser<'h> for I64Serialiser {
+	#[inline]
+	unsafe fn needed_capacity(&self) -> usize {
+		self.byte_count.into_usize() + 1
+	}
+
+	#[inline]
+	unsafe fn serialise<O: Output>(self, buf: &mut O) {
+		if self.byte_count > 8 { hint::unreachable_unchecked() }
+
+		if self.byte_count == 0 {
+			buf.write_byte(self.le_bytes[0]);
+		} else {
+			let marker = ((self.byte_count - 1) << 1) | 0x81;
+			buf.write_byte(marker);
+			buf.write_bytes(&self.le_bytes[..self.byte_count.into_usize()]);
+		}
+	}
 }
 
 pub struct I128Serialiser {
-	inner: SerialiserInner128,
-	/// Count of bytes to serialise in
-	///
-	/// If this is 0, that means smallint
-	/// (only serialise the first byte)
-	byte_count: MaybeUninit<u8>
+	le_bytes: [u8; 16],
+	byte_count: u8
+}
+
+impl I128Serialiser {
+	#[inline]
+	fn new(val: i128) -> Self {
+		let le_bytes = val.to_le_bytes();
+		let byte_count = {
+			let lower = val >= MARKER_SMALLINT_NEGATIVE_RANGE_START.into_i8_lossy().into_i128();
+			let upper = val <= MARKER_SMALLINT_RANGE_END.into_i128();
+
+			if lower && upper {
+				0
+			} else {
+				get_byte_count_signed_le(le_bytes)
+			}
+		};
+
+		Self { byte_count, le_bytes }
+	}
+}
+
+impl<'h> Serialiser<'h> for I128Serialiser {
+	#[inline]
+	unsafe fn needed_capacity(&self) -> usize {
+		self.byte_count.into_usize() + 1
+	}
+
+	#[inline]
+	unsafe fn serialise<O: Output>(self, buf: &mut O) {
+		if self.byte_count > 16 { hint::unreachable_unchecked() }
+
+		if self.byte_count == 0 {
+			buf.write_byte(self.le_bytes[0]);
+		} else {
+			let marker = ((self.byte_count - 1) << 1) | 0x81;
+			buf.write_byte(marker);
+			buf.write_bytes(&self.le_bytes[..self.byte_count.into_usize()]);
+		}
+	}
 }
 
 #[cfg(target_pointer_width = "64")]
-pub type ISizeSerialiser = I64Serialiser;
+pub struct ISizeSerialiser {
+	inner: I64Serialiser
+}
 
 #[cfg(target_pointer_width = "32")]
-pub type ISizeSerialiser = I32Serialiser;
+pub struct ISizeSerialiser {
+	inner: I32Serialiser
+}
 
 #[cfg(target_pointer_width = "16")]
-pub type ISizeSerialiser = I16Serialiser;
-
-union SerialiserInner16 {
-	unsigned: u16,
-	signed: i16,
-	le_bytes: [u8; 2]
+pub struct ISizeSerialiser {
+	inner: I16Serialiser
 }
 
-union SerialiserInner32 {
-	unsigned: u32,
-	signed: i32,
-	le_bytes: [u8; 4]
+impl ISizeSerialiser {
+	#[inline]
+	fn new(val: isize) -> Self {
+		#[cfg(target_pointer_width = "64")]
+		let inner = I64Serialiser::new(val.into_i64());
+
+		#[cfg(target_pointer_width = "32")]
+		let inner = I32Serialiser::new(val.into_i32());
+
+		#[cfg(target_pointer_width = "16")]
+		let inner = I16Serialiser::new(val.into_i16());
+
+		Self { inner }
+	}
 }
 
-union SerialiserInner64 {
-	unsigned: u64,
-	signed: i64,
-	le_bytes: [u8; 8]
-}
+impl<'h> Serialiser<'h> for ISizeSerialiser {
+	#[inline]
+	unsafe fn needed_capacity(&self) -> usize {
+		self.inner.needed_capacity()
+	}
 
-union SerialiserInner128 {
-	unsigned: u128,
-	signed: i128,
-	le_bytes: [u8; 16]
+	#[inline]
+	unsafe fn serialise<O: Output>(self, buf: &mut O) {
+		self.inner.serialise(buf)
+	}
 }
 
 #[inline]
@@ -193,14 +656,14 @@ fn get_byte_count_signed_le<const BYTES: usize>(bytes: [u8; BYTES]) -> u8 {
 			// sign bit is the same, return up to / including this byte
 			// iter range is 0 to BYTES - 1 (inclusive), so this return range
 			// will be 1 to BYTES (inclusive), which is correct
-			return (i + 1) as _
+			return (i + 1).into_u8_lossy()
 		} else {
 			// sign bit is different, return this byte and one more after it.
 			// if the next byte would have the wrong sign, it would have returned
 			// already in the previous branch. This won't ever overflow because
 			// the first byte will not have a different sign (as... itself),
 			// so will never reach here
-			return (i + 2) as _
+			return (i + 2).into_u8_lossy()
 		}
 	}
 
