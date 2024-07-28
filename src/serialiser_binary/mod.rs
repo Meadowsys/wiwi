@@ -21,18 +21,34 @@ pub use self::number::*;
 pub use error::{ Error, Result };
 
 #[inline]
-pub fn serialise<T: Serialise + ?Sized>(item: &T) -> Vec<u8> {
-	let serialiser = item.build_serialiser();
-
-	let capacity = unsafe { serialiser.needed_capacity() };
-	let mut out = OutputVecBuffer::with_capacity(capacity);
-
-	unsafe { serialiser.serialise(&mut out) }
-	out.into_vec()
+pub fn serialise<T>(item: &T) -> Vec<u8>
+where
+	T: Serialise + ?Sized
+{
+	let mut vec = Vec::new();
+	let mut buf = OutputVecBuffer::new(&mut vec);
+	serialise_into(item, &mut buf);
+	vec
 }
 
 #[inline]
-pub fn deserialise<'h, T: Deserialise<'h>>(bytes: &[u8]) -> Result<T, T::Error> {
+pub fn serialise_into<T, O>(item: &T, buf: &mut O)
+where
+	T: Serialise + ?Sized,
+	O: Output
+{
+	let serialiser = item.build_serialiser();
+	let capacity = unsafe { serialiser.needed_capacity() };
+
+	buf.reserve(capacity);
+	unsafe { serialiser.serialise(buf) }
+}
+
+#[inline]
+pub fn deserialise<'h, T>(bytes: &[u8]) -> Result<T, T::Error>
+where
+	T: Deserialise<'h>
+{
 	let mut input = InputSliceBuffer::new(bytes);
 	Ok(use_ok!(
 		T::deserialise(&mut input),
@@ -143,26 +159,20 @@ pub trait Input<'h> {
 	}
 }
 
-pub struct OutputVecBuffer {
-	vec: Vec<u8>,
+pub struct OutputVecBuffer<'h> {
+	vec: &'h mut Vec<u8>,
 	ptr: *const u8
 }
 
-impl OutputVecBuffer {
+impl<'h> OutputVecBuffer<'h> {
 	#[inline]
-	fn with_capacity(capacity: usize) -> Self {
-		let mut vec = Vec::with_capacity(capacity);
+	pub fn new(vec: &'h mut Vec<u8>) -> Self {
 		let ptr = vec.as_mut_ptr();
 		Self { vec, ptr }
 	}
-
-	#[inline]
-	fn into_vec(self) -> Vec<u8> {
-		self.vec
-	}
 }
 
-impl Output for OutputVecBuffer {
+impl<'h> Output for OutputVecBuffer<'h> {
 	#[inline]
 	fn reserve(&mut self, bytes: usize) {
 		self.vec.reserve(bytes);
