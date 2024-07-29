@@ -3,6 +3,7 @@ use super::USizeSerialiser;
 #[cfg(feature = "hashbrown")]
 use hashbrown::HashMap as HashbrownHashMap;
 use std::collections::HashMap as StdHashMap;
+use std::fmt;
 
 // TODO: deterministic wrapper? cause hashmap iter ordering is nondeterministic
 
@@ -91,5 +92,81 @@ where
 			k.serialise(buf);
 			v.serialise(buf);
 		}
+	}
+}
+
+fn map_deser_impl<'h, K, V, M, I>(buf: &mut I, marker: u8) -> Result<M, DeserialiseMapError<K::Error, V::Error>>
+where
+	K: Deserialise<'h>,
+	V: Deserialise<'h>,
+	M: FromIterator<(K, V)>,
+	I: Input<'h>
+{
+	let len = match marker {
+		MARKER_MAP_8 => {
+			use_ok!(
+				buf.read_byte(),
+				byte => byte.into_usize(),
+				#err err => err.expected(DESC_EXPECTED_MAP)
+					.wrap_foreign()
+			)
+		}
+		MARKER_MAP_XL => {
+			use_ok!(
+				usize::deserialise(buf),
+				#err err => err.expected(DESC_EXPECTED_MAP)
+					.wrap_foreign()
+			)
+		}
+		_ => {
+			return expected(DESC_EXPECTED_MAP)
+				.found_something_else()
+				.wrap_foreign()
+		}
+	};
+
+	(0..len).map(|_| {
+		let k = use_ok!(
+			K::deserialise(buf),
+			#err err => Err(DeserialiseMapError::KError { err })
+		);
+		let v = use_ok!(
+			V::deserialise(buf),
+			#err err => Err(DeserialiseMapError::VError { err })
+		);
+		Ok((k, v))
+	}).collect()
+}
+
+#[derive(Debug)]
+pub enum DeserialiseMapError<K, V> {
+	KError { err: K },
+	VError { err: V },
+	Wiwi { err: Error }
+}
+
+impl<K, V> fmt::Display for DeserialiseMapError<K, V>
+where
+	K: std::error::Error,
+	V: std::error::Error
+{
+	fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
+		match self {
+			Self::KError { err } => { fmt::Display::fmt(err, f) }
+			Self::VError { err } => { fmt::Display::fmt(err, f) }
+			Self::Wiwi { err } => { fmt::Display::fmt(err, f) }
+		}
+	}
+}
+
+impl<K, V> std::error::Error for DeserialiseMapError<K, V>
+where
+	K: std::error::Error,
+	V: std::error::Error
+{}
+
+impl<K, V> From<Error> for DeserialiseMapError<K, V> {
+	fn from(err: Error) -> Self {
+		Self::Wiwi { err }
 	}
 }
