@@ -1019,100 +1019,6 @@
 <a href="#1019" id="1019">1019</a>
 <a href="#1020" id="1020">1020</a>
 <a href="#1021" id="1021">1021</a>
-<a href="#1022" id="1022">1022</a>
-<a href="#1023" id="1023">1023</a>
-<a href="#1024" id="1024">1024</a>
-<a href="#1025" id="1025">1025</a>
-<a href="#1026" id="1026">1026</a>
-<a href="#1027" id="1027">1027</a>
-<a href="#1028" id="1028">1028</a>
-<a href="#1029" id="1029">1029</a>
-<a href="#1030" id="1030">1030</a>
-<a href="#1031" id="1031">1031</a>
-<a href="#1032" id="1032">1032</a>
-<a href="#1033" id="1033">1033</a>
-<a href="#1034" id="1034">1034</a>
-<a href="#1035" id="1035">1035</a>
-<a href="#1036" id="1036">1036</a>
-<a href="#1037" id="1037">1037</a>
-<a href="#1038" id="1038">1038</a>
-<a href="#1039" id="1039">1039</a>
-<a href="#1040" id="1040">1040</a>
-<a href="#1041" id="1041">1041</a>
-<a href="#1042" id="1042">1042</a>
-<a href="#1043" id="1043">1043</a>
-<a href="#1044" id="1044">1044</a>
-<a href="#1045" id="1045">1045</a>
-<a href="#1046" id="1046">1046</a>
-<a href="#1047" id="1047">1047</a>
-<a href="#1048" id="1048">1048</a>
-<a href="#1049" id="1049">1049</a>
-<a href="#1050" id="1050">1050</a>
-<a href="#1051" id="1051">1051</a>
-<a href="#1052" id="1052">1052</a>
-<a href="#1053" id="1053">1053</a>
-<a href="#1054" id="1054">1054</a>
-<a href="#1055" id="1055">1055</a>
-<a href="#1056" id="1056">1056</a>
-<a href="#1057" id="1057">1057</a>
-<a href="#1058" id="1058">1058</a>
-<a href="#1059" id="1059">1059</a>
-<a href="#1060" id="1060">1060</a>
-<a href="#1061" id="1061">1061</a>
-<a href="#1062" id="1062">1062</a>
-<a href="#1063" id="1063">1063</a>
-<a href="#1064" id="1064">1064</a>
-<a href="#1065" id="1065">1065</a>
-<a href="#1066" id="1066">1066</a>
-<a href="#1067" id="1067">1067</a>
-<a href="#1068" id="1068">1068</a>
-<a href="#1069" id="1069">1069</a>
-<a href="#1070" id="1070">1070</a>
-<a href="#1071" id="1071">1071</a>
-<a href="#1072" id="1072">1072</a>
-<a href="#1073" id="1073">1073</a>
-<a href="#1074" id="1074">1074</a>
-<a href="#1075" id="1075">1075</a>
-<a href="#1076" id="1076">1076</a>
-<a href="#1077" id="1077">1077</a>
-<a href="#1078" id="1078">1078</a>
-<a href="#1079" id="1079">1079</a>
-<a href="#1080" id="1080">1080</a>
-<a href="#1081" id="1081">1081</a>
-<a href="#1082" id="1082">1082</a>
-<a href="#1083" id="1083">1083</a>
-<a href="#1084" id="1084">1084</a>
-<a href="#1085" id="1085">1085</a>
-<a href="#1086" id="1086">1086</a>
-<a href="#1087" id="1087">1087</a>
-<a href="#1088" id="1088">1088</a>
-<a href="#1089" id="1089">1089</a>
-<a href="#1090" id="1090">1090</a>
-<a href="#1091" id="1091">1091</a>
-<a href="#1092" id="1092">1092</a>
-<a href="#1093" id="1093">1093</a>
-<a href="#1094" id="1094">1094</a>
-<a href="#1095" id="1095">1095</a>
-<a href="#1096" id="1096">1096</a>
-<a href="#1097" id="1097">1097</a>
-<a href="#1098" id="1098">1098</a>
-<a href="#1099" id="1099">1099</a>
-<a href="#1100" id="1100">1100</a>
-<a href="#1101" id="1101">1101</a>
-<a href="#1102" id="1102">1102</a>
-<a href="#1103" id="1103">1103</a>
-<a href="#1104" id="1104">1104</a>
-<a href="#1105" id="1105">1105</a>
-<a href="#1106" id="1106">1106</a>
-<a href="#1107" id="1107">1107</a>
-<a href="#1108" id="1108">1108</a>
-<a href="#1109" id="1109">1109</a>
-<a href="#1110" id="1110">1110</a>
-<a href="#1111" id="1111">1111</a>
-<a href="#1112" id="1112">1112</a>
-<a href="#1113" id="1113">1113</a>
-<a href="#1114" id="1114">1114</a>
-<a href="#1115" id="1115">1115</a>
 </pre></div><pre class="rust"><code><span class="kw">use </span><span class="kw">super</span>::internal_prelude::<span class="kw-2">*</span>;
 <span class="kw">use </span>std::{ hint, ptr };
 <span class="kw">use </span>std::mem::MaybeUninit;
@@ -1120,8 +1026,7 @@
 <span class="kw">impl </span>Serialise <span class="kw">for </span>u8 {
 	<span class="kw">type </span>Serialiser&lt;<span class="lifetime">'h</span>&gt; = U8Serialiser;
 
-	<span class="attr">#[inline]
-	</span><span class="kw">fn </span>build_serialiser(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; U8Serialiser {
+	<span class="kw">fn </span>build_serialiser(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; U8Serialiser {
 		U8Serialiser::new(<span class="kw-2">*</span><span class="self">self</span>)
 	}
 }
@@ -1132,8 +1037,7 @@
 }
 
 <span class="kw">impl </span>U8Serialiser {
-	<span class="attr">#[inline]
-	</span><span class="kw">pub fn </span>new(val: u8) -&gt; <span class="self">Self </span>{
+	<span class="kw">pub fn </span>new(val: u8) -&gt; <span class="self">Self </span>{
 		<span class="self">Self </span>{
 			byte: val,
 			needs_marker: val &gt; MARKER_SMALLINT_RANGE_END
@@ -1142,13 +1046,11 @@
 }
 
 <span class="kw">impl</span>&lt;<span class="lifetime">'h</span>&gt; Serialiser&lt;<span class="lifetime">'h</span>&gt; <span class="kw">for </span>U8Serialiser {
-	<span class="attr">#[inline]
-	</span><span class="kw">unsafe fn </span>needed_capacity(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; usize {
+	<span class="kw">unsafe fn </span>needed_capacity(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; usize {
 		<span class="self">self</span>.needs_marker <span class="kw">as </span>usize + <span class="number">1
 	</span>}
 
-	<span class="attr">#[inline]
-	</span><span class="kw">unsafe fn </span>serialise&lt;O: Output&gt;(<span class="kw-2">&amp;</span><span class="self">self</span>, buf: <span class="kw-2">&amp;mut </span>O) {
+	<span class="kw">unsafe fn </span>serialise&lt;O: Output&gt;(<span class="kw-2">&amp;</span><span class="self">self</span>, buf: <span class="kw-2">&amp;mut </span>O) {
 		<span class="kw">if </span><span class="self">self</span>.needs_marker { buf.write_byte(MARKER_U8) }
 		buf.write_byte(<span class="self">self</span>.byte)
 	}
@@ -1164,8 +1066,7 @@
 <span class="kw">impl </span>Serialise <span class="kw">for </span>u16 {
 	<span class="kw">type </span>Serialiser&lt;<span class="lifetime">'h</span>&gt; = U16Serialiser;
 
-	<span class="attr">#[inline]
-	</span><span class="kw">fn </span>build_serialiser(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; U16Serialiser {
+	<span class="kw">fn </span>build_serialiser(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; U16Serialiser {
 		U16Serialiser::new(<span class="kw-2">*</span><span class="self">self</span>)
 	}
 }
@@ -1176,8 +1077,7 @@
 }
 
 <span class="kw">impl </span>U16Serialiser {
-	<span class="attr">#[inline]
-	</span><span class="kw">pub fn </span>new(val: u16) -&gt; <span class="self">Self </span>{
+	<span class="kw">pub fn </span>new(val: u16) -&gt; <span class="self">Self </span>{
 		<span class="kw">let </span>le_bytes = val.to_le_bytes();
 		<span class="kw">let </span>byte_count = <span class="kw">if </span>val &lt;= MARKER_SMALLINT_RANGE_END.into_u16() {
 			<span class="number">0
@@ -1190,13 +1090,11 @@
 }
 
 <span class="kw">impl</span>&lt;<span class="lifetime">'h</span>&gt; Serialiser&lt;<span class="lifetime">'h</span>&gt; <span class="kw">for </span>U16Serialiser {
-	<span class="attr">#[inline]
-	</span><span class="kw">unsafe fn </span>needed_capacity(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; usize {
+	<span class="kw">unsafe fn </span>needed_capacity(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; usize {
 		<span class="self">self</span>.byte_count.into_usize() + <span class="number">1
 	</span>}
 
-	<span class="attr">#[inline]
-	</span><span class="kw">unsafe fn </span>serialise&lt;O: Output&gt;(<span class="kw-2">&amp;</span><span class="self">self</span>, buf: <span class="kw-2">&amp;mut </span>O) {
+	<span class="kw">unsafe fn </span>serialise&lt;O: Output&gt;(<span class="kw-2">&amp;</span><span class="self">self</span>, buf: <span class="kw-2">&amp;mut </span>O) {
 		<span class="kw">if </span><span class="self">self</span>.byte_count &gt; <span class="number">2 </span>{ hint::unreachable_unchecked() }
 
 		<span class="kw">if </span><span class="self">self</span>.byte_count == <span class="number">0 </span>{
@@ -1219,8 +1117,7 @@
 <span class="kw">impl </span>Serialise <span class="kw">for </span>u32 {
 	<span class="kw">type </span>Serialiser&lt;<span class="lifetime">'h</span>&gt; = U32Serialiser;
 
-	<span class="attr">#[inline]
-	</span><span class="kw">fn </span>build_serialiser(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; U32Serialiser {
+	<span class="kw">fn </span>build_serialiser(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; U32Serialiser {
 		U32Serialiser::new(<span class="kw-2">*</span><span class="self">self</span>)
 	}
 }
@@ -1231,8 +1128,7 @@
 }
 
 <span class="kw">impl </span>U32Serialiser {
-	<span class="attr">#[inline]
-	</span><span class="kw">pub fn </span>new(val: u32) -&gt; <span class="self">Self </span>{
+	<span class="kw">pub fn </span>new(val: u32) -&gt; <span class="self">Self </span>{
 		<span class="kw">let </span>le_bytes = val.to_le_bytes();
 		<span class="kw">let </span>byte_count = <span class="kw">if </span>val &lt;= MARKER_SMALLINT_RANGE_END.into_u32() {
 			<span class="number">0
@@ -1245,13 +1141,11 @@
 }
 
 <span class="kw">impl</span>&lt;<span class="lifetime">'h</span>&gt; Serialiser&lt;<span class="lifetime">'h</span>&gt; <span class="kw">for </span>U32Serialiser {
-	<span class="attr">#[inline]
-	</span><span class="kw">unsafe fn </span>needed_capacity(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; usize {
+	<span class="kw">unsafe fn </span>needed_capacity(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; usize {
 		<span class="self">self</span>.byte_count.into_usize() + <span class="number">1
 	</span>}
 
-	<span class="attr">#[inline]
-	</span><span class="kw">unsafe fn </span>serialise&lt;O: Output&gt;(<span class="kw-2">&amp;</span><span class="self">self</span>, buf: <span class="kw-2">&amp;mut </span>O) {
+	<span class="kw">unsafe fn </span>serialise&lt;O: Output&gt;(<span class="kw-2">&amp;</span><span class="self">self</span>, buf: <span class="kw-2">&amp;mut </span>O) {
 		<span class="kw">if </span><span class="self">self</span>.byte_count &gt; <span class="number">4 </span>{ hint::unreachable_unchecked() }
 
 		<span class="kw">if </span><span class="self">self</span>.byte_count == <span class="number">0 </span>{
@@ -1274,8 +1168,7 @@
 <span class="kw">impl </span>Serialise <span class="kw">for </span>u64 {
 	<span class="kw">type </span>Serialiser&lt;<span class="lifetime">'h</span>&gt; = U64Serialiser;
 
-	<span class="attr">#[inline]
-	</span><span class="kw">fn </span>build_serialiser(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; U64Serialiser {
+	<span class="kw">fn </span>build_serialiser(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; U64Serialiser {
 		U64Serialiser::new(<span class="kw-2">*</span><span class="self">self</span>)
 	}
 }
@@ -1286,8 +1179,7 @@
 }
 
 <span class="kw">impl </span>U64Serialiser {
-	<span class="attr">#[inline]
-	</span><span class="kw">pub fn </span>new(val: u64) -&gt; <span class="self">Self </span>{
+	<span class="kw">pub fn </span>new(val: u64) -&gt; <span class="self">Self </span>{
 		<span class="kw">let </span>le_bytes = val.to_le_bytes();
 		<span class="kw">let </span>byte_count = <span class="kw">if </span>val &lt;= MARKER_SMALLINT_RANGE_END.into_u64() {
 			<span class="number">0
@@ -1300,13 +1192,11 @@
 }
 
 <span class="kw">impl</span>&lt;<span class="lifetime">'h</span>&gt; Serialiser&lt;<span class="lifetime">'h</span>&gt; <span class="kw">for </span>U64Serialiser {
-	<span class="attr">#[inline]
-	</span><span class="kw">unsafe fn </span>needed_capacity(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; usize {
+	<span class="kw">unsafe fn </span>needed_capacity(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; usize {
 		<span class="self">self</span>.byte_count.into_usize() + <span class="number">1
 	</span>}
 
-	<span class="attr">#[inline]
-	</span><span class="kw">unsafe fn </span>serialise&lt;O: Output&gt;(<span class="kw-2">&amp;</span><span class="self">self</span>, buf: <span class="kw-2">&amp;mut </span>O) {
+	<span class="kw">unsafe fn </span>serialise&lt;O: Output&gt;(<span class="kw-2">&amp;</span><span class="self">self</span>, buf: <span class="kw-2">&amp;mut </span>O) {
 		<span class="kw">if </span><span class="self">self</span>.byte_count &gt; <span class="number">8 </span>{ hint::unreachable_unchecked() }
 
 		<span class="kw">if </span><span class="self">self</span>.byte_count == <span class="number">0 </span>{
@@ -1329,8 +1219,7 @@
 <span class="kw">impl </span>Serialise <span class="kw">for </span>u128 {
 	<span class="kw">type </span>Serialiser&lt;<span class="lifetime">'h</span>&gt; = U128Serialiser;
 
-	<span class="attr">#[inline]
-	</span><span class="kw">fn </span>build_serialiser(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; U128Serialiser {
+	<span class="kw">fn </span>build_serialiser(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; U128Serialiser {
 		U128Serialiser::new(<span class="kw-2">*</span><span class="self">self</span>)
 	}
 }
@@ -1341,8 +1230,7 @@
 }
 
 <span class="kw">impl </span>U128Serialiser {
-	<span class="attr">#[inline]
-	</span><span class="kw">pub fn </span>new(val: u128) -&gt; <span class="self">Self </span>{
+	<span class="kw">pub fn </span>new(val: u128) -&gt; <span class="self">Self </span>{
 		<span class="kw">let </span>le_bytes = val.to_le_bytes();
 		<span class="kw">let </span>byte_count = <span class="kw">if </span>val &lt;= MARKER_SMALLINT_RANGE_END.into_u128() {
 			<span class="number">0
@@ -1355,13 +1243,11 @@
 }
 
 <span class="kw">impl</span>&lt;<span class="lifetime">'h</span>&gt; Serialiser&lt;<span class="lifetime">'h</span>&gt; <span class="kw">for </span>U128Serialiser {
-	<span class="attr">#[inline]
-	</span><span class="kw">unsafe fn </span>needed_capacity(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; usize {
+	<span class="kw">unsafe fn </span>needed_capacity(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; usize {
 		<span class="self">self</span>.byte_count.into_usize() + <span class="number">1
 	</span>}
 
-	<span class="attr">#[inline]
-	</span><span class="kw">unsafe fn </span>serialise&lt;O: Output&gt;(<span class="kw-2">&amp;</span><span class="self">self</span>, buf: <span class="kw-2">&amp;mut </span>O) {
+	<span class="kw">unsafe fn </span>serialise&lt;O: Output&gt;(<span class="kw-2">&amp;</span><span class="self">self</span>, buf: <span class="kw-2">&amp;mut </span>O) {
 		<span class="kw">if </span><span class="self">self</span>.byte_count &gt; <span class="number">16 </span>{ hint::unreachable_unchecked() }
 
 		<span class="kw">if </span><span class="self">self</span>.byte_count == <span class="number">0 </span>{
@@ -1384,8 +1270,7 @@
 <span class="kw">impl </span>Serialise <span class="kw">for </span>usize {
 	<span class="kw">type </span>Serialiser&lt;<span class="lifetime">'h</span>&gt; = USizeSerialiser;
 
-	<span class="attr">#[inline]
-	</span><span class="kw">fn </span>build_serialiser(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; USizeSerialiser {
+	<span class="kw">fn </span>build_serialiser(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; USizeSerialiser {
 		USizeSerialiser::new(<span class="kw-2">*</span><span class="self">self</span>)
 	}
 }
@@ -1406,8 +1291,7 @@
 }
 
 <span class="kw">impl </span>USizeSerialiser {
-	<span class="attr">#[inline]
-	</span><span class="kw">pub fn </span>new(val: usize) -&gt; <span class="self">Self </span>{
+	<span class="kw">pub fn </span>new(val: usize) -&gt; <span class="self">Self </span>{
 		<span class="attr">#[cfg(target_pointer_width = <span class="string">"64"</span>)]
 		</span><span class="kw">let </span>inner = U64Serialiser::new(val.into_u64());
 
@@ -1422,8 +1306,7 @@
 }
 
 <span class="kw">impl</span>&lt;<span class="lifetime">'h</span>&gt; Serialiser&lt;<span class="lifetime">'h</span>&gt; <span class="kw">for </span>USizeSerialiser {
-	<span class="attr">#[inline]
-	</span><span class="kw">unsafe fn </span>needed_capacity(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; usize {
+	<span class="kw">unsafe fn </span>needed_capacity(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; usize {
 		<span class="self">self</span>.inner.needed_capacity()
 	}
 
@@ -1435,8 +1318,7 @@
 <span class="kw">impl</span>&lt;<span class="lifetime">'h</span>&gt; Deserialise&lt;<span class="lifetime">'h</span>&gt; <span class="kw">for </span>usize {
 	<span class="kw">type </span>Error = Error;
 
-	<span class="attr">#[inline]
-	</span><span class="kw">fn </span>deserialise_with_marker&lt;I: Input&lt;<span class="lifetime">'h</span>&gt;&gt;(buf: <span class="kw-2">&amp;mut </span>I, marker: u8) -&gt; <span class="prelude-ty">Result</span>&lt;usize&gt; {
+	<span class="kw">fn </span>deserialise_with_marker&lt;I: Input&lt;<span class="lifetime">'h</span>&gt;&gt;(buf: <span class="kw-2">&amp;mut </span>I, marker: u8) -&gt; <span class="prelude-ty">Result</span>&lt;usize&gt; {
 		<span class="attr">#[cfg(target_pointer_width = <span class="string">"64"</span>)]
 		</span><span class="kw">let </span>val = u64::deserialise_with_marker(buf, marker);
 		<span class="attr">#[cfg(target_pointer_width = <span class="string">"32"</span>)]
@@ -1455,8 +1337,7 @@
 <span class="kw">impl </span>Serialise <span class="kw">for </span>i8 {
 	<span class="kw">type </span>Serialiser&lt;<span class="lifetime">'h</span>&gt; = I8Serialiser;
 
-	<span class="attr">#[inline]
-	</span><span class="kw">fn </span>build_serialiser(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; I8Serialiser {
+	<span class="kw">fn </span>build_serialiser(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; I8Serialiser {
 		I8Serialiser::new(<span class="kw-2">*</span><span class="self">self</span>)
 	}
 }
@@ -1467,8 +1348,7 @@
 }
 
 <span class="kw">impl </span>I8Serialiser {
-	<span class="attr">#[inline]
-	</span><span class="kw">pub fn </span>new(val: i8) -&gt; <span class="self">Self </span>{
+	<span class="kw">pub fn </span>new(val: i8) -&gt; <span class="self">Self </span>{
 		<span class="self">Self </span>{
 			byte: val.into_u8_lossy(),
 			needs_marker: {
@@ -1481,13 +1361,11 @@
 }
 
 <span class="kw">impl</span>&lt;<span class="lifetime">'h</span>&gt; Serialiser&lt;<span class="lifetime">'h</span>&gt; <span class="kw">for </span>I8Serialiser {
-	<span class="attr">#[inline]
-	</span><span class="kw">unsafe fn </span>needed_capacity(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; usize {
+	<span class="kw">unsafe fn </span>needed_capacity(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; usize {
 		<span class="self">self</span>.needs_marker <span class="kw">as </span>usize + <span class="number">1
 	</span>}
 
-	<span class="attr">#[inline]
-	</span><span class="kw">unsafe fn </span>serialise&lt;O: Output&gt;(<span class="kw-2">&amp;</span><span class="self">self</span>, buf: <span class="kw-2">&amp;mut </span>O) {
+	<span class="kw">unsafe fn </span>serialise&lt;O: Output&gt;(<span class="kw-2">&amp;</span><span class="self">self</span>, buf: <span class="kw-2">&amp;mut </span>O) {
 		<span class="kw">if </span><span class="self">self</span>.needs_marker { buf.write_byte(MARKER_I8) }
 		buf.write_byte(<span class="self">self</span>.byte)
 	}
@@ -1503,8 +1381,7 @@
 <span class="kw">impl </span>Serialise <span class="kw">for </span>i16 {
 	<span class="kw">type </span>Serialiser&lt;<span class="lifetime">'h</span>&gt; = I16Serialiser;
 
-	<span class="attr">#[inline]
-	</span><span class="kw">fn </span>build_serialiser(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; I16Serialiser {
+	<span class="kw">fn </span>build_serialiser(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; I16Serialiser {
 		I16Serialiser::new(<span class="kw-2">*</span><span class="self">self</span>)
 	}
 }
@@ -1515,8 +1392,7 @@
 }
 
 <span class="kw">impl </span>I16Serialiser {
-	<span class="attr">#[inline]
-	</span><span class="kw">pub fn </span>new(val: i16) -&gt; <span class="self">Self </span>{
+	<span class="kw">pub fn </span>new(val: i16) -&gt; <span class="self">Self </span>{
 		<span class="kw">let </span>le_bytes = val.to_le_bytes();
 		<span class="kw">let </span>byte_count = {
 			<span class="kw">let </span>lower = val &gt;= MARKER_SMALLINT_NEGATIVE_RANGE_START.into_i8_lossy().into_i16();
@@ -1534,13 +1410,11 @@
 }
 
 <span class="kw">impl</span>&lt;<span class="lifetime">'h</span>&gt; Serialiser&lt;<span class="lifetime">'h</span>&gt; <span class="kw">for </span>I16Serialiser {
-	<span class="attr">#[inline]
-	</span><span class="kw">unsafe fn </span>needed_capacity(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; usize {
+	<span class="kw">unsafe fn </span>needed_capacity(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; usize {
 		<span class="self">self</span>.byte_count.into_usize() + <span class="number">1
 	</span>}
 
-	<span class="attr">#[inline]
-	</span><span class="kw">unsafe fn </span>serialise&lt;O: Output&gt;(<span class="kw-2">&amp;</span><span class="self">self</span>, buf: <span class="kw-2">&amp;mut </span>O) {
+	<span class="kw">unsafe fn </span>serialise&lt;O: Output&gt;(<span class="kw-2">&amp;</span><span class="self">self</span>, buf: <span class="kw-2">&amp;mut </span>O) {
 		<span class="kw">if </span><span class="self">self</span>.byte_count &gt; <span class="number">2 </span>{ hint::unreachable_unchecked() }
 
 		<span class="kw">if </span><span class="self">self</span>.byte_count == <span class="number">0 </span>{
@@ -1563,8 +1437,7 @@
 <span class="kw">impl </span>Serialise <span class="kw">for </span>i32 {
 	<span class="kw">type </span>Serialiser&lt;<span class="lifetime">'h</span>&gt; = I32Serialiser;
 
-	<span class="attr">#[inline]
-	</span><span class="kw">fn </span>build_serialiser(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; I32Serialiser {
+	<span class="kw">fn </span>build_serialiser(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; I32Serialiser {
 		I32Serialiser::new(<span class="kw-2">*</span><span class="self">self</span>)
 	}
 }
@@ -1575,8 +1448,7 @@
 }
 
 <span class="kw">impl </span>I32Serialiser {
-	<span class="attr">#[inline]
-	</span><span class="kw">pub fn </span>new(val: i32) -&gt; <span class="self">Self </span>{
+	<span class="kw">pub fn </span>new(val: i32) -&gt; <span class="self">Self </span>{
 		<span class="kw">let </span>le_bytes = val.to_le_bytes();
 		<span class="kw">let </span>byte_count = {
 			<span class="kw">let </span>lower = val &gt;= MARKER_SMALLINT_NEGATIVE_RANGE_START.into_i8_lossy().into_i32();
@@ -1593,13 +1465,11 @@
 }
 
 <span class="kw">impl</span>&lt;<span class="lifetime">'h</span>&gt; Serialiser&lt;<span class="lifetime">'h</span>&gt; <span class="kw">for </span>I32Serialiser {
-	<span class="attr">#[inline]
-	</span><span class="kw">unsafe fn </span>needed_capacity(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; usize {
+	<span class="kw">unsafe fn </span>needed_capacity(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; usize {
 		<span class="self">self</span>.byte_count.into_usize() + <span class="number">1
 	</span>}
 
-	<span class="attr">#[inline]
-	</span><span class="kw">unsafe fn </span>serialise&lt;O: Output&gt;(<span class="kw-2">&amp;</span><span class="self">self</span>, buf: <span class="kw-2">&amp;mut </span>O) {
+	<span class="kw">unsafe fn </span>serialise&lt;O: Output&gt;(<span class="kw-2">&amp;</span><span class="self">self</span>, buf: <span class="kw-2">&amp;mut </span>O) {
 		<span class="kw">if </span><span class="self">self</span>.byte_count &gt; <span class="number">4 </span>{ hint::unreachable_unchecked() }
 
 		<span class="kw">if </span><span class="self">self</span>.byte_count == <span class="number">0 </span>{
@@ -1622,8 +1492,7 @@
 <span class="kw">impl </span>Serialise <span class="kw">for </span>i64 {
 	<span class="kw">type </span>Serialiser&lt;<span class="lifetime">'h</span>&gt; = I64Serialiser;
 
-	<span class="attr">#[inline]
-	</span><span class="kw">fn </span>build_serialiser(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; I64Serialiser {
+	<span class="kw">fn </span>build_serialiser(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; I64Serialiser {
 		I64Serialiser::new(<span class="kw-2">*</span><span class="self">self</span>)
 	}
 }
@@ -1634,8 +1503,7 @@
 }
 
 <span class="kw">impl </span>I64Serialiser {
-	<span class="attr">#[inline]
-	</span><span class="kw">pub fn </span>new(val: i64) -&gt; <span class="self">Self </span>{
+	<span class="kw">pub fn </span>new(val: i64) -&gt; <span class="self">Self </span>{
 		<span class="kw">let </span>le_bytes = val.to_le_bytes();
 		<span class="kw">let </span>byte_count = {
 			<span class="kw">let </span>lower = val &gt;= MARKER_SMALLINT_NEGATIVE_RANGE_START.into_i8_lossy().into_i64();
@@ -1653,13 +1521,11 @@
 }
 
 <span class="kw">impl</span>&lt;<span class="lifetime">'h</span>&gt; Serialiser&lt;<span class="lifetime">'h</span>&gt; <span class="kw">for </span>I64Serialiser {
-	<span class="attr">#[inline]
-	</span><span class="kw">unsafe fn </span>needed_capacity(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; usize {
+	<span class="kw">unsafe fn </span>needed_capacity(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; usize {
 		<span class="self">self</span>.byte_count.into_usize() + <span class="number">1
 	</span>}
 
-	<span class="attr">#[inline]
-	</span><span class="kw">unsafe fn </span>serialise&lt;O: Output&gt;(<span class="kw-2">&amp;</span><span class="self">self</span>, buf: <span class="kw-2">&amp;mut </span>O) {
+	<span class="kw">unsafe fn </span>serialise&lt;O: Output&gt;(<span class="kw-2">&amp;</span><span class="self">self</span>, buf: <span class="kw-2">&amp;mut </span>O) {
 		<span class="kw">if </span><span class="self">self</span>.byte_count &gt; <span class="number">8 </span>{ hint::unreachable_unchecked() }
 
 		<span class="kw">if </span><span class="self">self</span>.byte_count == <span class="number">0 </span>{
@@ -1682,8 +1548,7 @@
 <span class="kw">impl </span>Serialise <span class="kw">for </span>i128 {
 	<span class="kw">type </span>Serialiser&lt;<span class="lifetime">'h</span>&gt; = I128Serialiser;
 
-	<span class="attr">#[inline]
-	</span><span class="kw">fn </span>build_serialiser(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; I128Serialiser {
+	<span class="kw">fn </span>build_serialiser(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; I128Serialiser {
 		I128Serialiser::new(<span class="kw-2">*</span><span class="self">self</span>)
 	}
 }
@@ -1694,8 +1559,7 @@
 }
 
 <span class="kw">impl </span>I128Serialiser {
-	<span class="attr">#[inline]
-	</span><span class="kw">pub fn </span>new(val: i128) -&gt; <span class="self">Self </span>{
+	<span class="kw">pub fn </span>new(val: i128) -&gt; <span class="self">Self </span>{
 		<span class="kw">let </span>le_bytes = val.to_le_bytes();
 		<span class="kw">let </span>byte_count = {
 			<span class="kw">let </span>lower = val &gt;= MARKER_SMALLINT_NEGATIVE_RANGE_START.into_i8_lossy().into_i128();
@@ -1713,13 +1577,11 @@
 }
 
 <span class="kw">impl</span>&lt;<span class="lifetime">'h</span>&gt; Serialiser&lt;<span class="lifetime">'h</span>&gt; <span class="kw">for </span>I128Serialiser {
-	<span class="attr">#[inline]
-	</span><span class="kw">unsafe fn </span>needed_capacity(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; usize {
+	<span class="kw">unsafe fn </span>needed_capacity(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; usize {
 		<span class="self">self</span>.byte_count.into_usize() + <span class="number">1
 	</span>}
 
-	<span class="attr">#[inline]
-	</span><span class="kw">unsafe fn </span>serialise&lt;O: Output&gt;(<span class="kw-2">&amp;</span><span class="self">self</span>, buf: <span class="kw-2">&amp;mut </span>O) {
+	<span class="kw">unsafe fn </span>serialise&lt;O: Output&gt;(<span class="kw-2">&amp;</span><span class="self">self</span>, buf: <span class="kw-2">&amp;mut </span>O) {
 		<span class="kw">if </span><span class="self">self</span>.byte_count &gt; <span class="number">16 </span>{ hint::unreachable_unchecked() }
 
 		<span class="kw">if </span><span class="self">self</span>.byte_count == <span class="number">0 </span>{
@@ -1742,8 +1604,7 @@
 <span class="kw">impl </span>Serialise <span class="kw">for </span>isize {
 	<span class="kw">type </span>Serialiser&lt;<span class="lifetime">'h</span>&gt; = ISizeSerialiser;
 
-	<span class="attr">#[inline]
-	</span><span class="kw">fn </span>build_serialiser(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; ISizeSerialiser {
+	<span class="kw">fn </span>build_serialiser(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; ISizeSerialiser {
 		ISizeSerialiser::new(<span class="kw-2">*</span><span class="self">self</span>)
 	}
 }
@@ -1764,8 +1625,7 @@
 }
 
 <span class="kw">impl </span>ISizeSerialiser {
-	<span class="attr">#[inline]
-	</span><span class="kw">pub fn </span>new(val: isize) -&gt; <span class="self">Self </span>{
+	<span class="kw">pub fn </span>new(val: isize) -&gt; <span class="self">Self </span>{
 		<span class="attr">#[cfg(target_pointer_width = <span class="string">"64"</span>)]
 		</span><span class="kw">let </span>inner = I64Serialiser::new(val.into_i64());
 
@@ -1780,13 +1640,11 @@
 }
 
 <span class="kw">impl</span>&lt;<span class="lifetime">'h</span>&gt; Serialiser&lt;<span class="lifetime">'h</span>&gt; <span class="kw">for </span>ISizeSerialiser {
-	<span class="attr">#[inline]
-	</span><span class="kw">unsafe fn </span>needed_capacity(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; usize {
+	<span class="kw">unsafe fn </span>needed_capacity(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; usize {
 		<span class="self">self</span>.inner.needed_capacity()
 	}
 
-	<span class="attr">#[inline]
-	</span><span class="kw">unsafe fn </span>serialise&lt;O: Output&gt;(<span class="kw-2">&amp;</span><span class="self">self</span>, buf: <span class="kw-2">&amp;mut </span>O) {
+	<span class="kw">unsafe fn </span>serialise&lt;O: Output&gt;(<span class="kw-2">&amp;</span><span class="self">self</span>, buf: <span class="kw-2">&amp;mut </span>O) {
 		<span class="self">self</span>.inner.serialise(buf)
 	}
 }
@@ -1794,8 +1652,7 @@
 <span class="kw">impl</span>&lt;<span class="lifetime">'h</span>&gt; Deserialise&lt;<span class="lifetime">'h</span>&gt; <span class="kw">for </span>isize {
 	<span class="kw">type </span>Error = Error;
 
-	<span class="attr">#[inline]
-	</span><span class="kw">fn </span>deserialise_with_marker&lt;I: Input&lt;<span class="lifetime">'h</span>&gt;&gt;(buf: <span class="kw-2">&amp;mut </span>I, marker: u8) -&gt; <span class="prelude-ty">Result</span>&lt;isize&gt; {
+	<span class="kw">fn </span>deserialise_with_marker&lt;I: Input&lt;<span class="lifetime">'h</span>&gt;&gt;(buf: <span class="kw-2">&amp;mut </span>I, marker: u8) -&gt; <span class="prelude-ty">Result</span>&lt;isize&gt; {
 		<span class="attr">#[cfg(target_pointer_width = <span class="string">"64"</span>)]
 		</span><span class="kw">let </span>val = i64::deserialise_with_marker(buf, marker);
 		<span class="attr">#[cfg(target_pointer_width = <span class="string">"32"</span>)]
@@ -1814,8 +1671,7 @@
 <span class="kw">impl </span>Serialise <span class="kw">for </span>f32 {
 	<span class="kw">type </span>Serialiser&lt;<span class="lifetime">'h</span>&gt; = F32Serialiser;
 
-	<span class="attr">#[inline]
-	</span><span class="kw">fn </span>build_serialiser(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; F32Serialiser {
+	<span class="kw">fn </span>build_serialiser(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; F32Serialiser {
 		F32Serialiser::new(<span class="kw-2">*</span><span class="self">self</span>)
 	}
 }
@@ -1825,20 +1681,17 @@
 }
 
 <span class="kw">impl </span>F32Serialiser {
-	<span class="attr">#[inline]
-	</span><span class="kw">pub fn </span>new(val: f32) -&gt; <span class="self">Self </span>{
+	<span class="kw">pub fn </span>new(val: f32) -&gt; <span class="self">Self </span>{
 		<span class="self">Self </span>{ val }
 	}
 }
 
 <span class="kw">impl</span>&lt;<span class="lifetime">'h</span>&gt; Serialiser&lt;<span class="lifetime">'h</span>&gt; <span class="kw">for </span>F32Serialiser {
-	<span class="attr">#[inline]
-	</span><span class="kw">unsafe fn </span>needed_capacity(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; usize {
+	<span class="kw">unsafe fn </span>needed_capacity(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; usize {
 		<span class="number">5
 	</span>}
 
-	<span class="attr">#[inline]
-	</span><span class="kw">unsafe fn </span>serialise&lt;O: Output&gt;(<span class="kw-2">&amp;</span><span class="self">self</span>, buf: <span class="kw-2">&amp;mut </span>O) {
+	<span class="kw">unsafe fn </span>serialise&lt;O: Output&gt;(<span class="kw-2">&amp;</span><span class="self">self</span>, buf: <span class="kw-2">&amp;mut </span>O) {
 		buf.write_byte(MARKER_F32);
 		buf.write_bytes(<span class="kw-2">&amp;</span><span class="self">self</span>.val.to_le_bytes());
 	}
@@ -1847,8 +1700,7 @@
 <span class="kw">impl</span>&lt;<span class="lifetime">'h</span>&gt; Deserialise&lt;<span class="lifetime">'h</span>&gt; <span class="kw">for </span>f32 {
 	<span class="kw">type </span>Error = Error;
 
-	<span class="attr">#[inline]
-	</span><span class="kw">fn </span>deserialise_with_marker&lt;I: Input&lt;<span class="lifetime">'h</span>&gt;&gt;(buf: <span class="kw-2">&amp;mut </span>I, marker: u8) -&gt; <span class="prelude-ty">Result</span>&lt;f32&gt; {
+	<span class="kw">fn </span>deserialise_with_marker&lt;I: Input&lt;<span class="lifetime">'h</span>&gt;&gt;(buf: <span class="kw-2">&amp;mut </span>I, marker: u8) -&gt; <span class="prelude-ty">Result</span>&lt;f32&gt; {
 		<span class="kw">match </span>marker {
 			MARKER_F32 =&gt; {
 				<span class="prelude-val">Ok</span>(<span class="macro">use_ok!</span>(
@@ -1865,8 +1717,7 @@
 <span class="kw">impl </span>Serialise <span class="kw">for </span>f64 {
 	<span class="kw">type </span>Serialiser&lt;<span class="lifetime">'h</span>&gt; = F64Serialiser;
 
-	<span class="attr">#[inline]
-	</span><span class="kw">fn </span>build_serialiser(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; F64Serialiser {
+	<span class="kw">fn </span>build_serialiser(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; F64Serialiser {
 		F64Serialiser::new(<span class="kw-2">*</span><span class="self">self</span>)
 	}
 }
@@ -1876,20 +1727,17 @@
 }
 
 <span class="kw">impl </span>F64Serialiser {
-	<span class="attr">#[inline]
-	</span><span class="kw">pub fn </span>new(val: f64) -&gt; <span class="self">Self </span>{
+	<span class="kw">pub fn </span>new(val: f64) -&gt; <span class="self">Self </span>{
 		<span class="self">Self </span>{ val }
 	}
 }
 
 <span class="kw">impl</span>&lt;<span class="lifetime">'h</span>&gt; Serialiser&lt;<span class="lifetime">'h</span>&gt; <span class="kw">for </span>F64Serialiser {
-	<span class="attr">#[inline]
-	</span><span class="kw">unsafe fn </span>needed_capacity(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; usize {
+	<span class="kw">unsafe fn </span>needed_capacity(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; usize {
 		<span class="number">9
 	</span>}
 
-	<span class="attr">#[inline]
-	</span><span class="kw">unsafe fn </span>serialise&lt;O: Output&gt;(<span class="kw-2">&amp;</span><span class="self">self</span>, buf: <span class="kw-2">&amp;mut </span>O) {
+	<span class="kw">unsafe fn </span>serialise&lt;O: Output&gt;(<span class="kw-2">&amp;</span><span class="self">self</span>, buf: <span class="kw-2">&amp;mut </span>O) {
 		buf.write_byte(MARKER_F64);
 		buf.write_bytes(<span class="kw-2">&amp;</span><span class="self">self</span>.val.to_le_bytes());
 	}
@@ -1898,8 +1746,7 @@
 <span class="kw">impl</span>&lt;<span class="lifetime">'h</span>&gt; Deserialise&lt;<span class="lifetime">'h</span>&gt; <span class="kw">for </span>f64 {
 	<span class="kw">type </span>Error = Error;
 
-	<span class="attr">#[inline]
-	</span><span class="kw">fn </span>deserialise_with_marker&lt;I: Input&lt;<span class="lifetime">'h</span>&gt;&gt;(buf: <span class="kw-2">&amp;mut </span>I, marker: u8) -&gt; <span class="prelude-ty">Result</span>&lt;f64&gt; {
+	<span class="kw">fn </span>deserialise_with_marker&lt;I: Input&lt;<span class="lifetime">'h</span>&gt;&gt;(buf: <span class="kw-2">&amp;mut </span>I, marker: u8) -&gt; <span class="prelude-ty">Result</span>&lt;f64&gt; {
 		<span class="kw">match </span>marker {
 			MARKER_F32 =&gt; {
 				<span class="prelude-val">Ok</span>(<span class="macro">use_ok!</span>(
@@ -1920,8 +1767,7 @@
 	}
 }
 
-<span class="attr">#[inline]
-</span><span class="kw">unsafe fn </span>get_byte_count_unsigned_le&lt;<span class="kw">const </span>BYTES: usize&gt;(bytes: [u8; BYTES]) -&gt; u8 {
+<span class="kw">unsafe fn </span>get_byte_count_unsigned_le&lt;<span class="kw">const </span>BYTES: usize&gt;(bytes: [u8; BYTES]) -&gt; u8 {
 	<span class="kw">let </span>ptr = bytes.as_ptr();
 
 	<span class="kw">for </span>i <span class="kw">in </span>(<span class="number">1</span>..BYTES).rev() {
@@ -1942,8 +1788,7 @@
 	</span><span class="number">1
 </span>}
 
-<span class="attr">#[inline]
-</span><span class="kw">unsafe fn </span>get_byte_count_signed_le&lt;<span class="kw">const </span>BYTES: usize&gt;(bytes: [u8; BYTES]) -&gt; u8 {
+<span class="kw">unsafe fn </span>get_byte_count_signed_le&lt;<span class="kw">const </span>BYTES: usize&gt;(bytes: [u8; BYTES]) -&gt; u8 {
 	<span class="macro">debug_assert!</span>(BYTES &gt; <span class="number">0</span>);
 
 	<span class="kw">let </span>ptr = bytes.as_ptr();
@@ -2074,8 +1919,7 @@
 		<span class="macro-nonterminal">$fn_name</span>:ident <span class="macro-nonterminal">$int</span>:ident <span class="macro-nonterminal">$expected</span>:ident
 	)* } =&gt; {
 		$(
-			<span class="attr">#[inline]
-			</span><span class="kw">fn </span><span class="macro-nonterminal">$fn_name</span>&lt;<span class="lifetime">'h</span>, I: Input&lt;<span class="lifetime">'h</span>&gt;&gt;(buf: <span class="kw-2">&amp;mut </span>I) -&gt; <span class="prelude-ty">Result</span>&lt;<span class="macro-nonterminal">$int</span>&gt; {
+			<span class="kw">fn </span><span class="macro-nonterminal">$fn_name</span>&lt;<span class="lifetime">'h</span>, I: Input&lt;<span class="lifetime">'h</span>&gt;&gt;(buf: <span class="kw-2">&amp;mut </span>I) -&gt; <span class="prelude-ty">Result</span>&lt;<span class="macro-nonterminal">$int</span>&gt; {
 				<span class="prelude-val">Ok</span>(<span class="macro">use_ok!</span>(
 					buf.read_bytes_const(),
 					bytes =&gt; <span class="macro-nonterminal">$int::from_le_bytes</span>(<span class="kw-2">*</span>bytes),
@@ -2108,8 +1952,7 @@
 		<span class="macro-nonterminal">$fn_name</span>:ident <span class="macro-nonterminal">$in_bytes</span>:literal <span class="macro-nonterminal">$extend_fn</span>:ident <span class="macro-nonterminal">$target_int</span>:ident <span class="macro-nonterminal">$expected</span>:ident
 	)* } =&gt; {
 		$(
-			<span class="attr">#[inline]
-			</span><span class="kw">fn </span><span class="macro-nonterminal">$fn_name</span>&lt;<span class="lifetime">'h</span>, I: Input&lt;<span class="lifetime">'h</span>&gt;&gt;(buf: <span class="kw-2">&amp;mut </span>I) -&gt; <span class="prelude-ty">Result</span>&lt;<span class="macro-nonterminal">$target_int</span>&gt; {
+			<span class="kw">fn </span><span class="macro-nonterminal">$fn_name</span>&lt;<span class="lifetime">'h</span>, I: Input&lt;<span class="lifetime">'h</span>&gt;&gt;(buf: <span class="kw-2">&amp;mut </span>I) -&gt; <span class="prelude-ty">Result</span>&lt;<span class="macro-nonterminal">$target_int</span>&gt; {
 				<span class="prelude-val">Ok</span>(<span class="macro">use_ok!</span>(
 					buf.read_bytes_const::&lt;<span class="macro-nonterminal">$in_bytes</span>&gt;(),
 					bytes =&gt; <span class="macro-nonterminal">$target_int::from_le_bytes</span>(<span class="kw">unsafe </span>{ <span class="macro-nonterminal">$extend_fn</span>(<span class="kw-2">*</span>bytes) }),
@@ -2155,8 +1998,7 @@
 	read_i120_to_i128 <span class="number">15 </span>sign_extend_array_le i128 DESC_EXPECTED_I120
 }
 
-<span class="attr">#[inline]
-</span><span class="kw">fn </span>int_try_into&lt;Into, From: TryInto&lt;Into&gt;&gt;(
+<span class="kw">fn </span>int_try_into&lt;Into, From: TryInto&lt;Into&gt;&gt;(
 	from: <span class="prelude-ty">Result</span>&lt;From&gt;,
 	expected_msg: <span class="kw-2">&amp;</span><span class="lifetime">'static </span>str
 ) -&gt; <span class="prelude-ty">Result</span>&lt;Into&gt; {
@@ -2168,36 +2010,7 @@
 	))
 }
 
-<span class="attr">#[inline]
-</span><span class="kw">fn </span>next_bytes_from_le&lt;<span class="lifetime">'h</span>, <span class="kw">const </span>IN_BYTES: usize, <span class="kw">const </span>OUT_BYTES: usize, T, I: Input&lt;<span class="lifetime">'h</span>&gt;&gt;(
-	buf: <span class="kw-2">&amp;mut </span>I,
-	extend: <span class="kw">unsafe fn</span>([u8; IN_BYTES]) -&gt; [u8; OUT_BYTES],
-	from_le_bytes: <span class="kw">fn</span>([u8; OUT_BYTES]) -&gt; T
-) -&gt; <span class="prelude-ty">Result</span>&lt;T, ErrorFound&gt; {
-	<span class="macro">debug_assert!</span>(IN_BYTES &lt; OUT_BYTES);
-	<span class="kw">unsafe </span>{ <span class="prelude-val">Ok</span>(from_le_bytes(extend(<span class="kw-2">*</span><span class="macro">use_ok!</span>(buf.read_bytes_const::&lt;IN_BYTES&gt;())))) }
-}
-
-<span class="kw">struct </span>TryNextBytesFromLeParams&lt;<span class="lifetime">'h</span>, <span class="kw">const </span>IN_BYTES: usize, <span class="kw">const </span>EXTENDED_BYTES: usize, <span class="kw">const </span>OUT_BYTES: usize, T, E, I, TIntermediate&gt; {
-	buf: <span class="kw-2">&amp;</span><span class="lifetime">'h </span><span class="kw-2">mut </span>I,
-	extend: <span class="kw">unsafe fn</span>([u8; IN_BYTES]) -&gt; [u8; EXTENDED_BYTES],
-	from_le_bytes: <span class="kw">fn</span>([u8; EXTENDED_BYTES]) -&gt; TIntermediate,
-	try_into: <span class="kw">fn</span>(TIntermediate) -&gt; <span class="prelude-ty">Result</span>&lt;T, E&gt;
-}
-
-<span class="attr">#[inline]
-</span><span class="kw">fn </span>try_next_bytes_from_le&lt;<span class="lifetime">'h</span>, <span class="kw">const </span>IN_BYTES: usize, <span class="kw">const </span>EXTENDED_BYTES: usize, <span class="kw">const </span>OUT_BYTES: usize, T, E, I: Input&lt;<span class="lifetime">'h</span>&gt;, TIntermediate&gt;(
-	params: TryNextBytesFromLeParams&lt;<span class="lifetime">'h</span>, IN_BYTES, EXTENDED_BYTES, OUT_BYTES, T, E, I, TIntermediate&gt;
-) -&gt; <span class="prelude-ty">Result</span>&lt;T, ErrorFound&gt; {
-	<span class="kw">let </span>TryNextBytesFromLeParams { buf, extend, from_le_bytes, try_into } = params;
-	<span class="prelude-val">Ok</span>(<span class="macro">use_ok!</span>(
-		<span class="kw">unsafe </span>{ try_into(from_le_bytes(extend(<span class="kw-2">*</span><span class="macro">use_ok!</span>(buf.read_bytes_const::&lt;IN_BYTES&gt;())))) },
-		#err _err =&gt; found_something_else().wrap()
-	))
-}
-
-<span class="attr">#[inline]
-</span><span class="kw">unsafe fn </span>zero_extend_array_le&lt;
+<span class="kw">unsafe fn </span>zero_extend_array_le&lt;
 	<span class="kw">const </span>IN_BYTES: usize,
 	<span class="kw">const </span>OUT_BYTES: usize
 &gt;(bytes: [u8; IN_BYTES]) -&gt; [u8; OUT_BYTES] {
@@ -2211,8 +2024,7 @@
 	out.assume_init()
 }
 
-<span class="attr">#[inline]
-</span><span class="kw">unsafe fn </span>sign_extend_array_le&lt;
+<span class="kw">unsafe fn </span>sign_extend_array_le&lt;
 	<span class="kw">const </span>IN_BYTES: usize,
 	<span class="kw">const </span>OUT_BYTES: usize
 &gt;(bytes: [u8; IN_BYTES]) -&gt; [u8; OUT_BYTES] {

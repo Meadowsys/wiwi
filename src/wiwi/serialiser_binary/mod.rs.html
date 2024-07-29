@@ -457,15 +457,6 @@
 <a href="#457" id="457">457</a>
 <a href="#458" id="458">458</a>
 <a href="#459" id="459">459</a>
-<a href="#460" id="460">460</a>
-<a href="#461" id="461">461</a>
-<a href="#462" id="462">462</a>
-<a href="#463" id="463">463</a>
-<a href="#464" id="464">464</a>
-<a href="#465" id="465">465</a>
-<a href="#466" id="466">466</a>
-<a href="#467" id="467">467</a>
-<a href="#468" id="468">468</a>
 </pre></div><pre class="rust"><code><span class="comment">// TODO: remove this
 </span><span class="attr">#![allow(
 	dead_code,
@@ -482,8 +473,10 @@
 <span class="kw">mod </span>marker;
 
 <span class="kw">mod </span>array;
+<span class="kw">mod </span>binary;
 <span class="kw">mod </span>bool;
 <span class="kw">mod </span>cow;
+<span class="kw">mod </span>map;
 <span class="kw">mod </span>option;
 <span class="kw">mod </span>number;
 <span class="kw">mod </span>string;
@@ -491,7 +484,9 @@
 <span class="kw">pub use </span><span class="self">self</span>::error::{ Error, <span class="prelude-ty">Result </span>};
 
 <span class="kw">pub use </span><span class="self">self</span>::array::SliceSerialiser;
+<span class="kw">pub use </span><span class="self">self</span>::binary::{ Binary, BytesSerialiser };
 <span class="kw">pub use </span><span class="self">self</span>::bool::BoolSerialiser;
+<span class="kw">pub use </span><span class="self">self</span>::map::MapSerialiser;
 <span class="kw">pub use </span><span class="self">self</span>::option::OptionSerialiser;
 <span class="kw">pub use </span><span class="self">self</span>::number::{
 	U8Serialiser,
@@ -509,8 +504,7 @@
 };
 <span class="kw">pub use </span><span class="self">self</span>::string::StrSerialiser;
 
-<span class="attr">#[inline]
-</span><span class="kw">pub fn </span>serialise&lt;T&gt;(item: <span class="kw-2">&amp;</span>T) -&gt; Vec&lt;u8&gt;
+<span class="kw">pub fn </span>serialise&lt;T&gt;(item: <span class="kw-2">&amp;</span>T) -&gt; Vec&lt;u8&gt;
 <span class="kw">where
 	</span>T: Serialise + <span class="question-mark">?</span>Sized
 {
@@ -520,8 +514,7 @@
 	vec
 }
 
-<span class="attr">#[inline]
-</span><span class="kw">pub fn </span>serialise_into&lt;T, O&gt;(item: <span class="kw-2">&amp;</span>T, buf: <span class="kw-2">&amp;mut </span>O)
+<span class="kw">pub fn </span>serialise_into&lt;T, O&gt;(item: <span class="kw-2">&amp;</span>T, buf: <span class="kw-2">&amp;mut </span>O)
 <span class="kw">where
 	</span>T: Serialise + <span class="question-mark">?</span>Sized,
 	O: Output
@@ -533,8 +526,7 @@
 	<span class="kw">unsafe </span>{ serialiser.serialise(buf) }
 }
 
-<span class="attr">#[inline]
-</span><span class="kw">pub fn </span>deserialise&lt;<span class="lifetime">'h</span>, T&gt;(bytes: <span class="kw-2">&amp;</span>[u8]) -&gt; <span class="prelude-ty">Result</span>&lt;T, T::Error&gt;
+<span class="kw">pub fn </span>deserialise&lt;<span class="lifetime">'h</span>, T&gt;(bytes: <span class="kw-2">&amp;</span>[u8]) -&gt; <span class="prelude-ty">Result</span>&lt;T, T::Error&gt;
 <span class="kw">where
 	</span>T: Deserialise&lt;<span class="lifetime">'h</span>&gt;
 {
@@ -558,6 +550,10 @@
 
 	<span class="doccomment">/// Gather all data required for serialisation, and store them in this
 	/// serialiser struct
+	///
+	/// You should do most if not all of the heavy lifting here, and store it all
+	/// in the serialiser struct. That would make calling
+	/// [`needed_capacity`](Serialiser::needed_capacity) easier to implement.
 	</span><span class="kw">fn </span>build_serialiser(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; <span class="self">Self</span>::Serialiser&lt;<span class="lifetime">'_</span>&gt;;
 }
 
@@ -585,8 +581,7 @@
 <span class="kw">pub trait </span>Deserialise&lt;<span class="lifetime">'h</span>&gt;: Sized {
 	<span class="kw">type </span>Error: std::error::Error + From&lt;Error&gt;;
 
-	<span class="attr">#[inline]
-	</span><span class="kw">fn </span>deserialise&lt;I: Input&lt;<span class="lifetime">'h</span>&gt;&gt;(buf: <span class="kw-2">&amp;mut </span>I) -&gt; <span class="prelude-ty">Result</span>&lt;<span class="self">Self</span>, <span class="self">Self</span>::Error&gt; {
+	<span class="kw">fn </span>deserialise&lt;I: Input&lt;<span class="lifetime">'h</span>&gt;&gt;(buf: <span class="kw-2">&amp;mut </span>I) -&gt; <span class="prelude-ty">Result</span>&lt;<span class="self">Self</span>, <span class="self">Self</span>::Error&gt; {
 		<span class="kw">let </span>marker = <span class="macro">use_ok!</span>(
 			buf.read_byte(),
 			#err err =&gt; err.expected(
@@ -621,13 +616,11 @@
 }
 
 <span class="kw">impl </span>Output <span class="kw">for </span>Vec&lt;u8&gt; {
-	<span class="attr">#[inline]
-	</span><span class="kw">fn </span>reserve(<span class="kw-2">&amp;mut </span><span class="self">self</span>, bytes: usize) {
+	<span class="kw">fn </span>reserve(<span class="kw-2">&amp;mut </span><span class="self">self</span>, bytes: usize) {
 		<span class="self">self</span>.reserve(bytes);
 	}
 
-	<span class="attr">#[inline]
-	</span><span class="kw">unsafe fn </span>write_bytes(<span class="kw-2">&amp;mut </span><span class="self">self</span>, bytes: <span class="kw-2">&amp;</span>[u8]) {
+	<span class="kw">unsafe fn </span>write_bytes(<span class="kw-2">&amp;mut </span><span class="self">self</span>, bytes: <span class="kw-2">&amp;</span>[u8]) {
 		<span class="kw">let </span>len = <span class="self">self</span>.len();
 		<span class="kw">let </span>ptr = <span class="self">self</span>.as_mut_ptr().add(len);
 
@@ -635,8 +628,7 @@
 		<span class="self">self</span>.set_len(len + bytes.len())
 	}
 
-	<span class="attr">#[inline]
-	</span><span class="kw">unsafe fn </span>write_byte(<span class="kw-2">&amp;mut </span><span class="self">self</span>, byte: u8) {
+	<span class="kw">unsafe fn </span>write_byte(<span class="kw-2">&amp;mut </span><span class="self">self</span>, byte: u8) {
 		<span class="kw">let </span>len = <span class="self">self</span>.len();
 		<span class="kw">let </span>ptr = <span class="self">self</span>.as_mut_ptr().add(len);
 
@@ -648,8 +640,7 @@
 <span class="kw">pub trait </span>Input&lt;<span class="lifetime">'h</span>&gt; {
 	<span class="kw">fn </span>read_bytes_ptr(<span class="kw-2">&amp;mut </span><span class="self">self</span>, bytes: usize) -&gt; <span class="prelude-ty">Result</span>&lt;<span class="kw-2">*const </span>u8, error::ErrorFound&gt;;
 
-	<span class="attr">#[inline]
-	</span><span class="kw">fn </span>read_bytes(<span class="kw-2">&amp;mut </span><span class="self">self</span>, bytes: usize) -&gt; <span class="prelude-ty">Result</span>&lt;<span class="kw-2">&amp;</span><span class="lifetime">'h </span>[u8], error::ErrorFound&gt; {
+	<span class="kw">fn </span>read_bytes(<span class="kw-2">&amp;mut </span><span class="self">self</span>, bytes: usize) -&gt; <span class="prelude-ty">Result</span>&lt;<span class="kw-2">&amp;</span><span class="lifetime">'h </span>[u8], error::ErrorFound&gt; {
 		<span class="prelude-val">Ok</span>(<span class="macro">use_ok!</span>(
 			<span class="self">self</span>.read_bytes_ptr(bytes),
 			<span class="comment">// SAFETY: if this returned `Some` then the ptr is valid for `bytes` reads
@@ -659,8 +650,7 @@
 		))
 	}
 
-	<span class="attr">#[inline]
-	</span><span class="kw">fn </span>read_byte(<span class="kw-2">&amp;mut </span><span class="self">self</span>) -&gt; <span class="prelude-ty">Result</span>&lt;u8, error::ErrorFound&gt; {
+	<span class="kw">fn </span>read_byte(<span class="kw-2">&amp;mut </span><span class="self">self</span>) -&gt; <span class="prelude-ty">Result</span>&lt;u8, error::ErrorFound&gt; {
 		<span class="prelude-val">Ok</span>(<span class="macro">use_ok!</span>(
 			<span class="self">self</span>.read_bytes_ptr(<span class="number">1</span>),
 			<span class="comment">// SAFETY: ptr returned by `read_bytes_ptr` is
@@ -670,8 +660,7 @@
 		))
 	}
 
-	<span class="attr">#[inline]
-	</span><span class="kw">fn </span>read_bytes_const&lt;<span class="kw">const </span>BYTES: usize&gt;(<span class="kw-2">&amp;mut </span><span class="self">self</span>) -&gt; <span class="prelude-ty">Result</span>&lt;<span class="kw-2">&amp;</span><span class="lifetime">'h </span>[u8; BYTES], error::ErrorFound&gt; {
+	<span class="kw">fn </span>read_bytes_const&lt;<span class="kw">const </span>BYTES: usize&gt;(<span class="kw-2">&amp;mut </span><span class="self">self</span>) -&gt; <span class="prelude-ty">Result</span>&lt;<span class="kw-2">&amp;</span><span class="lifetime">'h </span>[u8; BYTES], error::ErrorFound&gt; {
 		<span class="prelude-val">Ok</span>(<span class="macro">use_ok!</span>(
 			<span class="self">self</span>.read_bytes(BYTES),
 			bytes =&gt; <span class="kw">unsafe </span>{ <span class="kw-2">&amp;*</span>bytes.as_ptr().cast::&lt;[u8; BYTES]&gt;() },
@@ -686,16 +675,14 @@
 }
 
 <span class="kw">impl</span>&lt;<span class="lifetime">'h</span>&gt; OutputVecBuffer&lt;<span class="lifetime">'h</span>&gt; {
-	<span class="attr">#[inline]
-	</span><span class="kw">pub fn </span>new(vec: <span class="kw-2">&amp;</span><span class="lifetime">'h </span><span class="kw-2">mut </span>Vec&lt;u8&gt;) -&gt; <span class="self">Self </span>{
+	<span class="kw">pub fn </span>new(vec: <span class="kw-2">&amp;</span><span class="lifetime">'h </span><span class="kw-2">mut </span>Vec&lt;u8&gt;) -&gt; <span class="self">Self </span>{
 		<span class="kw">let </span>ptr = vec.as_mut_ptr();
 		<span class="self">Self </span>{ vec, ptr }
 	}
 }
 
 <span class="kw">impl</span>&lt;<span class="lifetime">'h</span>&gt; Output <span class="kw">for </span>OutputVecBuffer&lt;<span class="lifetime">'h</span>&gt; {
-	<span class="attr">#[inline]
-	</span><span class="kw">fn </span>reserve(<span class="kw-2">&amp;mut </span><span class="self">self</span>, bytes: usize) {
+	<span class="kw">fn </span>reserve(<span class="kw-2">&amp;mut </span><span class="self">self</span>, bytes: usize) {
 		<span class="self">self</span>.vec.reserve_exact(bytes);
 
 		<span class="kw">let </span>len = <span class="self">self</span>.vec.len();
@@ -703,8 +690,7 @@
 		<span class="self">self</span>.ptr = <span class="kw">unsafe </span>{ ptr.add(len).cast_const() };
 	}
 
-	<span class="attr">#[inline]
-	</span><span class="kw">unsafe fn </span>write_bytes(<span class="kw-2">&amp;mut </span><span class="self">self</span>, bytes: <span class="kw-2">&amp;</span>[u8]) {
+	<span class="kw">unsafe fn </span>write_bytes(<span class="kw-2">&amp;mut </span><span class="self">self</span>, bytes: <span class="kw-2">&amp;</span>[u8]) {
 		<span class="kw">let </span>bytes_len = bytes.len();
 
 		ptr::copy_nonoverlapping(bytes.as_ptr(), <span class="self">self</span>.ptr.cast_mut(), bytes_len);
@@ -714,8 +700,7 @@
 		<span class="self">self</span>.vec.set_len(vec_len + bytes_len);
 	}
 
-	<span class="attr">#[inline]
-	</span><span class="kw">unsafe fn </span>write_byte(<span class="kw-2">&amp;mut </span><span class="self">self</span>, byte: u8) {
+	<span class="kw">unsafe fn </span>write_byte(<span class="kw-2">&amp;mut </span><span class="self">self</span>, byte: u8) {
 		ptr::write(<span class="self">self</span>.ptr.cast_mut(), byte);
 
 		<span class="kw">let </span>vec_len = <span class="self">self</span>.vec.len();
@@ -731,8 +716,7 @@
 }
 
 <span class="kw">impl</span>&lt;<span class="lifetime">'h</span>&gt; InputSliceBuffer&lt;<span class="lifetime">'h</span>&gt; {
-	<span class="attr">#[inline]
-	</span><span class="kw">fn </span>new(bytes: <span class="kw-2">&amp;</span>[u8]) -&gt; <span class="self">Self </span>{
+	<span class="kw">fn </span>new(bytes: <span class="kw-2">&amp;</span>[u8]) -&gt; <span class="self">Self </span>{
 		<span class="self">Self </span>{
 			ptr: bytes.as_ptr(),
 			remaining: bytes.len(),
@@ -763,8 +747,7 @@
 <span class="kw">impl</span>&lt;T: Serialise + <span class="question-mark">?</span>Sized&gt; Serialise <span class="kw">for </span><span class="kw-2">&amp;</span>T {
 	<span class="kw">type </span>Serialiser&lt;<span class="lifetime">'h</span>&gt; = T::Serialiser&lt;<span class="lifetime">'h</span>&gt; <span class="kw">where </span><span class="self">Self</span>: <span class="lifetime">'h</span>;
 
-	<span class="attr">#[inline]
-	</span><span class="kw">fn </span>build_serialiser(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; T::Serialiser&lt;<span class="lifetime">'_</span>&gt; {
+	<span class="kw">fn </span>build_serialiser(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; T::Serialiser&lt;<span class="lifetime">'_</span>&gt; {
 		(<span class="kw-2">**</span><span class="self">self</span>).build_serialiser()
 	}
 }
@@ -772,8 +755,7 @@
 <span class="kw">impl</span>&lt;T: Serialise + <span class="question-mark">?</span>Sized&gt; Serialise <span class="kw">for </span><span class="kw-2">&amp;mut </span>T {
 	<span class="kw">type </span>Serialiser&lt;<span class="lifetime">'h</span>&gt; = T::Serialiser&lt;<span class="lifetime">'h</span>&gt; <span class="kw">where </span><span class="self">Self</span>: <span class="lifetime">'h</span>;
 
-	<span class="attr">#[inline]
-	</span><span class="kw">fn </span>build_serialiser(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; T::Serialiser&lt;<span class="lifetime">'_</span>&gt; {
+	<span class="kw">fn </span>build_serialiser(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; T::Serialiser&lt;<span class="lifetime">'_</span>&gt; {
 		(<span class="kw-2">**</span><span class="self">self</span>).build_serialiser()
 	}
 }
