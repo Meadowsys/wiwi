@@ -16,6 +16,7 @@ mod marker;
 mod array;
 mod bool;
 mod cow;
+mod map;
 mod option;
 mod number;
 mod string;
@@ -24,6 +25,7 @@ pub use self::error::{ Error, Result };
 
 pub use self::array::SliceSerialiser;
 pub use self::bool::BoolSerialiser;
+pub use self::map::MapSerialiser;
 pub use self::option::OptionSerialiser;
 pub use self::number::{
 	U8Serialiser,
@@ -87,6 +89,10 @@ pub trait Serialise {
 
 	/// Gather all data required for serialisation, and store them in this
 	/// serialiser struct
+	///
+	/// You should do most if not all of the heavy lifting here, and store it all
+	/// in the serialiser struct. That would make calling
+	/// [`needed_capacity`](Serialiser::needed_capacity) easier to implement.
 	fn build_serialiser(&self) -> Self::Serialiser<'_>;
 }
 
