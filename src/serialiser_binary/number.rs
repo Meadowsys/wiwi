@@ -993,6 +993,7 @@ unsafe fn zero_extend_array_le<
 	const IN_BYTES: usize,
 	const OUT_BYTES: usize
 >(bytes: [u8; IN_BYTES]) -> [u8; OUT_BYTES] {
+	debug_assert!(0 < IN_BYTES);
 	debug_assert!(IN_BYTES < OUT_BYTES);
 
 	let mut out = MaybeUninit::<[u8; OUT_BYTES]>::uninit();
@@ -1007,6 +1008,7 @@ unsafe fn sign_extend_array_le<
 	const IN_BYTES: usize,
 	const OUT_BYTES: usize
 >(bytes: [u8; IN_BYTES]) -> [u8; OUT_BYTES] {
+	debug_assert!(0 < IN_BYTES);
 	debug_assert!(IN_BYTES < OUT_BYTES);
 
 	let sign = bytes[IN_BYTES - 1] >> 7;
