@@ -74,14 +74,12 @@ where
 	let mut input = InputSliceBuffer::new(bytes);
 	Ok(use_ok!(
 		T::deserialise(&mut input),
-		val => {
-			if input.is_empty() {
-				val
-			} else {
-				return error::expected(error::expected::DESC_EXPECTED_EOF)
-					.found(error::found::DESC_FOUND_TRAILING_BYTES)
-					.wrap_foreign()
-			}
+		val => if input.is_empty() {
+			val
+		} else {
+			return error::expected(error::expected::DESC_EXPECTED_EOF)
+				.found(error::found::DESC_FOUND_TRAILING_BYTES)
+				.wrap_foreign()
 		}
 	))
 }
@@ -93,8 +91,7 @@ pub trait Serialise {
 	/// serialiser struct
 	///
 	/// You should do most if not all of the heavy lifting here, and store it all
-	/// in the serialiser struct. That would make calling
-	/// [`needed_capacity`](Serialiser::needed_capacity) easier to implement.
+	/// in the serialiser struct.
 	fn build_serialiser(&self) -> Self::Serialiser<'_>;
 }
 
@@ -103,9 +100,8 @@ pub trait Serialiser<'h> {
 	///
 	/// # Safety
 	///
-	/// Unsafe code is allowed to rely on this for soundness. If you cannot
-	/// precisely determine amount needed, you should (and must for soundness
-	/// reasons) provide the upper bound.
+	/// This must be accurate, as unsafe code is allowed to rely on this for
+	/// soundness.
 	unsafe fn needed_capacity(&self) -> usize;
 
 	/// Serialise `self` into the provided output buffer
@@ -203,9 +199,8 @@ pub trait Input<'h> {
 
 	fn read_bytes_const<const BYTES: usize>(&mut self) -> Result<&'h [u8; BYTES], error::ErrorFound> {
 		Ok(use_ok!(
-			self.read_bytes(BYTES),
-			bytes => unsafe { &*bytes.as_ptr().cast::<[u8; BYTES]>() },
-			#err err => err.wrap()
+			self.read_bytes_ptr(BYTES),
+			bytes => unsafe { &*bytes.cast::<[u8; BYTES]>() }
 		))
 	}
 }
@@ -332,36 +327,36 @@ macro_rules! use_ok {
 }
 use use_ok;
 
-macro_rules! use_some {
-	($option:expr) => {
-		match $option {
-			Some(val) => { val }
-			None => { return None }
-		}
-	};
-
-	($option:expr, #none => $none_op:expr) => {
-		match $option {
-			Some(val) => { val }
-			None => { return $none_op }
-		}
-	};
-
-	($option:expr, $val:ident => $op:expr) => {
-		match $option {
-			Some($val) => { $op }
-			None => { return None }
-		}
-	};
-
-	($option:expr, $val:ident => $op:expr, #none => $none_op:expr) => {
-		match $option {
-			Some($val) => { $op }
-			None => { return $none_op }
-		}
-	};
-}
-use use_some;
+// macro_rules! use_some {
+// 	($option:expr) => {
+// 		match $option {
+// 			Some(val) => { val }
+// 			None => { return None }
+// 		}
+// 	};
+//
+// 	($option:expr, #none => $none_op:expr) => {
+// 		match $option {
+// 			Some(val) => { val }
+// 			None => { return $none_op }
+// 		}
+// 	};
+//
+// 	($option:expr, $val:ident => $op:expr) => {
+// 		match $option {
+// 			Some($val) => { $op }
+// 			None => { return None }
+// 		}
+// 	};
+//
+// 	($option:expr, $val:ident => $op:expr, #none => $none_op:expr) => {
+// 		match $option {
+// 			Some($val) => { $op }
+// 			None => { return $none_op }
+// 		}
+// 	};
+// }
+// use use_some;
 
 macro_rules! consts {
 	{
@@ -439,8 +434,8 @@ mod internal_prelude {
 		Output,
 		Serialise,
 		Serialiser,
-		use_ok,
-		use_some
+		use_ok
+		// use_some
 	};
 	pub(super) use super::error::{
 		Error,

@@ -109,7 +109,7 @@ pub(super) const fn validate_utf8(code_units: &[u8]) -> bool {
 
 						let mut usize_i = 0;
 						while usize_i < max {
-							// SAFETY: while loop does not loop more than we can read,
+							// SAFETY: loop does not loop more than we can read,
 							// so ptr will not dereference out of bounds
 							let units = *ptr;
 							let units2 = *ptr.add(1);

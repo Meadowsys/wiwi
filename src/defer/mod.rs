@@ -498,6 +498,8 @@ impl<T> OnDrop for T {}
 
 #[cfg(test)]
 mod tests {
+	// TODO: need to do something about the way these test are run, since
+	// assert/etc panic and we catch_unwind sometimes, so that's, hmmm
 	use super::*;
 	use std::cell::Cell;
 	use std::panic::{ AssertUnwindSafe, catch_unwind };

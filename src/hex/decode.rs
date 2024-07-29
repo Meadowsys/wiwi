@@ -60,7 +60,7 @@ pub(super) unsafe fn generic(
 				// ie. within range to index table ptr
 				let ptr = unsafe { table_ptr.add($byte) };
 
-				// SAFETY: as describe above, ptr is valid to read
+				// SAFETY: as described above, ptr is valid to read
 				let $byte = unsafe { *ptr };
 
 				let $byte = match $byte {

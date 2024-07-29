@@ -57,20 +57,20 @@ macro_rules! decl_thread_local_rng {
 }
 
 decl_thread_local_rng! {
-	/// ChaCha8 thread local random number generator, seeding and reseeding
-	/// using the OS-provided randomness source every 16KiB of output
+	/// ChaCha8 thread local random number generator, seeding using the
+	/// OS-provided randomness source, and reseeding every 16KiB of output
 	ThreadLocalChaCha8Rng ChaCha8Core OsRng
 }
 
 decl_thread_local_rng! {
-	/// ChaCha12 thread local random number generator, seeding and reseeding
-	/// using the OS-provided randomness source every 16KiB of output
+	/// ChaCha12 thread local random number generator, seeding using the
+	/// OS-provided randomness source, and reseeding every 16KiB of output
 	ThreadLocalChaCha12Rng ChaCha12Core OsRng
 }
 
 decl_thread_local_rng! {
-	/// ChaCha20 thread local random number generator, seeding and reseeding
-	/// using the OS-provided randomness source every 16KiB of output
+	/// ChaCha20 thread local random number generator, seeding using the
+	/// OS-provided randomness source, and reseeding every 16KiB of output
 	ThreadLocalChaCha20Rng ChaCha20Core OsRng
 }
 
@@ -211,9 +211,9 @@ fn rand_u64<R: RngCore>(rng: &mut R) -> u64 {
 
 #[inline]
 fn rand_u128<R: RngCore>(rng: &mut R) -> u128 {
-	let upper = rng.next_u64() as u128;
 	let lower = rng.next_u64() as u128;
-	upper << 64 | lower
+	let upper = rng.next_u64() as u128;
+	lower | upper << 64
 }
 
 #[inline]

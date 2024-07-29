@@ -212,13 +212,13 @@ pub fn decode_z85(mut bytes: &[u8]) -> Result<Vec<u8>, DecodeError> {
 			// - it's established above that subtracting by 1
 			//   will not overflow, if we got into this match branch
 			// - `one_shorter` is one less than the len of the input slice
-			//    (which cannot won't overflow)
+			//    (which won't overflow)
 			// this is just taking a subslice of the all the bytes except the last
 			bytes = unsafe { slice::from_raw_parts(ptr, one_shorter) };
 
 			let decoded = {
-				// SAFETY: `byte` is of type u8, it's range is 0..=255, which will
-				// not overflow TABLE_DECODER, which is len 256
+				// SAFETY: `byte` is of type u8, which has a range of 0..=255,
+				// which will never overflow TABLE_DECODER as its len is 256
 				let table_ptr = unsafe { TABLE_DECODER.as_ptr().add(byte.into_usize()) };
 
 				// SAFETY: as established above, pointer above will not
@@ -461,7 +461,7 @@ unsafe fn encode_frame(frame: &[u8; BINARY_FRAME_LEN], dest: &mut UnsafeBufWrite
 		encode_byte_unsafe!(byte2),
 		encode_byte_unsafe!(byte3),
 		encode_byte_unsafe!(byte4),
-		encode_byte_unsafe!(byte5),
+		encode_byte_unsafe!(byte5)
 	];
 
 	// SAFETY: caller guarantees that `dest` has at least
@@ -471,9 +471,9 @@ unsafe fn encode_frame(frame: &[u8; BINARY_FRAME_LEN], dest: &mut UnsafeBufWrite
 
 /// # Safety
 ///
-/// All allowed-by-type-system inputs are sound. However, marking this function
-/// `unsafe` is not only consistent with [`encode_frame`], its also just more
-/// convenient :p. This is an internal function, so doesn't matter too much.
+/// All possible inputs are sound. However, marking this function `unsafe` is
+/// consistent with [`encode_frame`]. This is an internal function, so doesn't
+/// matter too much.
 unsafe fn decode_frame<F>(frame: &[u8; STRING_FRAME_LEN], f: F) -> Result<(), DecodeError>
 where
 	F: FnOnce(&[u8; BINARY_FRAME_LEN])
