@@ -14,17 +14,7 @@ impl<T: Serialise> Serialise for &[T] {
 
 	#[inline]
 	fn build_serialiser(&self) -> SliceSerialiser<'_, T> {
-		let len_ser = if self.len() > u8::MAX.into_usize() {
-			Some(USizeSerialiser::new(self.len()))
-		} else {
-			None
-		};
-
-		let inner = self.iter()
-			.map(|val| val.build_serialiser())
-			.collect();
-
-		SliceSerialiser { inner, len_ser }
+		SliceSerialiser::new(self)
 	}
 }
 
