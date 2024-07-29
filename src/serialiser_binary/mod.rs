@@ -25,6 +25,7 @@ mod string;
 pub use self::error::{ Error, Result };
 
 pub use self::array::SliceSerialiser;
+pub use self::binary::{ Binary, BytesSerialiser };
 pub use self::bool::BoolSerialiser;
 pub use self::map::MapSerialiser;
 pub use self::option::OptionSerialiser;

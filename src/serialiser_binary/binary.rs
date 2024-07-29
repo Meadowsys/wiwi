@@ -2,39 +2,43 @@ use super::internal_prelude::*;
 use super::USizeSerialiser;
 use std::ops::Deref;
 
-pub enum Bytes<'h> {
-	Slice {
-		inner: &'h [u8]
-	},
-	Owned {
-		inner: Vec<u8>
-	}
+pub enum Binary<'h> {
+	Slice(&'h [u8]),
+	Owned(Vec<u8>)
 }
 
-impl<'h> Bytes<'h> {
+impl<'h> Binary<'h> {
 	pub fn into_vec(self) -> Vec<u8> {
 		match self {
-			Self::Slice { inner } => { inner.into() }
-			Self::Owned { inner } => { inner }
+			Self::Slice(inner) => { inner.into() }
+			Self::Owned(inner) => { inner }
 		}
 	}
 
 	pub fn try_into_vec(self) -> Result<Vec<u8>, Self> {
 		match self {
-			Self::Slice { inner } => { Err(Self::Slice { inner }) }
-			Self::Owned { inner } => { Ok(inner) }
+			Self::Slice(inner) => { Err(Self::Slice(inner)) }
+			Self::Owned(inner) => { Ok(inner) }
 		}
 	}
 }
 
-impl<'h> Deref for Bytes<'h> {
+impl<'h> Deref for Binary<'h> {
 	type Target = [u8];
 
 	fn deref(&self) -> &[u8] {
 		match self {
-			Self::Owned { inner } => { inner }
-			Self::Slice { inner } => { inner }
+			Self::Owned(inner) => { inner }
+			Self::Slice(inner) => { inner }
 		}
+	}
+}
+
+impl<'b> Serialise for Binary<'b> {
+	type Serialiser<'h> = BytesSerialiser<'h> where Self: 'h;
+
+	fn build_serialiser(&self) -> BytesSerialiser<'_> {
+		BytesSerialiser::new(self)
 	}
 }
 
@@ -44,8 +48,7 @@ pub struct BytesSerialiser<'h> {
 }
 
 impl<'h> BytesSerialiser<'h> {
-	fn new(bytes: &'h Bytes) -> Self {
-		let slice = &**bytes;
+	fn new(slice: &'h [u8]) -> Self {
 		let len_ser = if slice.len() > u8::MAX.into_usize() {
 			Some(USizeSerialiser::new(slice.len()))
 		} else {
@@ -82,10 +85,10 @@ impl<'h> Serialiser<'h> for BytesSerialiser<'h> {
 	}
 }
 
-impl<'h> Deserialise<'h> for Bytes<'h> {
+impl<'h> Deserialise<'h> for Binary<'h> {
 	type Error = Error;
 
-	fn deserialise_with_marker<I: Input<'h>>(buf: &mut I, marker: u8) -> Result<Bytes<'h>> {
+	fn deserialise_with_marker<I: Input<'h>>(buf: &mut I, marker: u8) -> Result<Binary<'h>> {
 		let len = match marker {
 			MARKER_BINARY_8 => {
 				use_ok!(
@@ -112,6 +115,6 @@ impl<'h> Deserialise<'h> for Bytes<'h> {
 			#err err => err.expected(DESC_EXPECTED_BINARY).wrap()
 		);
 
-		Ok(Bytes::Slice { inner: slice })
+		Ok(Binary::Slice(slice))
 	}
 }
