@@ -4,6 +4,7 @@ use super::USizeSerialiser;
 use hashbrown::HashMap as HashbrownHashMap;
 use std::collections::HashMap as StdHashMap;
 use std::fmt;
+use std::hash::{ BuildHasher, Hash };
 
 // TODO: deterministic wrapper? cause hashmap iter ordering is nondeterministic
 
@@ -92,6 +93,39 @@ where
 			k.serialise(buf);
 			v.serialise(buf);
 		}
+	}
+}
+
+impl<'h, K, V, S> Deserialise<'h> for StdHashMap<K, V, S>
+where
+	K: Deserialise<'h> + Eq + Hash,
+	V: Deserialise<'h>,
+	S: BuildHasher + Default
+{
+	type Error = DeserialiseMapError<K::Error, V::Error>;
+
+	fn deserialise_with_marker<I: Input<'h>>(
+		buf: &mut I,
+		marker: u8
+	) -> Result<StdHashMap<K, V, S>, DeserialiseMapError<K::Error, V::Error>> {
+		map_deser_impl(buf, marker)
+	}
+}
+
+#[cfg(feature = "hashbrown")]
+impl<'h, K, V, S> Deserialise<'h> for HashbrownHashMap<K, V, S>
+where
+	K: Deserialise<'h> + Eq + Hash,
+	V: Deserialise<'h>,
+	S: BuildHasher + Default
+{
+	type Error = DeserialiseMapError<K::Error, V::Error>;
+
+	fn deserialise_with_marker<I: Input<'h>>(
+		buf: &mut I,
+		marker: u8
+	) -> Result<HashbrownHashMap<K, V, S>, DeserialiseMapError<K::Error, V::Error>> {
+		map_deser_impl(buf, marker)
 	}
 }
 
