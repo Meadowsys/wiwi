@@ -1113,25 +1113,7 @@
 <a href="#1113" id="1113">1113</a>
 <a href="#1114" id="1114">1114</a>
 <a href="#1115" id="1115">1115</a>
-<a href="#1116" id="1116">1116</a>
-<a href="#1117" id="1117">1117</a>
-<a href="#1118" id="1118">1118</a>
-<a href="#1119" id="1119">1119</a>
-<a href="#1120" id="1120">1120</a>
-<a href="#1121" id="1121">1121</a>
-<a href="#1122" id="1122">1122</a>
-<a href="#1123" id="1123">1123</a>
-<a href="#1124" id="1124">1124</a>
-<a href="#1125" id="1125">1125</a>
-<a href="#1126" id="1126">1126</a>
-<a href="#1127" id="1127">1127</a>
-</pre></div><pre class="rust"><code><span class="kw">use </span><span class="kw">crate</span>::num_traits::<span class="kw-2">*</span>;
-<span class="kw">use super</span>::{ Deserialise, Error, ErrorFound, Input, Output, <span class="prelude-ty">Result</span>, Serialise, Serialiser, use_marker, use_ok };
-<span class="kw">use </span><span class="kw">super</span>::error::expected;
-<span class="kw">use </span><span class="kw">super</span>::error::expected::<span class="kw-2">*</span>;
-<span class="kw">use </span><span class="kw">super</span>::error::found::<span class="kw-2">*</span>;
-<span class="kw">use </span><span class="kw">super</span>::marker::{ signed_smallint_range, unsigned_smallint_range };
-<span class="kw">use </span><span class="kw">super</span>::marker::markers::<span class="kw-2">*</span>;
+</pre></div><pre class="rust"><code><span class="kw">use </span><span class="kw">super</span>::internal_prelude::<span class="kw-2">*</span>;
 <span class="kw">use </span>std::{ hint, ptr };
 <span class="kw">use </span>std::mem::MaybeUninit;
 
@@ -1454,13 +1436,13 @@
 	<span class="kw">type </span>Error = Error;
 
 	<span class="attr">#[inline]
-	</span><span class="kw">fn </span>deserialise&lt;I: Input&lt;<span class="lifetime">'h</span>&gt;&gt;(buf: <span class="kw-2">&amp;mut </span>I) -&gt; <span class="prelude-ty">Result</span>&lt;usize&gt; {
+	</span><span class="kw">fn </span>deserialise_with_marker&lt;I: Input&lt;<span class="lifetime">'h</span>&gt;&gt;(buf: <span class="kw-2">&amp;mut </span>I, marker: u8) -&gt; <span class="prelude-ty">Result</span>&lt;usize&gt; {
 		<span class="attr">#[cfg(target_pointer_width = <span class="string">"64"</span>)]
-		</span><span class="kw">let </span>val = u64::deserialise(buf);
+		</span><span class="kw">let </span>val = u64::deserialise_with_marker(buf, marker);
 		<span class="attr">#[cfg(target_pointer_width = <span class="string">"32"</span>)]
-		</span><span class="kw">let </span>val = u32::deserialise(buf);
+		</span><span class="kw">let </span>val = u32::deserialise_with_marker(buf, marker);
 		<span class="attr">#[cfg(target_pointer_width = <span class="string">"16"</span>)]
-		</span><span class="kw">let </span>val = u16::deserialise(buf);
+		</span><span class="kw">let </span>val = u16::deserialise_with_marker(buf, marker);
 
 		<span class="prelude-val">Ok</span>(<span class="macro">use_ok!</span>(
 			val,
@@ -1813,13 +1795,13 @@
 	<span class="kw">type </span>Error = Error;
 
 	<span class="attr">#[inline]
-	</span><span class="kw">fn </span>deserialise&lt;I: Input&lt;<span class="lifetime">'h</span>&gt;&gt;(buf: <span class="kw-2">&amp;mut </span>I) -&gt; <span class="prelude-ty">Result</span>&lt;isize&gt; {
+	</span><span class="kw">fn </span>deserialise_with_marker&lt;I: Input&lt;<span class="lifetime">'h</span>&gt;&gt;(buf: <span class="kw-2">&amp;mut </span>I, marker: u8) -&gt; <span class="prelude-ty">Result</span>&lt;isize&gt; {
 		<span class="attr">#[cfg(target_pointer_width = <span class="string">"64"</span>)]
-		</span><span class="kw">let </span>val = i64::deserialise(buf);
+		</span><span class="kw">let </span>val = i64::deserialise_with_marker(buf, marker);
 		<span class="attr">#[cfg(target_pointer_width = <span class="string">"32"</span>)]
-		</span><span class="kw">let </span>val = i32::deserialise(buf);
+		</span><span class="kw">let </span>val = i32::deserialise_with_marker(buf, marker);
 		<span class="attr">#[cfg(target_pointer_width = <span class="string">"16"</span>)]
-		</span><span class="kw">let </span>val = i16::deserialise(buf);
+		</span><span class="kw">let </span>val = i16::deserialise_with_marker(buf, marker);
 
 		<span class="prelude-val">Ok</span>(<span class="macro">use_ok!</span>(
 			val,
@@ -1866,9 +1848,7 @@
 	<span class="kw">type </span>Error = Error;
 
 	<span class="attr">#[inline]
-	</span><span class="kw">fn </span>deserialise&lt;I: Input&lt;<span class="lifetime">'h</span>&gt;&gt;(buf: <span class="kw-2">&amp;mut </span>I) -&gt; <span class="prelude-ty">Result</span>&lt;f32&gt; {
-		<span class="kw">let </span>marker = <span class="macro">use_marker!</span>(buf);
-
+	</span><span class="kw">fn </span>deserialise_with_marker&lt;I: Input&lt;<span class="lifetime">'h</span>&gt;&gt;(buf: <span class="kw-2">&amp;mut </span>I, marker: u8) -&gt; <span class="prelude-ty">Result</span>&lt;f32&gt; {
 		<span class="kw">match </span>marker {
 			MARKER_F32 =&gt; {
 				<span class="prelude-val">Ok</span>(<span class="macro">use_ok!</span>(
@@ -1919,9 +1899,7 @@
 	<span class="kw">type </span>Error = Error;
 
 	<span class="attr">#[inline]
-	</span><span class="kw">fn </span>deserialise&lt;I: Input&lt;<span class="lifetime">'h</span>&gt;&gt;(buf: <span class="kw-2">&amp;mut </span>I) -&gt; <span class="prelude-ty">Result</span>&lt;f64&gt; {
-		<span class="kw">let </span>marker = <span class="macro">use_marker!</span>(buf);
-
+	</span><span class="kw">fn </span>deserialise_with_marker&lt;I: Input&lt;<span class="lifetime">'h</span>&gt;&gt;(buf: <span class="kw-2">&amp;mut </span>I, marker: u8) -&gt; <span class="prelude-ty">Result</span>&lt;f64&gt; {
 		<span class="kw">match </span>marker {
 			MARKER_F32 =&gt; {
 				<span class="prelude-val">Ok</span>(<span class="macro">use_ok!</span>(
@@ -2031,9 +2009,7 @@
 		<span class="kw">impl</span>&lt;<span class="lifetime">'h</span>&gt; Deserialise&lt;<span class="lifetime">'h</span>&gt; <span class="kw">for </span><span class="macro-nonterminal">$int </span>{
 			<span class="kw">type </span>Error = Error;
 
-			<span class="kw">fn </span>deserialise&lt;I: Input&lt;<span class="lifetime">'h</span>&gt;&gt;(buf: <span class="kw-2">&amp;mut </span>I) -&gt; <span class="prelude-ty">Result</span>&lt;<span class="macro-nonterminal">$int</span>&gt; {
-				<span class="kw">let </span>marker = <span class="macro">use_marker!</span>(buf);
-
+			<span class="kw">fn </span>deserialise_with_marker&lt;I: Input&lt;<span class="lifetime">'h</span>&gt;&gt;(buf: <span class="kw-2">&amp;mut </span>I, marker: u8) -&gt; <span class="prelude-ty">Result</span>&lt;<span class="macro-nonterminal">$int</span>&gt; {
 				<span class="kw">match </span>marker {
 					<span class="macro-nonterminal">$smallint </span>@ <span class="macro-nonterminal">$</span><span class="macro">smallint_macro!</span>() =&gt; { <span class="prelude-val">Ok</span>(<span class="macro-nonterminal">$smallint_cast</span>) }
 
@@ -2216,7 +2192,7 @@
 	<span class="kw">let </span>TryNextBytesFromLeParams { buf, extend, from_le_bytes, try_into } = params;
 	<span class="prelude-val">Ok</span>(<span class="macro">use_ok!</span>(
 		<span class="kw">unsafe </span>{ try_into(from_le_bytes(extend(<span class="kw-2">*</span><span class="macro">use_ok!</span>(buf.read_bytes_const::&lt;IN_BYTES&gt;())))) },
-		#err _err =&gt; <span class="kw">super</span>::found_something_else().wrap()
+		#err _err =&gt; found_something_else().wrap()
 	))
 }
 

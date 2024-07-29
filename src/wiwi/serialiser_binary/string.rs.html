@@ -130,16 +130,25 @@
 <a href="#130" id="130">130</a>
 <a href="#131" id="131">131</a>
 <a href="#132" id="132">132</a>
-</pre></div><pre class="rust"><code><span class="kw">use </span><span class="kw">crate</span>::num_traits::<span class="kw-2">*</span>;
-<span class="kw">use super</span>::{ Deserialise, Error, Input, Output, <span class="prelude-ty">Result</span>, Serialise, Serialiser, use_marker, use_ok, USizeSerialiser };
-<span class="kw">use </span><span class="kw">super</span>::error::expected;
-<span class="kw">use </span><span class="kw">super</span>::error::expected::<span class="kw-2">*</span>;
-<span class="kw">use </span><span class="kw">super</span>::error::found::<span class="kw-2">*</span>;
-<span class="kw">use </span><span class="kw">super</span>::marker::markers::<span class="kw-2">*</span>;
+<a href="#133" id="133">133</a>
+<a href="#134" id="134">134</a>
+<a href="#135" id="135">135</a>
+<a href="#136" id="136">136</a>
+</pre></div><pre class="rust"><code><span class="kw">use </span><span class="kw">super</span>::internal_prelude::<span class="kw-2">*</span>;
+<span class="kw">use </span><span class="kw">super</span>::USizeSerialiser;
 <span class="kw">use </span>std::borrow::Cow;
 <span class="kw">use </span>std::str;
 
 <span class="kw">impl </span>Serialise <span class="kw">for </span>str {
+	<span class="kw">type </span>Serialiser&lt;<span class="lifetime">'h</span>&gt; = StrSerialiser&lt;<span class="lifetime">'h</span>&gt;;
+
+	<span class="attr">#[inline]
+	</span><span class="kw">fn </span>build_serialiser(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; StrSerialiser&lt;<span class="lifetime">'_</span>&gt; {
+		StrSerialiser::new(<span class="self">self</span>)
+	}
+}
+
+<span class="kw">impl </span>Serialise <span class="kw">for </span>String {
 	<span class="kw">type </span>Serialiser&lt;<span class="lifetime">'h</span>&gt; = StrSerialiser&lt;<span class="lifetime">'h</span>&gt;;
 
 	<span class="attr">#[inline]
@@ -200,15 +209,14 @@
 	<span class="kw">type </span>Error = Error;
 
 	<span class="attr">#[inline]
-	</span><span class="kw">fn </span>deserialise&lt;I: Input&lt;<span class="lifetime">'h</span>&gt;&gt;(buf: <span class="kw-2">&amp;mut </span>I) -&gt; <span class="prelude-ty">Result</span>&lt;<span class="kw-2">&amp;</span><span class="lifetime">'h </span>str&gt; {
-		<span class="kw">let </span>marker = <span class="macro">use_marker!</span>(buf);
-
+	</span><span class="kw">fn </span>deserialise_with_marker&lt;I: Input&lt;<span class="lifetime">'h</span>&gt;&gt;(buf: <span class="kw-2">&amp;mut </span>I, marker: u8) -&gt; <span class="prelude-ty">Result</span>&lt;<span class="kw-2">&amp;</span><span class="lifetime">'h </span>str&gt; {
 		<span class="kw">let </span>len = <span class="kw">match </span>marker {
 			MARKER_STR_8 =&gt; {
 				<span class="macro">use_ok!</span>(
 					buf.read_byte(),
+					len =&gt; len.into_usize(),
 					#err err =&gt; err.expected(DESC_EXPECTED_STR).wrap()
-				).into_usize()
+				)
 			}
 			MARKER_STR_XL =&gt; {
 				<span class="macro">use_ok!</span>(
@@ -243,9 +251,9 @@
 	<span class="kw">type </span>Error = Error;
 
 	<span class="attr">#[inline]
-	</span><span class="kw">fn </span>deserialise&lt;I: Input&lt;<span class="lifetime">'h</span>&gt;&gt;(buf: <span class="kw-2">&amp;mut </span>I) -&gt; <span class="prelude-ty">Result</span>&lt;String&gt; {
+	</span><span class="kw">fn </span>deserialise_with_marker&lt;I: Input&lt;<span class="lifetime">'h</span>&gt;&gt;(buf: <span class="kw-2">&amp;mut </span>I, marker: u8) -&gt; <span class="prelude-ty">Result</span>&lt;String&gt; {
 		<span class="prelude-val">Ok</span>(<span class="macro">use_ok!</span>(
-			&lt;<span class="kw-2">&amp;</span>str&gt;::deserialise(buf),
+			&lt;<span class="kw-2">&amp;</span>str&gt;::deserialise_with_marker(buf, marker),
 			str =&gt; String::from(str)
 		))
 	}
@@ -255,9 +263,9 @@
 	<span class="kw">type </span>Error = Error;
 
 	<span class="attr">#[inline]
-	</span><span class="kw">fn </span>deserialise&lt;I: Input&lt;<span class="lifetime">'h</span>&gt;&gt;(buf: <span class="kw-2">&amp;mut </span>I) -&gt; <span class="prelude-ty">Result</span>&lt;Cow&lt;<span class="lifetime">'h</span>, str&gt;&gt; {
+	</span><span class="kw">fn </span>deserialise_with_marker&lt;I: Input&lt;<span class="lifetime">'h</span>&gt;&gt;(buf: <span class="kw-2">&amp;mut </span>I, marker: u8) -&gt; <span class="prelude-ty">Result</span>&lt;Cow&lt;<span class="lifetime">'h</span>, str&gt;&gt; {
 		<span class="prelude-val">Ok</span>(<span class="macro">use_ok!</span>(
-			&lt;<span class="kw-2">&amp;</span>str&gt;::deserialise(buf),
+			&lt;<span class="kw-2">&amp;</span>str&gt;::deserialise_with_marker(buf, marker),
 			str =&gt; Cow::Borrowed(str)
 		))
 	}

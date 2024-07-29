@@ -566,8 +566,18 @@
 <a href="#566" id="566">566</a>
 <a href="#567" id="567">567</a>
 <a href="#568" id="568">568</a>
+<a href="#569" id="569">569</a>
+<a href="#570" id="570">570</a>
+<a href="#571" id="571">571</a>
+<a href="#572" id="572">572</a>
+<a href="#573" id="573">573</a>
+<a href="#574" id="574">574</a>
+<a href="#575" id="575">575</a>
+<a href="#576" id="576">576</a>
+<a href="#577" id="577">577</a>
+<a href="#578" id="578">578</a>
+<a href="#579" id="579">579</a>
 </pre></div><pre class="rust"><code><span class="kw">use </span>std::fmt::{ <span class="self">self</span>, Debug, Display };
-<span class="kw">use </span>std::marker::PhantomData;
 <span class="kw">use </span>std::mem::ManuallyDrop;
 <span class="kw">use </span>std::ops::{ Deref, DerefMut };
 <span class="kw">use </span>std::thread::panicking;
@@ -824,6 +834,18 @@
 		<span class="kw">let </span>value = ManuallyDrop::new(should_run_value);
 		<span class="kw">let </span>f = ManuallyDrop::new(should_run);
 		<span class="self">self</span>._replace_when(when::RuntimeFn { value, f })
+	}
+
+	<span class="doccomment">/// Consumes and returns back the value and the function
+	</span><span class="attr">#[inline]
+	</span><span class="kw">pub fn </span>into_inner(<span class="self">self</span>) -&gt; (T, F) {
+		<span class="kw">let </span><span class="kw-2">mut </span>me = ManuallyDrop::new(<span class="self">self</span>);
+
+		<span class="kw">let </span>value = <span class="kw">unsafe </span>{ ManuallyDrop::take(<span class="kw-2">&amp;mut </span>me.value) };
+		<span class="kw">let </span>_when = <span class="kw">unsafe </span>{ ManuallyDrop::take(<span class="kw-2">&amp;mut </span>me.when) };
+		<span class="kw">let </span>f = <span class="kw">unsafe </span>{ ManuallyDrop::take(<span class="kw-2">&amp;mut </span>me.f) };
+
+		(value, f)
 	}
 }
 

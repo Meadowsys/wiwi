@@ -51,17 +51,7 @@
 <a href="#51" id="51">51</a>
 <a href="#52" id="52">52</a>
 <a href="#53" id="53">53</a>
-<a href="#54" id="54">54</a>
-<a href="#55" id="55">55</a>
-<a href="#56" id="56">56</a>
-<a href="#57" id="57">57</a>
-<a href="#58" id="58">58</a>
-<a href="#59" id="59">59</a>
-<a href="#60" id="60">60</a>
-</pre></div><pre class="rust"><code><span class="kw">use super</span>::{ Deserialise, Error, Input, Output, <span class="prelude-ty">Result</span>, Serialise, Serialiser, use_ok, use_some };
-<span class="kw">use </span><span class="kw">super</span>::error::expected;
-<span class="kw">use </span><span class="kw">super</span>::error::expected::<span class="kw-2">*</span>;
-<span class="kw">use </span><span class="kw">super</span>::marker::markers::<span class="kw-2">*</span>;
+</pre></div><pre class="rust"><code><span class="kw">use </span><span class="kw">super</span>::internal_prelude::<span class="kw-2">*</span>;
 
 <span class="kw">impl </span>Serialise <span class="kw">for </span>bool {
 	<span class="kw">type </span>Serialiser&lt;<span class="lifetime">'h</span>&gt; = BoolSerialiser;
@@ -104,18 +94,14 @@
 	<span class="kw">type </span>Error = Error;
 
 	<span class="attr">#[inline]
-	</span><span class="kw">fn </span>deserialise&lt;I: Input&lt;<span class="lifetime">'h</span>&gt;&gt;(buf: <span class="kw-2">&amp;mut </span>I) -&gt; <span class="prelude-ty">Result</span>&lt;bool&gt; {
-		<span class="prelude-val">Ok</span>(<span class="macro">use_ok!</span>(
-			buf.read_byte(),
-			byte =&gt; <span class="kw">if </span>byte &gt;&gt; <span class="number">1 </span>== MARKER_BOOL_UPPER_BITS_COMMON {
-				byte &amp; <span class="number">0b1 </span>!= <span class="number">0
-			</span>} <span class="kw">else </span>{
-				<span class="kw">return </span>expected(DESC_EXPECTED_BOOL)
-					.found_something_else()
-					.wrap()
-			},
-			#err err =&gt; err.expected(DESC_EXPECTED_BOOL).wrap()
-		))
+	</span><span class="kw">fn </span>deserialise_with_marker&lt;I: Input&lt;<span class="lifetime">'h</span>&gt;&gt;(_buf: <span class="kw-2">&amp;mut </span>I, marker: u8) -&gt; <span class="prelude-ty">Result</span>&lt;bool&gt; {
+		<span class="kw">if </span>marker &gt;&gt; <span class="number">1 </span>== MARKER_BOOL_UPPER_BITS_COMMON {
+			<span class="prelude-val">Ok</span>(marker &amp; <span class="number">0b1 </span>!= <span class="number">0</span>)
+		} <span class="kw">else </span>{
+			<span class="kw">return </span>expected(DESC_EXPECTED_BOOL)
+				.found_something_else()
+				.wrap()
+		}
 	}
 }
 </code></pre></div></section></main></body></html>

@@ -229,23 +229,6 @@
 <a href="#229" id="229">229</a>
 <a href="#230" id="230">230</a>
 <a href="#231" id="231">231</a>
-<a href="#232" id="232">232</a>
-<a href="#233" id="233">233</a>
-<a href="#234" id="234">234</a>
-<a href="#235" id="235">235</a>
-<a href="#236" id="236">236</a>
-<a href="#237" id="237">237</a>
-<a href="#238" id="238">238</a>
-<a href="#239" id="239">239</a>
-<a href="#240" id="240">240</a>
-<a href="#241" id="241">241</a>
-<a href="#242" id="242">242</a>
-<a href="#243" id="243">243</a>
-<a href="#244" id="244">244</a>
-<a href="#245" id="245">245</a>
-<a href="#246" id="246">246</a>
-<a href="#247" id="247">247</a>
-<a href="#248" id="248">248</a>
 </pre></div><pre class="rust"><code><span class="kw">use super</span>::{ consts, use_ok };
 <span class="kw">use </span>std::fmt;
 
@@ -371,15 +354,6 @@
 	<span class="kw">static type </span><span class="kw-2">&amp;</span><span class="lifetime">'static </span>str
 
 	<span class="doccomment">/// error messages for the `expected` part of errors
-	///
-	/// For example:
-	///
-	/// ```ignore
-	/// Error {
-	///    expected: "an unsigned integer, up to 24 bits",
-	///    found: "a negative integer",
-	/// }
-	/// ```
 	</span><span class="kw">pub mod </span>expected
 
 	<span class="comment">// keep order the same as in the `marker` module
@@ -458,21 +432,13 @@
 	</span>DESC_EXPECTED_F64 = <span class="string">"a floating point number, 64 bit"
 
 	</span>DESC_EXPECTED_STR = <span class="string">"an utf-8 encoded string"
+	</span>DESC_EXPECTED_ARRAY = <span class="string">"an array"
 </span>}
 
 <span class="macro">consts!</span> {
 	<span class="kw">static type </span><span class="kw-2">&amp;</span><span class="lifetime">'static </span>str
 
 	<span class="doccomment">/// error messages for the `found` part of errors
-	///
-	/// For example:
-	///
-	/// ```ignore
-	/// Error {
-	///    expected: "an unsigned integer, up to 24 bits",
-	///    found: "a negative integer",
-	/// }
-	/// ```
 	</span><span class="kw">pub mod </span>found
 
 	<span class="comment">// keep order the same as in the `marker` module
