@@ -203,6 +203,7 @@ consts! {
 	DESC_EXPECTED_STR = "an utf-8 encoded string"
 	DESC_EXPECTED_ARRAY = "an array"
 	DESC_EXPECTED_MAP = "a map"
+	DESC_EXPECTED_BINARY = "binary data"
 }
 
 consts! {

@@ -14,6 +14,7 @@ pub mod error;
 mod marker;
 
 mod array;
+mod binary;
 mod bool;
 mod cow;
 mod map;
