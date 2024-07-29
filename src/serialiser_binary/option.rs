@@ -13,7 +13,7 @@ pub struct OptionSerialiser<'h, T: Serialise + 'h> {
 	inner: Option<T::Serialiser<'h>>
 }
 
-impl<'h, T: Serialise + 'h> OptionSerialiser<'h, T> {
+impl<'h, T: Serialise> OptionSerialiser<'h, T> {
 	#[inline]
 	fn new(optional_val: &'h Option<T>) -> Self {
 		let inner = optional_val.as_ref()
@@ -22,7 +22,7 @@ impl<'h, T: Serialise + 'h> OptionSerialiser<'h, T> {
 	}
 }
 
-impl<'h, T: Serialise + 'h> Serialiser<'h> for OptionSerialiser<'h, T> {
+impl<'h, T: Serialise> Serialiser<'h> for OptionSerialiser<'h, T> {
 	#[inline]
 	unsafe fn needed_capacity(&self) -> usize {
 		self.inner

@@ -35,7 +35,7 @@ pub struct SliceSerialiser<'h, T: Serialise + 'h> {
 	len_ser: Option<USizeSerialiser>
 }
 
-impl<'h, T: Serialise + 'h> SliceSerialiser<'h, T> {
+impl<'h, T: Serialise> SliceSerialiser<'h, T> {
 	#[inline]
 	fn new(slice: &'h [T]) -> Self {
 		let len_ser = if slice.len() > u8::MAX.into_usize() {
@@ -52,7 +52,7 @@ impl<'h, T: Serialise + 'h> SliceSerialiser<'h, T> {
 	}
 }
 
-impl<'h, T: Serialise + 'h> Serialiser<'h> for SliceSerialiser<'h, T> {
+impl<'h, T: Serialise> Serialiser<'h> for SliceSerialiser<'h, T> {
 	#[inline]
 	unsafe fn needed_capacity(&self) -> usize {
 		let len_ser = if let Some(len_ser) = &self.len_ser {
@@ -82,7 +82,7 @@ impl<'h, T: Serialise + 'h> Serialiser<'h> for SliceSerialiser<'h, T> {
 	}
 }
 
-impl<'h, T: Deserialise<'h> + 'h> Deserialise<'h> for Vec<T> {
+impl<'h, T: Deserialise<'h>> Deserialise<'h> for Vec<T> {
 	type Error = T::Error;
 
 	#[inline]
