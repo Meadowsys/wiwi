@@ -6,7 +6,6 @@ use std::str;
 impl Serialise for str {
 	type Serialiser<'h> = StrSerialiser<'h>;
 
-	#[inline]
 	fn build_serialiser(&self) -> StrSerialiser<'_> {
 		StrSerialiser::new(self)
 	}
@@ -15,7 +14,6 @@ impl Serialise for str {
 impl Serialise for String {
 	type Serialiser<'h> = StrSerialiser<'h>;
 
-	#[inline]
 	fn build_serialiser(&self) -> StrSerialiser<'_> {
 		StrSerialiser::new(self)
 	}
@@ -29,7 +27,6 @@ pub struct StrSerialiser<'h> {
 }
 
 impl<'h> StrSerialiser<'h> {
-	#[inline]
 	fn new(val: &'h str) -> Self {
 		let len_ser = if val.len() > u8::MAX.into_usize() {
 			Some(USizeSerialiser::new(val.len()))
@@ -42,7 +39,6 @@ impl<'h> StrSerialiser<'h> {
 }
 
 impl<'h> Serialiser<'h> for StrSerialiser<'h> {
-	#[inline]
 	unsafe fn needed_capacity(&self) -> usize {
 		let meta = if let Some(len_ser) = self.len_ser.as_ref() {
 			// marker + length serialised
@@ -55,7 +51,6 @@ impl<'h> Serialiser<'h> for StrSerialiser<'h> {
 		meta + self.val.len()
 	}
 
-	#[inline]
 	unsafe fn serialise<O: Output>(&self, buf: &mut O) {
 		if let Some(len_ser) = self.len_ser.as_ref() {
 			buf.write_byte(MARKER_STR_XL);
@@ -72,7 +67,6 @@ impl<'h> Serialiser<'h> for StrSerialiser<'h> {
 impl<'h> Deserialise<'h> for &'h str {
 	type Error = Error;
 
-	#[inline]
 	fn deserialise_with_marker<I: Input<'h>>(buf: &mut I, marker: u8) -> Result<&'h str> {
 		let len = match marker {
 			MARKER_STR_8 => {
@@ -114,7 +108,6 @@ impl<'h> Deserialise<'h> for &'h str {
 impl<'h> Deserialise<'h> for String {
 	type Error = Error;
 
-	#[inline]
 	fn deserialise_with_marker<I: Input<'h>>(buf: &mut I, marker: u8) -> Result<String> {
 		Ok(use_ok!(
 			<&str>::deserialise_with_marker(buf, marker),
@@ -126,7 +119,6 @@ impl<'h> Deserialise<'h> for String {
 impl<'h> Deserialise<'h> for Cow<'h, str> {
 	type Error = Error;
 
-	#[inline]
 	fn deserialise_with_marker<I: Input<'h>>(buf: &mut I, marker: u8) -> Result<Cow<'h, str>> {
 		Ok(use_ok!(
 			<&str>::deserialise_with_marker(buf, marker),

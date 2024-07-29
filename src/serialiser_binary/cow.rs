@@ -16,7 +16,6 @@ use std::borrow::Cow;
 impl<T: Serialise + ToOwned + ?Sized> Serialise for Cow<'_, T> {
 	type Serialiser<'h> = T::Serialiser<'h> where Self: 'h;
 
-	#[inline]
 	fn build_serialiser(&self) -> T::Serialiser<'_> {
 		(**self).build_serialiser()
 	}

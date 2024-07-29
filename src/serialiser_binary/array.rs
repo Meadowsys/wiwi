@@ -12,7 +12,6 @@ use super::USizeSerialiser;
 impl<T: Serialise> Serialise for &[T] {
 	type Serialiser<'h> = SliceSerialiser<'h, T> where Self: 'h;
 
-	#[inline]
 	fn build_serialiser(&self) -> SliceSerialiser<'_, T> {
 		SliceSerialiser::new(self)
 	}
@@ -26,7 +25,6 @@ pub struct SliceSerialiser<'h, T: Serialise + 'h> {
 }
 
 impl<'h, T: Serialise> SliceSerialiser<'h, T> {
-	#[inline]
 	fn new(slice: &'h [T]) -> Self {
 		let len_ser = if slice.len() > u8::MAX.into_usize() {
 			Some(USizeSerialiser::new(slice.len()))
@@ -43,7 +41,6 @@ impl<'h, T: Serialise> SliceSerialiser<'h, T> {
 }
 
 impl<'h, T: Serialise> Serialiser<'h> for SliceSerialiser<'h, T> {
-	#[inline]
 	unsafe fn needed_capacity(&self) -> usize {
 		let len_ser = if let Some(len_ser) = &self.len_ser {
 			// marker + length serialised
@@ -60,7 +57,6 @@ impl<'h, T: Serialise> Serialiser<'h> for SliceSerialiser<'h, T> {
 		len_ser + inner
 	}
 
-	#[inline]
 	unsafe fn serialise<O: Output>(&self, buf: &mut O) {
 		if let Some(len_ser) = &self.len_ser {
 			buf.write_byte(MARKER_ARRAY_XL);
@@ -69,13 +65,17 @@ impl<'h, T: Serialise> Serialiser<'h> for SliceSerialiser<'h, T> {
 			buf.write_byte(MARKER_ARRAY_8);
 			buf.write_byte(self.inner.len().into_u8_lossy());
 		}
+
+		for item in &self.inner {
+			item.serialise(buf);
+		}
 	}
 }
 
 impl<'h, T: Deserialise<'h>> Deserialise<'h> for Vec<T> {
 	type Error = T::Error;
 
-	#[inline]
+
 	fn deserialise_with_marker<I: Input<'h>>(buf: &mut I, marker: u8) -> Result<Vec<T>, T::Error> {
 		let len = match marker {
 			MARKER_ARRAY_8 => {

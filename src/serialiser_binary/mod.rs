@@ -41,7 +41,6 @@ pub use self::number::{
 };
 pub use self::string::StrSerialiser;
 
-#[inline]
 pub fn serialise<T>(item: &T) -> Vec<u8>
 where
 	T: Serialise + ?Sized
@@ -52,7 +51,6 @@ where
 	vec
 }
 
-#[inline]
 pub fn serialise_into<T, O>(item: &T, buf: &mut O)
 where
 	T: Serialise + ?Sized,
@@ -65,7 +63,6 @@ where
 	unsafe { serialiser.serialise(buf) }
 }
 
-#[inline]
 pub fn deserialise<'h, T>(bytes: &[u8]) -> Result<T, T::Error>
 where
 	T: Deserialise<'h>
@@ -117,7 +114,6 @@ pub trait Serialiser<'h> {
 pub trait Deserialise<'h>: Sized {
 	type Error: std::error::Error + From<Error>;
 
-	#[inline]
 	fn deserialise<I: Input<'h>>(buf: &mut I) -> Result<Self, Self::Error> {
 		let marker = use_ok!(
 			buf.read_byte(),
@@ -153,12 +149,10 @@ pub trait Output {
 }
 
 impl Output for Vec<u8> {
-	#[inline]
 	fn reserve(&mut self, bytes: usize) {
 		self.reserve(bytes);
 	}
 
-	#[inline]
 	unsafe fn write_bytes(&mut self, bytes: &[u8]) {
 		let len = self.len();
 		let ptr = self.as_mut_ptr().add(len);
@@ -167,7 +161,6 @@ impl Output for Vec<u8> {
 		self.set_len(len + bytes.len())
 	}
 
-	#[inline]
 	unsafe fn write_byte(&mut self, byte: u8) {
 		let len = self.len();
 		let ptr = self.as_mut_ptr().add(len);
@@ -180,7 +173,6 @@ impl Output for Vec<u8> {
 pub trait Input<'h> {
 	fn read_bytes_ptr(&mut self, bytes: usize) -> Result<*const u8, error::ErrorFound>;
 
-	#[inline]
 	fn read_bytes(&mut self, bytes: usize) -> Result<&'h [u8], error::ErrorFound> {
 		Ok(use_ok!(
 			self.read_bytes_ptr(bytes),
@@ -191,7 +183,6 @@ pub trait Input<'h> {
 		))
 	}
 
-	#[inline]
 	fn read_byte(&mut self) -> Result<u8, error::ErrorFound> {
 		Ok(use_ok!(
 			self.read_bytes_ptr(1),
@@ -202,7 +193,6 @@ pub trait Input<'h> {
 		))
 	}
 
-	#[inline]
 	fn read_bytes_const<const BYTES: usize>(&mut self) -> Result<&'h [u8; BYTES], error::ErrorFound> {
 		Ok(use_ok!(
 			self.read_bytes(BYTES),
@@ -218,7 +208,6 @@ pub struct OutputVecBuffer<'h> {
 }
 
 impl<'h> OutputVecBuffer<'h> {
-	#[inline]
 	pub fn new(vec: &'h mut Vec<u8>) -> Self {
 		let ptr = vec.as_mut_ptr();
 		Self { vec, ptr }
@@ -226,7 +215,6 @@ impl<'h> OutputVecBuffer<'h> {
 }
 
 impl<'h> Output for OutputVecBuffer<'h> {
-	#[inline]
 	fn reserve(&mut self, bytes: usize) {
 		self.vec.reserve_exact(bytes);
 
@@ -235,7 +223,6 @@ impl<'h> Output for OutputVecBuffer<'h> {
 		self.ptr = unsafe { ptr.add(len).cast_const() };
 	}
 
-	#[inline]
 	unsafe fn write_bytes(&mut self, bytes: &[u8]) {
 		let bytes_len = bytes.len();
 
@@ -246,7 +233,6 @@ impl<'h> Output for OutputVecBuffer<'h> {
 		self.vec.set_len(vec_len + bytes_len);
 	}
 
-	#[inline]
 	unsafe fn write_byte(&mut self, byte: u8) {
 		ptr::write(self.ptr.cast_mut(), byte);
 
@@ -263,7 +249,6 @@ pub struct InputSliceBuffer<'h> {
 }
 
 impl<'h> InputSliceBuffer<'h> {
-	#[inline]
 	fn new(bytes: &[u8]) -> Self {
 		Self {
 			ptr: bytes.as_ptr(),
@@ -295,7 +280,6 @@ impl<'h> Input<'h> for InputSliceBuffer<'h> {
 impl<T: Serialise + ?Sized> Serialise for &T {
 	type Serialiser<'h> = T::Serialiser<'h> where Self: 'h;
 
-	#[inline]
 	fn build_serialiser(&self) -> T::Serialiser<'_> {
 		(**self).build_serialiser()
 	}
@@ -304,7 +288,6 @@ impl<T: Serialise + ?Sized> Serialise for &T {
 impl<T: Serialise + ?Sized> Serialise for &mut T {
 	type Serialiser<'h> = T::Serialiser<'h> where Self: 'h;
 
-	#[inline]
 	fn build_serialiser(&self) -> T::Serialiser<'_> {
 		(**self).build_serialiser()
 	}

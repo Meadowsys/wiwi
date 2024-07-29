@@ -3,7 +3,6 @@ use super::internal_prelude::*;
 impl Serialise for bool {
 	type Serialiser<'h> = BoolSerialiser;
 
-	#[inline]
 	fn build_serialiser(&self) -> BoolSerialiser {
 		BoolSerialiser::new(*self)
 	}
@@ -14,19 +13,16 @@ pub struct BoolSerialiser {
 }
 
 impl BoolSerialiser {
-	#[inline]
 	fn new(val: bool) -> Self {
 		Self { val }
 	}
 }
 
 impl<'h> Serialiser<'h> for BoolSerialiser {
-	#[inline]
 	unsafe fn needed_capacity(&self) -> usize {
 		1
 	}
 
-	#[inline]
 	unsafe fn serialise<O: Output>(&self, buf: &mut O) {
 		// - false is 0xa0, true is 0xa1
 		// - false casts to integer 0, true to 1
@@ -40,12 +36,11 @@ impl<'h> Serialiser<'h> for BoolSerialiser {
 impl<'h> Deserialise<'h> for bool {
 	type Error = Error;
 
-	#[inline]
 	fn deserialise_with_marker<I: Input<'h>>(_buf: &mut I, marker: u8) -> Result<bool> {
 		if marker >> 1 == MARKER_BOOL_UPPER_BITS_COMMON {
 			Ok(marker & 0b1 != 0)
 		} else {
-			return expected(DESC_EXPECTED_BOOL)
+			expected(DESC_EXPECTED_BOOL)
 				.found_something_else()
 				.wrap()
 		}

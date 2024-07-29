@@ -3,7 +3,6 @@ use super::internal_prelude::*;
 impl<T: Serialise> Serialise for Option<T> {
 	type Serialiser<'h> = OptionSerialiser<'h, T> where Self: 'h;
 
-	#[inline]
 	fn build_serialiser(&self) -> OptionSerialiser<'_, T> {
 		OptionSerialiser::new(self)
 	}
@@ -14,7 +13,6 @@ pub struct OptionSerialiser<'h, T: Serialise + 'h> {
 }
 
 impl<'h, T: Serialise> OptionSerialiser<'h, T> {
-	#[inline]
 	fn new(optional_val: &'h Option<T>) -> Self {
 		let inner = optional_val.as_ref()
 			.map(|val| val.build_serialiser());
@@ -23,7 +21,6 @@ impl<'h, T: Serialise> OptionSerialiser<'h, T> {
 }
 
 impl<'h, T: Serialise> Serialiser<'h> for OptionSerialiser<'h, T> {
-	#[inline]
 	unsafe fn needed_capacity(&self) -> usize {
 		self.inner
 			.as_ref()
@@ -33,7 +30,6 @@ impl<'h, T: Serialise> Serialiser<'h> for OptionSerialiser<'h, T> {
 			.unwrap_or(1)
 	}
 
-	#[inline]
 	unsafe fn serialise<O: Output>(&self, buf: &mut O) {
 		if let Some(ser) = &self.inner {
 			ser.serialise(buf);
@@ -46,7 +42,6 @@ impl<'h, T: Serialise> Serialiser<'h> for OptionSerialiser<'h, T> {
 impl<'h, T: Deserialise<'h>> Deserialise<'h> for Option<T> {
 	type Error = T::Error;
 
-	#[inline]
 	fn deserialise_with_marker<I: Input<'h>>(buf: &mut I, marker: u8) -> Result<Option<T>, T::Error> {
 		Ok(if marker == MARKER_NULL {
 			None
