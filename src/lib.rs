@@ -6,6 +6,8 @@
 #![warn(
 	missing_docs,
 	unsafe_op_in_unsafe_fn,
+	clippy::missing_docs_in_private_items,
+	clippy::empty_docs,
 	clippy::missing_safety_doc,
 	clippy::multiple_unsafe_ops_per_block,
 	clippy::undocumented_unsafe_blocks
