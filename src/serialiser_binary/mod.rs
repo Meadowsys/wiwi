@@ -20,12 +20,16 @@ mod cow;
 mod map;
 mod option;
 mod number;
+mod single_type_array;
 mod string;
 
 pub use self::error::{ Error, Result };
 
 pub use self::array::SliceSerialiser;
-pub use self::binary::{ Binary, BytesSerialiser };
+pub use self::binary::{
+	Binary,
+	BinarySerialiser
+};
 pub use self::bool::BoolSerialiser;
 pub use self::map::MapSerialiser;
 pub use self::option::OptionSerialiser;
@@ -42,6 +46,10 @@ pub use self::number::{
 	I64Serialiser,
 	I128Serialiser,
 	ISizeSerialiser
+};
+pub use single_type_array::{
+	SingleTypeArray,
+	SingleTypeArrayExpensive
 };
 pub use self::string::StrSerialiser;
 

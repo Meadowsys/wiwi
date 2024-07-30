@@ -35,20 +35,20 @@ impl<'h> Deref for Binary<'h> {
 }
 
 impl<'b> Serialise for Binary<'b> {
-	type Serialiser<'h> = BytesSerialiser<'h> where Self: 'h;
+	type Serialiser<'h> = BinarySerialiser<'h> where Self: 'h;
 
-	fn build_serialiser(&self) -> BytesSerialiser<'_> {
-		BytesSerialiser::new(self)
+	fn build_serialiser(&self) -> BinarySerialiser<'_> {
+		BinarySerialiser::new(self)
 	}
 }
 
-pub struct BytesSerialiser<'h> {
+pub struct BinarySerialiser<'h> {
 	slice: &'h [u8],
 	len_ser: Option<USizeSerialiser>
 }
 
-impl<'h> BytesSerialiser<'h> {
-	fn new(slice: &'h [u8]) -> Self {
+impl<'h> BinarySerialiser<'h> {
+	pub(super) fn new(slice: &'h [u8]) -> Self {
 		let len_ser = if slice.len() > u8::MAX.into_usize() {
 			Some(USizeSerialiser::new(slice.len()))
 		} else {
@@ -59,7 +59,7 @@ impl<'h> BytesSerialiser<'h> {
 	}
 }
 
-impl<'h> Serialiser<'h> for BytesSerialiser<'h> {
+impl<'h> Serialiser<'h> for BinarySerialiser<'h> {
 	unsafe fn needed_capacity(&self) -> usize {
 		let marker = if let Some(len_ser) = &self.len_ser {
 			// one marker + serialised usize
