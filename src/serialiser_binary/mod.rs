@@ -304,6 +304,22 @@ impl<T: Serialise + ?Sized> Serialise for &mut T {
 	}
 }
 
+impl<T: Serialise + ?Sized> Serialise for Box<T> {
+	type Serialiser<'h> = T::Serialiser<'h> where T: 'h;
+
+	fn build_serialiser(&self) -> T::Serialiser<'_> {
+		T::build_serialiser(self)
+	}
+}
+
+impl<'h, T: Deserialise<'h>> Deserialise<'h> for Box<T> {
+	type Error = T::Error;
+
+	fn deserialise_with_marker<I: Input<'h>>(buf: &mut I, marker: u8) -> Result<Box<T>, T::Error> {
+		Ok(Box::new(use_ok!(T::deserialise_with_marker(buf, marker))))
+	}
+}
+
 macro_rules! use_ok {
 	($result:expr) => {
 		match $result {
