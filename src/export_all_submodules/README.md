@@ -19,5 +19,6 @@ wiwi::export_all_submodules! {
    module1
    module2
    module3
+   // ...
 }
 ```
