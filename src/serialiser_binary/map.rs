@@ -2,7 +2,7 @@ use super::internal_prelude::*;
 use super::USizeSerialiser;
 #[cfg(feature = "hashbrown")]
 use hashbrown::HashMap as HashbrownHashMap;
-use std::collections::HashMap as StdHashMap;
+use std::collections::{ BTreeMap, HashMap as StdHashMap };
 use std::fmt;
 use std::hash::{ BuildHasher, Hash };
 
@@ -14,6 +14,18 @@ where
 	V: Serialise
 {
 	type Serialiser<'h> = MapSerialiser<'h, K, V> where K: 'h, V: 'h, S: 'h;
+
+	fn build_serialiser(&self) -> MapSerialiser<'_, K, V> {
+		MapSerialiser::new(self)
+	}
+}
+
+impl<K, V> Serialise for BTreeMap<K, V>
+where
+	K: Serialise,
+	V: Serialise
+{
+	type Serialiser<'h> = MapSerialiser<'h, K, V> where K: 'h, V: 'h;
 
 	fn build_serialiser(&self) -> MapSerialiser<'_, K, V> {
 		MapSerialiser::new(self)
@@ -108,6 +120,21 @@ where
 		buf: &mut I,
 		marker: u8
 	) -> Result<StdHashMap<K, V, S>, DeserialiseMapError<K::Error, V::Error>> {
+		map_deser_impl(buf, marker)
+	}
+}
+
+impl<'h, K, V> Deserialise<'h> for BTreeMap<K, V>
+where
+	K: Deserialise<'h> + Ord,
+	V: Deserialise<'h>
+{
+	type Error = DeserialiseMapError<K::Error, V::Error>;
+
+	fn deserialise_with_marker<I: Input<'h>>(
+		buf: &mut I,
+		marker: u8
+	) -> Result<BTreeMap<K, V>, DeserialiseMapError<K::Error, V::Error>> {
 		map_deser_impl(buf, marker)
 	}
 }
