@@ -1,20 +1,37 @@
+//! Error types and utilities for deserialisation (serialisation is infallible)
+
 use super::{ consts, use_ok };
 use std::fmt;
 
+/// Result type
+///
+/// Behaves the same as std's [`Result`], except if you omit `E`, it'll
+/// default to our [`Error`] type.
 pub type Result<T, E = Error> = std::result::Result<T, E>;
 
-#[derive(Clone, Debug)]
+/// Deserialiser error, specifying in plain language what the deserialiser
+/// expected, and what it found instead
+#[derive(Clone)]
 pub struct Error {
+	/// What the deserialiser expected to find
 	pub expected: &'static str,
+	/// What the deserialiser actually found
+	///
+	/// At time of writing, this will most likely be something like "eof" or
+	/// "something else", but it is definitely possible to find/calculate
+	/// more/better information.
 	pub found: &'static str
 }
 
 impl Error {
+	/// Wraps `self` in [`Err`]
 	#[inline(always)]
 	pub fn wrap<T>(self) -> Result<T> {
 		Err(self)
 	}
 
+	/// Calls `.into()` on self to convert to another error type first, then
+	/// wraps that error value in [`Err`]
 	#[inline(always)]
 	pub fn wrap_foreign<T, E>(self) -> Result<T, E>
 	where
@@ -23,12 +40,14 @@ impl Error {
 		Err(self.into())
 	}
 
+	/// Sets the `expected` field to the provided message, returning a new error
 	#[inline(always)]
 	pub fn expected(mut self, expected: &'static str) -> Self {
 		self.expected = expected;
 		self
 	}
 
+	/// Sets the `found` field to the provided message, returning a new error
 	#[inline(always)]
 	pub fn found(mut self, found: &'static str) -> Self {
 		self.found = found;
@@ -47,45 +66,63 @@ impl fmt::Display for Error {
 	}
 }
 
+impl fmt::Debug for Error {
+	fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
+		fmt::Display::fmt(self, f)
+	}
+}
+
 impl std::error::Error for Error {}
 
+/// An error with only the `expected` field set (ie. a half built error)
 #[repr(transparent)]
 pub struct ErrorExpected {
 	expected: &'static str
 }
 
+/// Creates [`ErrorExpected`] ith the specified message
 #[inline(always)]
 pub fn expected(expected: &'static str) -> ErrorExpected {
 	ErrorExpected { expected }
 }
 
 impl ErrorExpected {
+	/// Sets the `found` field to the provided message,
+	/// returning a fully built [`Error`]
 	#[inline(always)]
 	pub fn found(self, found: &'static str) -> Error {
 		let ErrorExpected { expected } = self;
 		Error { expected, found }
 	}
 
+	/// Sets the `found` field to ["something else"](found::DESC_FOUND_SOMETHING_ELSE),
+	/// returning a fully built [`Error`]
+	///
+	/// This is a convenience method for, and is equivalent to,
+	/// `self.found(found::DESC_FOUND_SOMETHING_ELSE)`.
 	#[inline(always)]
 	pub fn found_something_else(self) -> Error {
-		let ErrorExpected { expected } = self;
-		let found = found::DESC_FOUND_SOMETHING_ELSE;
-		Error { expected, found }
+		self.found(found::DESC_FOUND_SOMETHING_ELSE)
 	}
 
+	/// Sets the `found` field to ["something else"](found::DESC_FOUND_EOF),
+	/// returning a fully built [`Error`]
+	///
+	/// This is a convenience method for, and is equivalent to,
+	/// `self.found(found::DESC_FOUND_EOF)`.
 	#[inline(always)]
 	pub fn found_eof(self) -> Error {
-		let ErrorExpected { expected } = self;
-		let found = found::DESC_FOUND_EOF;
-		Error { expected, found }
+		self.found(found::DESC_FOUND_EOF)
 	}
 
+	/// Wraps `self` in [`Err`]
 	#[inline(always)]
 	pub fn wrap<T>(self) -> Result<T, Self> {
 		Err(self)
 	}
 }
 
+/// An error with only the `found` field set (ie. a half built error)
 #[repr(transparent)]
 pub struct ErrorFound {
 	found: &'static str
@@ -107,12 +144,15 @@ pub fn found_eof() -> ErrorFound {
 }
 
 impl ErrorFound {
+	/// Sets the `expected` field to the provided message,
+	/// returning a fully built [`Error`]
 	#[inline(always)]
 	pub fn expected(self, expected: &'static str) -> Error {
 		let ErrorFound { found } = self;
 		Error { expected, found }
 	}
 
+	/// Wraps `self` in [`Err`]
 	#[inline(always)]
 	pub fn wrap<T>(self) -> Result<T, Self> {
 		Err(self)

@@ -14,7 +14,10 @@ mod number;
 mod single_type_array;
 mod string;
 
-pub use self::error::{ Error, Result };
+pub use self::error::{
+	Error,
+	Result
+};
 
 pub use self::array::SliceSerialiser;
 pub use self::binary::{
@@ -22,7 +25,10 @@ pub use self::binary::{
 	BinarySerialiser
 };
 pub use self::bool::BoolSerialiser;
-pub use self::map::MapSerialiser;
+pub use self::map::{
+	DeserialiseMapError,
+	MapSerialiser
+};
 pub use self::option::OptionSerialiser;
 pub use self::number::{
 	U8Serialiser,
@@ -36,14 +42,31 @@ pub use self::number::{
 	I32Serialiser,
 	I64Serialiser,
 	I128Serialiser,
-	ISizeSerialiser
+	ISizeSerialiser,
+	F32Serialiser,
+	F64Serialiser
 };
 pub use single_type_array::{
 	SingleTypeArray,
-	SingleTypeArrayExpensive
+	SingleTypeArrayExpensive,
+	SingleTypeArraySerialiserInt
 };
 pub use self::string::StrSerialiser;
 
+/// Serialise the given value to bytes
+///
+/// # Examples
+///
+/// ```
+/// # use wiwi::serialiser_binary::serialise;
+/// let data = String::from("glory cute");
+/// let serialised = serialise(&data);
+///
+/// // str marker and length
+/// assert_eq!(&serialised[0..2], [0xa8, 10]);
+/// // the string
+/// assert_eq!(&serialised[2..], b"glory cute")
+/// ```
 pub fn serialise<T>(item: &T) -> Vec<u8>
 where
 	T: Serialise + ?Sized
@@ -135,6 +158,13 @@ pub trait Output {
 	/// Reserve the given amount of bytes in the buffer
 	fn reserve(&mut self, bytes: usize);
 
+	/// Write the byte in
+	///
+	/// # Safety
+	///
+	/// You must have reserved at least 1 before calling this.
+	unsafe fn write_byte(&mut self, byte: u8);
+
 	/// Write all the bytes in the byte slice in
 	///
 	/// # Safety
@@ -142,13 +172,6 @@ pub trait Output {
 	/// You must have reserved at least the amount of space as `bytes.len()`
 	/// before calling this.
 	unsafe fn write_bytes(&mut self, bytes: &[u8]);
-
-	/// Write the byte in
-	///
-	/// # Safety
-	///
-	/// You must have reserved at least 1 before calling this.
-	unsafe fn write_byte(&mut self, byte: u8);
 }
 
 impl Output for Vec<u8> {
@@ -158,10 +181,18 @@ impl Output for Vec<u8> {
 
 	unsafe fn write_bytes(&mut self, bytes: &[u8]) {
 		let len = self.len();
-		let ptr = self.as_mut_ptr().add(len);
+		// SAFETY: `len` is `self`'s len, so this ptr offset is in bounds
+		let ptr = unsafe { self.as_mut_ptr().add(len) };
 
-		ptr::copy_nonoverlapping(bytes.as_ptr(), ptr, bytes.len());
-		self.set_len(len + bytes.len())
+		// SAFETY: caller promises to have called `reserve` on `self` with
+		// at least `bytes.len()` bytes, so there is at least `bytes.len()`
+		// unused bytes, `ptr` is pointer to the start of the uninitialised
+		// region, and we only write `bytes.len()` bytes, staying in bounds
+		unsafe { ptr::copy_nonoverlapping(bytes.as_ptr(), ptr, bytes.len()) }
+
+		// SAFETY: `len` is the previous length of `self`, and we just wrote
+		// to `bytes.len()` bytes
+		unsafe { self.set_len(len + bytes.len()) }
 	}
 
 	unsafe fn write_byte(&mut self, byte: u8) {
@@ -174,31 +205,50 @@ impl Output for Vec<u8> {
 }
 
 pub trait Input<'h> {
+	/// Reads the next specified amount of bytes, returning a pointer to it if
+	/// there is enough bytes left
+	///
+	/// Semantically, the returned pointer is granting shared access to the
+	/// region of memory of length `bytes`, for lifetime `'h`.
+	///
+	/// Calling this function is safe, because doing anything with the returned
+	/// pointer is unsafe, and then you have to adhere to contract.
 	fn read_bytes_ptr(&mut self, bytes: usize) -> Result<*const u8, error::ErrorFound>;
 
+	/// Reads the next specified amount of bytes, returning a slice if there is
+	/// enough bytes left
 	fn read_bytes(&mut self, bytes: usize) -> Result<&'h [u8], error::ErrorFound> {
 		Ok(use_ok!(
 			self.read_bytes_ptr(bytes),
-			// SAFETY: if this returned `Some` then the ptr is valid for `bytes` reads
-			// so is safe to create slice here
+			// SAFETY: it's valid semantically to create a slice of `bytes` len to the
+			// returned pointer for lifetime `'h` (see doc on `read_bytes_ptr` fn)
 			ptr => unsafe { slice::from_raw_parts(ptr, bytes) },
 			#err err => err.wrap()
 		))
 	}
 
+	/// Reads the next byte and returns it, if there is at least one left
 	fn read_byte(&mut self) -> Result<u8, error::ErrorFound> {
 		Ok(use_ok!(
 			self.read_bytes_ptr(1),
-			// SAFETY: ptr returned by `read_bytes_ptr` is
-			// guaranteed to be readable for at least 1 byte
+			// SAFETY: semantically `read_bytes_ptr` gives us one byte in
+			// the ptr it returns so this is safe to dereference
 			byte => unsafe { *byte },
 			#err err => err.wrap()
 		))
 	}
 
+	/// Reads `BYTES` bytes, returning a pointer to an array if there
+	/// are enough bytes left
+	///
+	/// This is the same as [`read_bytes`](Input::read_bytes), but it returns
+	/// a reference to a constant sized array, instead of a dynamically sized
+	/// slice.
 	fn read_bytes_const<const BYTES: usize>(&mut self) -> Result<&'h [u8; BYTES], error::ErrorFound> {
 		Ok(use_ok!(
 			self.read_bytes_ptr(BYTES),
+			// SAFETY: semantically we are given access to next `BYTES` bytes, so
+			// casting the pointer to an array of length `BYTES` is valid
 			bytes => unsafe { &*bytes.cast::<[u8; BYTES]>() }
 		))
 	}
@@ -210,6 +260,7 @@ pub struct OutputVecBuffer<'h> {
 }
 
 impl<'h> OutputVecBuffer<'h> {
+	/// Create a new [`OutputVecBuffer`] with the given [`Vec`]
 	pub fn new(vec: &'h mut Vec<u8>) -> Self {
 		let ptr = vec.as_mut_ptr();
 		Self { vec, ptr }
@@ -222,6 +273,9 @@ impl<'h> Output for OutputVecBuffer<'h> {
 
 		let len = self.vec.len();
 		let ptr = self.vec.as_mut_ptr();
+
+		// SAFETY: `ptr` was just gotten from `vec`, *after* the reserve call.
+		// `len` is existing amount of elements in the vec, so is in bounds
 		self.ptr = unsafe { ptr.add(len).cast_const() };
 	}
 
@@ -262,6 +316,14 @@ impl<'h> InputSliceBuffer<'h> {
 	fn is_empty(&self) -> bool {
 		self.remaining == 0
 	}
+
+	/// Gets a slice of the remaining bytes
+	fn as_slice(&self) -> &[u8] {
+		// SAFETY: every time we read from `self`, we offset `ptr` forward by
+		// that much and decrease `remaining` by that much too. So this slice
+		// created represents the tail end of the initial buffer (ie. what's left)
+		unsafe { slice::from_raw_parts(self.ptr, self.remaining) }
+	}
 }
 
 impl<'h> Input<'h> for InputSliceBuffer<'h> {
@@ -272,6 +334,9 @@ impl<'h> Input<'h> for InputSliceBuffer<'h> {
 			let ptr = self.ptr;
 
 			self.remaining -= bytes;
+			// SAFETY: `self.remaining` is the remaining amount of bytes `ptr` is
+			// valid for, and we just "took" `bytes` bytes, so we offset `ptr`
+			// forward alongside `remaining`
 			self.ptr = unsafe { self.ptr.add(bytes) };
 
 			Ok(ptr)
