@@ -46,11 +46,7 @@ pub use self::number::{
 	F32Serialiser,
 	F64Serialiser
 };
-pub use single_type_array::{
-	SingleTypeArray,
-	SingleTypeArrayExpensive,
-	SingleTypeArraySerialiserInt
-};
+pub use single_type_array::{};
 pub use self::string::StrSerialiser;
 
 /// Serialise the given value to bytes
@@ -122,8 +118,10 @@ pub trait Serialiser<'h> {
 	///
 	/// # Safety
 	///
-	/// This must be accurate, as unsafe code is allowed to rely on this for
-	/// soundness.
+	/// There are no invariants for callers to uphold.
+	///
+	/// Implementations must return an accurate value, as unsafe code is allowed
+	/// to rely on this for soundness.
 	unsafe fn needed_capacity(&self) -> usize;
 
 	/// Serialise `self` into the provided output buffer
