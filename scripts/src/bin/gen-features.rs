@@ -37,115 +37,115 @@ fn main() {
 	let _features = decl_features! {
 		#[unstable]
 		"aoc"
-		"utilities specific for writing solutions for [Advent of Code](https://adventofcode.com)"
+		"Utilities specific for writing solutions for [Advent of Code](https://adventofcode.com)"
 		features: ["iter"]
 
 		"augment-panic-hook"
-		"allows you to augment the current panic hook in a convenient way, running some code on panic, but still calling the existing hook afterwards"
+		"Conveniently augment the panic hook (instead of replacing it), running some of your code before calling the existing one"
 
 		#[unstable]
 		"auth"
-		"some lower(ish) level utilities to aid in writing an authentication system, in which the client password is never sent across the wire. Quite heavily inspired by [Tuta's authentication/encryption system](https://tuta.com/nl/encryption)"
+		"Lower-level(ish) utilities for writing an authentication system, in which the client password is never sent over the wire"
 		dependencies: ["argon2", "chacha20poly1305", "chrono", "p384", "rand", "thiserror", "zeroize"]
 		features: ["rand", "z85"]
 
 		#[unstable]
 		"bitstream"
-		"bit stream encoder/decoder"
+		"Encoder and decoder for a stream of bits"
 		features: ["num-traits"]
 
 		#[unstable]
 		"chainer"
-		"zero-cost wrappers that provide chaining APIs"
+		"Wrappers around common structs that provide chaining APIs (take ownership, do operation, then return back)"
 
 		#[unstable]
 		"cli"
-		"command line args parser"
+		"CLI arguments parser"
 
 		"clock-timer"
-		"an interval tracking clock, yielding ticks at specified intervals and doing so for a specified duration"
+		"An interval tracking clock, yielding ticks at specified intervals and doing so for a specified period of time"
 		dependencies: ["chrono", "tokio"]
 
 		"debounce"
-		"delay calling a function until a certain time period has passed since the last time it was called"
+		"Delay calling a function until a specified period of time has passed since the last time it was called"
 		dependencies: ["chrono", "tokio"]
 		features: ["num-traits"]
 
 		#[unstable]
 		"defer"
-		"utilities for deferring running code"
+		"Defer running code until the end of the current scope or until something gets dropped"
 
 		"export-all-submodules"
-		"convenience macro for declaring many private modules, then reexporting everything within them using a glob use statement"
+		"A convenience macro for declaring many private modules, then reexporting everything within them using a glob use statement"
 
 		#[unstable]
 		"gpg"
-		"bindings to [GPGME](https://www.gnupg.org/software/gpgme), GnuPG's official C library"
+		"Bindings to [GPGME](https://www.gnupg.org/software/gpgme), GnuPG's official C library"
 		features: ["libassuan", "libgpg-error"]
 
 		"h"
 		"h"
 
 		"hex"
-		"fast (faster than `hex` crate[^1]) implementation of hex encoding, supporting upper hex and lower hex"
+		"Fast hex encoder and decoder for both upper hex and lower hex"
 		dependencies: ["thiserror"]
 		features: ["num-traits"]
 
 		#[unstable]
 		"id"
-		"ID generator, with all IDs generated from one generater guaranteed to be monotonically increasing"
+		"ID generators, of various output sizes, and guarantees of uniqueness and ordering"
 		features: ["num-traits", "rand"]
 
 		#[unstable]
 		"int"
-		"bigint / uneven int types"
+		"Bigints (ex. u384) and uneven sized ints (ex. u15)"
 		dependencies: ["macro"]
 		features: ["num-traits"]
 
 		#[unstable]
 		"iter"
-		"iter stuff"
+		"Iterator utilities"
 
 		"lazy-wrap"
-		"wrapper around an initialisation function to lazily initialise a value on first access (can be used in statics)"
+		"Wrappers around a lazily initialised value, and its initialisation function, supporting usage in static variables"
 		dependencies: ["parking-lot"]
 
 		#[unstable]
 		"libassuan"
-		"bindings to [`libassuan`](https://www.gnupg.org/related_software/libassuan)"
+		"Bindings to [`libassuan`](https://www.gnupg.org/related_software/libassuan)"
 
 		#[unstable]
 		"libgpg-error"
-		"bindings to [`libgpg-error`](https://www.gnupg.org/related_software/libgpg-error)"
+		"Bindings to [`libgpg-error`](https://www.gnupg.org/related_software/libgpg-error)"
 
 		#[unstable]
 		"lsl"
-		"experimental lib to help with writing Second Life scripts in Rust... because yes, I got fed up with it very quickly and immediately missed Rust lol >< It is really only built for a dedicated crate just to write the script, rather than as part of another lib/app"
+		"Experimental lib to help with writing Second Life scripts in Rust... because yes, I got fed up with it very quickly and immediately missed Rust lol"
 		dependencies: ["hashbrown"]
 		features: ["id"]
 
 		#[unstable]
 		"mcu"
-		"[material colour utilities](https://github.com/material-foundation/material-color-utilities), ported to rust"
+		"[Material colour utilities](https://github.com/material-foundation/material-color-utilities)"
 		features: ["num-traits"]
 
 		#[unstable]
 		"memory-usage"
-		"calculate actual memory usage of Rust structs, including derive macro for custom types"
+		"Calculate actual memory usage of Rust structs, including derive macro for custom types (not the same as `size_of::<T>()`)"
 		dependencies: ["macro"]
 
 		#[unstable]
 		"minesweeper"
-		"core logic components for minesweeper games of arbitrary size"
+		"Core logic components for minesweeper games of arbitrary size"
 		dependencies: ["rand"]
 		features: ["chainer", "iter", "num-traits", "z85"]
 
 		"nominal"
-		"zero cost wrapper to put data in a newtype, taking advantage of nominal typing for increased safety"
+		"Generic newtype wrappers, for increased type safety through Rust's nominal type system"
 
 		#[unstable]
 		"num-traits"
-		"traits for number types and number functionality"
+		"More traits for numbers and their various functionality, including things like [`MulWidening`]"
 		features: ["export-all-submodules", "int"]
 
 		#[unstable]
@@ -153,60 +153,60 @@ fn main() {
 		"UTF-8 only path manipulation utilities written from scratch"
 
 		"rand"
-		"random number generator lib, building on top of `rand`"
+		"More random number generators and utilities"
 		dependencies: ["rand", "rand-chacha"]
 
 		#[unstable]
 		"serialiser-binary"
-		"self describing, stable (once finished) binary serialiser, aiming for small output size by exploiting common patterns in real world data"
+		"Self describing and stable binary format/serialiser, aiming for small output size"
 		dependencies: ["ordered-float"]
 		features: ["num-traits"]
 
 		#[unstable]
 		"serialiser-text"
-		"self describing, stable (once finished) text serialiser, aiming for human readability, and ease of writing"
+		"Self describing and stable text format/serialiser, aiming to be easy to read and write by hand"
 
 		#[unstable]
 		"string-pool"
-		"global immutable string pool and String type"
+		"Global immutable string pool and String type (à la Java)"
 		dependencies: ["hashbrown"]
 		features: ["lazy-wrap"]
 
 		#[unstable]
 		"sudoku"
-		"sudoku related... stuff"
+		"Sudoku related... stuff"
 		features: ["chainer", "iter", "num-traits"]
 
 		#[unstable]
 		"unicode"
-		"implementation of the [Unicode](https://home.unicode.org) standard, including UTF-8, UTF-16, and UTF-32 strings"
+		"Implementation of the [Unicode](https://home.unicode.org) standard, including UTF-8, UTF-16, and UTF-32 strings"
 		dependencies: ["macro"]
 
 		"with-cloned"
-		"easily execute code using clones of variables in a temporary scope (see the documentation on `with_cloned!`, I'm not sure how to best summarise ><)"
+		"Convenience macro for the clone-and-move pattern (yes, we're calling it that :p)"
 
 		"z85"
-		"a fast (faster than `z85` crate[^1]) implementation of [ZeroMQ]'s [z85] format, a format to represent binary data as printable ASCII text"
+		"Fast encoder and decoder for [ZeroMQ](https://zeromq.org)'s [zZ85](https://rfc.zeromq.org/spec/32) format"
 		dependencies: ["thiserror"]
 		features: ["num-traits"]
 
 		#[addon]
 		"hashbrown"
-		"adds integration with `hashbrown` crate"
+		"Adds integration with `hashbrown` crate (where applicable)"
 		dependencies: ["hashbrown"]
 
 		#[addon]
 		"image"
-		"adds integration with `image` crate"
+		"Adds integration with `image` crate (where applicable)"
 		dependencies: ["image"]
 
 		#[addon]
 		"large-tuples"
-		"by default, tuple implementations (where applicable of course) are available for tuples with up to 8 elements, which should be enough for most uses. Enabling this feature will enable implementations for tuples with up to 32 elements."
+		"By default, implementations on tuples are available for tuples with up to 8 elements, which should be enough for most uses. Enabling this feature will enable implementations for tuples with up to 32 elements"
 
 		#[addon]
 		"nightly"
-		"enable features only available in nightly rust"
+		"Enable features only available in nightly Rust"
 
 		#[addon]
 		"omega-tuples-of-doom"
@@ -215,12 +215,12 @@ fn main() {
 
 		#[addon]
 		"serde"
-		"adds integration with `serde` crate"
+		"Adds integration with `serde` crate (where applicable)"
 		dependencies: ["serde"]
 
 		#[addon]
 		"serde-json"
-		"adds integration with `serde-json` crate"
+		"Adds integration with `serde-json` crate (where applicable)"
 		dependencies: ["serde-json"]
 	};
 
@@ -352,14 +352,19 @@ fn main() {
 
 		macro_rules! push_feature {
 			($unstable:literal) => {
+				let name_with_underscores = name.replace('-', "_");
 				generated_lib += "#[cfg(feature = \"";
 				generated_lib += name;
 				if $unstable { generated_lib += "-unstable" }
 				generated_lib += "\")]\n#[cfg_attr(docsrs, doc(cfg(feature = \"";
 				generated_lib += name;
 				if $unstable { generated_lib += "-unstable" }
-				generated_lib += "\")))]\npub mod ";
-				generated_lib += &name.replace('-', "_");
+				generated_lib += "\")))]\n/// ";
+				generated_lib += desc;
+				generated_lib += "\n#[doc = \"\"]\n#[doc = include_str!(\"./";
+				generated_lib += &name_with_underscores;
+				generated_lib += "/README.md\")]\npub mod ";
+				generated_lib += &name_with_underscores;
 				generated_lib += ";\n\n";
 
 				generated_doc_cfgs_list += "#![cfg_attr(all(not(any(docsrs, kiwingay)), feature = \"";

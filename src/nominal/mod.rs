@@ -1,12 +1,3 @@
-//! Generic, zero-cost struct that wraps data in a newtype, to take advantage of
-//! nominal typing
-//!
-//! This helps you avoid ex. accidentally passing a filepath ([`String`]) as an
-//! ID (also [`String`]) or something like that, which is something I (Vapor | Meadowsys)
-//! am always paranoid about..
-//!
-//! Nominal typing is great c:
-
 use std::cmp::Ordering;
 use std::fmt::{ self, Debug, Display, Formatter };
 use std::hash::{ Hash, Hasher };

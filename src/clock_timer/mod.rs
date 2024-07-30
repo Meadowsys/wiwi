@@ -1,5 +1,3 @@
-//! An interval tracking clock
-
 pub use chrono;
 
 use chrono::{ DateTime, Local, NaiveDateTime, TimeDelta, Timelike, TimeZone };

@@ -1,5 +1,3 @@
-//! Global immutable string pool implementation
-
 pub mod pool;
 pub mod string;
 

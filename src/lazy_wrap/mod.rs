@@ -1,7 +1,3 @@
-//! Wrapper for initialisation function, initialising it only on first access.
-//!
-//! Works in static contexts (static variables)
-
 use parking_lot::{ Once, OnceState };
 use std::cell::UnsafeCell;
 use std::fmt::{ self, Debug, Display };

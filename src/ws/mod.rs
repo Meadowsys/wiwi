@@ -1,5 +1,3 @@
-//! Websocket implementation
-
 use tokio::net::TcpSocket;
 use tokio::io::AsyncRead;
 

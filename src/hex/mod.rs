@@ -1,5 +1,3 @@
-//! Fast and efficient implementation of hex encoding.
-
 use crate::_internal::encoding_utils::UnsafeBufWriteGuard;
 use std::str;
 
