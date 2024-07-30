@@ -79,8 +79,7 @@ impl<'h> Serialiser<'h> for U16Serialiser {
 		if self.byte_count == 0 {
 			buf.write_byte(self.le_bytes[0]);
 		} else {
-			let marker = ((self.byte_count - 1) << 1) | 0x80;
-			buf.write_byte(marker);
+			buf.write_byte(get_marker_for_unsigned(self.byte_count));
 			buf.write_bytes(&self.le_bytes[..self.byte_count.into_usize()]);
 		}
 	}
@@ -130,8 +129,7 @@ impl<'h> Serialiser<'h> for U32Serialiser {
 		if self.byte_count == 0 {
 			buf.write_byte(self.le_bytes[0]);
 		} else {
-			let marker = ((self.byte_count - 1) << 1) | 0x80;
-			buf.write_byte(marker);
+			buf.write_byte(get_marker_for_unsigned(self.byte_count));
 			buf.write_bytes(&self.le_bytes[..self.byte_count.into_usize()]);
 		}
 	}
@@ -181,8 +179,7 @@ impl<'h> Serialiser<'h> for U64Serialiser {
 		if self.byte_count == 0 {
 			buf.write_byte(self.le_bytes[0]);
 		} else {
-			let marker = ((self.byte_count - 1) << 1) | 0x80;
-			buf.write_byte(marker);
+			buf.write_byte(get_marker_for_unsigned(self.byte_count));
 			buf.write_bytes(&self.le_bytes[..self.byte_count.into_usize()]);
 		}
 	}
@@ -232,8 +229,7 @@ impl<'h> Serialiser<'h> for U128Serialiser {
 		if self.byte_count == 0 {
 			buf.write_byte(self.le_bytes[0]);
 		} else {
-			let marker = ((self.byte_count - 1) << 1) | 0x80;
-			buf.write_byte(marker);
+			buf.write_byte(get_marker_for_unsigned(self.byte_count));
 			buf.write_bytes(&self.le_bytes[..self.byte_count.into_usize()]);
 		}
 	}
@@ -399,8 +395,7 @@ impl<'h> Serialiser<'h> for I16Serialiser {
 		if self.byte_count == 0 {
 			buf.write_byte(self.le_bytes[0]);
 		} else {
-			let marker = ((self.byte_count - 1) << 1) | 0x81;
-			buf.write_byte(marker);
+			buf.write_byte(get_marker_for_signed(self.byte_count));
 			buf.write_bytes(&self.le_bytes[..self.byte_count.into_usize()]);
 		}
 	}
@@ -454,8 +449,7 @@ impl<'h> Serialiser<'h> for I32Serialiser {
 		if self.byte_count == 0 {
 			buf.write_byte(self.le_bytes[0]);
 		} else {
-			let marker = ((self.byte_count - 1) << 1) | 0x81;
-			buf.write_byte(marker);
+			buf.write_byte(get_marker_for_signed(self.byte_count));
 			buf.write_bytes(&self.le_bytes[..self.byte_count.into_usize()]);
 		}
 	}
@@ -510,8 +504,7 @@ impl<'h> Serialiser<'h> for I64Serialiser {
 		if self.byte_count == 0 {
 			buf.write_byte(self.le_bytes[0]);
 		} else {
-			let marker = ((self.byte_count - 1) << 1) | 0x81;
-			buf.write_byte(marker);
+			buf.write_byte(get_marker_for_signed(self.byte_count));
 			buf.write_bytes(&self.le_bytes[..self.byte_count.into_usize()]);
 		}
 	}
@@ -566,8 +559,7 @@ impl<'h> Serialiser<'h> for I128Serialiser {
 		if self.byte_count == 0 {
 			buf.write_byte(self.le_bytes[0]);
 		} else {
-			let marker = ((self.byte_count - 1) << 1) | 0x81;
-			buf.write_byte(marker);
+			buf.write_byte(get_marker_for_signed(self.byte_count));
 			buf.write_bytes(&self.le_bytes[..self.byte_count.into_usize()]);
 		}
 	}
@@ -746,7 +738,15 @@ impl<'h> Deserialise<'h> for f64 {
 	}
 }
 
-unsafe fn get_byte_count_unsigned_le<const BYTES: usize>(bytes: [u8; BYTES]) -> u8 {
+pub(super) const unsafe fn get_marker_for_unsigned(byte_count: u8) -> u8 {
+	((byte_count - 1) << 1) | 0x80
+}
+
+pub(super) const unsafe fn get_marker_for_signed(byte_count: u8) -> u8 {
+	((byte_count - 1) << 1) | 0x81
+}
+
+pub(super) unsafe fn get_byte_count_unsigned_le<const BYTES: usize>(bytes: [u8; BYTES]) -> u8 {
 	let ptr = bytes.as_ptr();
 
 	for i in (1..BYTES).rev() {
@@ -767,7 +767,7 @@ unsafe fn get_byte_count_unsigned_le<const BYTES: usize>(bytes: [u8; BYTES]) -> 
 	1
 }
 
-unsafe fn get_byte_count_signed_le<const BYTES: usize>(bytes: [u8; BYTES]) -> u8 {
+pub(super) unsafe fn get_byte_count_signed_le<const BYTES: usize>(bytes: [u8; BYTES]) -> u8 {
 	debug_assert!(BYTES > 0);
 
 	let ptr = bytes.as_ptr();

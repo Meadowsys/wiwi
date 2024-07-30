@@ -9,7 +9,7 @@
 use super::internal_prelude::*;
 use super::USizeSerialiser;
 
-impl<T: Serialise> Serialise for &[T] {
+impl<T: Serialise> Serialise for [T] {
 	type Serialiser<'h> = SliceSerialiser<'h, T> where Self: 'h;
 
 	fn build_serialiser(&self) -> SliceSerialiser<'_, T> {
