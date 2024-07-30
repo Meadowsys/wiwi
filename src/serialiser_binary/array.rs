@@ -75,7 +75,6 @@ impl<'h, T: Serialise> Serialiser<'h> for SliceSerialiser<'h, T> {
 impl<'h, T: Deserialise<'h>> Deserialise<'h> for Vec<T> {
 	type Error = T::Error;
 
-
 	fn deserialise_with_marker<I: Input<'h>>(buf: &mut I, marker: u8) -> Result<Vec<T>, T::Error> {
 		let len = match marker {
 			MARKER_ARRAY_8 => {
