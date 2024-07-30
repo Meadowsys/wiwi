@@ -283,6 +283,111 @@
 <a href="#283" id="283">283</a>
 <a href="#284" id="284">284</a>
 <a href="#285" id="285">285</a>
+<a href="#286" id="286">286</a>
+<a href="#287" id="287">287</a>
+<a href="#288" id="288">288</a>
+<a href="#289" id="289">289</a>
+<a href="#290" id="290">290</a>
+<a href="#291" id="291">291</a>
+<a href="#292" id="292">292</a>
+<a href="#293" id="293">293</a>
+<a href="#294" id="294">294</a>
+<a href="#295" id="295">295</a>
+<a href="#296" id="296">296</a>
+<a href="#297" id="297">297</a>
+<a href="#298" id="298">298</a>
+<a href="#299" id="299">299</a>
+<a href="#300" id="300">300</a>
+<a href="#301" id="301">301</a>
+<a href="#302" id="302">302</a>
+<a href="#303" id="303">303</a>
+<a href="#304" id="304">304</a>
+<a href="#305" id="305">305</a>
+<a href="#306" id="306">306</a>
+<a href="#307" id="307">307</a>
+<a href="#308" id="308">308</a>
+<a href="#309" id="309">309</a>
+<a href="#310" id="310">310</a>
+<a href="#311" id="311">311</a>
+<a href="#312" id="312">312</a>
+<a href="#313" id="313">313</a>
+<a href="#314" id="314">314</a>
+<a href="#315" id="315">315</a>
+<a href="#316" id="316">316</a>
+<a href="#317" id="317">317</a>
+<a href="#318" id="318">318</a>
+<a href="#319" id="319">319</a>
+<a href="#320" id="320">320</a>
+<a href="#321" id="321">321</a>
+<a href="#322" id="322">322</a>
+<a href="#323" id="323">323</a>
+<a href="#324" id="324">324</a>
+<a href="#325" id="325">325</a>
+<a href="#326" id="326">326</a>
+<a href="#327" id="327">327</a>
+<a href="#328" id="328">328</a>
+<a href="#329" id="329">329</a>
+<a href="#330" id="330">330</a>
+<a href="#331" id="331">331</a>
+<a href="#332" id="332">332</a>
+<a href="#333" id="333">333</a>
+<a href="#334" id="334">334</a>
+<a href="#335" id="335">335</a>
+<a href="#336" id="336">336</a>
+<a href="#337" id="337">337</a>
+<a href="#338" id="338">338</a>
+<a href="#339" id="339">339</a>
+<a href="#340" id="340">340</a>
+<a href="#341" id="341">341</a>
+<a href="#342" id="342">342</a>
+<a href="#343" id="343">343</a>
+<a href="#344" id="344">344</a>
+<a href="#345" id="345">345</a>
+<a href="#346" id="346">346</a>
+<a href="#347" id="347">347</a>
+<a href="#348" id="348">348</a>
+<a href="#349" id="349">349</a>
+<a href="#350" id="350">350</a>
+<a href="#351" id="351">351</a>
+<a href="#352" id="352">352</a>
+<a href="#353" id="353">353</a>
+<a href="#354" id="354">354</a>
+<a href="#355" id="355">355</a>
+<a href="#356" id="356">356</a>
+<a href="#357" id="357">357</a>
+<a href="#358" id="358">358</a>
+<a href="#359" id="359">359</a>
+<a href="#360" id="360">360</a>
+<a href="#361" id="361">361</a>
+<a href="#362" id="362">362</a>
+<a href="#363" id="363">363</a>
+<a href="#364" id="364">364</a>
+<a href="#365" id="365">365</a>
+<a href="#366" id="366">366</a>
+<a href="#367" id="367">367</a>
+<a href="#368" id="368">368</a>
+<a href="#369" id="369">369</a>
+<a href="#370" id="370">370</a>
+<a href="#371" id="371">371</a>
+<a href="#372" id="372">372</a>
+<a href="#373" id="373">373</a>
+<a href="#374" id="374">374</a>
+<a href="#375" id="375">375</a>
+<a href="#376" id="376">376</a>
+<a href="#377" id="377">377</a>
+<a href="#378" id="378">378</a>
+<a href="#379" id="379">379</a>
+<a href="#380" id="380">380</a>
+<a href="#381" id="381">381</a>
+<a href="#382" id="382">382</a>
+<a href="#383" id="383">383</a>
+<a href="#384" id="384">384</a>
+<a href="#385" id="385">385</a>
+<a href="#386" id="386">386</a>
+<a href="#387" id="387">387</a>
+<a href="#388" id="388">388</a>
+<a href="#389" id="389">389</a>
+<a href="#390" id="390">390</a>
 </pre></div><pre class="rust"><code><span class="attr">#![cfg_attr(feature = <span class="string">"nightly"</span>, feature(cfg_overflow_checks))]
 
 #![cfg_attr(feature = <span class="string">"omega-tuples-of-doom"</span>, recursion_limit = <span class="string">"256"</span>)]
@@ -291,12 +396,15 @@
 </span><span class="attr">#![warn(
 	missing_docs,
 	unsafe_op_in_unsafe_fn,
+	clippy::missing_docs_in_private_items,
 	clippy::missing_safety_doc,
 	clippy::multiple_unsafe_ops_per_block,
 	clippy::undocumented_unsafe_blocks
 )]
 #![deny(
+	unconditional_recursion,
 	unexpected_cfgs,
+	clippy::empty_docs,
 	clippy::mixed_attributes_style,
 	clippy::unnecessary_safety_comment
 )]
@@ -433,138 +541,240 @@
 
 </span><span class="attr">#[cfg(feature = <span class="string">"aoc-unstable"</span>)]
 #[cfg_attr(docsrs, doc(cfg(feature = <span class="string">"aoc-unstable"</span>)))]
+</span><span class="doccomment">/// Utilities specific for writing solutions for [Advent of Code](https://adventofcode.com)
+</span><span class="attr">#[doc = <span class="string">""</span>]
+#[doc = <span class="macro">include_str!</span>(<span class="string">"./aoc/README.md"</span>)]
 </span><span class="kw">pub mod </span>aoc;
 
 <span class="attr">#[cfg(feature = <span class="string">"augment-panic-hook"</span>)]
 #[cfg_attr(docsrs, doc(cfg(feature = <span class="string">"augment-panic-hook"</span>)))]
+</span><span class="doccomment">/// Conveniently augment the panic hook (instead of replacing it), running some of your code before calling the existing one
+</span><span class="attr">#[doc = <span class="string">""</span>]
+#[doc = <span class="macro">include_str!</span>(<span class="string">"./augment_panic_hook/README.md"</span>)]
 </span><span class="kw">pub mod </span>augment_panic_hook;
 
 <span class="attr">#[cfg(feature = <span class="string">"auth-unstable"</span>)]
 #[cfg_attr(docsrs, doc(cfg(feature = <span class="string">"auth-unstable"</span>)))]
+</span><span class="doccomment">/// Lower-level(ish) utilities for writing an authentication system, in which the client password is never sent over the wire
+</span><span class="attr">#[doc = <span class="string">""</span>]
+#[doc = <span class="macro">include_str!</span>(<span class="string">"./auth/README.md"</span>)]
 </span><span class="kw">pub mod </span>auth;
 
 <span class="attr">#[cfg(feature = <span class="string">"bitstream-unstable"</span>)]
 #[cfg_attr(docsrs, doc(cfg(feature = <span class="string">"bitstream-unstable"</span>)))]
+</span><span class="doccomment">/// Encoder and decoder for a stream of bits
+</span><span class="attr">#[doc = <span class="string">""</span>]
+#[doc = <span class="macro">include_str!</span>(<span class="string">"./bitstream/README.md"</span>)]
 </span><span class="kw">pub mod </span>bitstream;
 
 <span class="attr">#[cfg(feature = <span class="string">"chainer-unstable"</span>)]
 #[cfg_attr(docsrs, doc(cfg(feature = <span class="string">"chainer-unstable"</span>)))]
+</span><span class="doccomment">/// Wrappers around common structs that provide chaining APIs (take ownership, do operation, then return back)
+</span><span class="attr">#[doc = <span class="string">""</span>]
+#[doc = <span class="macro">include_str!</span>(<span class="string">"./chainer/README.md"</span>)]
 </span><span class="kw">pub mod </span>chainer;
 
 <span class="attr">#[cfg(feature = <span class="string">"cli-unstable"</span>)]
 #[cfg_attr(docsrs, doc(cfg(feature = <span class="string">"cli-unstable"</span>)))]
+</span><span class="doccomment">/// CLI arguments parser
+</span><span class="attr">#[doc = <span class="string">""</span>]
+#[doc = <span class="macro">include_str!</span>(<span class="string">"./cli/README.md"</span>)]
 </span><span class="kw">pub mod </span>cli;
 
 <span class="attr">#[cfg(feature = <span class="string">"clock-timer"</span>)]
 #[cfg_attr(docsrs, doc(cfg(feature = <span class="string">"clock-timer"</span>)))]
+</span><span class="doccomment">/// An interval tracking clock, yielding ticks at specified intervals and doing so for a specified period of time
+</span><span class="attr">#[doc = <span class="string">""</span>]
+#[doc = <span class="macro">include_str!</span>(<span class="string">"./clock_timer/README.md"</span>)]
 </span><span class="kw">pub mod </span>clock_timer;
 
 <span class="attr">#[cfg(feature = <span class="string">"debounce"</span>)]
 #[cfg_attr(docsrs, doc(cfg(feature = <span class="string">"debounce"</span>)))]
+</span><span class="doccomment">/// Delay calling a function until a specified period of time has passed since the last time it was called
+</span><span class="attr">#[doc = <span class="string">""</span>]
+#[doc = <span class="macro">include_str!</span>(<span class="string">"./debounce/README.md"</span>)]
 </span><span class="kw">pub mod </span>debounce;
 
 <span class="attr">#[cfg(feature = <span class="string">"defer-unstable"</span>)]
 #[cfg_attr(docsrs, doc(cfg(feature = <span class="string">"defer-unstable"</span>)))]
+</span><span class="doccomment">/// Defer running code until the end of the current scope or until something gets dropped
+</span><span class="attr">#[doc = <span class="string">""</span>]
+#[doc = <span class="macro">include_str!</span>(<span class="string">"./defer/README.md"</span>)]
 </span><span class="kw">pub mod </span>defer;
 
 <span class="attr">#[cfg(feature = <span class="string">"export-all-submodules"</span>)]
 #[cfg_attr(docsrs, doc(cfg(feature = <span class="string">"export-all-submodules"</span>)))]
+</span><span class="doccomment">/// A convenience macro for declaring many private modules, then reexporting everything within them using a glob use statement
+</span><span class="attr">#[doc = <span class="string">""</span>]
+#[doc = <span class="macro">include_str!</span>(<span class="string">"./export_all_submodules/README.md"</span>)]
 </span><span class="kw">pub mod </span>export_all_submodules;
 
 <span class="attr">#[cfg(feature = <span class="string">"gpg-unstable"</span>)]
 #[cfg_attr(docsrs, doc(cfg(feature = <span class="string">"gpg-unstable"</span>)))]
+</span><span class="doccomment">/// Bindings to [GPGME](https://www.gnupg.org/software/gpgme), GnuPG's official C library
+</span><span class="attr">#[doc = <span class="string">""</span>]
+#[doc = <span class="macro">include_str!</span>(<span class="string">"./gpg/README.md"</span>)]
 </span><span class="kw">pub mod </span>gpg;
 
 <span class="attr">#[cfg(feature = <span class="string">"h"</span>)]
 #[cfg_attr(docsrs, doc(cfg(feature = <span class="string">"h"</span>)))]
+</span><span class="doccomment">/// h
+</span><span class="attr">#[doc = <span class="string">""</span>]
+#[doc = <span class="macro">include_str!</span>(<span class="string">"./h/README.md"</span>)]
 </span><span class="kw">pub mod </span>h;
 
 <span class="attr">#[cfg(feature = <span class="string">"hex"</span>)]
 #[cfg_attr(docsrs, doc(cfg(feature = <span class="string">"hex"</span>)))]
+</span><span class="doccomment">/// Fast hex encoder and decoder for both upper hex and lower hex
+</span><span class="attr">#[doc = <span class="string">""</span>]
+#[doc = <span class="macro">include_str!</span>(<span class="string">"./hex/README.md"</span>)]
 </span><span class="kw">pub mod </span>hex;
 
 <span class="attr">#[cfg(feature = <span class="string">"id-unstable"</span>)]
 #[cfg_attr(docsrs, doc(cfg(feature = <span class="string">"id-unstable"</span>)))]
+</span><span class="doccomment">/// ID generators, of various output sizes, and guarantees of uniqueness and ordering
+</span><span class="attr">#[doc = <span class="string">""</span>]
+#[doc = <span class="macro">include_str!</span>(<span class="string">"./id/README.md"</span>)]
 </span><span class="kw">pub mod </span>id;
 
 <span class="attr">#[cfg(feature = <span class="string">"int-unstable"</span>)]
 #[cfg_attr(docsrs, doc(cfg(feature = <span class="string">"int-unstable"</span>)))]
+</span><span class="doccomment">/// Bigints (ex. u384) and uneven sized ints (ex. u15)
+</span><span class="attr">#[doc = <span class="string">""</span>]
+#[doc = <span class="macro">include_str!</span>(<span class="string">"./int/README.md"</span>)]
 </span><span class="kw">pub mod </span>int;
 
 <span class="attr">#[cfg(feature = <span class="string">"iter-unstable"</span>)]
 #[cfg_attr(docsrs, doc(cfg(feature = <span class="string">"iter-unstable"</span>)))]
+</span><span class="doccomment">/// Iterator utilities
+</span><span class="attr">#[doc = <span class="string">""</span>]
+#[doc = <span class="macro">include_str!</span>(<span class="string">"./iter/README.md"</span>)]
 </span><span class="kw">pub mod </span>iter;
 
 <span class="attr">#[cfg(feature = <span class="string">"lazy-wrap"</span>)]
 #[cfg_attr(docsrs, doc(cfg(feature = <span class="string">"lazy-wrap"</span>)))]
+</span><span class="doccomment">/// Wrappers around a lazily initialised value, and its initialisation function, supporting usage in static variables
+</span><span class="attr">#[doc = <span class="string">""</span>]
+#[doc = <span class="macro">include_str!</span>(<span class="string">"./lazy_wrap/README.md"</span>)]
 </span><span class="kw">pub mod </span>lazy_wrap;
 
 <span class="attr">#[cfg(feature = <span class="string">"libassuan-unstable"</span>)]
 #[cfg_attr(docsrs, doc(cfg(feature = <span class="string">"libassuan-unstable"</span>)))]
+</span><span class="doccomment">/// Bindings to [`libassuan`](https://www.gnupg.org/related_software/libassuan)
+</span><span class="attr">#[doc = <span class="string">""</span>]
+#[doc = <span class="macro">include_str!</span>(<span class="string">"./libassuan/README.md"</span>)]
 </span><span class="kw">pub mod </span>libassuan;
 
 <span class="attr">#[cfg(feature = <span class="string">"libgpg-error-unstable"</span>)]
 #[cfg_attr(docsrs, doc(cfg(feature = <span class="string">"libgpg-error-unstable"</span>)))]
+</span><span class="doccomment">/// Bindings to [`libgpg-error`](https://www.gnupg.org/related_software/libgpg-error)
+</span><span class="attr">#[doc = <span class="string">""</span>]
+#[doc = <span class="macro">include_str!</span>(<span class="string">"./libgpg_error/README.md"</span>)]
 </span><span class="kw">pub mod </span>libgpg_error;
 
 <span class="attr">#[cfg(feature = <span class="string">"lsl-unstable"</span>)]
 #[cfg_attr(docsrs, doc(cfg(feature = <span class="string">"lsl-unstable"</span>)))]
+</span><span class="doccomment">/// Experimental lib to help with writing Second Life scripts in Rust... because yes, I got fed up with it very quickly and immediately missed Rust lol
+</span><span class="attr">#[doc = <span class="string">""</span>]
+#[doc = <span class="macro">include_str!</span>(<span class="string">"./lsl/README.md"</span>)]
 </span><span class="kw">pub mod </span>lsl;
 
 <span class="attr">#[cfg(feature = <span class="string">"mcu-unstable"</span>)]
 #[cfg_attr(docsrs, doc(cfg(feature = <span class="string">"mcu-unstable"</span>)))]
+</span><span class="doccomment">/// [Material colour utilities](https://github.com/material-foundation/material-color-utilities)
+</span><span class="attr">#[doc = <span class="string">""</span>]
+#[doc = <span class="macro">include_str!</span>(<span class="string">"./mcu/README.md"</span>)]
 </span><span class="kw">pub mod </span>mcu;
 
 <span class="attr">#[cfg(feature = <span class="string">"memory-usage-unstable"</span>)]
 #[cfg_attr(docsrs, doc(cfg(feature = <span class="string">"memory-usage-unstable"</span>)))]
+</span><span class="doccomment">/// Calculate actual memory usage of Rust structs, including derive macro for custom types (not the same as `size_of::&lt;T&gt;()`)
+</span><span class="attr">#[doc = <span class="string">""</span>]
+#[doc = <span class="macro">include_str!</span>(<span class="string">"./memory_usage/README.md"</span>)]
 </span><span class="kw">pub mod </span>memory_usage;
 
 <span class="attr">#[cfg(feature = <span class="string">"minesweeper-unstable"</span>)]
 #[cfg_attr(docsrs, doc(cfg(feature = <span class="string">"minesweeper-unstable"</span>)))]
+</span><span class="doccomment">/// Core logic components for minesweeper games of arbitrary size
+</span><span class="attr">#[doc = <span class="string">""</span>]
+#[doc = <span class="macro">include_str!</span>(<span class="string">"./minesweeper/README.md"</span>)]
 </span><span class="kw">pub mod </span>minesweeper;
 
 <span class="attr">#[cfg(feature = <span class="string">"nominal"</span>)]
 #[cfg_attr(docsrs, doc(cfg(feature = <span class="string">"nominal"</span>)))]
+</span><span class="doccomment">/// Generic newtype wrappers, for increased type safety through Rust's nominal type system
+</span><span class="attr">#[doc = <span class="string">""</span>]
+#[doc = <span class="macro">include_str!</span>(<span class="string">"./nominal/README.md"</span>)]
 </span><span class="kw">pub mod </span>nominal;
 
 <span class="attr">#[cfg(feature = <span class="string">"num-traits-unstable"</span>)]
 #[cfg_attr(docsrs, doc(cfg(feature = <span class="string">"num-traits-unstable"</span>)))]
+</span><span class="doccomment">/// More traits for numbers and their various functionality, including things like [`MulWidening`]
+</span><span class="attr">#[doc = <span class="string">""</span>]
+#[doc = <span class="macro">include_str!</span>(<span class="string">"./num_traits/README.md"</span>)]
 </span><span class="kw">pub mod </span>num_traits;
 
 <span class="attr">#[cfg(feature = <span class="string">"path-unstable"</span>)]
 #[cfg_attr(docsrs, doc(cfg(feature = <span class="string">"path-unstable"</span>)))]
+</span><span class="doccomment">/// UTF-8 only path manipulation utilities written from scratch
+</span><span class="attr">#[doc = <span class="string">""</span>]
+#[doc = <span class="macro">include_str!</span>(<span class="string">"./path/README.md"</span>)]
 </span><span class="kw">pub mod </span>path;
 
 <span class="attr">#[cfg(feature = <span class="string">"rand"</span>)]
 #[cfg_attr(docsrs, doc(cfg(feature = <span class="string">"rand"</span>)))]
+</span><span class="doccomment">/// More random number generators and utilities
+</span><span class="attr">#[doc = <span class="string">""</span>]
+#[doc = <span class="macro">include_str!</span>(<span class="string">"./rand/README.md"</span>)]
 </span><span class="kw">pub mod </span>rand;
 
 <span class="attr">#[cfg(feature = <span class="string">"serialiser-binary-unstable"</span>)]
 #[cfg_attr(docsrs, doc(cfg(feature = <span class="string">"serialiser-binary-unstable"</span>)))]
+</span><span class="doccomment">/// Self describing and stable binary format/serialiser, aiming for small output size
+</span><span class="attr">#[doc = <span class="string">""</span>]
+#[doc = <span class="macro">include_str!</span>(<span class="string">"./serialiser_binary/README.md"</span>)]
 </span><span class="kw">pub mod </span>serialiser_binary;
 
 <span class="attr">#[cfg(feature = <span class="string">"serialiser-text-unstable"</span>)]
 #[cfg_attr(docsrs, doc(cfg(feature = <span class="string">"serialiser-text-unstable"</span>)))]
+</span><span class="doccomment">/// Self describing and stable text format/serialiser, aiming to be easy to read and write by hand
+</span><span class="attr">#[doc = <span class="string">""</span>]
+#[doc = <span class="macro">include_str!</span>(<span class="string">"./serialiser_text/README.md"</span>)]
 </span><span class="kw">pub mod </span>serialiser_text;
 
 <span class="attr">#[cfg(feature = <span class="string">"string-pool-unstable"</span>)]
 #[cfg_attr(docsrs, doc(cfg(feature = <span class="string">"string-pool-unstable"</span>)))]
+</span><span class="doccomment">/// Global immutable string pool and String type (à la Java)
+</span><span class="attr">#[doc = <span class="string">""</span>]
+#[doc = <span class="macro">include_str!</span>(<span class="string">"./string_pool/README.md"</span>)]
 </span><span class="kw">pub mod </span>string_pool;
 
 <span class="attr">#[cfg(feature = <span class="string">"sudoku-unstable"</span>)]
 #[cfg_attr(docsrs, doc(cfg(feature = <span class="string">"sudoku-unstable"</span>)))]
+</span><span class="doccomment">/// Sudoku related... stuff
+</span><span class="attr">#[doc = <span class="string">""</span>]
+#[doc = <span class="macro">include_str!</span>(<span class="string">"./sudoku/README.md"</span>)]
 </span><span class="kw">pub mod </span>sudoku;
 
 <span class="attr">#[cfg(feature = <span class="string">"unicode-unstable"</span>)]
 #[cfg_attr(docsrs, doc(cfg(feature = <span class="string">"unicode-unstable"</span>)))]
+</span><span class="doccomment">/// Implementation of the [Unicode](https://home.unicode.org) standard, including UTF-8, UTF-16, and UTF-32 strings
+</span><span class="attr">#[doc = <span class="string">""</span>]
+#[doc = <span class="macro">include_str!</span>(<span class="string">"./unicode/README.md"</span>)]
 </span><span class="kw">pub mod </span>unicode;
 
 <span class="attr">#[cfg(feature = <span class="string">"with-cloned"</span>)]
 #[cfg_attr(docsrs, doc(cfg(feature = <span class="string">"with-cloned"</span>)))]
+</span><span class="doccomment">/// Convenience macro for the clone-and-move pattern (yes, we're calling it that :p)
+</span><span class="attr">#[doc = <span class="string">""</span>]
+#[doc = <span class="macro">include_str!</span>(<span class="string">"./with_cloned/README.md"</span>)]
 </span><span class="kw">pub mod </span>with_cloned;
 
 <span class="attr">#[cfg(feature = <span class="string">"z85"</span>)]
 #[cfg_attr(docsrs, doc(cfg(feature = <span class="string">"z85"</span>)))]
+</span><span class="doccomment">/// Fast encoder and decoder for [ZeroMQ](https://zeromq.org)'s [zZ85](https://rfc.zeromq.org/spec/32) format
+</span><span class="attr">#[doc = <span class="string">""</span>]
+#[doc = <span class="macro">include_str!</span>(<span class="string">"./z85/README.md"</span>)]
 </span><span class="kw">pub mod </span>z85;
 
 <span class="comment">// ----- end autogenerated region (lib) -----

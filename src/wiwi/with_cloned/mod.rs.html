@@ -233,6 +233,8 @@
 <a href="#233" id="233">233</a>
 <a href="#234" id="234">234</a>
 <a href="#235" id="235">235</a>
+<a href="#236" id="236">236</a>
+<a href="#237" id="237">237</a>
 </pre></div><pre class="rust"><code><span class="doccomment">/// Executes code with cloned values, so the executed code
 /// can take ownership of the value without moving the original
 ///
@@ -455,12 +457,14 @@
 
 		<span class="kw">let </span>join_handles = (<span class="number">1</span>..=<span class="number">5</span>)
 			<span class="comment">// no need to use clone on everything, so the macro does work as expected
-			</span>.map(|i| <span class="macro">with_cloned!</span> { thing <span class="kw">in </span>thread::spawn(<span class="kw">move </span>|| {
-				thread::sleep(std::time::Duration::from_millis((<span class="number">0</span>..<span class="number">1000</span>).sample_single(<span class="kw-2">&amp;mut </span>thread_rng())));
-				<span class="kw-2">*</span>thing.lock().unwrap() <span class="kw-2">*</span>= i;
-			}) })
+			</span>.map(|i| <span class="macro">with_cloned!</span> { thing <span class="kw">in
+				</span>thread::spawn(<span class="kw">move </span>|| {
+					thread::sleep(std::time::Duration::from_millis((<span class="number">0</span>..<span class="number">1000</span>).sample_single(<span class="kw-2">&amp;mut </span>thread_rng())));
+					<span class="kw-2">*</span>thing.lock().unwrap() <span class="kw-2">*</span>= i;
+				})
+			})
 			.collect::&lt;Vec&lt;<span class="kw">_</span>&gt;&gt;();
-		<span class="kw">let </span>expected_result = <span class="number">5 </span>* <span class="number">2 </span>* <span class="number">3 </span>* <span class="number">4 </span>* <span class="number">5</span>;
+		<span class="kw">let </span>expected_result = <span class="number">5 </span>* <span class="number">1 </span>* <span class="number">2 </span>* <span class="number">3 </span>* <span class="number">4 </span>* <span class="number">5</span>;
 
 		<span class="comment">// but we still run it through to make sure we get expected result still,
 		// and nothing else weird went wrong or something

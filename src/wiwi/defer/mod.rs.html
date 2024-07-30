@@ -577,6 +577,8 @@
 <a href="#577" id="577">577</a>
 <a href="#578" id="578">578</a>
 <a href="#579" id="579">579</a>
+<a href="#580" id="580">580</a>
+<a href="#581" id="581">581</a>
 </pre></div><pre class="rust"><code><span class="kw">use </span>std::fmt::{ <span class="self">self</span>, Debug, Display };
 <span class="kw">use </span>std::mem::ManuallyDrop;
 <span class="kw">use </span>std::ops::{ Deref, DerefMut };
@@ -1077,7 +1079,9 @@
 
 <span class="attr">#[cfg(test)]
 </span><span class="kw">mod </span>tests {
-	<span class="kw">use super</span>::<span class="kw-2">*</span>;
+	<span class="comment">// TODO: need to do something about the way these test are run, since
+	// assert/etc panic and we catch_unwind sometimes, so that's, hmmm
+	</span><span class="kw">use super</span>::<span class="kw-2">*</span>;
 	<span class="kw">use </span>std::cell::Cell;
 	<span class="kw">use </span>std::panic::{ AssertUnwindSafe, catch_unwind };
 

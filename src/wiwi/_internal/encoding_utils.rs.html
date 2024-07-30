@@ -372,7 +372,7 @@
 	/// memory, it gives us at least that much, then we are not touching it, until
 	/// `self` gets unwrapped using [`into_full_vec`](Self::into_full_vec). After
 	/// that, we will never use this pointer again. We are then (unsafely) setting
-	/// the len of the vec to the requested amount of capacity initially, which
+	/// the len of the vec to the initially requested amount of capacity, which
 	/// the caller of that method promises is initialised, since it is a safety
 	/// invariant of [`into_full_vec`]. What happens to the vec after we hand it's
 	/// ownership back to caller, is no longer on us to handle. The pointer has

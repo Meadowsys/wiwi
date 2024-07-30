@@ -231,24 +231,81 @@
 <a href="#231" id="231">231</a>
 <a href="#232" id="232">232</a>
 <a href="#233" id="233">233</a>
-</pre></div><pre class="rust"><code><span class="kw">use super</span>::{ consts, use_ok };
+<a href="#234" id="234">234</a>
+<a href="#235" id="235">235</a>
+<a href="#236" id="236">236</a>
+<a href="#237" id="237">237</a>
+<a href="#238" id="238">238</a>
+<a href="#239" id="239">239</a>
+<a href="#240" id="240">240</a>
+<a href="#241" id="241">241</a>
+<a href="#242" id="242">242</a>
+<a href="#243" id="243">243</a>
+<a href="#244" id="244">244</a>
+<a href="#245" id="245">245</a>
+<a href="#246" id="246">246</a>
+<a href="#247" id="247">247</a>
+<a href="#248" id="248">248</a>
+<a href="#249" id="249">249</a>
+<a href="#250" id="250">250</a>
+<a href="#251" id="251">251</a>
+<a href="#252" id="252">252</a>
+<a href="#253" id="253">253</a>
+<a href="#254" id="254">254</a>
+<a href="#255" id="255">255</a>
+<a href="#256" id="256">256</a>
+<a href="#257" id="257">257</a>
+<a href="#258" id="258">258</a>
+<a href="#259" id="259">259</a>
+<a href="#260" id="260">260</a>
+<a href="#261" id="261">261</a>
+<a href="#262" id="262">262</a>
+<a href="#263" id="263">263</a>
+<a href="#264" id="264">264</a>
+<a href="#265" id="265">265</a>
+<a href="#266" id="266">266</a>
+<a href="#267" id="267">267</a>
+<a href="#268" id="268">268</a>
+<a href="#269" id="269">269</a>
+<a href="#270" id="270">270</a>
+<a href="#271" id="271">271</a>
+<a href="#272" id="272">272</a>
+<a href="#273" id="273">273</a>
+</pre></div><pre class="rust"><code><span class="doccomment">//! Error types and utilities for deserialisation (serialisation is infallible)
+
+</span><span class="kw">use super</span>::{ consts, use_ok };
 <span class="kw">use </span>std::fmt;
 
-<span class="kw">pub type </span><span class="prelude-ty">Result</span>&lt;T, E = Error&gt; = std::result::Result&lt;T, E&gt;;
+<span class="doccomment">/// Result type
+///
+/// Behaves the same as std's [`Result`], except if you omit `E`, it'll
+/// default to our [`Error`] type.
+</span><span class="kw">pub type </span><span class="prelude-ty">Result</span>&lt;T, E = Error&gt; = std::result::Result&lt;T, E&gt;;
 
-<span class="attr">#[derive(Clone, Debug)]
+<span class="doccomment">/// Deserialiser error, specifying in plain language what the deserialiser
+/// expected, and what it found instead
+</span><span class="attr">#[derive(Clone)]
 </span><span class="kw">pub struct </span>Error {
-	<span class="kw">pub </span>expected: <span class="kw-2">&amp;</span><span class="lifetime">'static </span>str,
-	<span class="kw">pub </span>found: <span class="kw-2">&amp;</span><span class="lifetime">'static </span>str
+	<span class="doccomment">/// What the deserialiser expected to find
+	</span><span class="kw">pub </span>expected: <span class="kw-2">&amp;</span><span class="lifetime">'static </span>str,
+	<span class="doccomment">/// What the deserialiser actually found
+	///
+	/// At time of writing, this will most likely be something like "eof" or
+	/// "something else", but it is definitely possible to find/calculate
+	/// more/better information.
+	</span><span class="kw">pub </span>found: <span class="kw-2">&amp;</span><span class="lifetime">'static </span>str
 }
 
 <span class="kw">impl </span>Error {
-	<span class="attr">#[inline(always)]
+	<span class="doccomment">/// Wraps `self` in [`Err`]
+	</span><span class="attr">#[inline(always)]
 	</span><span class="kw">pub fn </span>wrap&lt;T&gt;(<span class="self">self</span>) -&gt; <span class="prelude-ty">Result</span>&lt;T&gt; {
 		<span class="prelude-val">Err</span>(<span class="self">self</span>)
 	}
 
-	<span class="attr">#[inline(always)]
+	<span class="doccomment">/// Calls `.into()` on self to convert to another error type first, then
+	/// wraps that error value in [`Err`]
+	</span><span class="attr">#[inline(always)]
 	</span><span class="kw">pub fn </span>wrap_foreign&lt;T, E&gt;(<span class="self">self</span>) -&gt; <span class="prelude-ty">Result</span>&lt;T, E&gt;
 	<span class="kw">where
 		</span>Error: Into&lt;E&gt;
@@ -256,13 +313,15 @@
 		<span class="prelude-val">Err</span>(<span class="self">self</span>.into())
 	}
 
-	<span class="attr">#[inline(always)]
+	<span class="doccomment">/// Sets the `expected` field to the provided message, returning a new error
+	</span><span class="attr">#[inline(always)]
 	</span><span class="kw">pub fn </span>expected(<span class="kw-2">mut </span><span class="self">self</span>, expected: <span class="kw-2">&amp;</span><span class="lifetime">'static </span>str) -&gt; <span class="self">Self </span>{
 		<span class="self">self</span>.expected = expected;
 		<span class="self">self
 	</span>}
 
-	<span class="attr">#[inline(always)]
+	<span class="doccomment">/// Sets the `found` field to the provided message, returning a new error
+	</span><span class="attr">#[inline(always)]
 	</span><span class="kw">pub fn </span>found(<span class="kw-2">mut </span><span class="self">self</span>, found: <span class="kw-2">&amp;</span><span class="lifetime">'static </span>str) -&gt; <span class="self">Self </span>{
 		<span class="self">self</span>.found = found;
 		<span class="self">self
@@ -280,46 +339,64 @@
 	}
 }
 
+<span class="kw">impl </span>fmt::Debug <span class="kw">for </span>Error {
+	<span class="kw">fn </span>fmt(<span class="kw-2">&amp;</span><span class="self">self</span>, f: <span class="kw-2">&amp;mut </span>fmt::Formatter&lt;<span class="lifetime">'_</span>&gt;) -&gt; fmt::Result {
+		fmt::Display::fmt(<span class="self">self</span>, f)
+	}
+}
+
 <span class="kw">impl </span>std::error::Error <span class="kw">for </span>Error {}
 
-<span class="attr">#[repr(transparent)]
+<span class="doccomment">/// An error with only the `expected` field set (ie. a half built error)
+</span><span class="attr">#[repr(transparent)]
 </span><span class="kw">pub struct </span>ErrorExpected {
 	expected: <span class="kw-2">&amp;</span><span class="lifetime">'static </span>str
 }
 
-<span class="attr">#[inline(always)]
+<span class="doccomment">/// Creates [`ErrorExpected`] ith the specified message
+</span><span class="attr">#[inline(always)]
 </span><span class="kw">pub fn </span>expected(expected: <span class="kw-2">&amp;</span><span class="lifetime">'static </span>str) -&gt; ErrorExpected {
 	ErrorExpected { expected }
 }
 
 <span class="kw">impl </span>ErrorExpected {
-	<span class="attr">#[inline(always)]
+	<span class="doccomment">/// Sets the `found` field to the provided message,
+	/// returning a fully built [`Error`]
+	</span><span class="attr">#[inline(always)]
 	</span><span class="kw">pub fn </span>found(<span class="self">self</span>, found: <span class="kw-2">&amp;</span><span class="lifetime">'static </span>str) -&gt; Error {
 		<span class="kw">let </span>ErrorExpected { expected } = <span class="self">self</span>;
 		Error { expected, found }
 	}
 
-	<span class="attr">#[inline(always)]
+	<span class="doccomment">/// Sets the `found` field to ["something else"](found::DESC_FOUND_SOMETHING_ELSE),
+	/// returning a fully built [`Error`]
+	///
+	/// This is a convenience method for, and is equivalent to,
+	/// `self.found(found::DESC_FOUND_SOMETHING_ELSE)`.
+	</span><span class="attr">#[inline(always)]
 	</span><span class="kw">pub fn </span>found_something_else(<span class="self">self</span>) -&gt; Error {
-		<span class="kw">let </span>ErrorExpected { expected } = <span class="self">self</span>;
-		<span class="kw">let </span>found = found::DESC_FOUND_SOMETHING_ELSE;
-		Error { expected, found }
+		<span class="self">self</span>.found(found::DESC_FOUND_SOMETHING_ELSE)
 	}
 
-	<span class="attr">#[inline(always)]
+	<span class="doccomment">/// Sets the `found` field to ["something else"](found::DESC_FOUND_EOF),
+	/// returning a fully built [`Error`]
+	///
+	/// This is a convenience method for, and is equivalent to,
+	/// `self.found(found::DESC_FOUND_EOF)`.
+	</span><span class="attr">#[inline(always)]
 	</span><span class="kw">pub fn </span>found_eof(<span class="self">self</span>) -&gt; Error {
-		<span class="kw">let </span>ErrorExpected { expected } = <span class="self">self</span>;
-		<span class="kw">let </span>found = found::DESC_FOUND_EOF;
-		Error { expected, found }
+		<span class="self">self</span>.found(found::DESC_FOUND_EOF)
 	}
 
-	<span class="attr">#[inline(always)]
+	<span class="doccomment">/// Wraps `self` in [`Err`]
+	</span><span class="attr">#[inline(always)]
 	</span><span class="kw">pub fn </span>wrap&lt;T&gt;(<span class="self">self</span>) -&gt; <span class="prelude-ty">Result</span>&lt;T, <span class="self">Self</span>&gt; {
 		<span class="prelude-val">Err</span>(<span class="self">self</span>)
 	}
 }
 
-<span class="attr">#[repr(transparent)]
+<span class="doccomment">/// An error with only the `found` field set (ie. a half built error)
+</span><span class="attr">#[repr(transparent)]
 </span><span class="kw">pub struct </span>ErrorFound {
 	found: <span class="kw-2">&amp;</span><span class="lifetime">'static </span>str
 }
@@ -340,13 +417,16 @@
 }
 
 <span class="kw">impl </span>ErrorFound {
-	<span class="attr">#[inline(always)]
+	<span class="doccomment">/// Sets the `expected` field to the provided message,
+	/// returning a fully built [`Error`]
+	</span><span class="attr">#[inline(always)]
 	</span><span class="kw">pub fn </span>expected(<span class="self">self</span>, expected: <span class="kw-2">&amp;</span><span class="lifetime">'static </span>str) -&gt; Error {
 		<span class="kw">let </span>ErrorFound { found } = <span class="self">self</span>;
 		Error { expected, found }
 	}
 
-	<span class="attr">#[inline(always)]
+	<span class="doccomment">/// Wraps `self` in [`Err`]
+	</span><span class="attr">#[inline(always)]
 	</span><span class="kw">pub fn </span>wrap&lt;T&gt;(<span class="self">self</span>) -&gt; <span class="prelude-ty">Result</span>&lt;T, <span class="self">Self</span>&gt; {
 		<span class="prelude-val">Err</span>(<span class="self">self</span>)
 	}

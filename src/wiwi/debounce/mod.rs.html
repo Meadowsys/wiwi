@@ -174,13 +174,7 @@
 <a href="#174" id="174">174</a>
 <a href="#175" id="175">175</a>
 <a href="#176" id="176">176</a>
-<a href="#177" id="177">177</a>
-<a href="#178" id="178">178</a>
-<a href="#179" id="179">179</a>
-</pre></div><pre class="rust"><code><span class="doccomment">//! A debounced function; or a function that won't actually get called until
-//! there haven't been calls to it for a certain amount of time.
-
-</span><span class="kw">use </span><span class="kw">crate</span>::num_traits::<span class="kw-2">*</span>;
+</pre></div><pre class="rust"><code><span class="kw">use </span><span class="kw">crate</span>::num_traits::<span class="kw-2">*</span>;
 <span class="kw">use </span>chrono::{ Local, NaiveDateTime, TimeDelta };
 <span class="kw">use </span>std::{ mem::swap, sync::Arc };
 <span class="kw">use </span>tokio::runtime::Handle;

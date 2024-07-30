@@ -1019,6 +1019,8 @@
 <a href="#1019" id="1019">1019</a>
 <a href="#1020" id="1020">1020</a>
 <a href="#1021" id="1021">1021</a>
+<a href="#1022" id="1022">1022</a>
+<a href="#1023" id="1023">1023</a>
 </pre></div><pre class="rust"><code><span class="kw">use </span><span class="kw">super</span>::internal_prelude::<span class="kw-2">*</span>;
 <span class="kw">use </span>std::{ hint, ptr };
 <span class="kw">use </span>std::mem::MaybeUninit;
@@ -1100,8 +1102,7 @@
 		<span class="kw">if </span><span class="self">self</span>.byte_count == <span class="number">0 </span>{
 			buf.write_byte(<span class="self">self</span>.le_bytes[<span class="number">0</span>]);
 		} <span class="kw">else </span>{
-			<span class="kw">let </span>marker = ((<span class="self">self</span>.byte_count - <span class="number">1</span>) &lt;&lt; <span class="number">1</span>) | <span class="number">0x80</span>;
-			buf.write_byte(marker);
+			buf.write_byte(get_marker_for_unsigned(<span class="self">self</span>.byte_count));
 			buf.write_bytes(<span class="kw-2">&amp;</span><span class="self">self</span>.le_bytes[..<span class="self">self</span>.byte_count.into_usize()]);
 		}
 	}
@@ -1151,8 +1152,7 @@
 		<span class="kw">if </span><span class="self">self</span>.byte_count == <span class="number">0 </span>{
 			buf.write_byte(<span class="self">self</span>.le_bytes[<span class="number">0</span>]);
 		} <span class="kw">else </span>{
-			<span class="kw">let </span>marker = ((<span class="self">self</span>.byte_count - <span class="number">1</span>) &lt;&lt; <span class="number">1</span>) | <span class="number">0x80</span>;
-			buf.write_byte(marker);
+			buf.write_byte(get_marker_for_unsigned(<span class="self">self</span>.byte_count));
 			buf.write_bytes(<span class="kw-2">&amp;</span><span class="self">self</span>.le_bytes[..<span class="self">self</span>.byte_count.into_usize()]);
 		}
 	}
@@ -1202,8 +1202,7 @@
 		<span class="kw">if </span><span class="self">self</span>.byte_count == <span class="number">0 </span>{
 			buf.write_byte(<span class="self">self</span>.le_bytes[<span class="number">0</span>]);
 		} <span class="kw">else </span>{
-			<span class="kw">let </span>marker = ((<span class="self">self</span>.byte_count - <span class="number">1</span>) &lt;&lt; <span class="number">1</span>) | <span class="number">0x80</span>;
-			buf.write_byte(marker);
+			buf.write_byte(get_marker_for_unsigned(<span class="self">self</span>.byte_count));
 			buf.write_bytes(<span class="kw-2">&amp;</span><span class="self">self</span>.le_bytes[..<span class="self">self</span>.byte_count.into_usize()]);
 		}
 	}
@@ -1253,8 +1252,7 @@
 		<span class="kw">if </span><span class="self">self</span>.byte_count == <span class="number">0 </span>{
 			buf.write_byte(<span class="self">self</span>.le_bytes[<span class="number">0</span>]);
 		} <span class="kw">else </span>{
-			<span class="kw">let </span>marker = ((<span class="self">self</span>.byte_count - <span class="number">1</span>) &lt;&lt; <span class="number">1</span>) | <span class="number">0x80</span>;
-			buf.write_byte(marker);
+			buf.write_byte(get_marker_for_unsigned(<span class="self">self</span>.byte_count));
 			buf.write_bytes(<span class="kw-2">&amp;</span><span class="self">self</span>.le_bytes[..<span class="self">self</span>.byte_count.into_usize()]);
 		}
 	}
@@ -1420,8 +1418,7 @@
 		<span class="kw">if </span><span class="self">self</span>.byte_count == <span class="number">0 </span>{
 			buf.write_byte(<span class="self">self</span>.le_bytes[<span class="number">0</span>]);
 		} <span class="kw">else </span>{
-			<span class="kw">let </span>marker = ((<span class="self">self</span>.byte_count - <span class="number">1</span>) &lt;&lt; <span class="number">1</span>) | <span class="number">0x81</span>;
-			buf.write_byte(marker);
+			buf.write_byte(get_marker_for_signed(<span class="self">self</span>.byte_count));
 			buf.write_bytes(<span class="kw-2">&amp;</span><span class="self">self</span>.le_bytes[..<span class="self">self</span>.byte_count.into_usize()]);
 		}
 	}
@@ -1475,8 +1472,7 @@
 		<span class="kw">if </span><span class="self">self</span>.byte_count == <span class="number">0 </span>{
 			buf.write_byte(<span class="self">self</span>.le_bytes[<span class="number">0</span>]);
 		} <span class="kw">else </span>{
-			<span class="kw">let </span>marker = ((<span class="self">self</span>.byte_count - <span class="number">1</span>) &lt;&lt; <span class="number">1</span>) | <span class="number">0x81</span>;
-			buf.write_byte(marker);
+			buf.write_byte(get_marker_for_signed(<span class="self">self</span>.byte_count));
 			buf.write_bytes(<span class="kw-2">&amp;</span><span class="self">self</span>.le_bytes[..<span class="self">self</span>.byte_count.into_usize()]);
 		}
 	}
@@ -1531,8 +1527,7 @@
 		<span class="kw">if </span><span class="self">self</span>.byte_count == <span class="number">0 </span>{
 			buf.write_byte(<span class="self">self</span>.le_bytes[<span class="number">0</span>]);
 		} <span class="kw">else </span>{
-			<span class="kw">let </span>marker = ((<span class="self">self</span>.byte_count - <span class="number">1</span>) &lt;&lt; <span class="number">1</span>) | <span class="number">0x81</span>;
-			buf.write_byte(marker);
+			buf.write_byte(get_marker_for_signed(<span class="self">self</span>.byte_count));
 			buf.write_bytes(<span class="kw-2">&amp;</span><span class="self">self</span>.le_bytes[..<span class="self">self</span>.byte_count.into_usize()]);
 		}
 	}
@@ -1587,8 +1582,7 @@
 		<span class="kw">if </span><span class="self">self</span>.byte_count == <span class="number">0 </span>{
 			buf.write_byte(<span class="self">self</span>.le_bytes[<span class="number">0</span>]);
 		} <span class="kw">else </span>{
-			<span class="kw">let </span>marker = ((<span class="self">self</span>.byte_count - <span class="number">1</span>) &lt;&lt; <span class="number">1</span>) | <span class="number">0x81</span>;
-			buf.write_byte(marker);
+			buf.write_byte(get_marker_for_signed(<span class="self">self</span>.byte_count));
 			buf.write_bytes(<span class="kw-2">&amp;</span><span class="self">self</span>.le_bytes[..<span class="self">self</span>.byte_count.into_usize()]);
 		}
 	}
@@ -1767,7 +1761,15 @@
 	}
 }
 
-<span class="kw">unsafe fn </span>get_byte_count_unsigned_le&lt;<span class="kw">const </span>BYTES: usize&gt;(bytes: [u8; BYTES]) -&gt; u8 {
+<span class="kw">pub</span>(<span class="kw">super</span>) <span class="kw">const unsafe fn </span>get_marker_for_unsigned(byte_count: u8) -&gt; u8 {
+	((byte_count - <span class="number">1</span>) &lt;&lt; <span class="number">1</span>) | <span class="number">0x80
+</span>}
+
+<span class="kw">pub</span>(<span class="kw">super</span>) <span class="kw">const unsafe fn </span>get_marker_for_signed(byte_count: u8) -&gt; u8 {
+	((byte_count - <span class="number">1</span>) &lt;&lt; <span class="number">1</span>) | <span class="number">0x81
+</span>}
+
+<span class="kw">pub</span>(<span class="kw">super</span>) <span class="kw">unsafe fn </span>get_byte_count_unsigned_le&lt;<span class="kw">const </span>BYTES: usize&gt;(bytes: [u8; BYTES]) -&gt; u8 {
 	<span class="kw">let </span>ptr = bytes.as_ptr();
 
 	<span class="kw">for </span>i <span class="kw">in </span>(<span class="number">1</span>..BYTES).rev() {
@@ -1788,7 +1790,7 @@
 	</span><span class="number">1
 </span>}
 
-<span class="kw">unsafe fn </span>get_byte_count_signed_le&lt;<span class="kw">const </span>BYTES: usize&gt;(bytes: [u8; BYTES]) -&gt; u8 {
+<span class="kw">pub</span>(<span class="kw">super</span>) <span class="kw">unsafe fn </span>get_byte_count_signed_le&lt;<span class="kw">const </span>BYTES: usize&gt;(bytes: [u8; BYTES]) -&gt; u8 {
 	<span class="macro">debug_assert!</span>(BYTES &gt; <span class="number">0</span>);
 
 	<span class="kw">let </span>ptr = bytes.as_ptr();
@@ -2014,6 +2016,7 @@
 	<span class="kw">const </span>IN_BYTES: usize,
 	<span class="kw">const </span>OUT_BYTES: usize
 &gt;(bytes: [u8; IN_BYTES]) -&gt; [u8; OUT_BYTES] {
+	<span class="macro">debug_assert!</span>(<span class="number">0 </span>&lt; IN_BYTES);
 	<span class="macro">debug_assert!</span>(IN_BYTES &lt; OUT_BYTES);
 
 	<span class="kw">let </span><span class="kw-2">mut </span>out = MaybeUninit::&lt;[u8; OUT_BYTES]&gt;::uninit();
@@ -2028,6 +2031,7 @@
 	<span class="kw">const </span>IN_BYTES: usize,
 	<span class="kw">const </span>OUT_BYTES: usize
 &gt;(bytes: [u8; IN_BYTES]) -&gt; [u8; OUT_BYTES] {
+	<span class="macro">debug_assert!</span>(<span class="number">0 </span>&lt; IN_BYTES);
 	<span class="macro">debug_assert!</span>(IN_BYTES &lt; OUT_BYTES);
 
 	<span class="kw">let </span>sign = bytes[IN_BYTES - <span class="number">1</span>] &gt;&gt; <span class="number">7</span>;

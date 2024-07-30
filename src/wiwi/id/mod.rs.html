@@ -262,6 +262,7 @@
 <a href="#262" id="262">262</a>
 <a href="#263" id="263">263</a>
 <a href="#264" id="264">264</a>
+<a href="#265" id="265">265</a>
 </pre></div><pre class="rust"><code><span class="kw">use </span><span class="kw">crate</span>::num_traits::<span class="kw-2">*</span>;
 <span class="kw">use </span><span class="kw">crate</span>::rand::ThreadLocalChaCha8Rng;
 <span class="kw">use </span>std::time::{ SystemTime, UNIX_EPOCH };
@@ -283,7 +284,8 @@
 </span><span class="kw">const </span>RANDOM_COMPONENT_MASK: u8 = <span class="number">0b1111</span>;
 
 <span class="doccomment">/// When storing as an signed int, we flip the top bit (two's complement), so
-/// sorting numerically by this signed int representation of the ID will still work.
+/// sorting numerically by this signed int representation of the ID will still
+/// work the same.
 </span><span class="kw">const </span>TOP_BIT: u64 = <span class="number">1 </span>&lt;&lt; (u64::BITS - <span class="number">1</span>);
 
 <span class="doccomment">/// counting from the most significant to least significant bit, bits 1 to 64:
@@ -293,8 +295,8 @@
 /// - (47-60) 14 bits for increment (this is max 16384 IDs/ms, or about 16M IDs/s)
 /// - (61-64) last 4 bits for randomness (so IDs within one ms aren't just increments)
 ///
-/// IDs generated from one single factory are guaranteed to be unique and
-/// monotonically increase.
+/// IDs generated from one single instance of this generator are guaranteed to
+/// be unique and monotonically increasing.
 </span><span class="kw">pub struct </span>IDGenerator {
 	<span class="doccomment">/// unix epoch time
 	</span>last_generated_time: u64,

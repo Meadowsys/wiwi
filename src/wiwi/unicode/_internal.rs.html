@@ -1007,7 +1007,7 @@
 
 						<span class="kw">let </span><span class="kw-2">mut </span>usize_i = <span class="number">0</span>;
 						<span class="kw">while </span>usize_i &lt; max {
-							<span class="comment">// SAFETY: while loop does not loop more than we can read,
+							<span class="comment">// SAFETY: loop does not loop more than we can read,
 							// so ptr will not dereference out of bounds
 							</span><span class="kw">let </span>units = <span class="kw-2">*</span>ptr;
 							<span class="kw">let </span>units2 = <span class="kw-2">*</span>ptr.add(<span class="number">1</span>);

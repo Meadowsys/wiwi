@@ -299,20 +299,20 @@
 }
 
 <span class="macro">decl_thread_local_rng!</span> {
-	<span class="doccomment">/// ChaCha8 thread local random number generator, seeding and reseeding
-	/// using the OS-provided randomness source every 16KiB of output
+	<span class="doccomment">/// ChaCha8 thread local random number generator, seeding using the
+	/// OS-provided randomness source, and reseeding every 16KiB of output
 	</span>ThreadLocalChaCha8Rng ChaCha8Core OsRng
 }
 
 <span class="macro">decl_thread_local_rng!</span> {
-	<span class="doccomment">/// ChaCha12 thread local random number generator, seeding and reseeding
-	/// using the OS-provided randomness source every 16KiB of output
+	<span class="doccomment">/// ChaCha12 thread local random number generator, seeding using the
+	/// OS-provided randomness source, and reseeding every 16KiB of output
 	</span>ThreadLocalChaCha12Rng ChaCha12Core OsRng
 }
 
 <span class="macro">decl_thread_local_rng!</span> {
-	<span class="doccomment">/// ChaCha20 thread local random number generator, seeding and reseeding
-	/// using the OS-provided randomness source every 16KiB of output
+	<span class="doccomment">/// ChaCha20 thread local random number generator, seeding using the
+	/// OS-provided randomness source, and reseeding every 16KiB of output
 	</span>ThreadLocalChaCha20Rng ChaCha20Core OsRng
 }
 
@@ -453,10 +453,10 @@
 
 <span class="attr">#[inline]
 </span><span class="kw">fn </span>rand_u128&lt;R: RngCore&gt;(rng: <span class="kw-2">&amp;mut </span>R) -&gt; u128 {
-	<span class="kw">let </span>upper = rng.next_u64() <span class="kw">as </span>u128;
 	<span class="kw">let </span>lower = rng.next_u64() <span class="kw">as </span>u128;
-	upper &lt;&lt; <span class="number">64 </span>| lower
-}
+	<span class="kw">let </span>upper = rng.next_u64() <span class="kw">as </span>u128;
+	lower | upper &lt;&lt; <span class="number">64
+</span>}
 
 <span class="attr">#[inline]
 </span><span class="kw">fn </span>rand_i8&lt;R: RngCore&gt;(rng: <span class="kw-2">&amp;mut </span>R) -&gt; i8 {

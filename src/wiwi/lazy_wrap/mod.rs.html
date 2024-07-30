@@ -243,15 +243,7 @@
 <a href="#243" id="243">243</a>
 <a href="#244" id="244">244</a>
 <a href="#245" id="245">245</a>
-<a href="#246" id="246">246</a>
-<a href="#247" id="247">247</a>
-<a href="#248" id="248">248</a>
-<a href="#249" id="249">249</a>
-</pre></div><pre class="rust"><code><span class="doccomment">//! Wrapper for initialisation function, initialising it only on first access.
-//!
-//! Works in static contexts (static variables)
-
-</span><span class="kw">use </span>parking_lot::{ Once, OnceState };
+</pre></div><pre class="rust"><code><span class="kw">use </span>parking_lot::{ Once, OnceState };
 <span class="kw">use </span>std::cell::UnsafeCell;
 <span class="kw">use </span>std::fmt::{ <span class="self">self</span>, Debug, Display };
 <span class="kw">use </span>std::mem::ManuallyDrop;

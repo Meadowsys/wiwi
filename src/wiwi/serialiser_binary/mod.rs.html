@@ -457,16 +457,82 @@
 <a href="#457" id="457">457</a>
 <a href="#458" id="458">458</a>
 <a href="#459" id="459">459</a>
-</pre></div><pre class="rust"><code><span class="comment">// TODO: remove this
-</span><span class="attr">#![allow(
-	dead_code,
-	missing_docs,
-	unsafe_op_in_unsafe_fn,
-	clippy::missing_safety_doc,
-	clippy::undocumented_unsafe_blocks
-)]
-
-</span><span class="kw">use </span>std::{ ptr, slice };
+<a href="#460" id="460">460</a>
+<a href="#461" id="461">461</a>
+<a href="#462" id="462">462</a>
+<a href="#463" id="463">463</a>
+<a href="#464" id="464">464</a>
+<a href="#465" id="465">465</a>
+<a href="#466" id="466">466</a>
+<a href="#467" id="467">467</a>
+<a href="#468" id="468">468</a>
+<a href="#469" id="469">469</a>
+<a href="#470" id="470">470</a>
+<a href="#471" id="471">471</a>
+<a href="#472" id="472">472</a>
+<a href="#473" id="473">473</a>
+<a href="#474" id="474">474</a>
+<a href="#475" id="475">475</a>
+<a href="#476" id="476">476</a>
+<a href="#477" id="477">477</a>
+<a href="#478" id="478">478</a>
+<a href="#479" id="479">479</a>
+<a href="#480" id="480">480</a>
+<a href="#481" id="481">481</a>
+<a href="#482" id="482">482</a>
+<a href="#483" id="483">483</a>
+<a href="#484" id="484">484</a>
+<a href="#485" id="485">485</a>
+<a href="#486" id="486">486</a>
+<a href="#487" id="487">487</a>
+<a href="#488" id="488">488</a>
+<a href="#489" id="489">489</a>
+<a href="#490" id="490">490</a>
+<a href="#491" id="491">491</a>
+<a href="#492" id="492">492</a>
+<a href="#493" id="493">493</a>
+<a href="#494" id="494">494</a>
+<a href="#495" id="495">495</a>
+<a href="#496" id="496">496</a>
+<a href="#497" id="497">497</a>
+<a href="#498" id="498">498</a>
+<a href="#499" id="499">499</a>
+<a href="#500" id="500">500</a>
+<a href="#501" id="501">501</a>
+<a href="#502" id="502">502</a>
+<a href="#503" id="503">503</a>
+<a href="#504" id="504">504</a>
+<a href="#505" id="505">505</a>
+<a href="#506" id="506">506</a>
+<a href="#507" id="507">507</a>
+<a href="#508" id="508">508</a>
+<a href="#509" id="509">509</a>
+<a href="#510" id="510">510</a>
+<a href="#511" id="511">511</a>
+<a href="#512" id="512">512</a>
+<a href="#513" id="513">513</a>
+<a href="#514" id="514">514</a>
+<a href="#515" id="515">515</a>
+<a href="#516" id="516">516</a>
+<a href="#517" id="517">517</a>
+<a href="#518" id="518">518</a>
+<a href="#519" id="519">519</a>
+<a href="#520" id="520">520</a>
+<a href="#521" id="521">521</a>
+<a href="#522" id="522">522</a>
+<a href="#523" id="523">523</a>
+<a href="#524" id="524">524</a>
+<a href="#525" id="525">525</a>
+<a href="#526" id="526">526</a>
+<a href="#527" id="527">527</a>
+<a href="#528" id="528">528</a>
+<a href="#529" id="529">529</a>
+<a href="#530" id="530">530</a>
+<a href="#531" id="531">531</a>
+<a href="#532" id="532">532</a>
+<a href="#533" id="533">533</a>
+<a href="#534" id="534">534</a>
+</pre></div><pre class="rust"><code><span class="kw">use </span>std::{ ptr, slice };
 <span class="kw">use </span>std::marker::PhantomData;
 
 <span class="kw">pub mod </span>error;
@@ -479,14 +545,24 @@
 <span class="kw">mod </span>map;
 <span class="kw">mod </span>option;
 <span class="kw">mod </span>number;
+<span class="kw">mod </span>single_type_array;
 <span class="kw">mod </span>string;
 
-<span class="kw">pub use </span><span class="self">self</span>::error::{ Error, <span class="prelude-ty">Result </span>};
+<span class="kw">pub use </span><span class="self">self</span>::error::{
+	Error,
+	<span class="prelude-ty">Result
+</span>};
 
 <span class="kw">pub use </span><span class="self">self</span>::array::SliceSerialiser;
-<span class="kw">pub use </span><span class="self">self</span>::binary::{ Binary, BytesSerialiser };
+<span class="kw">pub use </span><span class="self">self</span>::binary::{
+	Binary,
+	BinarySerialiser
+};
 <span class="kw">pub use </span><span class="self">self</span>::bool::BoolSerialiser;
-<span class="kw">pub use </span><span class="self">self</span>::map::MapSerialiser;
+<span class="kw">pub use </span><span class="self">self</span>::map::{
+	DeserialiseMapError,
+	MapSerialiser
+};
 <span class="kw">pub use </span><span class="self">self</span>::option::OptionSerialiser;
 <span class="kw">pub use </span><span class="self">self</span>::number::{
 	U8Serialiser,
@@ -500,11 +576,32 @@
 	I32Serialiser,
 	I64Serialiser,
 	I128Serialiser,
-	ISizeSerialiser
+	ISizeSerialiser,
+	F32Serialiser,
+	F64Serialiser
+};
+<span class="kw">pub use </span>single_type_array::{
+	SingleTypeArray,
+	SingleTypeArrayExpensive,
+	SingleTypeArraySerialiserInt
 };
 <span class="kw">pub use </span><span class="self">self</span>::string::StrSerialiser;
 
-<span class="kw">pub fn </span>serialise&lt;T&gt;(item: <span class="kw-2">&amp;</span>T) -&gt; Vec&lt;u8&gt;
+<span class="doccomment">/// Serialise the given value to bytes
+///
+/// # Examples
+///
+/// ```
+/// # use wiwi::serialiser_binary::serialise;
+/// let data = String::from("glory cute");
+/// let serialised = serialise(&amp;data);
+///
+/// // str marker and length
+/// assert_eq!(&amp;serialised[0..2], [0xa8, 10]);
+/// // the string
+/// assert_eq!(&amp;serialised[2..], b"glory cute")
+/// ```
+</span><span class="kw">pub fn </span>serialise&lt;T&gt;(item: <span class="kw-2">&amp;</span>T) -&gt; Vec&lt;u8&gt;
 <span class="kw">where
 	</span>T: Serialise + <span class="question-mark">?</span>Sized
 {
@@ -533,14 +630,12 @@
 	<span class="kw">let </span><span class="kw-2">mut </span>input = InputSliceBuffer::new(bytes);
 	<span class="prelude-val">Ok</span>(<span class="macro">use_ok!</span>(
 		T::deserialise(<span class="kw-2">&amp;mut </span>input),
-		val =&gt; {
-			<span class="kw">if </span>input.is_empty() {
-				val
-			} <span class="kw">else </span>{
-				<span class="kw">return </span>error::expected(error::expected::DESC_EXPECTED_EOF)
-					.found(error::found::DESC_FOUND_TRAILING_BYTES)
-					.wrap_foreign()
-			}
+		val =&gt; <span class="kw">if </span>input.is_empty() {
+			val
+		} <span class="kw">else </span>{
+			<span class="kw">return </span>error::expected(error::expected::DESC_EXPECTED_EOF)
+				.found(error::found::DESC_FOUND_TRAILING_BYTES)
+				.wrap_foreign()
 		}
 	))
 }
@@ -552,8 +647,7 @@
 	/// serialiser struct
 	///
 	/// You should do most if not all of the heavy lifting here, and store it all
-	/// in the serialiser struct. That would make calling
-	/// [`needed_capacity`](Serialiser::needed_capacity) easier to implement.
+	/// in the serialiser struct.
 	</span><span class="kw">fn </span>build_serialiser(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; <span class="self">Self</span>::Serialiser&lt;<span class="lifetime">'_</span>&gt;;
 }
 
@@ -562,9 +656,8 @@
 	///
 	/// # Safety
 	///
-	/// Unsafe code is allowed to rely on this for soundness. If you cannot
-	/// precisely determine amount needed, you should (and must for soundness
-	/// reasons) provide the upper bound.
+	/// This must be accurate, as unsafe code is allowed to rely on this for
+	/// soundness.
 	</span><span class="kw">unsafe fn </span>needed_capacity(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; usize;
 
 	<span class="doccomment">/// Serialise `self` into the provided output buffer
@@ -599,6 +692,13 @@
 	<span class="doccomment">/// Reserve the given amount of bytes in the buffer
 	</span><span class="kw">fn </span>reserve(<span class="kw-2">&amp;mut </span><span class="self">self</span>, bytes: usize);
 
+	<span class="doccomment">/// Write the byte in
+	///
+	/// # Safety
+	///
+	/// You must have reserved at least 1 before calling this.
+	</span><span class="kw">unsafe fn </span>write_byte(<span class="kw-2">&amp;mut </span><span class="self">self</span>, byte: u8);
+
 	<span class="doccomment">/// Write all the bytes in the byte slice in
 	///
 	/// # Safety
@@ -606,13 +706,6 @@
 	/// You must have reserved at least the amount of space as `bytes.len()`
 	/// before calling this.
 	</span><span class="kw">unsafe fn </span>write_bytes(<span class="kw-2">&amp;mut </span><span class="self">self</span>, bytes: <span class="kw-2">&amp;</span>[u8]);
-
-	<span class="doccomment">/// Write the byte in
-	///
-	/// # Safety
-	///
-	/// You must have reserved at least 1 before calling this.
-	</span><span class="kw">unsafe fn </span>write_byte(<span class="kw-2">&amp;mut </span><span class="self">self</span>, byte: u8);
 }
 
 <span class="kw">impl </span>Output <span class="kw">for </span>Vec&lt;u8&gt; {
@@ -622,10 +715,18 @@
 
 	<span class="kw">unsafe fn </span>write_bytes(<span class="kw-2">&amp;mut </span><span class="self">self</span>, bytes: <span class="kw-2">&amp;</span>[u8]) {
 		<span class="kw">let </span>len = <span class="self">self</span>.len();
-		<span class="kw">let </span>ptr = <span class="self">self</span>.as_mut_ptr().add(len);
+		<span class="comment">// SAFETY: `len` is `self`'s len, so this ptr offset is in bounds
+		</span><span class="kw">let </span>ptr = <span class="kw">unsafe </span>{ <span class="self">self</span>.as_mut_ptr().add(len) };
 
-		ptr::copy_nonoverlapping(bytes.as_ptr(), ptr, bytes.len());
-		<span class="self">self</span>.set_len(len + bytes.len())
+		<span class="comment">// SAFETY: caller promises to have called `reserve` on `self` with
+		// at least `bytes.len()` bytes, so there is at least `bytes.len()`
+		// unused bytes, `ptr` is pointer to the start of the uninitialised
+		// region, and we only write `bytes.len()` bytes, staying in bounds
+		</span><span class="kw">unsafe </span>{ ptr::copy_nonoverlapping(bytes.as_ptr(), ptr, bytes.len()) }
+
+		<span class="comment">// SAFETY: `len` is the previous length of `self`, and we just wrote
+		// to `bytes.len()` bytes
+		</span><span class="kw">unsafe </span>{ <span class="self">self</span>.set_len(len + bytes.len()) }
 	}
 
 	<span class="kw">unsafe fn </span>write_byte(<span class="kw-2">&amp;mut </span><span class="self">self</span>, byte: u8) {
@@ -638,33 +739,51 @@
 }
 
 <span class="kw">pub trait </span>Input&lt;<span class="lifetime">'h</span>&gt; {
-	<span class="kw">fn </span>read_bytes_ptr(<span class="kw-2">&amp;mut </span><span class="self">self</span>, bytes: usize) -&gt; <span class="prelude-ty">Result</span>&lt;<span class="kw-2">*const </span>u8, error::ErrorFound&gt;;
+	<span class="doccomment">/// Reads the next specified amount of bytes, returning a pointer to it if
+	/// there is enough bytes left
+	///
+	/// Semantically, the returned pointer is granting shared access to the
+	/// region of memory of length `bytes`, for lifetime `'h`.
+	///
+	/// Calling this function is safe, because doing anything with the returned
+	/// pointer is unsafe, and then you have to adhere to contract.
+	</span><span class="kw">fn </span>read_bytes_ptr(<span class="kw-2">&amp;mut </span><span class="self">self</span>, bytes: usize) -&gt; <span class="prelude-ty">Result</span>&lt;<span class="kw-2">*const </span>u8, error::ErrorFound&gt;;
 
-	<span class="kw">fn </span>read_bytes(<span class="kw-2">&amp;mut </span><span class="self">self</span>, bytes: usize) -&gt; <span class="prelude-ty">Result</span>&lt;<span class="kw-2">&amp;</span><span class="lifetime">'h </span>[u8], error::ErrorFound&gt; {
+	<span class="doccomment">/// Reads the next specified amount of bytes, returning a slice if there is
+	/// enough bytes left
+	</span><span class="kw">fn </span>read_bytes(<span class="kw-2">&amp;mut </span><span class="self">self</span>, bytes: usize) -&gt; <span class="prelude-ty">Result</span>&lt;<span class="kw-2">&amp;</span><span class="lifetime">'h </span>[u8], error::ErrorFound&gt; {
 		<span class="prelude-val">Ok</span>(<span class="macro">use_ok!</span>(
 			<span class="self">self</span>.read_bytes_ptr(bytes),
-			<span class="comment">// SAFETY: if this returned `Some` then the ptr is valid for `bytes` reads
-			// so is safe to create slice here
+			<span class="comment">// SAFETY: it's valid semantically to create a slice of `bytes` len to the
+			// returned pointer for lifetime `'h` (see doc on `read_bytes_ptr` fn)
 			</span>ptr =&gt; <span class="kw">unsafe </span>{ slice::from_raw_parts(ptr, bytes) },
 			#err err =&gt; err.wrap()
 		))
 	}
 
-	<span class="kw">fn </span>read_byte(<span class="kw-2">&amp;mut </span><span class="self">self</span>) -&gt; <span class="prelude-ty">Result</span>&lt;u8, error::ErrorFound&gt; {
+	<span class="doccomment">/// Reads the next byte and returns it, if there is at least one left
+	</span><span class="kw">fn </span>read_byte(<span class="kw-2">&amp;mut </span><span class="self">self</span>) -&gt; <span class="prelude-ty">Result</span>&lt;u8, error::ErrorFound&gt; {
 		<span class="prelude-val">Ok</span>(<span class="macro">use_ok!</span>(
 			<span class="self">self</span>.read_bytes_ptr(<span class="number">1</span>),
-			<span class="comment">// SAFETY: ptr returned by `read_bytes_ptr` is
-			// guaranteed to be readable for at least 1 byte
+			<span class="comment">// SAFETY: semantically `read_bytes_ptr` gives us one byte in
+			// the ptr it returns so this is safe to dereference
 			</span>byte =&gt; <span class="kw">unsafe </span>{ <span class="kw-2">*</span>byte },
 			#err err =&gt; err.wrap()
 		))
 	}
 
-	<span class="kw">fn </span>read_bytes_const&lt;<span class="kw">const </span>BYTES: usize&gt;(<span class="kw-2">&amp;mut </span><span class="self">self</span>) -&gt; <span class="prelude-ty">Result</span>&lt;<span class="kw-2">&amp;</span><span class="lifetime">'h </span>[u8; BYTES], error::ErrorFound&gt; {
+	<span class="doccomment">/// Reads `BYTES` bytes, returning a pointer to an array if there
+	/// are enough bytes left
+	///
+	/// This is the same as [`read_bytes`](Input::read_bytes), but it returns
+	/// a reference to a constant sized array, instead of a dynamically sized
+	/// slice.
+	</span><span class="kw">fn </span>read_bytes_const&lt;<span class="kw">const </span>BYTES: usize&gt;(<span class="kw-2">&amp;mut </span><span class="self">self</span>) -&gt; <span class="prelude-ty">Result</span>&lt;<span class="kw-2">&amp;</span><span class="lifetime">'h </span>[u8; BYTES], error::ErrorFound&gt; {
 		<span class="prelude-val">Ok</span>(<span class="macro">use_ok!</span>(
-			<span class="self">self</span>.read_bytes(BYTES),
-			bytes =&gt; <span class="kw">unsafe </span>{ <span class="kw-2">&amp;*</span>bytes.as_ptr().cast::&lt;[u8; BYTES]&gt;() },
-			#err err =&gt; err.wrap()
+			<span class="self">self</span>.read_bytes_ptr(BYTES),
+			<span class="comment">// SAFETY: semantically we are given access to next `BYTES` bytes, so
+			// casting the pointer to an array of length `BYTES` is valid
+			</span>bytes =&gt; <span class="kw">unsafe </span>{ <span class="kw-2">&amp;*</span>bytes.cast::&lt;[u8; BYTES]&gt;() }
 		))
 	}
 }
@@ -675,7 +794,8 @@
 }
 
 <span class="kw">impl</span>&lt;<span class="lifetime">'h</span>&gt; OutputVecBuffer&lt;<span class="lifetime">'h</span>&gt; {
-	<span class="kw">pub fn </span>new(vec: <span class="kw-2">&amp;</span><span class="lifetime">'h </span><span class="kw-2">mut </span>Vec&lt;u8&gt;) -&gt; <span class="self">Self </span>{
+	<span class="doccomment">/// Create a new [`OutputVecBuffer`] with the given [`Vec`]
+	</span><span class="kw">pub fn </span>new(vec: <span class="kw-2">&amp;</span><span class="lifetime">'h </span><span class="kw-2">mut </span>Vec&lt;u8&gt;) -&gt; <span class="self">Self </span>{
 		<span class="kw">let </span>ptr = vec.as_mut_ptr();
 		<span class="self">Self </span>{ vec, ptr }
 	}
@@ -687,7 +807,10 @@
 
 		<span class="kw">let </span>len = <span class="self">self</span>.vec.len();
 		<span class="kw">let </span>ptr = <span class="self">self</span>.vec.as_mut_ptr();
-		<span class="self">self</span>.ptr = <span class="kw">unsafe </span>{ ptr.add(len).cast_const() };
+
+		<span class="comment">// SAFETY: `ptr` was just gotten from `vec`, *after* the reserve call.
+		// `len` is existing amount of elements in the vec, so is in bounds
+		</span><span class="self">self</span>.ptr = <span class="kw">unsafe </span>{ ptr.add(len).cast_const() };
 	}
 
 	<span class="kw">unsafe fn </span>write_bytes(<span class="kw-2">&amp;mut </span><span class="self">self</span>, bytes: <span class="kw-2">&amp;</span>[u8]) {
@@ -727,6 +850,14 @@
 	<span class="kw">fn </span>is_empty(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; bool {
 		<span class="self">self</span>.remaining == <span class="number">0
 	</span>}
+
+	<span class="doccomment">/// Gets a slice of the remaining bytes
+	</span><span class="kw">fn </span>as_slice(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; <span class="kw-2">&amp;</span>[u8] {
+		<span class="comment">// SAFETY: every time we read from `self`, we offset `ptr` forward by
+		// that much and decrease `remaining` by that much too. So this slice
+		// created represents the tail end of the initial buffer (ie. what's left)
+		</span><span class="kw">unsafe </span>{ slice::from_raw_parts(<span class="self">self</span>.ptr, <span class="self">self</span>.remaining) }
+	}
 }
 
 <span class="kw">impl</span>&lt;<span class="lifetime">'h</span>&gt; Input&lt;<span class="lifetime">'h</span>&gt; <span class="kw">for </span>InputSliceBuffer&lt;<span class="lifetime">'h</span>&gt; {
@@ -737,7 +868,10 @@
 			<span class="kw">let </span>ptr = <span class="self">self</span>.ptr;
 
 			<span class="self">self</span>.remaining -= bytes;
-			<span class="self">self</span>.ptr = <span class="kw">unsafe </span>{ <span class="self">self</span>.ptr.add(bytes) };
+			<span class="comment">// SAFETY: `self.remaining` is the remaining amount of bytes `ptr` is
+			// valid for, and we just "took" `bytes` bytes, so we offset `ptr`
+			// forward alongside `remaining`
+			</span><span class="self">self</span>.ptr = <span class="kw">unsafe </span>{ <span class="self">self</span>.ptr.add(bytes) };
 
 			<span class="prelude-val">Ok</span>(ptr)
 		}
@@ -757,6 +891,22 @@
 
 	<span class="kw">fn </span>build_serialiser(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; T::Serialiser&lt;<span class="lifetime">'_</span>&gt; {
 		(<span class="kw-2">**</span><span class="self">self</span>).build_serialiser()
+	}
+}
+
+<span class="kw">impl</span>&lt;T: Serialise + <span class="question-mark">?</span>Sized&gt; Serialise <span class="kw">for </span>Box&lt;T&gt; {
+	<span class="kw">type </span>Serialiser&lt;<span class="lifetime">'h</span>&gt; = T::Serialiser&lt;<span class="lifetime">'h</span>&gt; <span class="kw">where </span>T: <span class="lifetime">'h</span>;
+
+	<span class="kw">fn </span>build_serialiser(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; T::Serialiser&lt;<span class="lifetime">'_</span>&gt; {
+		T::build_serialiser(<span class="self">self</span>)
+	}
+}
+
+<span class="kw">impl</span>&lt;<span class="lifetime">'h</span>, T: Deserialise&lt;<span class="lifetime">'h</span>&gt;&gt; Deserialise&lt;<span class="lifetime">'h</span>&gt; <span class="kw">for </span>Box&lt;T&gt; {
+	<span class="kw">type </span>Error = T::Error;
+
+	<span class="kw">fn </span>deserialise_with_marker&lt;I: Input&lt;<span class="lifetime">'h</span>&gt;&gt;(buf: <span class="kw-2">&amp;mut </span>I, marker: u8) -&gt; <span class="prelude-ty">Result</span>&lt;Box&lt;T&gt;, T::Error&gt; {
+		<span class="prelude-val">Ok</span>(Box::new(<span class="macro">use_ok!</span>(T::deserialise_with_marker(buf, marker))))
 	}
 }
 
@@ -791,38 +941,38 @@
 }
 <span class="kw">use </span>use_ok;
 
-<span class="macro">macro_rules!</span> use_some {
-	(<span class="macro-nonterminal">$option</span>:expr) =&gt; {
-		<span class="kw">match </span><span class="macro-nonterminal">$option </span>{
-			<span class="prelude-val">Some</span>(val) =&gt; { val }
-			<span class="prelude-val">None </span>=&gt; { <span class="kw">return </span><span class="prelude-val">None </span>}
-		}
-	};
+<span class="comment">// macro_rules! use_some {
+// 	($option:expr) =&gt; {
+// 		match $option {
+// 			Some(val) =&gt; { val }
+// 			None =&gt; { return None }
+// 		}
+// 	};
+//
+// 	($option:expr, #none =&gt; $none_op:expr) =&gt; {
+// 		match $option {
+// 			Some(val) =&gt; { val }
+// 			None =&gt; { return $none_op }
+// 		}
+// 	};
+//
+// 	($option:expr, $val:ident =&gt; $op:expr) =&gt; {
+// 		match $option {
+// 			Some($val) =&gt; { $op }
+// 			None =&gt; { return None }
+// 		}
+// 	};
+//
+// 	($option:expr, $val:ident =&gt; $op:expr, #none =&gt; $none_op:expr) =&gt; {
+// 		match $option {
+// 			Some($val) =&gt; { $op }
+// 			None =&gt; { return $none_op }
+// 		}
+// 	};
+// }
+// use use_some;
 
-	(<span class="macro-nonterminal">$option</span>:expr, #none =&gt; <span class="macro-nonterminal">$none_op</span>:expr) =&gt; {
-		<span class="kw">match </span><span class="macro-nonterminal">$option </span>{
-			<span class="prelude-val">Some</span>(val) =&gt; { val }
-			<span class="prelude-val">None </span>=&gt; { <span class="kw">return </span><span class="macro-nonterminal">$none_op </span>}
-		}
-	};
-
-	(<span class="macro-nonterminal">$option</span>:expr, <span class="macro-nonterminal">$val</span>:ident =&gt; <span class="macro-nonterminal">$op</span>:expr) =&gt; {
-		<span class="kw">match </span><span class="macro-nonterminal">$option </span>{
-			<span class="prelude-val">Some</span>(<span class="macro-nonterminal">$val</span>) =&gt; { <span class="macro-nonterminal">$op </span>}
-			<span class="prelude-val">None </span>=&gt; { <span class="kw">return </span><span class="prelude-val">None </span>}
-		}
-	};
-
-	(<span class="macro-nonterminal">$option</span>:expr, <span class="macro-nonterminal">$val</span>:ident =&gt; <span class="macro-nonterminal">$op</span>:expr, #none =&gt; <span class="macro-nonterminal">$none_op</span>:expr) =&gt; {
-		<span class="kw">match </span><span class="macro-nonterminal">$option </span>{
-			<span class="prelude-val">Some</span>(<span class="macro-nonterminal">$val</span>) =&gt; { <span class="macro-nonterminal">$op </span>}
-			<span class="prelude-val">None </span>=&gt; { <span class="kw">return </span><span class="macro-nonterminal">$none_op </span>}
-		}
-	};
-}
-<span class="kw">use </span>use_some;
-
-<span class="macro">macro_rules!</span> consts {
+</span><span class="macro">macro_rules!</span> consts {
 	{
 		@<span class="kw">impl</span>(<span class="kw">const</span>)
 		$(<span class="attr">#[<span class="macro-nonterminal">$mod_meta</span>:meta]</span>)*
@@ -898,9 +1048,9 @@
 		Output,
 		Serialise,
 		Serialiser,
-		use_ok,
-		use_some
-	};
+		use_ok
+		<span class="comment">// use_some
+	</span>};
 	<span class="kw">pub</span>(<span class="kw">super</span>) <span class="kw">use </span><span class="kw">super</span>::error::{
 		Error,
 		ErrorExpected,
