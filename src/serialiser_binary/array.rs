@@ -25,14 +25,6 @@ impl<T: Serialise> Serialise for Vec<T> {
 	}
 }
 
-impl<T: Serialise> Serialise for Box<[T]> {
-	type Serialiser<'h> = SliceSerialiser<'h, T> where Self: 'h;
-
-	fn build_serialiser(&self) -> SliceSerialiser<'_, T> {
-		SliceSerialiser::new(self)
-	}
-}
-
 pub struct SliceSerialiser<'h, T: Serialise + 'h> {
 	inner: Vec<T::Serialiser<'h>>,
 	/// If `inner.len() > u8::MAX`, this will be `Some`, containing
