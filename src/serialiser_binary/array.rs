@@ -17,6 +17,22 @@ impl<T: Serialise> Serialise for &[T] {
 	}
 }
 
+impl<T: Serialise> Serialise for Vec<T> {
+	type Serialiser<'h> = SliceSerialiser<'h, T> where Self: 'h;
+
+	fn build_serialiser(&self) -> SliceSerialiser<'_, T> {
+		SliceSerialiser::new(self)
+	}
+}
+
+impl<T: Serialise> Serialise for Box<[T]> {
+	type Serialiser<'h> = SliceSerialiser<'h, T> where Self: 'h;
+
+	fn build_serialiser(&self) -> SliceSerialiser<'_, T> {
+		SliceSerialiser::new(self)
+	}
+}
+
 pub struct SliceSerialiser<'h, T: Serialise + 'h> {
 	inner: Vec<T::Serialiser<'h>>,
 	/// If `inner.len() > u8::MAX`, this will be `Some`, containing
@@ -109,5 +125,16 @@ impl<'h, T: Deserialise<'h>> Deserialise<'h> for Vec<T> {
 		}
 
 		Ok(vec)
+	}
+}
+
+impl<'h, T: Deserialise<'h>> Deserialise<'h> for Box<[T]> {
+	type Error = T::Error;
+
+	fn deserialise_with_marker<I: Input<'h>>(buf: &mut I, marker: u8) -> Result<Box<[T]>, T::Error> {
+		Ok(use_ok!(
+			Vec::deserialise_with_marker(buf, marker),
+			vec => vec.into_boxed_slice()
+		))
 	}
 }
