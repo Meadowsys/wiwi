@@ -1,12 +1,3 @@
-// TODO: remove this
-#![allow(
-	dead_code,
-	missing_docs,
-	unsafe_op_in_unsafe_fn,
-	clippy::missing_safety_doc,
-	clippy::undocumented_unsafe_blocks
-)]
-
 use std::{ ptr, slice };
 use std::marker::PhantomData;
 
