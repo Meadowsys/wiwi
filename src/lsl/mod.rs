@@ -1,11 +1,11 @@
-use crate::id::{ IDGenerator, GeneratedID };
+use crate::id::{ IDGenerator64, GeneratedID64 };
 use hashbrown::HashMap;
 use std::marker::PhantomData;
 
 mod lib;
 
 pub struct Script {
-	generator: IDGenerator,
+	generator: IDGenerator64,
 	vars: Vars,
 	fns: Fns,
 	state_default: State,
@@ -24,12 +24,12 @@ struct State {
 
 #[derive(Clone, Copy, Hash)]
 struct StateKey {
-	id: GeneratedID
+	id: GeneratedID64
 }
 
 struct ConcreteVar<T: Type> {
 	ty: T,
-	id: GeneratedID,
+	id: GeneratedID64,
 	init_val: Option<String>
 }
 

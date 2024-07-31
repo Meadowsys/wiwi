@@ -114,6 +114,7 @@ hex = [
 	"num-traits-unstable"
 ]
 id-unstable = [
+	"export-all-submodules",
 	"num-traits-unstable",
 	"rand"
 ]

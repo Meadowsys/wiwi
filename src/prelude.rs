@@ -82,11 +82,6 @@ pub use crate::hex::{
 	decode_hex
 };
 
-#[cfg(feature = "id-unstable")]
-pub use crate::id::{
-	IDGenerator,
-	GeneratedID
-};
 
 #[cfg(feature = "lazy-wrap")]
 pub use crate::lazy_wrap::{

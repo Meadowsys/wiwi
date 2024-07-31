@@ -94,7 +94,7 @@ fn main() {
 		#[unstable]
 		"id"
 		"ID generators, of various output sizes, and guarantees of uniqueness and ordering"
-		features: ["num-traits", "rand"]
+		features: ["export-all-submodules", "num-traits", "rand"]
 
 		#[unstable]
 		"int"
