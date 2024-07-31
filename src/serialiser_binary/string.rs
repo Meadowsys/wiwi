@@ -19,8 +19,11 @@ impl Serialise for String {
 	}
 }
 
+/// Serialiser for strings (including [`prim@str`], [`String`], [`Cow<str>`] etc)
 pub struct StrSerialiser<'h> {
+	/// The [`prim@str`] to serialise
 	val: &'h str,
+
 	/// If `val.len() > u8::MAX`, this will be `Some`, containing
 	/// the [`USizeSerialiser`] whose job is to serialise the length
 	len_ser: Option<USizeSerialiser>
