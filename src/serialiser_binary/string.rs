@@ -1,5 +1,5 @@
 use super::internal_prelude::*;
-use super::USizeSerialiser;
+use super::NumberSerialiserUnsigned;
 use std::borrow::Cow;
 use std::str;
 
@@ -26,13 +26,13 @@ pub struct StrSerialiser<'h> {
 
 	/// If `val.len() > u8::MAX`, this will be `Some`, containing
 	/// the [`USizeSerialiser`] whose job is to serialise the length
-	len_ser: Option<USizeSerialiser>
+	len_ser: Option<<usize as Serialise>::Serialiser<'h>>
 }
 
 impl<'h> StrSerialiser<'h> {
 	fn new(val: &'h str) -> Self {
 		let len_ser = if val.len() > u8::MAX.into_usize() {
-			Some(USizeSerialiser::new(val.len()))
+			Some(NumberSerialiserUnsigned::new(val.len()))
 		} else {
 			None
 		};

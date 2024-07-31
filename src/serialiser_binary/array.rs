@@ -8,7 +8,7 @@
 
 use crate::defer::OnDrop;
 use super::internal_prelude::*;
-use super::USizeSerialiser;
+use super::NumberSerialiserUnsigned;
 use std::mem::MaybeUninit;
 use std::ptr;
 
@@ -39,13 +39,13 @@ pub struct SliceSerialiser<'h, T: Serialise + 'h> {
 	inner: Vec<T::Serialiser<'h>>,
 	/// If `inner.len() > u8::MAX`, this will be `Some`, containing
 	/// the [`USizeSerialiser`] whose job is to serialise the length
-	len_ser: Option<USizeSerialiser>
+	len_ser: Option<<usize as Serialise>::Serialiser<'h>>
 }
 
 impl<'h, T: Serialise> SliceSerialiser<'h, T> {
 	fn new(slice: &'h [T]) -> Self {
 		let len_ser = if slice.len() > u8::MAX.into_usize() {
-			Some(USizeSerialiser::new(slice.len()))
+			Some(NumberSerialiserUnsigned::new(slice.len()))
 		} else {
 			None
 		};

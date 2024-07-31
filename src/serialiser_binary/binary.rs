@@ -1,5 +1,5 @@
 use super::internal_prelude::*;
-use super::USizeSerialiser;
+use super::NumberSerialiserUnsigned;
 use std::ops::Deref;
 
 pub enum Binary<'h> {
@@ -44,13 +44,13 @@ impl<'b> Serialise for Binary<'b> {
 
 pub struct BinarySerialiser<'h> {
 	slice: &'h [u8],
-	len_ser: Option<USizeSerialiser>
+	len_ser: Option<<usize as Serialise>::Serialiser<'h>>
 }
 
 impl<'h> BinarySerialiser<'h> {
 	pub(super) fn new(slice: &'h [u8]) -> Self {
 		let len_ser = if slice.len() > u8::MAX.into_usize() {
-			Some(USizeSerialiser::new(slice.len()))
+			Some(NumberSerialiserUnsigned::new(slice.len()))
 		} else {
 			None
 		};

@@ -32,19 +32,10 @@ pub use self::map::{
 pub use self::option::OptionSerialiser;
 pub use self::number::{
 	U8Serialiser,
-	U16Serialiser,
-	U32Serialiser,
-	U64Serialiser,
-	U128Serialiser,
-	USizeSerialiser,
 	I8Serialiser,
-	I16Serialiser,
-	I32Serialiser,
-	I64Serialiser,
-	I128Serialiser,
-	ISizeSerialiser,
-	F32Serialiser,
-	F64Serialiser
+	NumberSerialiserSigned,
+	NumberSerialiserUnsigned,
+	NumberSerialiserFloat
 };
 pub use single_type_array::{
 	SingleTypeArray,

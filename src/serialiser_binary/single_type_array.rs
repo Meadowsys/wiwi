@@ -1,5 +1,5 @@
 use super::internal_prelude::*;
-use super::USizeSerialiser;
+use super::NumberSerialiserUnsigned;
 use super::number::{
 	get_byte_count_signed_le,
 	get_byte_count_unsigned_le,
@@ -49,7 +49,7 @@ where
 	T: SingleTypeArraySerialise + 'h
 {
 	serialisers: Vec<T::Serialiser<'h>>,
-	len_ser: Option<USizeSerialiser>
+	len_ser: Option<<usize as Serialise>::Serialiser<'h>>
 }
 
 impl<'h, T> SingleTypeArraySerialiserImpl<'h, T>
@@ -58,7 +58,7 @@ where
 {
 	fn new(slice: &'h [T]) -> Self {
 		let len_ser = if slice.len() > u8::MAX.into_usize() {
-			Some(USizeSerialiser::new(slice.len()))
+			Some(NumberSerialiserUnsigned::new(slice.len()))
 		} else {
 			None
 		};

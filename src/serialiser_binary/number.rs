@@ -43,47 +43,13 @@ gen_int_deserialise! {
 }
 
 impl Serialise for u16 {
-	type Serialiser<'h> = U16Serialiser;
+	type Serialiser<'h> = NumberSerialiserUnsigned<2>;
 
-	fn build_serialiser(&self) -> U16Serialiser {
-		U16Serialiser::new(*self)
+	fn build_serialiser(&self) -> NumberSerialiserUnsigned<2> {
+		NumberSerialiserUnsigned::new(*self)
 	}
 }
 
-pub struct U16Serialiser {
-	le_bytes: [u8; 2],
-	byte_count: u8
-}
-
-impl U16Serialiser {
-	pub(super) fn new(val: u16) -> Self {
-		let le_bytes = val.to_le_bytes();
-		let byte_count = if val <= MARKER_SMALLINT_RANGE_END.into_u16() {
-			0
-		} else {
-			unsafe { get_byte_count_unsigned_le(le_bytes) }
-		};
-
-		Self { le_bytes, byte_count }
-	}
-}
-
-impl<'h> Serialiser<'h> for U16Serialiser {
-	unsafe fn needed_capacity(&self) -> usize {
-		self.byte_count.into_usize() + 1
-	}
-
-	unsafe fn serialise<O: Output>(&self, buf: &mut O) {
-		if self.byte_count > 2 { hint::unreachable_unchecked() }
-
-		if self.byte_count == 0 {
-			buf.write_byte(self.le_bytes[0]);
-		} else {
-			buf.write_byte(get_marker_for_unsigned(self.byte_count));
-			buf.write_bytes(&self.le_bytes[..self.byte_count.into_usize()]);
-		}
-	}
-}
 
 gen_int_deserialise! {
 	u16
@@ -93,45 +59,10 @@ gen_int_deserialise! {
 }
 
 impl Serialise for u32 {
-	type Serialiser<'h> = U32Serialiser;
+	type Serialiser<'h> = NumberSerialiserUnsigned<4>;
 
-	fn build_serialiser(&self) -> U32Serialiser {
-		U32Serialiser::new(*self)
-	}
-}
-
-pub struct U32Serialiser {
-	le_bytes: [u8; 4],
-	byte_count: u8
-}
-
-impl U32Serialiser {
-	pub(super) fn new(val: u32) -> Self {
-		let le_bytes = val.to_le_bytes();
-		let byte_count = if val <= MARKER_SMALLINT_RANGE_END.into_u32() {
-			0
-		} else {
-			unsafe { get_byte_count_unsigned_le(le_bytes) }
-		};
-
-		Self { le_bytes, byte_count }
-	}
-}
-
-impl<'h> Serialiser<'h> for U32Serialiser {
-	unsafe fn needed_capacity(&self) -> usize {
-		self.byte_count.into_usize() + 1
-	}
-
-	unsafe fn serialise<O: Output>(&self, buf: &mut O) {
-		if self.byte_count > 4 { hint::unreachable_unchecked() }
-
-		if self.byte_count == 0 {
-			buf.write_byte(self.le_bytes[0]);
-		} else {
-			buf.write_byte(get_marker_for_unsigned(self.byte_count));
-			buf.write_bytes(&self.le_bytes[..self.byte_count.into_usize()]);
-		}
+	fn build_serialiser(&self) -> NumberSerialiserUnsigned<4> {
+		NumberSerialiserUnsigned::new(*self)
 	}
 }
 
@@ -143,45 +74,10 @@ gen_int_deserialise! {
 }
 
 impl Serialise for u64 {
-	type Serialiser<'h> = U64Serialiser;
+	type Serialiser<'h> = NumberSerialiserUnsigned<8>;
 
-	fn build_serialiser(&self) -> U64Serialiser {
-		U64Serialiser::new(*self)
-	}
-}
-
-pub struct U64Serialiser {
-	le_bytes: [u8; 8],
-	byte_count: u8
-}
-
-impl U64Serialiser {
-	pub(super) fn new(val: u64) -> Self {
-		let le_bytes = val.to_le_bytes();
-		let byte_count = if val <= MARKER_SMALLINT_RANGE_END.into_u64() {
-			0
-		} else {
-			unsafe { get_byte_count_unsigned_le(le_bytes) }
-		};
-
-		Self { le_bytes, byte_count }
-	}
-}
-
-impl<'h> Serialiser<'h> for U64Serialiser {
-	unsafe fn needed_capacity(&self) -> usize {
-		self.byte_count.into_usize() + 1
-	}
-
-	unsafe fn serialise<O: Output>(&self, buf: &mut O) {
-		if self.byte_count > 8 { hint::unreachable_unchecked() }
-
-		if self.byte_count == 0 {
-			buf.write_byte(self.le_bytes[0]);
-		} else {
-			buf.write_byte(get_marker_for_unsigned(self.byte_count));
-			buf.write_bytes(&self.le_bytes[..self.byte_count.into_usize()]);
-		}
+	fn build_serialiser(&self) -> NumberSerialiserUnsigned<8> {
+		NumberSerialiserUnsigned::new(*self)
 	}
 }
 
@@ -193,45 +89,10 @@ gen_int_deserialise! {
 }
 
 impl Serialise for u128 {
-	type Serialiser<'h> = U128Serialiser;
+	type Serialiser<'h> = NumberSerialiserUnsigned<16>;
 
-	fn build_serialiser(&self) -> U128Serialiser {
-		U128Serialiser::new(*self)
-	}
-}
-
-pub struct U128Serialiser {
-	le_bytes: [u8; 16],
-	byte_count: u8
-}
-
-impl U128Serialiser {
-	pub(super) fn new(val: u128) -> Self {
-		let le_bytes = val.to_le_bytes();
-		let byte_count = if val <= MARKER_SMALLINT_RANGE_END.into_u128() {
-			0
-		} else {
-			unsafe { get_byte_count_unsigned_le(le_bytes) }
-		};
-
-		Self { le_bytes, byte_count }
-	}
-}
-
-impl<'h> Serialiser<'h> for U128Serialiser {
-	unsafe fn needed_capacity(&self) -> usize {
-		self.byte_count.into_usize() + 1
-	}
-
-	unsafe fn serialise<O: Output>(&self, buf: &mut O) {
-		if self.byte_count > 16 { hint::unreachable_unchecked() }
-
-		if self.byte_count == 0 {
-			buf.write_byte(self.le_bytes[0]);
-		} else {
-			buf.write_byte(get_marker_for_unsigned(self.byte_count));
-			buf.write_bytes(&self.le_bytes[..self.byte_count.into_usize()]);
-		}
+	fn build_serialiser(&self) -> NumberSerialiserUnsigned<16> {
+		NumberSerialiserUnsigned::new(*self)
 	}
 }
 
@@ -243,50 +104,15 @@ gen_int_deserialise! {
 }
 
 impl Serialise for usize {
-	type Serialiser<'h> = USizeSerialiser;
+	#[cfg(target_pointer_width = "64")]
+	type Serialiser<'h> = NumberSerialiserUnsigned<8>;
+	#[cfg(target_pointer_width = "32")]
+	type Serialiser<'h> = NumberSerialiserUnsigned<4>;
+	#[cfg(target_pointer_width = "16")]
+	type Serialiser<'h> = NumberSerialiserUnsigned<2>;
 
-	fn build_serialiser(&self) -> USizeSerialiser {
-		USizeSerialiser::new(*self)
-	}
-}
-
-#[cfg(target_pointer_width = "64")]
-pub struct USizeSerialiser {
-	inner: U64Serialiser
-}
-
-#[cfg(target_pointer_width = "32")]
-pub struct USizeSerialiser {
-	inner: U32Serialiser
-}
-
-#[cfg(target_pointer_width = "16")]
-pub struct USizeSerialiser {
-	inner: U16Serialiser
-}
-
-impl USizeSerialiser {
-	pub(super) fn new(val: usize) -> Self {
-		#[cfg(target_pointer_width = "64")]
-		let inner = U64Serialiser::new(val.into_u64());
-
-		#[cfg(target_pointer_width = "32")]
-		let inner = U32Serialiser::new(val.into_u32());
-
-		#[cfg(target_pointer_width = "16")]
-		let inner = U16Serialiser::new(val.into_u16());
-
-		Self { inner }
-	}
-}
-
-impl<'h> Serialiser<'h> for USizeSerialiser {
-	unsafe fn needed_capacity(&self) -> usize {
-		self.inner.needed_capacity()
-	}
-
-	unsafe fn serialise<O: Output>(&self, buf: &mut O) {
-		self.inner.serialise(buf)
+	fn build_serialiser(&self) -> Self::Serialiser<'_> {
+		NumberSerialiserUnsigned::new(*self)
 	}
 }
 
@@ -354,50 +180,10 @@ gen_int_deserialise! {
 }
 
 impl Serialise for i16 {
-	type Serialiser<'h> = I16Serialiser;
+	type Serialiser<'h> = NumberSerialiserSigned<2>;
 
-	fn build_serialiser(&self) -> I16Serialiser {
-		I16Serialiser::new(*self)
-	}
-}
-
-pub struct I16Serialiser {
-	le_bytes: [u8; 2],
-	byte_count: u8
-}
-
-impl I16Serialiser {
-	pub(super) fn new(val: i16) -> Self {
-		let le_bytes = val.to_le_bytes();
-		let byte_count = {
-			let lower = val >= MARKER_SMALLINT_NEGATIVE_RANGE_START.into_i8_lossy().into_i16();
-			let upper = val <= MARKER_SMALLINT_RANGE_END.into_i16();
-
-			if lower && upper {
-				0
-			} else {
-				unsafe { get_byte_count_signed_le(le_bytes) }
-			}
-		};
-
-		Self { le_bytes, byte_count }
-	}
-}
-
-impl<'h> Serialiser<'h> for I16Serialiser {
-	unsafe fn needed_capacity(&self) -> usize {
-		self.byte_count.into_usize() + 1
-	}
-
-	unsafe fn serialise<O: Output>(&self, buf: &mut O) {
-		if self.byte_count > 2 { hint::unreachable_unchecked() }
-
-		if self.byte_count == 0 {
-			buf.write_byte(self.le_bytes[0]);
-		} else {
-			buf.write_byte(get_marker_for_signed(self.byte_count));
-			buf.write_bytes(&self.le_bytes[..self.byte_count.into_usize()]);
-		}
+	fn build_serialiser(&self) -> NumberSerialiserSigned<2> {
+		NumberSerialiserSigned::new(*self)
 	}
 }
 
@@ -409,49 +195,10 @@ gen_int_deserialise! {
 }
 
 impl Serialise for i32 {
-	type Serialiser<'h> = I32Serialiser;
+	type Serialiser<'h> = NumberSerialiserSigned<4>;
 
-	fn build_serialiser(&self) -> I32Serialiser {
-		I32Serialiser::new(*self)
-	}
-}
-
-pub struct I32Serialiser {
-	le_bytes: [u8; 4],
-	byte_count: u8
-}
-
-impl I32Serialiser {
-	pub(super) fn new(val: i32) -> Self {
-		let le_bytes = val.to_le_bytes();
-		let byte_count = {
-			let lower = val >= MARKER_SMALLINT_NEGATIVE_RANGE_START.into_i8_lossy().into_i32();
-			let upper = val <= MARKER_SMALLINT_RANGE_END.into_i32();
-
-			if lower && upper {
-				0
-			} else {
-				unsafe { get_byte_count_signed_le(le_bytes) }
-			}
-		};
-		Self { le_bytes, byte_count }
-	}
-}
-
-impl<'h> Serialiser<'h> for I32Serialiser {
-	unsafe fn needed_capacity(&self) -> usize {
-		self.byte_count.into_usize() + 1
-	}
-
-	unsafe fn serialise<O: Output>(&self, buf: &mut O) {
-		if self.byte_count > 4 { hint::unreachable_unchecked() }
-
-		if self.byte_count == 0 {
-			buf.write_byte(self.le_bytes[0]);
-		} else {
-			buf.write_byte(get_marker_for_signed(self.byte_count));
-			buf.write_bytes(&self.le_bytes[..self.byte_count.into_usize()]);
-		}
+	fn build_serialiser(&self) -> NumberSerialiserSigned<4> {
+		NumberSerialiserSigned::new(*self)
 	}
 }
 
@@ -463,50 +210,10 @@ gen_int_deserialise! {
 }
 
 impl Serialise for i64 {
-	type Serialiser<'h> = I64Serialiser;
+	type Serialiser<'h> = NumberSerialiserSigned<8>;
 
-	fn build_serialiser(&self) -> I64Serialiser {
-		I64Serialiser::new(*self)
-	}
-}
-
-pub struct I64Serialiser {
-	le_bytes: [u8; 8],
-	byte_count: u8
-}
-
-impl I64Serialiser {
-	pub(super) fn new(val: i64) -> Self {
-		let le_bytes = val.to_le_bytes();
-		let byte_count = {
-			let lower = val >= MARKER_SMALLINT_NEGATIVE_RANGE_START.into_i8_lossy().into_i64();
-			let upper = val <= MARKER_SMALLINT_RANGE_END.into_i64();
-
-			if lower && upper {
-				0
-			} else {
-				unsafe { get_byte_count_signed_le(le_bytes) }
-			}
-		};
-
-		Self { le_bytes, byte_count }
-	}
-}
-
-impl<'h> Serialiser<'h> for I64Serialiser {
-	unsafe fn needed_capacity(&self) -> usize {
-		self.byte_count.into_usize() + 1
-	}
-
-	unsafe fn serialise<O: Output>(&self, buf: &mut O) {
-		if self.byte_count > 8 { hint::unreachable_unchecked() }
-
-		if self.byte_count == 0 {
-			buf.write_byte(self.le_bytes[0]);
-		} else {
-			buf.write_byte(get_marker_for_signed(self.byte_count));
-			buf.write_bytes(&self.le_bytes[..self.byte_count.into_usize()]);
-		}
+	fn build_serialiser(&self) -> NumberSerialiserSigned<8> {
+		NumberSerialiserSigned::new(*self)
 	}
 }
 
@@ -518,50 +225,10 @@ gen_int_deserialise! {
 }
 
 impl Serialise for i128 {
-	type Serialiser<'h> = I128Serialiser;
+	type Serialiser<'h> = NumberSerialiserSigned<16>;
 
-	fn build_serialiser(&self) -> I128Serialiser {
-		I128Serialiser::new(*self)
-	}
-}
-
-pub struct I128Serialiser {
-	le_bytes: [u8; 16],
-	byte_count: u8
-}
-
-impl I128Serialiser {
-	pub(super) fn new(val: i128) -> Self {
-		let le_bytes = val.to_le_bytes();
-		let byte_count = {
-			let lower = val >= MARKER_SMALLINT_NEGATIVE_RANGE_START.into_i8_lossy().into_i128();
-			let upper = val <= MARKER_SMALLINT_RANGE_END.into_i128();
-
-			if lower && upper {
-				0
-			} else {
-				unsafe { get_byte_count_signed_le(le_bytes) }
-			}
-		};
-
-		Self { byte_count, le_bytes }
-	}
-}
-
-impl<'h> Serialiser<'h> for I128Serialiser {
-	unsafe fn needed_capacity(&self) -> usize {
-		self.byte_count.into_usize() + 1
-	}
-
-	unsafe fn serialise<O: Output>(&self, buf: &mut O) {
-		if self.byte_count > 16 { hint::unreachable_unchecked() }
-
-		if self.byte_count == 0 {
-			buf.write_byte(self.le_bytes[0]);
-		} else {
-			buf.write_byte(get_marker_for_signed(self.byte_count));
-			buf.write_bytes(&self.le_bytes[..self.byte_count.into_usize()]);
-		}
+	fn build_serialiser(&self) -> NumberSerialiserSigned<16> {
+		NumberSerialiserSigned::new(*self)
 	}
 }
 
@@ -573,50 +240,15 @@ gen_int_deserialise! {
 }
 
 impl Serialise for isize {
-	type Serialiser<'h> = ISizeSerialiser;
+	#[cfg(target_pointer_width = "64")]
+	type Serialiser<'h> = NumberSerialiserSigned<8>;
+	#[cfg(target_pointer_width = "32")]
+	type Serialiser<'h> = NumberSerialiserSigned<4>;
+	#[cfg(target_pointer_width = "16")]
+	type Serialiser<'h> = NumberSerialiserSigned<2>;
 
-	fn build_serialiser(&self) -> ISizeSerialiser {
-		ISizeSerialiser::new(*self)
-	}
-}
-
-#[cfg(target_pointer_width = "64")]
-pub struct ISizeSerialiser {
-	inner: I64Serialiser
-}
-
-#[cfg(target_pointer_width = "32")]
-pub struct ISizeSerialiser {
-	inner: I32Serialiser
-}
-
-#[cfg(target_pointer_width = "16")]
-pub struct ISizeSerialiser {
-	inner: I16Serialiser
-}
-
-impl ISizeSerialiser {
-	pub(super) fn new(val: isize) -> Self {
-		#[cfg(target_pointer_width = "64")]
-		let inner = I64Serialiser::new(val.into_i64());
-
-		#[cfg(target_pointer_width = "32")]
-		let inner = I32Serialiser::new(val.into_i32());
-
-		#[cfg(target_pointer_width = "16")]
-		let inner = I16Serialiser::new(val.into_i16());
-
-		Self { inner }
-	}
-}
-
-impl<'h> Serialiser<'h> for ISizeSerialiser {
-	unsafe fn needed_capacity(&self) -> usize {
-		self.inner.needed_capacity()
-	}
-
-	unsafe fn serialise<O: Output>(&self, buf: &mut O) {
-		self.inner.serialise(buf)
+	fn build_serialiser(&self) -> Self::Serialiser<'_> {
+		NumberSerialiserSigned::new(*self)
 	}
 }
 
@@ -640,31 +272,10 @@ impl<'h> Deserialise<'h> for isize {
 }
 
 impl Serialise for f32 {
-	type Serialiser<'h> = F32Serialiser;
+	type Serialiser<'h> = NumberSerialiserFloat<4, MARKER_F32>;
 
-	fn build_serialiser(&self) -> F32Serialiser {
-		F32Serialiser::new(*self)
-	}
-}
-
-pub struct F32Serialiser {
-	val: f32
-}
-
-impl F32Serialiser {
-	pub fn new(val: f32) -> Self {
-		Self { val }
-	}
-}
-
-impl<'h> Serialiser<'h> for F32Serialiser {
-	unsafe fn needed_capacity(&self) -> usize {
-		5
-	}
-
-	unsafe fn serialise<O: Output>(&self, buf: &mut O) {
-		buf.write_byte(MARKER_F32);
-		buf.write_bytes(&self.val.to_le_bytes());
+	fn build_serialiser(&self) -> NumberSerialiserFloat<4, MARKER_F32> {
+		NumberSerialiserFloat::new(*self)
 	}
 }
 
@@ -686,31 +297,10 @@ impl<'h> Deserialise<'h> for f32 {
 }
 
 impl Serialise for f64 {
-	type Serialiser<'h> = F64Serialiser;
+	type Serialiser<'h> = NumberSerialiserFloat<8, MARKER_F64>;
 
-	fn build_serialiser(&self) -> F64Serialiser {
-		F64Serialiser::new(*self)
-	}
-}
-
-pub struct F64Serialiser {
-	val: f64
-}
-
-impl F64Serialiser {
-	pub fn new(val: f64) -> Self {
-		Self { val }
-	}
-}
-
-impl<'h> Serialiser<'h> for F64Serialiser {
-	unsafe fn needed_capacity(&self) -> usize {
-		9
-	}
-
-	unsafe fn serialise<O: Output>(&self, buf: &mut O) {
-		buf.write_byte(MARKER_F64);
-		buf.write_bytes(&self.val.to_le_bytes());
+	fn build_serialiser(&self) -> NumberSerialiserFloat<8, MARKER_F64> {
+		NumberSerialiserFloat::new(*self)
 	}
 }
 
@@ -735,6 +325,113 @@ impl<'h> Deserialise<'h> for f64 {
 			}
 			_ => { expected(DESC_EXPECTED_F64).found_something_else().wrap() }
 		}
+	}
+}
+
+pub struct NumberSerialiserUnsigned<const N: usize> {
+	le_bytes: [u8; N],
+	byte_count: u8
+}
+
+impl<const N: usize> NumberSerialiserUnsigned<N> {
+	pub(super) fn new<T>(val: T) -> Self
+	where
+		T: IntUnsigned + ArrayConversions<N> + FromU8Lossless + Ord
+	{
+		let le_bytes = val.clone().into_le_bytes();
+		let byte_count = if val <= T::from_u8(MARKER_SMALLINT_RANGE_END) {
+			0
+		} else {
+			unsafe { get_byte_count_unsigned_le(le_bytes) }
+		};
+
+		Self { le_bytes, byte_count }
+	}
+}
+
+impl<'h, const N: usize> Serialiser<'h> for NumberSerialiserUnsigned<N> {
+	unsafe fn needed_capacity(&self) -> usize {
+		self.byte_count.into_usize() + 1
+	}
+
+	unsafe fn serialise<O: Output>(&self, buf: &mut O) {
+		let byte_count = self.byte_count.into_usize();
+		if byte_count > N { hint::unreachable_unchecked() }
+
+		if byte_count == 0 {
+			buf.write_byte(self.le_bytes[0]);
+		} else {
+			buf.write_byte(get_marker_for_unsigned(self.byte_count));
+			buf.write_bytes(&self.le_bytes[..byte_count])
+		}
+	}
+}
+
+pub struct NumberSerialiserSigned<const N: usize> {
+	le_bytes: [u8; N],
+	byte_count: u8
+}
+
+impl<const N: usize> NumberSerialiserSigned<N> {
+	pub(super) fn new<T>(val: T) -> Self
+	where
+		T: IntSigned + ArrayConversions<N> + FromI8Lossless + Ord
+	{
+		let le_bytes = val.clone().into_le_bytes();
+		let byte_count = {
+			let lower = val >= T::from_i8(MARKER_SMALLINT_NEGATIVE_RANGE_START.into_i8_lossy());
+			let upper = val <= T::from_i8(MARKER_SMALLINT_RANGE_END.into_i8_lossy());
+
+			if lower && upper {
+				0
+			} else {
+				unsafe { get_byte_count_signed_le(le_bytes) }
+			}
+		};
+
+		Self { le_bytes, byte_count }
+	}
+}
+
+impl<'h, const N: usize> Serialiser<'h> for NumberSerialiserSigned<N> {
+	unsafe fn needed_capacity(&self) -> usize {
+		self.byte_count.into_usize() + 1
+	}
+
+	unsafe fn serialise<O: Output>(&self, buf: &mut O) {
+		let byte_count = self.byte_count.into_usize();
+		if byte_count > N { hint::unreachable_unchecked() }
+
+		if byte_count == 0 {
+			buf.write_byte(self.le_bytes[0]);
+		} else {
+			buf.write_byte(get_marker_for_signed(self.byte_count));
+			buf.write_bytes(&self.le_bytes[..byte_count]);
+		}
+	}
+}
+
+pub struct NumberSerialiserFloat<const N: usize, const MARKER: u8> {
+	le_bytes: [u8; N],
+}
+
+impl<const N: usize, const MARKER: u8> NumberSerialiserFloat<N, MARKER> {
+	pub(super) fn new<T>(val: T) -> Self
+	where
+		T: ArrayConversions<N>
+	{
+		Self { le_bytes: val.into_le_bytes() }
+	}
+}
+
+impl<'h, const N: usize, const MARKER: u8> Serialiser<'h> for NumberSerialiserFloat<N, MARKER> {
+	unsafe fn needed_capacity(&self) -> usize {
+		N + 1
+	}
+
+	unsafe fn serialise<O: Output>(&self, buf: &mut O) {
+		buf.write_byte(MARKER);
+		buf.write_bytes(&self.le_bytes);
 	}
 }
 

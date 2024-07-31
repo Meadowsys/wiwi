@@ -1,5 +1,5 @@
 use super::internal_prelude::*;
-use super::USizeSerialiser;
+use super::NumberSerialiserUnsigned;
 #[cfg(feature = "hashbrown")]
 use hashbrown::HashMap as HashbrownHashMap;
 use std::collections::{ BTreeMap, HashMap as StdHashMap };
@@ -48,7 +48,7 @@ where
 
 pub struct MapSerialiser<'h, K: Serialise + 'h, V: Serialise + 'h> {
 	kv: Vec<(K::Serialiser<'h>, V::Serialiser<'h>)>,
-	len_ser: Option<USizeSerialiser>
+	len_ser: Option<<usize as Serialise>::Serialiser<'h>>
 }
 
 impl<'h, K, V> MapSerialiser<'h, K, V>
@@ -62,7 +62,7 @@ where
 			.collect::<Vec<_>>();
 
 		let len_ser = if kv.len() > u8::MAX.into_usize() {
-			Some(USizeSerialiser::new(kv.len()))
+			Some(NumberSerialiserUnsigned::new(kv.len()))
 		} else {
 			None
 		};
