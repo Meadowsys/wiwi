@@ -78,19 +78,56 @@ where
 	vec
 }
 
+/// Serialise the given value to bytes, writing the bytes into the provided
+/// output buffer
+///
+/// # Examples
+///
+/// ```
+/// # use wiwi::serialiser_binary::serialise_into;
+/// let data = String::from("glory cute");
+/// let mut output = Vec::new();
+/// serialise_into(&data, &mut output);
+///
+/// // str marker and length
+/// assert_eq!(&output[0..2], [0xa8, 10]);
+/// // the string
+/// assert_eq!(&output[2..], b"glory cute")
+/// ```
 pub fn serialise_into<T, O>(item: &T, buf: &mut O)
 where
 	T: ?Sized + Serialise,
 	O: Output
 {
 	let serialiser = item.build_serialiser();
+	// SAFETY: callers have no invariants to hold, unsafe is for implementor
+	// to assert a correct implementation
 	let capacity = unsafe { serialiser.needed_capacity() };
 
 	buf.reserve(capacity);
+	// SAFETY: we have called `reserve` on `buf`
+	// with `capacity` returned by `needed_capacity`
 	unsafe { serialiser.serialise(buf) }
 }
 
-pub fn deserialise<'h, T>(bytes: &[u8]) -> Result<T, T::Error>
+/// Deserialise an instance of `T` from the provided input bytes
+///
+/// Zero copy deserialisation is available for some types.
+///
+/// # Examples
+///
+/// ```
+/// # use wiwi::serialiser_binary::deserialise;
+/// let bytes = Vec::from(b"\xa8\x0aglory cute");
+///
+/// let deserialised: String = deserialise(&bytes).unwrap();
+/// assert_eq!(deserialised, "glory cute");
+///
+/// // `&str` is a type that offers zero copy deserialisation
+/// let deserialised: &str = deserialise(&bytes).unwrap();
+/// assert_eq!(deserialised, "glory cute");
+/// ```
+pub fn deserialise<'h, T>(bytes: &'h [u8]) -> Result<T, T::Error>
 where
 	T: Deserialise<'h>
 {
@@ -105,6 +142,32 @@ where
 				.wrap_foreign()
 		}
 	))
+}
+
+/// Deserialise an instance of `T` from the provided input bytes, without
+/// enforcing that all the bytes in the provided bytes are used
+///
+/// Other than that relaxed requirement, this function behaves exactly the
+/// same as [`deserialise`].
+///
+/// # Examples
+///
+/// ```
+/// # use wiwi::serialiser_binary::deserialise_lax;
+/// let bytes = Vec::from(b"\xa8\x0aglory cute and a bunch of trailing bytes :)");
+///
+/// let (value, remaining_bytes): (&str, _) = deserialise_lax(&bytes).unwrap();
+/// assert_eq!(value, "glory cute");
+/// assert_eq!(remaining_bytes, b" and a bunch of trailing bytes :)");
+/// ```
+pub fn deserialise_lax<'h, T>(bytes: &'h [u8]) -> Result<(T, &'h [u8]), T::Error>
+where
+	T: Deserialise<'h>
+{
+	let mut input = InputSliceBuffer::new(bytes);
+	let val = use_ok!(T::deserialise(&mut input));
+	let remaining = input.as_slice();
+	Ok((val, remaining))
 }
 
 pub trait Serialise {
@@ -340,7 +403,7 @@ pub struct InputSliceBuffer<'h> {
 }
 
 impl<'h> InputSliceBuffer<'h> {
-	fn new(bytes: &[u8]) -> Self {
+	fn new(bytes: &'h [u8]) -> Self {
 		Self {
 			ptr: bytes.as_ptr(),
 			remaining: bytes.len(),
@@ -348,12 +411,14 @@ impl<'h> InputSliceBuffer<'h> {
 		}
 	}
 
+	/// Returns if there is any bytes remaining in the slice
 	fn is_empty(&self) -> bool {
 		self.remaining == 0
 	}
 
-	/// Gets a slice of the remaining bytes
-	fn as_slice(&self) -> &[u8] {
+	/// Gets a slice of the remaining bytes (with same lifetime as the slice
+	/// that was used to create `self`)
+	fn as_slice(&self) -> &'h [u8] {
 		// SAFETY: every time we read from `self`, we offset `ptr` forward by
 		// that much and decrease `remaining` by that much too. So this slice
 		// created represents the tail end of the initial buffer (ie. what's left)
@@ -508,6 +573,7 @@ macro_rules! consts {
 }
 use consts;
 
+/// Internal prelude
 #[allow(unused_imports)]
 mod internal_prelude {
 	pub(super) use crate::num_traits::*;

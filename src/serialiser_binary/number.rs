@@ -16,7 +16,7 @@ pub struct U8Serialiser {
 }
 
 impl U8Serialiser {
-	pub fn new(val: u8) -> Self {
+	pub(super) fn new(val: u8) -> Self {
 		Self {
 			byte: val,
 			needs_marker: val > MARKER_SMALLINT_RANGE_END
@@ -56,7 +56,7 @@ pub struct U16Serialiser {
 }
 
 impl U16Serialiser {
-	pub fn new(val: u16) -> Self {
+	pub(super) fn new(val: u16) -> Self {
 		let le_bytes = val.to_le_bytes();
 		let byte_count = if val <= MARKER_SMALLINT_RANGE_END.into_u16() {
 			0
@@ -106,7 +106,7 @@ pub struct U32Serialiser {
 }
 
 impl U32Serialiser {
-	pub fn new(val: u32) -> Self {
+	pub(super) fn new(val: u32) -> Self {
 		let le_bytes = val.to_le_bytes();
 		let byte_count = if val <= MARKER_SMALLINT_RANGE_END.into_u32() {
 			0
@@ -156,7 +156,7 @@ pub struct U64Serialiser {
 }
 
 impl U64Serialiser {
-	pub fn new(val: u64) -> Self {
+	pub(super) fn new(val: u64) -> Self {
 		let le_bytes = val.to_le_bytes();
 		let byte_count = if val <= MARKER_SMALLINT_RANGE_END.into_u64() {
 			0
@@ -206,7 +206,7 @@ pub struct U128Serialiser {
 }
 
 impl U128Serialiser {
-	pub fn new(val: u128) -> Self {
+	pub(super) fn new(val: u128) -> Self {
 		let le_bytes = val.to_le_bytes();
 		let byte_count = if val <= MARKER_SMALLINT_RANGE_END.into_u128() {
 			0
@@ -266,7 +266,7 @@ pub struct USizeSerialiser {
 }
 
 impl USizeSerialiser {
-	pub fn new(val: usize) -> Self {
+	pub(super) fn new(val: usize) -> Self {
 		#[cfg(target_pointer_width = "64")]
 		let inner = U64Serialiser::new(val.into_u64());
 
@@ -323,7 +323,7 @@ pub struct I8Serialiser {
 }
 
 impl I8Serialiser {
-	pub fn new(val: i8) -> Self {
+	pub(super) fn new(val: i8) -> Self {
 		Self {
 			byte: val.into_u8_lossy(),
 			needs_marker: {
@@ -367,7 +367,7 @@ pub struct I16Serialiser {
 }
 
 impl I16Serialiser {
-	pub fn new(val: i16) -> Self {
+	pub(super) fn new(val: i16) -> Self {
 		let le_bytes = val.to_le_bytes();
 		let byte_count = {
 			let lower = val >= MARKER_SMALLINT_NEGATIVE_RANGE_START.into_i8_lossy().into_i16();
@@ -422,7 +422,7 @@ pub struct I32Serialiser {
 }
 
 impl I32Serialiser {
-	pub fn new(val: i32) -> Self {
+	pub(super) fn new(val: i32) -> Self {
 		let le_bytes = val.to_le_bytes();
 		let byte_count = {
 			let lower = val >= MARKER_SMALLINT_NEGATIVE_RANGE_START.into_i8_lossy().into_i32();
@@ -476,7 +476,7 @@ pub struct I64Serialiser {
 }
 
 impl I64Serialiser {
-	pub fn new(val: i64) -> Self {
+	pub(super) fn new(val: i64) -> Self {
 		let le_bytes = val.to_le_bytes();
 		let byte_count = {
 			let lower = val >= MARKER_SMALLINT_NEGATIVE_RANGE_START.into_i8_lossy().into_i64();
@@ -531,7 +531,7 @@ pub struct I128Serialiser {
 }
 
 impl I128Serialiser {
-	pub fn new(val: i128) -> Self {
+	pub(super) fn new(val: i128) -> Self {
 		let le_bytes = val.to_le_bytes();
 		let byte_count = {
 			let lower = val >= MARKER_SMALLINT_NEGATIVE_RANGE_START.into_i8_lossy().into_i128();
@@ -596,7 +596,7 @@ pub struct ISizeSerialiser {
 }
 
 impl ISizeSerialiser {
-	pub fn new(val: isize) -> Self {
+	pub(super) fn new(val: isize) -> Self {
 		#[cfg(target_pointer_width = "64")]
 		let inner = I64Serialiser::new(val.into_i64());
 
