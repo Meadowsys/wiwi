@@ -156,6 +156,7 @@ rand = [
 ]
 serialiser-binary-unstable = [
 	"dep:ordered-float",
+	"defer-unstable",
 	"num-traits-unstable"
 ]
 serialiser-text-unstable = []
