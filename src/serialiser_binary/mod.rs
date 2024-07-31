@@ -46,7 +46,12 @@ pub use self::number::{
 	F32Serialiser,
 	F64Serialiser
 };
-pub use single_type_array::{};
+pub use single_type_array::{
+	SingleTypeArray,
+	SingleTypeArraySerialise,
+	SingleTypeArraySerialiser,
+	SingleTypeArraySerialiserImpl
+};
 pub use self::string::StrSerialiser;
 
 /// Serialise the given value to bytes
