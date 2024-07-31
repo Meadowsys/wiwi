@@ -117,22 +117,3 @@ pub trait SingleTypeArraySerialiser<'h> {
 	unsafe fn needed_capacity(&self) -> usize;
 	unsafe fn serialise<O: Output>(&self, buf: &mut O);
 }
-
-impl SingleTypeArraySerialise for u8 {
-	type Serialiser<'h> = Temporary;
-	unsafe fn marker() -> u8 { MARKER_U8 }
-	fn build_serialiser(&self) -> Temporary {
-		Temporary { value: *self }
-	}
-}
-
-pub struct Temporary {
-	value: u8
-}
-
-impl<'h> SingleTypeArraySerialiser<'h> for Temporary {
-	unsafe fn needed_capacity(&self) -> usize { 1 }
-	unsafe fn serialise<O: Output>(&self, buf: &mut O) {
-		buf.write_byte(self.value);
-	}
-}
