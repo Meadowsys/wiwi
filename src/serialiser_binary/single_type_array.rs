@@ -79,7 +79,7 @@ where
 		let len = if let Some(len_ser) = &self.len_ser {
 			len_ser.needed_capacity()
 		} else {
-			// just one usize value
+			// just one u8 value
 			1
 		};
 
