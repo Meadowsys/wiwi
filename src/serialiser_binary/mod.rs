@@ -118,6 +118,30 @@ pub trait Serialise {
 	fn build_serialiser(&self) -> Self::Serialiser<'_>;
 }
 
+impl<T: ?Sized + Serialise> Serialise for &T {
+	type Serialiser<'h> = T::Serialiser<'h> where Self: 'h;
+
+	fn build_serialiser(&self) -> T::Serialiser<'_> {
+		(**self).build_serialiser()
+	}
+}
+
+impl<T: ?Sized + Serialise> Serialise for &mut T {
+	type Serialiser<'h> = T::Serialiser<'h> where Self: 'h;
+
+	fn build_serialiser(&self) -> T::Serialiser<'_> {
+		(**self).build_serialiser()
+	}
+}
+
+impl<T: ?Sized + Serialise> Serialise for Box<T> {
+	type Serialiser<'h> = T::Serialiser<'h> where T: 'h;
+
+	fn build_serialiser(&self) -> T::Serialiser<'_> {
+		T::build_serialiser(self)
+	}
+}
+
 pub trait Serialiser<'h> {
 	/// Get the amount of bytes this item will take up when serialised
 	///
@@ -155,6 +179,14 @@ pub trait Deserialise<'h>: Sized {
 	}
 
 	fn deserialise_with_marker<I: Input<'h>>(buf: &mut I, marker: u8) -> Result<Self, Self::Error>;
+}
+
+impl<'h, T: Deserialise<'h>> Deserialise<'h> for Box<T> {
+	type Error = T::Error;
+
+	fn deserialise_with_marker<I: Input<'h>>(buf: &mut I, marker: u8) -> Result<Box<T>, T::Error> {
+		Ok(Box::new(use_ok!(T::deserialise_with_marker(buf, marker))))
+	}
 }
 
 pub trait Output {
@@ -344,38 +376,6 @@ impl<'h> Input<'h> for InputSliceBuffer<'h> {
 
 			Ok(ptr)
 		}
-	}
-}
-
-impl<T: ?Sized + Serialise> Serialise for &T {
-	type Serialiser<'h> = T::Serialiser<'h> where Self: 'h;
-
-	fn build_serialiser(&self) -> T::Serialiser<'_> {
-		(**self).build_serialiser()
-	}
-}
-
-impl<T: ?Sized + Serialise> Serialise for &mut T {
-	type Serialiser<'h> = T::Serialiser<'h> where Self: 'h;
-
-	fn build_serialiser(&self) -> T::Serialiser<'_> {
-		(**self).build_serialiser()
-	}
-}
-
-impl<T: ?Sized + Serialise> Serialise for Box<T> {
-	type Serialiser<'h> = T::Serialiser<'h> where T: 'h;
-
-	fn build_serialiser(&self) -> T::Serialiser<'_> {
-		T::build_serialiser(self)
-	}
-}
-
-impl<'h, T: Deserialise<'h>> Deserialise<'h> for Box<T> {
-	type Error = T::Error;
-
-	fn deserialise_with_marker<I: Input<'h>>(buf: &mut I, marker: u8) -> Result<Box<T>, T::Error> {
-		Ok(Box::new(use_ok!(T::deserialise_with_marker(buf, marker))))
 	}
 }
 
