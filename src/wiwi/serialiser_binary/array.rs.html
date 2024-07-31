@@ -206,7 +206,7 @@
 
 </span><span class="kw">use </span><span class="kw">crate</span>::defer::OnDrop;
 <span class="kw">use </span><span class="kw">super</span>::internal_prelude::<span class="kw-2">*</span>;
-<span class="kw">use </span><span class="kw">super</span>::USizeSerialiser;
+<span class="kw">use </span><span class="kw">super</span>::NumberSerialiserUnsigned;
 <span class="kw">use </span>std::mem::MaybeUninit;
 <span class="kw">use </span>std::ptr;
 
@@ -237,13 +237,13 @@
 	inner: Vec&lt;T::Serialiser&lt;<span class="lifetime">'h</span>&gt;&gt;,
 	<span class="doccomment">/// If `inner.len() &gt; u8::MAX`, this will be `Some`, containing
 	/// the [`USizeSerialiser`] whose job is to serialise the length
-	</span>len_ser: <span class="prelude-ty">Option</span>&lt;USizeSerialiser&gt;
+	</span>len_ser: <span class="prelude-ty">Option</span>&lt;&lt;usize <span class="kw">as </span>Serialise&gt;::Serialiser&lt;<span class="lifetime">'h</span>&gt;&gt;
 }
 
 <span class="kw">impl</span>&lt;<span class="lifetime">'h</span>, T: Serialise&gt; SliceSerialiser&lt;<span class="lifetime">'h</span>, T&gt; {
 	<span class="kw">fn </span>new(slice: <span class="kw-2">&amp;</span><span class="lifetime">'h </span>[T]) -&gt; <span class="self">Self </span>{
 		<span class="kw">let </span>len_ser = <span class="kw">if </span>slice.len() &gt; u8::MAX.into_usize() {
-			<span class="prelude-val">Some</span>(USizeSerialiser::new(slice.len()))
+			<span class="prelude-val">Some</span>(NumberSerialiserUnsigned::new(slice.len()))
 		} <span class="kw">else </span>{
 			<span class="prelude-val">None
 		</span>};
