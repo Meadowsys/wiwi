@@ -1077,7 +1077,7 @@
 }
 
 <span class="kw">impl </span>U8Serialiser {
-	<span class="kw">pub fn </span>new(val: u8) -&gt; <span class="self">Self </span>{
+	<span class="kw">pub</span>(<span class="kw">super</span>) <span class="kw">fn </span>new(val: u8) -&gt; <span class="self">Self </span>{
 		<span class="self">Self </span>{
 			byte: val,
 			needs_marker: val &gt; MARKER_SMALLINT_RANGE_END
@@ -1117,7 +1117,7 @@
 }
 
 <span class="kw">impl </span>U16Serialiser {
-	<span class="kw">pub fn </span>new(val: u16) -&gt; <span class="self">Self </span>{
+	<span class="kw">pub</span>(<span class="kw">super</span>) <span class="kw">fn </span>new(val: u16) -&gt; <span class="self">Self </span>{
 		<span class="kw">let </span>le_bytes = val.to_le_bytes();
 		<span class="kw">let </span>byte_count = <span class="kw">if </span>val &lt;= MARKER_SMALLINT_RANGE_END.into_u16() {
 			<span class="number">0
@@ -1167,7 +1167,7 @@
 }
 
 <span class="kw">impl </span>U32Serialiser {
-	<span class="kw">pub fn </span>new(val: u32) -&gt; <span class="self">Self </span>{
+	<span class="kw">pub</span>(<span class="kw">super</span>) <span class="kw">fn </span>new(val: u32) -&gt; <span class="self">Self </span>{
 		<span class="kw">let </span>le_bytes = val.to_le_bytes();
 		<span class="kw">let </span>byte_count = <span class="kw">if </span>val &lt;= MARKER_SMALLINT_RANGE_END.into_u32() {
 			<span class="number">0
@@ -1217,7 +1217,7 @@
 }
 
 <span class="kw">impl </span>U64Serialiser {
-	<span class="kw">pub fn </span>new(val: u64) -&gt; <span class="self">Self </span>{
+	<span class="kw">pub</span>(<span class="kw">super</span>) <span class="kw">fn </span>new(val: u64) -&gt; <span class="self">Self </span>{
 		<span class="kw">let </span>le_bytes = val.to_le_bytes();
 		<span class="kw">let </span>byte_count = <span class="kw">if </span>val &lt;= MARKER_SMALLINT_RANGE_END.into_u64() {
 			<span class="number">0
@@ -1267,7 +1267,7 @@
 }
 
 <span class="kw">impl </span>U128Serialiser {
-	<span class="kw">pub fn </span>new(val: u128) -&gt; <span class="self">Self </span>{
+	<span class="kw">pub</span>(<span class="kw">super</span>) <span class="kw">fn </span>new(val: u128) -&gt; <span class="self">Self </span>{
 		<span class="kw">let </span>le_bytes = val.to_le_bytes();
 		<span class="kw">let </span>byte_count = <span class="kw">if </span>val &lt;= MARKER_SMALLINT_RANGE_END.into_u128() {
 			<span class="number">0
@@ -1327,7 +1327,7 @@
 }
 
 <span class="kw">impl </span>USizeSerialiser {
-	<span class="kw">pub fn </span>new(val: usize) -&gt; <span class="self">Self </span>{
+	<span class="kw">pub</span>(<span class="kw">super</span>) <span class="kw">fn </span>new(val: usize) -&gt; <span class="self">Self </span>{
 		<span class="attr">#[cfg(target_pointer_width = <span class="string">"64"</span>)]
 		</span><span class="kw">let </span>inner = U64Serialiser::new(val.into_u64());
 
@@ -1384,7 +1384,7 @@
 }
 
 <span class="kw">impl </span>I8Serialiser {
-	<span class="kw">pub fn </span>new(val: i8) -&gt; <span class="self">Self </span>{
+	<span class="kw">pub</span>(<span class="kw">super</span>) <span class="kw">fn </span>new(val: i8) -&gt; <span class="self">Self </span>{
 		<span class="self">Self </span>{
 			byte: val.into_u8_lossy(),
 			needs_marker: {
@@ -1428,7 +1428,7 @@
 }
 
 <span class="kw">impl </span>I16Serialiser {
-	<span class="kw">pub fn </span>new(val: i16) -&gt; <span class="self">Self </span>{
+	<span class="kw">pub</span>(<span class="kw">super</span>) <span class="kw">fn </span>new(val: i16) -&gt; <span class="self">Self </span>{
 		<span class="kw">let </span>le_bytes = val.to_le_bytes();
 		<span class="kw">let </span>byte_count = {
 			<span class="kw">let </span>lower = val &gt;= MARKER_SMALLINT_NEGATIVE_RANGE_START.into_i8_lossy().into_i16();
@@ -1483,7 +1483,7 @@
 }
 
 <span class="kw">impl </span>I32Serialiser {
-	<span class="kw">pub fn </span>new(val: i32) -&gt; <span class="self">Self </span>{
+	<span class="kw">pub</span>(<span class="kw">super</span>) <span class="kw">fn </span>new(val: i32) -&gt; <span class="self">Self </span>{
 		<span class="kw">let </span>le_bytes = val.to_le_bytes();
 		<span class="kw">let </span>byte_count = {
 			<span class="kw">let </span>lower = val &gt;= MARKER_SMALLINT_NEGATIVE_RANGE_START.into_i8_lossy().into_i32();
@@ -1537,7 +1537,7 @@
 }
 
 <span class="kw">impl </span>I64Serialiser {
-	<span class="kw">pub fn </span>new(val: i64) -&gt; <span class="self">Self </span>{
+	<span class="kw">pub</span>(<span class="kw">super</span>) <span class="kw">fn </span>new(val: i64) -&gt; <span class="self">Self </span>{
 		<span class="kw">let </span>le_bytes = val.to_le_bytes();
 		<span class="kw">let </span>byte_count = {
 			<span class="kw">let </span>lower = val &gt;= MARKER_SMALLINT_NEGATIVE_RANGE_START.into_i8_lossy().into_i64();
@@ -1592,7 +1592,7 @@
 }
 
 <span class="kw">impl </span>I128Serialiser {
-	<span class="kw">pub fn </span>new(val: i128) -&gt; <span class="self">Self </span>{
+	<span class="kw">pub</span>(<span class="kw">super</span>) <span class="kw">fn </span>new(val: i128) -&gt; <span class="self">Self </span>{
 		<span class="kw">let </span>le_bytes = val.to_le_bytes();
 		<span class="kw">let </span>byte_count = {
 			<span class="kw">let </span>lower = val &gt;= MARKER_SMALLINT_NEGATIVE_RANGE_START.into_i8_lossy().into_i128();
@@ -1657,7 +1657,7 @@
 }
 
 <span class="kw">impl </span>ISizeSerialiser {
-	<span class="kw">pub fn </span>new(val: isize) -&gt; <span class="self">Self </span>{
+	<span class="kw">pub</span>(<span class="kw">super</span>) <span class="kw">fn </span>new(val: isize) -&gt; <span class="self">Self </span>{
 		<span class="attr">#[cfg(target_pointer_width = <span class="string">"64"</span>)]
 		</span><span class="kw">let </span>inner = I64Serialiser::new(val.into_i64());
 

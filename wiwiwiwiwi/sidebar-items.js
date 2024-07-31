@@ -1,1 +1,1 @@
-window.SIDEBAR_ITEMS = {"derive":["MemoryUsage"]};
+window.SIDEBAR_ITEMS = {"derive":["MemoryUsage","Serialise"]};
