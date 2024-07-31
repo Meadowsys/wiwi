@@ -20,6 +20,7 @@ default = ["syn/full"]
 
 int = []
 memory-usage = []
+serialiser-binary = []
 unicode = []
 
 [package.metadata.docs.rs]

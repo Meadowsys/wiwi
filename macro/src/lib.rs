@@ -27,5 +27,14 @@ pub fn define_int(input: proc_macro::TokenStream) -> proc_macro::TokenStream {
 	int::macro_impl(input)
 }
 
+#[cfg(feature = "serialiser-binary")]
+mod serialiser_binary;
+
+#[cfg(feature = "serialiser-binary")]
+#[proc_macro_derive(Serialise, attributes(wiwi))]
+pub fn serialise_binary(input: proc_macro::TokenStream) -> proc_macro::TokenStream {
+	serialiser_binary::macro_impl(input)
+}
+
 #[cfg(feature = "unicode")]
 mod unicode;

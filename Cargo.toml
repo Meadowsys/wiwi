@@ -155,6 +155,7 @@ rand = [
 	"dep:rand_chacha"
 ]
 serialiser-binary-unstable = [
+	"wiwiwiwiwi/serialiser-binary",
 	"dep:ordered-float",
 	"defer-unstable",
 	"num-traits-unstable"
