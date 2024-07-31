@@ -428,7 +428,6 @@ impl<T: PartialEq<TR>, M, TR, MR> PartialEq<Nominal<TR, MR>> for Nominal<T, M> {
 	#[inline]
 	fn eq(&self, other: &Nominal<TR, MR>) -> bool {
 		self.wrapped_ref().eq(other.wrapped_ref())
-		// <T as PartialEq>::eq(self.ref_inner(), other.ref_inner())
 	}
 
 	// we override ne here since T might have overridden ne,
