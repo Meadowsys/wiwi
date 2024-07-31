@@ -2,7 +2,7 @@ use std::{ ptr, slice };
 use std::marker::PhantomData;
 
 pub mod error;
-mod marker;
+pub mod marker;
 
 mod array;
 mod binary;

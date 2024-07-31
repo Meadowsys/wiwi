@@ -1,3 +1,5 @@
+//! Marker constants
+
 use super::consts;
 
 macro_rules! unsigned_smallint_range {
@@ -107,8 +109,8 @@ consts! {
 	MARKER_BINARY_8 = 0xb0
 	MARKER_BINARY_XL = 0xb1
 
-	MARKER_SET_8 = 0xb2
-	MARKER_SET_XL = 0xb3
+	MARKER_SET_8 = 0xb2 // todo impl this
+	MARKER_SET_XL = 0xb3 // todo impl this
 
 	MARKER_UNASSIGNED_B4 = 0xb4
 	MARKER_UNASSIGNED_B5 = 0xb5
