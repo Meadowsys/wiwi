@@ -242,6 +242,7 @@ consts! {
 
 	DESC_EXPECTED_STR = "an utf-8 encoded string"
 	DESC_EXPECTED_ARRAY = "an array"
+	DESC_EXPECTED_ARRAY_CONST = "a constant-sized array"
 	DESC_EXPECTED_MAP = "a map"
 	DESC_EXPECTED_BINARY = "binary data"
 }
@@ -270,4 +271,5 @@ consts! {
 	// ...
 
 	DESC_FOUND_INVALID_UTF_8 = "invalid utf-8"
+	DESC_FOUND_WRONG_SIZE_ARRAY = "an array with the wrong length"
 }

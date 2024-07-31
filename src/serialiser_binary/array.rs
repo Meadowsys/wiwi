@@ -6,10 +6,20 @@
 //!
 //! RUST!!! SPECIALISATION WHEN!?!?!?
 
+use crate::defer::OnDrop;
 use super::internal_prelude::*;
 use super::USizeSerialiser;
+use std::mem::MaybeUninit;
+use std::ptr;
 
 impl<T: Serialise> Serialise for [T] {
+	type Serialiser<'h> = SliceSerialiser<'h, T> where Self: 'h;
+
+	fn build_serialiser(&self) -> SliceSerialiser<'_, T> {
+		SliceSerialiser::new(self)
+	}
+}
+impl<T: Serialise, const N: usize> Serialise for [T; N] {
 	type Serialiser<'h> = SliceSerialiser<'h, T> where Self: 'h;
 
 	fn build_serialiser(&self) -> SliceSerialiser<'_, T> {
@@ -77,6 +87,62 @@ impl<'h, T: Serialise> Serialiser<'h> for SliceSerialiser<'h, T> {
 		for item in &self.inner {
 			item.serialise(buf);
 		}
+	}
+}
+
+impl<'h, T: Deserialise<'h>, const N: usize> Deserialise<'h> for [T; N] {
+	type Error = T::Error;
+
+	fn deserialise_with_marker<I: Input<'h>>(buf: &mut I, marker: u8) -> Result<[T; N], T::Error> {
+		let len = match marker {
+			MARKER_ARRAY_8 => {
+				use_ok!(
+					buf.read_byte(),
+					val => val.into_usize(),
+					#err err => err.expected(DESC_EXPECTED_ARRAY).wrap_foreign()
+				)
+			}
+			MARKER_ARRAY_XL => {
+				use_ok!(
+					usize::deserialise(buf),
+					#err err => err.expected(DESC_EXPECTED_ARRAY).wrap_foreign()
+				)
+			}
+			_ => {
+				return expected(DESC_EXPECTED_ARRAY)
+					.found_something_else()
+					.wrap_foreign()
+			}
+		};
+
+		if len != N {
+			return expected(DESC_EXPECTED_ARRAY_CONST)
+				.found(DESC_FOUND_WRONG_SIZE_ARRAY)
+				.wrap_foreign()
+		}
+
+
+		let arr = MaybeUninit::<[T; N]>::uninit();
+		let count = 0;
+
+		let mut dest = (arr, count).on_drop(|(mut arr, count)| {
+			// drop what elements have been deserialised already
+			// if we early exit for whatever reason
+			let ptr = arr.as_mut_ptr().cast::<T>();
+			for i in 0..count {
+				let value = unsafe{ ptr::read(ptr.add(i)) };
+				unsafe { drop(value) }
+			}
+		});
+		let ptr = dest.0.as_mut_ptr().cast::<T>();
+
+		for i in 0..N {
+			let val = use_ok!(T::deserialise(buf));
+			unsafe { ptr.add(i).write(val) }
+			dest.1 = i;
+		}
+
+		unsafe { Ok(dest.into_inner().0.0.assume_init()) }
 	}
 }
 
