@@ -754,5 +754,7 @@ mod tests {
 		i64 roundtrip_i64
 		i128 roundtrip_i128
 		isize roundtrip_isize
+		f32 roundtrip_f32
+		f64 roundtrip_f64
 	}
 }
