@@ -329,7 +329,7 @@ impl I8Serialiser {
 			needs_marker: {
 				let lower = val < MARKER_SMALLINT_NEGATIVE_RANGE_START.into_i8_lossy();
 				let upper = val > MARKER_SMALLINT_RANGE_END.into_i8_lossy();
-				lower && upper
+				lower || upper
 			}
 		}
 	}
@@ -1020,4 +1020,42 @@ unsafe fn sign_extend_array_le<
 	ptr::write_bytes(out.as_mut_ptr().cast::<u8>().add(IN_BYTES), fill_byte, OUT_BYTES - IN_BYTES);
 
 	out.assume_init()
+}
+
+#[cfg(test)]
+mod tests {
+	use crate::serialiser_binary::{ deserialise, serialise };
+	use super::*;
+	use rand::{ Rng, thread_rng };
+
+	macro_rules! gen_test {
+		{ $($num:ident $fn_name:ident)* } => {
+			$(
+				#[test]
+				fn $fn_name() {
+					for _ in 0..1000 {
+						let num = thread_rng().gen::<$num>();
+						let serialised = serialise(&num);
+						let deserialised = deserialise::<$num>(&serialised).unwrap();
+						assert_eq!(deserialised, num);
+					}
+				}
+			)*
+		}
+	}
+
+	gen_test! {
+		u8 roundtrip_u8
+		u16 roundtrip_u16
+		u32 roundtrip_u32
+		u64 roundtrip_u64
+		u128 roundtrip_u128
+		usize roundtrip_usize
+		i8 roundtrip_i8
+		i16 roundtrip_i16
+		i32 roundtrip_i32
+		i64 roundtrip_i64
+		i128 roundtrip_i128
+		isize roundtrip_isize
+	}
 }
