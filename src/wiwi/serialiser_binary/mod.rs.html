@@ -532,11 +532,14 @@
 <a href="#532" id="532">532</a>
 <a href="#533" id="533">533</a>
 <a href="#534" id="534">534</a>
+<a href="#535" id="535">535</a>
+<a href="#536" id="536">536</a>
+<a href="#537" id="537">537</a>
 </pre></div><pre class="rust"><code><span class="kw">use </span>std::{ ptr, slice };
 <span class="kw">use </span>std::marker::PhantomData;
 
 <span class="kw">pub mod </span>error;
-<span class="kw">mod </span>marker;
+<span class="kw">pub mod </span>marker;
 
 <span class="kw">mod </span>array;
 <span class="kw">mod </span>binary;
@@ -582,8 +585,9 @@
 };
 <span class="kw">pub use </span>single_type_array::{
 	SingleTypeArray,
-	SingleTypeArrayExpensive,
-	SingleTypeArraySerialiserInt
+	SingleTypeArraySerialise,
+	SingleTypeArraySerialiser,
+	SingleTypeArraySerialiserImpl
 };
 <span class="kw">pub use </span><span class="self">self</span>::string::StrSerialiser;
 
@@ -603,7 +607,7 @@
 /// ```
 </span><span class="kw">pub fn </span>serialise&lt;T&gt;(item: <span class="kw-2">&amp;</span>T) -&gt; Vec&lt;u8&gt;
 <span class="kw">where
-	</span>T: Serialise + <span class="question-mark">?</span>Sized
+	</span>T: <span class="question-mark">?</span>Sized + Serialise
 {
 	<span class="kw">let </span><span class="kw-2">mut </span>vec = Vec::new();
 	<span class="kw">let </span><span class="kw-2">mut </span>buf = OutputVecBuffer::new(<span class="kw-2">&amp;mut </span>vec);
@@ -613,7 +617,7 @@
 
 <span class="kw">pub fn </span>serialise_into&lt;T, O&gt;(item: <span class="kw-2">&amp;</span>T, buf: <span class="kw-2">&amp;mut </span>O)
 <span class="kw">where
-	</span>T: Serialise + <span class="question-mark">?</span>Sized,
+	</span>T: <span class="question-mark">?</span>Sized + Serialise,
 	O: Output
 {
 	<span class="kw">let </span>serialiser = item.build_serialiser();
@@ -651,13 +655,39 @@
 	</span><span class="kw">fn </span>build_serialiser(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; <span class="self">Self</span>::Serialiser&lt;<span class="lifetime">'_</span>&gt;;
 }
 
+<span class="kw">impl</span>&lt;T: <span class="question-mark">?</span>Sized + Serialise&gt; Serialise <span class="kw">for </span><span class="kw-2">&amp;</span>T {
+	<span class="kw">type </span>Serialiser&lt;<span class="lifetime">'h</span>&gt; = T::Serialiser&lt;<span class="lifetime">'h</span>&gt; <span class="kw">where </span><span class="self">Self</span>: <span class="lifetime">'h</span>;
+
+	<span class="kw">fn </span>build_serialiser(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; T::Serialiser&lt;<span class="lifetime">'_</span>&gt; {
+		(<span class="kw-2">**</span><span class="self">self</span>).build_serialiser()
+	}
+}
+
+<span class="kw">impl</span>&lt;T: <span class="question-mark">?</span>Sized + Serialise&gt; Serialise <span class="kw">for </span><span class="kw-2">&amp;mut </span>T {
+	<span class="kw">type </span>Serialiser&lt;<span class="lifetime">'h</span>&gt; = T::Serialiser&lt;<span class="lifetime">'h</span>&gt; <span class="kw">where </span><span class="self">Self</span>: <span class="lifetime">'h</span>;
+
+	<span class="kw">fn </span>build_serialiser(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; T::Serialiser&lt;<span class="lifetime">'_</span>&gt; {
+		(<span class="kw-2">**</span><span class="self">self</span>).build_serialiser()
+	}
+}
+
+<span class="kw">impl</span>&lt;T: <span class="question-mark">?</span>Sized + Serialise&gt; Serialise <span class="kw">for </span>Box&lt;T&gt; {
+	<span class="kw">type </span>Serialiser&lt;<span class="lifetime">'h</span>&gt; = T::Serialiser&lt;<span class="lifetime">'h</span>&gt; <span class="kw">where </span>T: <span class="lifetime">'h</span>;
+
+	<span class="kw">fn </span>build_serialiser(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; T::Serialiser&lt;<span class="lifetime">'_</span>&gt; {
+		T::build_serialiser(<span class="self">self</span>)
+	}
+}
+
 <span class="kw">pub trait </span>Serialiser&lt;<span class="lifetime">'h</span>&gt; {
 	<span class="doccomment">/// Get the amount of bytes this item will take up when serialised
 	///
 	/// # Safety
 	///
-	/// This must be accurate, as unsafe code is allowed to rely on this for
-	/// soundness.
+	/// There are no invariants for callers to uphold.
+	///
+	/// Implementations must return an accurate value, as unsafe code is allowed
+	/// to rely on this for soundness.
 	</span><span class="kw">unsafe fn </span>needed_capacity(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; usize;
 
 	<span class="doccomment">/// Serialise `self` into the provided output buffer
@@ -686,6 +716,14 @@
 	}
 
 	<span class="kw">fn </span>deserialise_with_marker&lt;I: Input&lt;<span class="lifetime">'h</span>&gt;&gt;(buf: <span class="kw-2">&amp;mut </span>I, marker: u8) -&gt; <span class="prelude-ty">Result</span>&lt;<span class="self">Self</span>, <span class="self">Self</span>::Error&gt;;
+}
+
+<span class="kw">impl</span>&lt;<span class="lifetime">'h</span>, T: Deserialise&lt;<span class="lifetime">'h</span>&gt;&gt; Deserialise&lt;<span class="lifetime">'h</span>&gt; <span class="kw">for </span>Box&lt;T&gt; {
+	<span class="kw">type </span>Error = T::Error;
+
+	<span class="kw">fn </span>deserialise_with_marker&lt;I: Input&lt;<span class="lifetime">'h</span>&gt;&gt;(buf: <span class="kw-2">&amp;mut </span>I, marker: u8) -&gt; <span class="prelude-ty">Result</span>&lt;Box&lt;T&gt;, T::Error&gt; {
+		<span class="prelude-val">Ok</span>(Box::new(<span class="macro">use_ok!</span>(T::deserialise_with_marker(buf, marker))))
+	}
 }
 
 <span class="kw">pub trait </span>Output {
@@ -875,38 +913,6 @@
 
 			<span class="prelude-val">Ok</span>(ptr)
 		}
-	}
-}
-
-<span class="kw">impl</span>&lt;T: Serialise + <span class="question-mark">?</span>Sized&gt; Serialise <span class="kw">for </span><span class="kw-2">&amp;</span>T {
-	<span class="kw">type </span>Serialiser&lt;<span class="lifetime">'h</span>&gt; = T::Serialiser&lt;<span class="lifetime">'h</span>&gt; <span class="kw">where </span><span class="self">Self</span>: <span class="lifetime">'h</span>;
-
-	<span class="kw">fn </span>build_serialiser(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; T::Serialiser&lt;<span class="lifetime">'_</span>&gt; {
-		(<span class="kw-2">**</span><span class="self">self</span>).build_serialiser()
-	}
-}
-
-<span class="kw">impl</span>&lt;T: Serialise + <span class="question-mark">?</span>Sized&gt; Serialise <span class="kw">for </span><span class="kw-2">&amp;mut </span>T {
-	<span class="kw">type </span>Serialiser&lt;<span class="lifetime">'h</span>&gt; = T::Serialiser&lt;<span class="lifetime">'h</span>&gt; <span class="kw">where </span><span class="self">Self</span>: <span class="lifetime">'h</span>;
-
-	<span class="kw">fn </span>build_serialiser(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; T::Serialiser&lt;<span class="lifetime">'_</span>&gt; {
-		(<span class="kw-2">**</span><span class="self">self</span>).build_serialiser()
-	}
-}
-
-<span class="kw">impl</span>&lt;T: Serialise + <span class="question-mark">?</span>Sized&gt; Serialise <span class="kw">for </span>Box&lt;T&gt; {
-	<span class="kw">type </span>Serialiser&lt;<span class="lifetime">'h</span>&gt; = T::Serialiser&lt;<span class="lifetime">'h</span>&gt; <span class="kw">where </span>T: <span class="lifetime">'h</span>;
-
-	<span class="kw">fn </span>build_serialiser(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; T::Serialiser&lt;<span class="lifetime">'_</span>&gt; {
-		T::build_serialiser(<span class="self">self</span>)
-	}
-}
-
-<span class="kw">impl</span>&lt;<span class="lifetime">'h</span>, T: Deserialise&lt;<span class="lifetime">'h</span>&gt;&gt; Deserialise&lt;<span class="lifetime">'h</span>&gt; <span class="kw">for </span>Box&lt;T&gt; {
-	<span class="kw">type </span>Error = T::Error;
-
-	<span class="kw">fn </span>deserialise_with_marker&lt;I: Input&lt;<span class="lifetime">'h</span>&gt;&gt;(buf: <span class="kw-2">&amp;mut </span>I, marker: u8) -&gt; <span class="prelude-ty">Result</span>&lt;Box&lt;T&gt;, T::Error&gt; {
-		<span class="prelude-val">Ok</span>(Box::new(<span class="macro">use_ok!</span>(T::deserialise_with_marker(buf, marker))))
 	}
 }
 

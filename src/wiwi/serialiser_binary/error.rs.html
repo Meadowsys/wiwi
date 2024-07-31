@@ -271,6 +271,8 @@
 <a href="#271" id="271">271</a>
 <a href="#272" id="272">272</a>
 <a href="#273" id="273">273</a>
+<a href="#274" id="274">274</a>
+<a href="#275" id="275">275</a>
 </pre></div><pre class="rust"><code><span class="doccomment">//! Error types and utilities for deserialisation (serialisation is infallible)
 
 </span><span class="kw">use super</span>::{ consts, use_ok };
@@ -515,6 +517,7 @@
 
 	</span>DESC_EXPECTED_STR = <span class="string">"an utf-8 encoded string"
 	</span>DESC_EXPECTED_ARRAY = <span class="string">"an array"
+	</span>DESC_EXPECTED_ARRAY_CONST = <span class="string">"a constant-sized array"
 	</span>DESC_EXPECTED_MAP = <span class="string">"a map"
 	</span>DESC_EXPECTED_BINARY = <span class="string">"binary data"
 </span>}
@@ -543,5 +546,6 @@
 	// ...
 
 	</span>DESC_FOUND_INVALID_UTF_8 = <span class="string">"invalid utf-8"
+	</span>DESC_FOUND_WRONG_SIZE_ARRAY = <span class="string">"an array with the wrong length"
 </span>}
 </code></pre></div></section></main></body></html>

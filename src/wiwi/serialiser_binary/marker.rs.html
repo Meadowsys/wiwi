@@ -127,7 +127,11 @@
 <a href="#127" id="127">127</a>
 <a href="#128" id="128">128</a>
 <a href="#129" id="129">129</a>
-</pre></div><pre class="rust"><code><span class="kw">use </span><span class="kw">super</span>::consts;
+<a href="#130" id="130">130</a>
+<a href="#131" id="131">131</a>
+</pre></div><pre class="rust"><code><span class="doccomment">//! Marker constants
+
+</span><span class="kw">use </span><span class="kw">super</span>::consts;
 
 <span class="macro">macro_rules!</span> unsigned_smallint_range {
 	() =&gt; { <span class="number">0x00</span>..=<span class="number">0x7f </span>}
@@ -236,8 +240,8 @@
 	</span>MARKER_BINARY_8 = <span class="number">0xb0
 	</span>MARKER_BINARY_XL = <span class="number">0xb1
 
-	</span>MARKER_SET_8 = <span class="number">0xb2
-	</span>MARKER_SET_XL = <span class="number">0xb3
+	</span>MARKER_SET_8 = <span class="number">0xb2 </span><span class="comment">// todo impl this
+	</span>MARKER_SET_XL = <span class="number">0xb3 </span><span class="comment">// todo impl this
 
 	</span>MARKER_UNASSIGNED_B4 = <span class="number">0xb4
 	</span>MARKER_UNASSIGNED_B5 = <span class="number">0xb5
