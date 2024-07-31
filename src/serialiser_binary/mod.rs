@@ -70,7 +70,7 @@ pub use self::string::StrSerialiser;
 /// ```
 pub fn serialise<T>(item: &T) -> Vec<u8>
 where
-	T: Serialise + ?Sized
+	T: ?Sized + Serialise
 {
 	let mut vec = Vec::new();
 	let mut buf = OutputVecBuffer::new(&mut vec);
@@ -80,7 +80,7 @@ where
 
 pub fn serialise_into<T, O>(item: &T, buf: &mut O)
 where
-	T: Serialise + ?Sized,
+	T: ?Sized + Serialise,
 	O: Output
 {
 	let serialiser = item.build_serialiser();
@@ -347,7 +347,7 @@ impl<'h> Input<'h> for InputSliceBuffer<'h> {
 	}
 }
 
-impl<T: Serialise + ?Sized> Serialise for &T {
+impl<T: ?Sized + Serialise> Serialise for &T {
 	type Serialiser<'h> = T::Serialiser<'h> where Self: 'h;
 
 	fn build_serialiser(&self) -> T::Serialiser<'_> {
@@ -355,7 +355,7 @@ impl<T: Serialise + ?Sized> Serialise for &T {
 	}
 }
 
-impl<T: Serialise + ?Sized> Serialise for &mut T {
+impl<T: ?Sized + Serialise> Serialise for &mut T {
 	type Serialiser<'h> = T::Serialiser<'h> where Self: 'h;
 
 	fn build_serialiser(&self) -> T::Serialiser<'_> {
@@ -363,7 +363,7 @@ impl<T: Serialise + ?Sized> Serialise for &mut T {
 	}
 }
 
-impl<T: Serialise + ?Sized> Serialise for Box<T> {
+impl<T: ?Sized + Serialise> Serialise for Box<T> {
 	type Serialiser<'h> = T::Serialiser<'h> where T: 'h;
 
 	fn build_serialiser(&self) -> T::Serialiser<'_> {
