@@ -299,20 +299,20 @@
 }
 
 <span class="macro">decl_thread_local_rng!</span> {
-	<span class="doccomment">/// ChaCha8 thread local random number generator, seeding using the
-	/// OS-provided randomness source, and reseeding every 16KiB of output
+	<span class="doccomment">/// ChaCha with 8 rounds, thread local random number generator, seeding using
+	/// the OS-provided randomness source, and reseeding every 16KiB of output
 	</span>ThreadLocalChaCha8Rng ChaCha8Core OsRng
 }
 
 <span class="macro">decl_thread_local_rng!</span> {
-	<span class="doccomment">/// ChaCha12 thread local random number generator, seeding using the
-	/// OS-provided randomness source, and reseeding every 16KiB of output
+	<span class="doccomment">/// ChaCha with 12 rounds, thread local random number generator, seeding using
+	/// the OS-provided randomness source, and reseeding every 16KiB of output
 	</span>ThreadLocalChaCha12Rng ChaCha12Core OsRng
 }
 
 <span class="macro">decl_thread_local_rng!</span> {
-	<span class="doccomment">/// ChaCha20 thread local random number generator, seeding using the
-	/// OS-provided randomness source, and reseeding every 16KiB of output
+	<span class="doccomment">/// ChaCha with 20 rounds, thread local random number generator, seeding using
+	/// the OS-provided randomness source, and reseeding every 16KiB of output
 	</span>ThreadLocalChaCha20Rng ChaCha20Core OsRng
 }
 

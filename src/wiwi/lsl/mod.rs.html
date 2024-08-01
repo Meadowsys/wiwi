@@ -95,14 +95,14 @@
 <a href="#95" id="95">95</a>
 <a href="#96" id="96">96</a>
 <a href="#97" id="97">97</a>
-</pre></div><pre class="rust"><code><span class="kw">use </span><span class="kw">crate</span>::id::{ IDGenerator, GeneratedID };
+</pre></div><pre class="rust"><code><span class="kw">use </span><span class="kw">crate</span>::id::{ IDGenerator64, GeneratedID64 };
 <span class="kw">use </span>hashbrown::HashMap;
 <span class="kw">use </span>std::marker::PhantomData;
 
 <span class="kw">mod </span>lib;
 
 <span class="kw">pub struct </span>Script {
-	generator: IDGenerator,
+	generator: IDGenerator64,
 	vars: Vars,
 	fns: Fns,
 	state_default: State,
@@ -121,12 +121,12 @@
 
 <span class="attr">#[derive(Clone, Copy, Hash)]
 </span><span class="kw">struct </span>StateKey {
-	id: GeneratedID
+	id: GeneratedID64
 }
 
 <span class="kw">struct </span>ConcreteVar&lt;T: Type&gt; {
 	ty: T,
-	id: GeneratedID,
+	id: GeneratedID64,
 	init_val: <span class="prelude-ty">Option</span>&lt;String&gt;
 }
 

@@ -1,1 +1,1 @@
-window.SIDEBAR_ITEMS = {"struct":["GeneratedID","IDGenerator"]};
+window.SIDEBAR_ITEMS = {"struct":["GeneratedID128Details","GeneratedID64","IDGenerator128","IDGenerator64"]};
