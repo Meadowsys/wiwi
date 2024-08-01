@@ -15,7 +15,7 @@ const COUNT_SHIFT: u8 = 4;
 
 /// one more than 14 lower bits filled. count must be / will always be below
 /// this value
-const MAX_COUNT: u32 = 1 << 14;
+const MAX_COUNT: u16 = 1 << 14;
 
 /// keep only 4 lower bits of random byte.
 const RANDOM_COMPONENT_MASK: u8 = 0b1111;
@@ -37,8 +37,8 @@ const TOP_BIT: u64 = 1 << (u64::BITS - 1);
 pub struct IDGenerator64 {
 	/// unix epoch time
 	last_generated_time: u64,
-	// 19 bits fits in u32 (duh)
-	count: u32
+	// 14 bits fits in u32 (duh)
+	count: u16
 }
 
 impl IDGenerator64 {
