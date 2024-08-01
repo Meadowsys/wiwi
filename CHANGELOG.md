@@ -28,6 +28,13 @@ Hallo!
 
 ## unreleased
 
+I need to stop making such large changes before releasing anything lol
+
+- enabled some safety related lints (in warning for now, will turn to deny when all fixed), which will improve safety documentation and safety overall
+- removed some `allow` lints that probably were long overdue removing
+- added a CI workflow that runs clippy
+  - which is why CI is mostly red right now :p cause I made it error if there's a warning, and I have yet to clear all the warnings I've enabled
+- all modules now have an associated `README.md` file in its directory, included in rustdoc too
 - created `nightly` addon features, to enable features only available in nightly rust
   - As of now, there's nothing taking advantage of it yet
 - don't show list of enabled features on docs.rs/wiwi.kiwin.gay, it feels pretty redundent
@@ -37,6 +44,9 @@ Hallo!
 - feature `augment-panic-hook`
   - created the feature
   - allows you to augment the current panic hook in a convenient way, running some code on panic, but still calling the existing hook afterwards
+- feature `auth`
+  - yeet most contents and rewrite some of it, because o.o
+  - rewrote P-384 keypair struct
 - feature `chainer`
   - create chainers `ArrayChain`, `SliceMutChain`, `SliceRefChain`, with some method impls
   - implement more methods on `VecChain`
@@ -62,8 +72,33 @@ Hallo!
     - `defer_on_unwind_with` -> `DeferUnwind::new`
   - removed `OnDrop::defer`, `OnDrop::defer_success`, and `OnDrop::defer_unwind`
     - they were just different names for `OnDrop::on_drop`, `OnDrop::on_success_drop`, and `OnDrop::on_unwind_drop`, respectively
+  - added `into_inner` for `Defer`, to get the value back out
+    - makes this viable now for the "drop guard" pattern
+- feature `gpg`
+  - created the feature (unstable)
+  - ...it's empty
+- feature `id`
+  - uses `rand` feature's `ChaCha8` generator instead of thread rng from `rand` crate, which is a bit faster, since the last 4 bits is not intended for security, rather just a bit of non-critical unpredictability between 2 IDs if they were generated within the same millisecond
+  - move current (64-bit) generator to its own module
+  - create a new 128-bit ID format
+    - the timeestamp won't overflow until `di 25 jul 572823 17:58:01 UTC`
+    - the timestamp has opt-in to microsecond precision
+      - this is done in a way that still preserves sortability, between IDs with it on and with it off
+    - a process ID field, so up to 256 processes can concurrently generate IDs
+    - if you use microsecond precision timestamps, you can generate up to 32768 IDs per _microsecond_
+    - if you don't use microsecond precision timestamps, you can generate up to roughly 33.5M IDs per _millisecond_
+      - if microseconds aren't enabled, they are toggled off in the generator, and what would have been the microsecond field just becomes 10 more bits for incrementing within the same millisecond instead. so you generate the same amount of IDs per millisecond
+      - in fact... you can actually generate more IDs per millisecond with microseconds off, because the microsecond field is seperated out from the rest of the time field, 10 bits to fit up to 999 microseconds, but 10 bits can actually store 1024 bits of data, which can be utilised here as a counter
+    - still have 40 bits of randomness
+      - doesn't turn into an increment like ULID has its random field do, since that makes the amount of IDs you can generate per period of time quite... random (ie. if you roll a high value, you can generate less IDs than if you were to roll a low value. Not a problem in practice, but, yknow, in theory it can be a problem)
 - feature `int`
   - implemented (overflowing) add, (overflowing) sub, and (widening) mul for arrays of arbitrary length holding arbitrary integers (powered by `num-traits` feature, very nice)
+- feature `libassuan`
+  - created the feature (unstable)
+  - ...it's empty
+- feature `libgpg-error`
+  - created the feature (unstable)
+  - ...it's empty
 - feature `lsl`
   - yeeted it all, we're starting over lol
   - started sketching out the structs for it again
@@ -74,10 +109,21 @@ Hallo!
   - gone a fully modular route, creating one trait for one bit of functionality (add checked, add (regular), add unchecked, etc. like that)
   - because of the above, there's over 100 structs as of now, and I'm not nearly done yet :p
   - plan to add overarching traits like `Int`, or maybe even `Number`, which will be a supertrait of as much of the other traits as makes sense
-- feature `ptr`
+- feature `rand`
+  - created the feature
+  - contains some random generators
+    - currently including thread local ChaCha generators, with variants for 8, 12, and 20 rounds, reseeding every 16KiB output from OS rng (context: `thread_rng` in `rand` crate is `ChaCha12` and reseeds every 64KiB output)
+- feature `serialiser-binary`
   - created the feature (unstable)
-  - contains some extension traits relating to pointers, like
-    - ex. explicitly converting a reference to a pointer
+  - implement all the basic features (ie. all JSON can be encoded in this format)
+- feature `unicode`
+  - created the feature (unstable)
+  - implement some core functionality of unicode code points, UTF-8, UTF-16, and UTF-32 str/string
+- feature `z85`
+  - changed the z85 decode table from `[Option<u8>; 256]` to `[u8; 256]`
+    - this halves the size of the table (from 512 to 256 bits, since `Option<u8>` is size 2 and `u8` is size 1)
+    - this also unintentionally/unknowingly reduced decoding time by roughly 24%!
+  - done a lot of internal safety commenting
 
 ## v0.9.0
 
