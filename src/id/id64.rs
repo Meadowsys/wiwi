@@ -5,6 +5,8 @@ use std::num::NonZeroU64;
 
 /// 46 bits gives space for >2000years with millisecond precision.
 /// 18 bits remaining after this
+///
+/// This goes out to about `zo 24 nov 4199 01:22:57 UTC`
 const TIMESTAMP_SHIFT: u8 = 64 - 46;
 
 /// to make way for 4 lower bits for the random component. Keep count in the next
@@ -37,13 +39,6 @@ pub struct IDGenerator64 {
 	last_generated_time: u64,
 	// 19 bits fits in u32 (duh)
 	count: u32
-}
-
-#[repr(transparent)]
-#[derive(Clone, Copy, Debug, Hash, PartialEq, Eq, PartialOrd, Ord)]
-pub struct GeneratedID64 {
-	/// [`NonZeroU64`] to allow for null ptr optimisation
-	unsigned: NonZeroU64
 }
 
 impl IDGenerator64 {
@@ -92,6 +87,13 @@ impl IDGenerator64 {
 			GeneratedID64 { unsigned }
 		})
 	}
+}
+
+#[repr(transparent)]
+#[derive(Clone, Copy, Debug, Hash, PartialEq, Eq, PartialOrd, Ord)]
+pub struct GeneratedID64 {
+	/// [`NonZeroU64`] to allow for null ptr optimisation
+	unsigned: NonZeroU64
 }
 
 impl GeneratedID64 {
