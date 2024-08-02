@@ -68,6 +68,7 @@
 #![cfg_attr(all(not(any(docsrs, kiwingay)), feature = "path-unstable"), doc = "- `path` (unstable)")]
 #![cfg_attr(all(not(any(docsrs, kiwingay)), feature = "rand"), doc = "- `rand`")]
 #![cfg_attr(all(not(any(docsrs, kiwingay)), feature = "serialiser-binary-unstable"), doc = "- `serialiser-binary` (unstable)")]
+#![cfg_attr(all(not(any(docsrs, kiwingay)), feature = "serialiser-binary-2-unstable"), doc = "- `serialiser-binary-2` (unstable)")]
 #![cfg_attr(all(not(any(docsrs, kiwingay)), feature = "serialiser-text-unstable"), doc = "- `serialiser-text` (unstable)")]
 #![cfg_attr(all(not(any(docsrs, kiwingay)), feature = "string-pool-unstable"), doc = "- `string-pool` (unstable)")]
 #![cfg_attr(all(not(any(docsrs, kiwingay)), feature = "sudoku-unstable"), doc = "- `sudoku` (unstable)")]
@@ -104,6 +105,7 @@
 	not(feature = "path-unstable"),
 	not(feature = "rand"),
 	not(feature = "serialiser-binary-unstable"),
+	not(feature = "serialiser-binary-2-unstable"),
 	not(feature = "serialiser-text-unstable"),
 	not(feature = "string-pool-unstable"),
 	not(feature = "sudoku-unstable"),
@@ -344,6 +346,13 @@ pub mod rand;
 #[doc = ""]
 #[doc = include_str!("./serialiser_binary/README.md")]
 pub mod serialiser_binary;
+
+#[cfg(feature = "serialiser-binary-2-unstable")]
+#[cfg_attr(docsrs, doc(cfg(feature = "serialiser-binary-2-unstable")))]
+/// Self describing and stable binary format/serialiser, aiming for small output size (v2)
+#[doc = ""]
+#[doc = include_str!("./serialiser_binary_2/README.md")]
+pub mod serialiser_binary_2;
 
 #[cfg(feature = "serialiser-text-unstable")]
 #[cfg_attr(docsrs, doc(cfg(feature = "serialiser-text-unstable")))]

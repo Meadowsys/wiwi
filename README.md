@@ -65,6 +65,7 @@ reminder: **Unstable features are NOT covered by semver!**
 - **`num-traits`** - More traits for numbers and their various functionality, including things like [`MulWidening`]
 - **`path`** - UTF-8 only path manipulation utilities written from scratch
 - **`serialiser-binary`** - Self describing and stable binary format/serialiser, aiming for small output size
+- **`serialiser-binary-2`** - Self describing and stable binary format/serialiser, aiming for small output size (v2)
 - **`serialiser-text`** - Self describing and stable text format/serialiser, aiming to be easy to read and write by hand
 - **`string-pool`** - Global immutable string pool and String type (à la Java)
 - **`sudoku`** - Sudoku related... stuff

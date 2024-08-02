@@ -31,6 +31,7 @@
 	not(feature = "path-unstable"),
 	not(feature = "rand"),
 	not(feature = "serialiser-binary-unstable"),
+	not(feature = "serialiser-binary-2-unstable"),
 	not(feature = "serialiser-text-unstable"),
 	not(feature = "string-pool-unstable"),
 	not(feature = "sudoku-unstable"),

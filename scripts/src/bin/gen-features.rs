@@ -163,6 +163,12 @@ fn main() {
 		features: ["defer", "num-traits"]
 
 		#[unstable]
+		"serialiser-binary-2"
+		"Self describing and stable binary format/serialiser, aiming for small output size (v2)"
+		dependencies: ["macro"]
+		features: ["defer", "num-traits"]
+
+		#[unstable]
 		"serialiser-text"
 		"Self describing and stable text format/serialiser, aiming to be easy to read and write by hand"
 
