@@ -1,0 +1,125 @@
+<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><meta name="generator" content="rustdoc"><meta name="description" content="Self describing and stable binary format/serialiser, aiming for small output size (v2)"><title>wiwi::serialiser_binary_2 - Rust</title><script>if(window.location.protocol!=="file:")document.head.insertAdjacentHTML("beforeend","SourceSerif4-Regular-46f98efaafac5295.ttf.woff2,FiraSans-Regular-018c141bf0843ffd.woff2,FiraSans-Medium-8f9a781e4970d388.woff2,SourceCodePro-Regular-562dcc5011b6de7d.ttf.woff2,SourceCodePro-Semibold-d899c5a5c4aeb14a.ttf.woff2".split(",").map(f=>`<link rel="preload" as="font" type="font/woff2" crossorigin href="../../static.files/${f}">`).join(""))</script><link rel="stylesheet" href="../../static.files/normalize-76eba96aa4d2e634.css"><link rel="stylesheet" href="../../static.files/rustdoc-dd39b87e5fcfba68.css"><meta name="rustdoc-vars" data-root-path="../../" data-static-root-path="../../static.files/" data-current-crate="wiwi" data-themes="meadow" data-resource-suffix="" data-rustdoc-version="1.81.0-nightly (e9e6e2e44 2024-06-28)" data-channel="nightly" data-search-js="search-0fe7219eb170c82e.js" data-settings-js="settings-4313503d2e1961c2.js" ><script src="../../static.files/storage-118b08c4c78b968e.js"></script><script defer src="../sidebar-items.js"></script><script defer src="../../static.files/main-20a3ad099b048cf2.js"></script><noscript><link rel="stylesheet" href="../../static.files/noscript-df360f571f6edeae.css"></noscript><link rel="alternate icon" type="image/png" href="../../static.files/favicon-32x32-422f7d1d52889060.png"><link rel="icon" type="image/svg+xml" href="../../static.files/favicon-2c020d218678b618.svg"></head><body class="rustdoc mod"><!--[if lte IE 11]><div class="warning">This old browser is unsupported and will most likely display funky things.</div><![endif]--><nav class="mobile-topbar"><button class="sidebar-menu-toggle" title="show sidebar"></button></nav><nav class="sidebar"><div class="sidebar-crate"><h2><a href="../../wiwi/index.html">wiwi</a><span class="version">0.10.0-dev</span></h2></div><h2 class="location"><a href="#">Module serialiser_binary_2</a></h2><div class="sidebar-elems"><h2><a href="../index.html">In crate wiwi</a></h2></div></nav><div class="sidebar-resizer"></div><main><div class="width-limiter"><rustdoc-search></rustdoc-search><section id="main-content" class="content"><div class="main-heading"><h1>Module <a href="../index.html">wiwi</a>::<wbr><a class="mod" href="#">serialiser_binary_2</a><button id="copy-path" title="Copy item path to clipboard">Copy item path</button></h1><span class="out-of-band"><a class="src" href="../../src/wiwi/serialiser_binary_2/mod.rs.html#0">source</a> · <button id="toggle-all-docs" title="collapse all docs">[<span>&#x2212;</span>]</button></span></div><span class="item-info"><div class="stab portability">Available on <strong>crate feature <code>serialiser-binary-2-unstable</code></strong> only.</div></span><details class="toggle top-doc" open><summary class="hideme"><span>Expand description</span></summary><div class="docblock"><p>Self describing and stable binary format/serialiser, aiming for small output size (v2)</p>
+<h2 id="spec"><a class="doc-anchor" href="#spec">§</a>Spec</h2>
+<p>The Spec™</p>
+<h3 id="root"><a class="doc-anchor" href="#root">§</a>Root</h3>
+<p>Each encoded document contains one root object, and that’s it. It is forbidden to have trailing bytes that aren’t used to deserialise the object. This restriction can however be relaxed with the <code>deserialise_lax</code> function.</p>
+<p>To (conformantly) encode multiple objects in the “root” of a document, put them in an array.</p>
+<h3 id="endianness"><a class="doc-anchor" href="#endianness">§</a>Endianness</h3>
+<p>All values that are sensitive to endianness, will use the little endian byte order when encoded.</p>
+<h3 id="markers"><a class="doc-anchor" href="#markers">§</a>Markers</h3>
+<ul>
+<li><code>0x00</code> - the value <code>false</code></li>
+<li><code>0x01</code> - the value <code>true</code></li>
+<li><code>0x02</code> - the value <code>none</code> (similar to <code>null</code>, <code>nil</code>, <code>Option::None</code>, etc)</li>
+<li><code>0x03</code> to <code>0x07</code> - IEEE754-2008 floating point types (<code>f16</code>, <code>f32</code>, <code>f64</code>, <code>f128</code>, <code>f256</code>)</li>
+<li><code>0x08</code> - string</li>
+<li><code>0x09</code> - array</li>
+<li><code>0x0a</code> - record</li>
+<li><code>0x0b</code> - map</li>
+<li><code>0x0c</code> - binary</li>
+<li><code>0x0d</code> - intern</li>
+<li><code>0x0e</code> - 2 byte markers</li>
+<li><code>0x0f</code> - 3 byte markers</li>
+<li><code>0x10</code> to <code>0x1f</code> - integer markers (<code>i8</code>, <code>i16</code>, <code>i24</code>, <code>i32</code>, <code>i48</code>, <code>i64</code>, <code>i96</code>, <code>i128</code>, <code>u8</code>, <code>u16</code>, <code>u24</code>, <code>u32</code>, <code>u48</code>, <code>u64</code>, <code>u96</code>, <code>u128</code>)</li>
+<li><code>0x20</code> to <code>0x3f</code> - negative integers, from -31 to 0</li>
+<li><code>0x40</code> to <code>0x7f</code> - positive integers, from 1 to 64</li>
+<li><code>0x80</code> to <code>0x9f</code> - string, length 1 to 32</li>
+<li><code>0xa0</code> to <code>0xaf</code> - array, length 1 to 16</li>
+<li><code>0xb0</code> to <code>0xb7</code> - record, length 1 to 8</li>
+<li><code>0xb8</code> to <code>0xbf</code> - map, length 1 to 8</li>
+<li><code>0xc0</code> to <code>0xfe</code> - reference to interned value, ref 0 to 62</li>
+<li><code>0xff</code> - reference to interned value</li>
+</ul>
+<h3 id="nonenullnilnoneetc"><a class="doc-anchor" href="#nonenullnilnoneetc">§</a><code>none</code>/<code>null</code>/<code>nil</code>/<code>None</code>/etc</h3>
+<p>The value <code>none</code> is encoded as <code>0x02</code>.</p>
+<h3 id="booleans"><a class="doc-anchor" href="#booleans">§</a>booleans</h3>
+<p>The value <code>false</code> is encoded as <code>0x00</code>, and the value <code>true</code> is encoded as <code>0x01</code>.</p>
+<h3 id="integers"><a class="doc-anchor" href="#integers">§</a>integers</h3>
+<p>There are… 18 types of integers: small positive ints, small negative ints, <code>i8</code>, <code>i16</code>, <code>i24</code>, <code>i32</code>, <code>i48</code>, <code>i64</code>, <code>i96</code>, <code>i128</code>, <code>u8</code>, <code>u16</code>, <code>u24</code>, <code>u32</code>, <code>u48</code>, <code>u64</code>, <code>u96</code>, <code>u128</code>.</p>
+<p>Marker types for <code>i8</code>…<code>i128</code> are in range <code>0x10</code> to <code>0x17</code>, and marker types for <code>u8</code>…<code>u128</code> are in range <code>0x18</code> to <code>0x1f</code>. For example, marker for i96 is <code>0x16</code>, and marker for <code>u24</code> is <code>0x1a</code>.</p>
+<p>If an integer is within -31 to 0, it can be encoded as one marker byte within the range <code>0x20</code> to <code>0x3f</code>. For example, <code>0x20</code> has the value of -31 and <code>0x3f</code> has the value of 0.</p>
+<p>If an integer is within 1 to 64, it can be encoded as one marker byte within range <code>0x40</code> to <code>0x7f</code>. For example, <code>0x40</code> has the value of 1 and <code>0x7f</code> has the value of 64.</p>
+<p>If an integer is outside of these ranges: first consider what signedness the integer is, and what the <em>value</em> is. The smallest type that has the correct signedness must be used. For example, an unsigned value of 70,000 should use the type <code>u24</code>, while a signed value of 70,000 should use the type <code>i24</code>. Then first write the marker for the type, followed by the integer bytes itself.</p>
+<p>Note: in v1 there were more number types (one for ever multiple of 8, until 128). We’ve decided there is probably not much benefit to these extra types for the amount of marker space they hog. With this new data model there are half the amount of integer sizes, half the int markers as before, but still a decent amount more flexibility than just every power of 2 from 8 to 128.</p>
+<h3 id="floats"><a class="doc-anchor" href="#floats">§</a>floats</h3>
+<p>Floating point values are IEEE754-2008 values (our <code>f32</code> and <code>f64</code> are identical to Rust’s).</p>
+<p><code>f16</code> values are encoded by first writing the byte <code>0x03</code>, followed by the bytes of the float value itself (2 bytes).</p>
+<p><code>f32</code> values are encoded by first writing the byte <code>0x04</code>, followed by the bytes of the float value itself (4 bytes).</p>
+<p><code>f64</code> values are encoded by first writing the byte <code>0x05</code>, followed by the bytes of the float value itself (8 bytes).</p>
+<p><code>f128</code> values are encoded by first writing the byte <code>0x06</code>, followed by the bytes of the float value itself (16 bytes).</p>
+<p><code>f256</code> values are encoded by first writing the byte <code>0x07</code>, followed by the bytes of the float value itself (32 bytes).</p>
+<p><code>f16</code>, <code>f128</code>, and <code>f256</code> types are included in the spec, but should not actually be used for now, as support for them is very rare.</p>
+<h3 id="strings"><a class="doc-anchor" href="#strings">§</a>strings</h3>
+<p>Strings are strictly UTF-8 strings, like Rust’s <code>String</code>/<code>str</code> types.</p>
+<p>If the string has a byte length within the range <code>1..=32</code> (note, <em>does not</em> include length zero bytes), use a marker within the range from <code>0x80</code> to <code>0x9f</code> to encode its length. For example, <code>0x80</code> means string with length 1, <code>0x81</code> length 2, <code>0x82</code> length 3, … <code>0x9f</code> length 32.</p>
+<p>If the string is either 0 bytes long (ie. empty string), or is length 33 bytes or longer, first encode the marker byte <code>0x08</code>, followed by an unsigned variable length integer encoding the byte length of the string.</p>
+<p>After writing the marker byte(s), write the string in verbatim (ie. during deserialisation you should be able to zero-copy deserialise it just by doing something like <code>std::str::from_str(&amp;input[pos..pos + len]</code>, where <code>len</code> is the length of the string, and <code>pos</code> is the current position in deserialisation)).</p>
+<h3 id="arrays"><a class="doc-anchor" href="#arrays">§</a>arrays</h3>
+<p>Arrays are like a list of serialised values. There are specialised array types available, but this one is the most “generic” array type, able to encode lists of anything that can be encoded at all.</p>
+<p>If the array has amount of elements within <code>1..=16</code> (note: <em>does not</em> include length zero), a marker within range <code>0xa0</code> to <code>0xaf</code> is used. For example, <code>0xa0</code> encodes an array with length 1, and <code>0xaf</code> encodes an array with length 16.</p>
+<p>If the array has either zero elements, or 17 or more items, first encode the marker byte <code>0x09</code>, follwed by an unsigned variable length integer encoding the length of the array.</p>
+<p>Next, encode every element in the array, one element at a time, including everything.</p>
+<h3 id="record"><a class="doc-anchor" href="#record">§</a>record</h3>
+<p>Records are key value mappings, from a string to any encodable value. One key-value pair is one entry.</p>
+<p>Use marker bytes <code>0xb0</code> to <code>0xb7</code> to encode a record with an amount of entries within <code>1..=8</code> (note, <em>does not</em> include 0 entries).</p>
+<p>If the record has either 0 entries or 9 or more entries, first encode the record marker <code>0x0a</code>, followed by an unsigned variable length integer encoding the amount of entries.</p>
+<p>Then, encode every key value pair in one at a time. First the key, then the value.</p>
+<p>Since the key in this type must be a string, we can just always encode its length using an unsigned variable length integer, skipping the string marker. For strings with length 1 to 32, this has no effect on encoded size, but for strings with length 0 or 33 or more, doing this would save 1 byte per string.</p>
+<h3 id="binary"><a class="doc-anchor" href="#binary">§</a>binary</h3>
+<p>A binary blob of just, binary data.</p>
+<p>We made the design decision that any binary data sent through this encoding method will usually exceed the amount of “inlined” markers we give it for encoding its length (which would have been 16, or maybe 8, something quite small for binary data), and felt those marker values would serve better as part of some other type’s range.</p>
+<p>First encode the binary marker <code>0x0c</code>, followed by an unsigned variable length integer encoding the length in bytes.</p>
+<h3 id="map"><a class="doc-anchor" href="#map">§</a>map</h3>
+<p>A map is like a record (key value mappings), except it accepts arbitrary types for the keys as well as strings.</p>
+<p>Use marker bytes <code>0xb8</code> to <code>0xbf</code> to encode a map with a number of entries within <code>1..=8</code> (note, <em>does not</em> include 0 entries).</p>
+<p>If the map has either 0 entries, or 9 or more entries, first encode the map marker <code>0x0b</code>, then an unsigned variable length integer which encodes the amount of entries.</p>
+<p>Then, encode every key value pair in one at a time, first the key, then the value.</p>
+<p>Note: since we accept arbitrary types for the keys, a marker must be used for the keys here, unlike records.</p>
+<h3 id="interned-values-references-and-the-value-registry"><a class="doc-anchor" href="#interned-values-references-and-the-value-registry">§</a>interned values, references, and the value registry</h3>
+<p>The value registry is a global registry of values, where during serialisation, values can be interned into this global registry by serialisers, and then get a reference back to use in the place of where the value would have been. This registry is included in the front of the serialised output (only if there are any entries; ie. if the registry is not used, it won’t be included), and during deserialisation, it is deserialised first, then used throughout the rest of the deserialisation to match references with their actual values. Doing this can save many bytes if there are many identical values and/or identical values repeated a lot throughout the data. For example, APIs that return an array of structured objects, where all the keys in each object are the same.</p>
+<p>During serialisation, you should keep one global store of interned values. This can be a map or a vec. With a vec, the item’s index becomes its’ reference value (which implies that values <em>cannot</em> be moved into a different index once a reference has been returned). Using a map of some kind, a seperate increment counter (starting from 0, ie. first reference is 0) should be used to keep track of the references, and the reference value should be stored with each entry.</p>
+<h4 id="encoding-the-value-registry"><a class="doc-anchor" href="#encoding-the-value-registry">§</a>encoding the value registry</h4>
+<p>To encode the value registry, first write the intern marker <code>0x0d</code>, <em>twice</em>. The reason it’s written twice is so that the deserialiser can differentiate between the value registry declaration, and malformed data which is trying to start an interned type without the registry written first.</p>
+<p>Next, write the amount of entries inside the value registry, encoded as an unsigned variable length integer.</p>
+<p>Then, write all the entries. Every entry should be encoded in full, including its type header, and body, since there is no type known otherwise. This is the same encoding method as encoding the body of an array (after the len).</p>
+<p>Each interned entry written should have the same index as its reference value. This means that the value with reference value 0 should be written first, followed by the value with ref 1, then ref 2, and so on.</p>
+<h4 id="encoding-references"><a class="doc-anchor" href="#encoding-references">§</a>encoding references</h4>
+<p>References should be encoded in place of another value.</p>
+<p>If the reference value is between 0 and 63, encode it using a marker in <code>0xc0</code> to <code>0xfe</code> (ie. ref 0 is <code>0xc0</code>, and ref 62 is <code>0xfe</code>).</p>
+<p>If the reference value is 63 or greater, first write the ref marker byte <code>0xff</code>, followed by the reference value as an unsigned variable length integer.</p>
+<h4 id="nested-documents-and-value-registries"><a class="doc-anchor" href="#nested-documents-and-value-registries">§</a>nested documents and value registries</h4>
+<p>It would be possible to take a seperate encoded document, and just plop it inline where any other value would otherwise be expected. However, it may have its own value registry, with of course its own reference values, which would overlap with the parent documents’ references. To support nesting arbitrary documents without reserialisation, we must also support arbitrarily nesting value registries.</p>
+<p>If a value registry declaration is found when expecting a value instead, don’t error, but parse that value registry. Then use only the newly deserialised registry to only deserialise the next value, discarding the registry afterwards.</p>
+<p>Embedding another document is putting arbitrary bytes into the output buffer, which can cause issues if the inserted payload is invalid/malformed/malicious. We believe the worst case with malicious inputs is to corrupt data and return potentially arbitrary data. However, in a strict type system like Rust with a serialiser that doesn’t access the outside world like the internet (why would it though?), this shouldn’t cause RCE bugs or anything like that. It could in a language like javascript though, if an implementation isn’t careful about eg. prototype pollution. A document inserted like this should either come from a trusted source, or validated for correct <em>structure</em>. Checking for correct structure would mean interpreting the markers and lengths, then skipping over regions, assuming the data inside is valid (ex. read the string marker and the length, but skip UTF-8 validation). This ensures the structure is intact and can’t cause things to become messy.</p>
+<p>If the document you want to embed is untrusted and/or unverified, and verifying it is not feasible for whatever reason, you can put a “foreign document” header just before putting the document in. This header is optional, and you don’t need to use it if the document you’re putting in is from a trusted source and/or validated to be structurally correct. First write the intern marker <code>0x0d</code>, followed by <code>0x00</code> (yes its the marker for <code>false</code>.. it works since no where else is <code>false</code> written just after the intern marker), followed by the length in bytes of the document to be embedded as an unsigned variable length integer. Then, write the document. In deserialisation, if this header is found, hold on to the position and decoded length just before the embedded document starts (ie. just after the encoded length), then try deserialising. If deserialisation fails, you may be able to recover and continue by skipping forwards the saved amount of bytes, past the embedded document.</p>
+<h3 id="variable-length-integers"><a class="doc-anchor" href="#variable-length-integers">§</a>variable length integers</h3>
+<p>these can be used to encode up to a 16 byte (128 bit) integer</p>
+<p>There are two variants to this encoding: unsigned only and signed only. Depending on context, one or the other are used. For example, in a context where a length is expected, the unsigned encoding would be used.</p>
+<h4 id="unsigned-variable-length-integer"><a class="doc-anchor" href="#unsigned-variable-length-integer">§</a>unsigned variable length integer</h4>
+<ul>
+<li><code>0x00</code> to <code>0xf7</code> - encodes 0 to 247</li>
+<li><code>0xf8</code> - next byte encodes u8</li>
+<li><code>0xf9</code> - next 2 bytes encodes u16</li>
+<li><code>0xfa</code> - next 3 bytes encodes u24</li>
+<li><code>0xfb</code> - next 4 bytes encodes u32</li>
+<li><code>0xfc</code> - next 6 bytes encodes u48</li>
+<li><code>0xfd</code> - next 8 bytes encodes u64</li>
+<li><code>0xfe</code> - next 12 bytes encodes u96</li>
+<li><code>0xff</code> - next 16 bytes encodes u128</li>
+</ul>
+<h4 id="signed-variable-length-integer"><a class="doc-anchor" href="#signed-variable-length-integer">§</a>signed variable length integer</h4>
+<ul>
+<li><code>0x84</code> to <code>0xff</code> - encodes -124 to -1 (two’s compliment)</li>
+<li><code>0x00</code> to <code>0x7b</code> - encodes 0 to 123</li>
+<li><code>0x7c</code> - next byte encodes i8</li>
+<li><code>0x7d</code> - next 2 bytes encodes i16</li>
+<li><code>0x7e</code> - next 3 bytes encodes i24</li>
+<li><code>0x7f</code> - next 4 bytes encodes i32</li>
+<li><code>0x80</code> - next 6 bytes encodes i48</li>
+<li><code>0x81</code> - next 8 bytes encodes i64</li>
+<li><code>0x82</code> - next 12 bytes encodes i96</li>
+<li><code>0x83</code> - next 16 bytes encodes i128</li>
+</ul>
+<h2 id=""><a class="doc-anchor" href="#">§</a>???</h2>
+<p>Now that I’ve written the first version… I’ve figured out a few more things that I think I could do better.</p>
+</div></details></section></div></main></body></html>
