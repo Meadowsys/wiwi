@@ -2,6 +2,12 @@
 
 The Spec&trade;
 
+## Root
+
+Each encoded document contains one root object, and that's it. It is forbidden to have trailing bytes that aren't used to deserialise the object. This restriction can however be relaxed with the `deserialise_lax` function.
+
+To (conformantly) encode multiple objects in the "root" of a document, put them in an array.
+
 ## Endianness
 
 All values that are sensitive to endianness, will use the little endian byte order when encoded.
@@ -17,7 +23,7 @@ All values that are sensitive to endianness, will use the little endian byte ord
 - `0x0a` - record
 - `0x0b` - map
 - `0x0c` - binary
-- `0x0d` - interned value
+- `0x0d` - intern
 - `0x0e` - 2 byte markers
 - `0x0f` - 3 byte markers
 - `0x10` to `0x1f` - integer markers (`i8`, `i16`, `i24`, `i32`, `i48`, `i64`, `i96`, `i128`, `u8`, `u16`, `u24`, `u32`, `u48`, `u64`, `u96`, `u128`)
@@ -27,7 +33,8 @@ All values that are sensitive to endianness, will use the little endian byte ord
 - `0xa0` to `0xaf` - array, length 1 to 16
 - `0xb0` to `0xb7` - record, length 1 to 8
 - `0xb8` to `0xbf` - map, length 1 to 8
-- `0xc0` to `0xff` - reference to interned value
+- `0xc0` to `0xfe` - reference to interned value, ref 0 to 62
+- `0xff` - reference to interned value
 
 ## `none`/`null`/`nil`/`None`/etc
 
@@ -75,7 +82,7 @@ If the string has a byte length within the range `1..=32` (note, _does not_ incl
 
 If the string is either 0 bytes long (ie. empty string), or is length 33 bytes or longer, first encode the marker byte `0x08`, followed by an unsigned variable length integer encoding the byte length of the string.
 
-After writing the marker byte(s), write the string in verbatim.
+After writing the marker byte(s), write the string in verbatim (ie. during deserialisation you should be able to zero-copy deserialise it just by doing something like `std::str::from_str(&input[pos..pos + len]`, where `len` is the length of the string, and `pos` is the current position in deserialisation)).
 
 ## arrays
 
@@ -119,9 +126,39 @@ Then, encode every key value pair in one at a time, first the key, then the valu
 
 Note: since we accept arbitrary types for the keys, a marker must be used for the keys here, unlike records.
 
-## interned values and references
+## interned values, references, and the value registry
 
-todo
+The value registry is a global registry of values, where during serialisation, values can be interned into this global registry by serialisers, and then get a reference back to use in the place of where the value would have been. This registry is included in the front of the serialised output (only if there are any entries; ie. if the registry is not used, it won't be included), and during deserialisation, it is deserialised first, then used throughout the rest of the deserialisation to match references with their actual values. Doing this can save many bytes if there are many identical values and/or identical values repeated a lot throughout the data. For example, APIs that return an array of structured objects, where all the keys in each object are the same.
+
+During serialisation, you should keep one global store of interned values. This can be a map or a vec. With a vec, the item's index becomes its' reference value (which implies that values _cannot_ be moved into a different index once a reference has been returned). Using a map of some kind, a seperate increment counter (starting from 0, ie. first reference is 0) should be used to keep track of the references, and the reference value should be stored with each entry.
+
+### encoding the value registry
+
+To encode the value registry, first write the intern marker `0x0d`, _twice_. The reason it's written twice is so that the deserialiser can differentiate between the value registry declaration, and malformed data which is trying to start an interned type without the registry written first.
+
+Next, write the amount of entries inside the value registry, encoded as an unsigned variable length integer.
+
+Then, write all the entries. Every entry should be encoded in full, including its type header, and body, since there is no type known otherwise. This is the same encoding method as encoding the body of an array (after the len).
+
+Each interned entry written should have the same index as its reference value. This means that the value with reference value 0 should be written first, followed by the value with ref 1, then ref 2, and so on.
+
+### encoding references
+
+References should be encoded in place of another value.
+
+If the reference value is between 0 and 63, encode it using a marker in `0xc0` to `0xfe` (ie. ref 0 is `0xc0`, and ref 62 is `0xfe`).
+
+If the reference value is 63 or greater, first write the ref marker byte `0xff`, followed by the reference value as an unsigned variable length integer.
+
+### nested documents and value registries
+
+It would be possible to take a seperate encoded document, and just plop it inline where any other value would otherwise be expected. However, it may have its own value registry, with of course its own reference values, which would overlap with the parent documents' references. To support nesting arbitrary documents without reserialisation, we must also support arbitrarily nesting value registries.
+
+If a value registry declaration is found when expecting a value instead, don't error, but parse that value registry. Then use only the newly deserialised registry to only deserialise the next value, discarding the registry afterwards.
+
+Embedding another document is putting arbitrary bytes into the output buffer, which can cause issues if the inserted payload is invalid/malformed/malicious. We believe the worst case with malicious inputs is to corrupt data and return potentially arbitrary data. However, in a strict type system like Rust with a serialiser that doesn't access the outside world like the internet (why would it though?), this shouldn't cause RCE bugs or anything like that. It could in a language like javascript though, if an implementation isn't careful about eg. prototype pollution. A document inserted like this should either come from a trusted source, or validated for correct _structure_. Checking for correct structure would mean interpreting the markers and lengths, then skipping over regions, assuming the data inside is valid (ex. read the string marker and the length, but skip UTF-8 validation). This ensures the structure is intact and can't cause things to become messy.
+
+If the document you want to embed is untrusted and/or unverified, and verifying it is not feasible for whatever reason, you can put a "foreign document" header just before putting the document in. This header is optional, and you don't need to use it if the document you're putting in is from a trusted source and/or validated to be structurally correct. First write the intern marker `0x0d`, followed by `0x00` (yes its the marker for `false`.. it works since no where else is `false` written just after the intern marker), followed by the length in bytes of the document to be embedded as an unsigned variable length integer. Then, write the document. In deserialisation, if this header is found, hold on to the position and decoded length just before the embedded document starts (ie. just after the encoded length), then try deserialising. If deserialisation fails, you may be able to recover and continue by skipping forwards the saved amount of bytes, past the embedded document.
 
 ## variable length integers
 
