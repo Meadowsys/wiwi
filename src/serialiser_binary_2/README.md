@@ -4,7 +4,7 @@ The Spec&trade;
 
 ## Root
 
-Each encoded document contains one root object, and that's it. It is forbidden to have trailing bytes that aren't used to deserialise the object. This restriction can however be relaxed with the `deserialise_lax` function.
+Each encoded document contains one root object, and that's it. It is forbidden to have trailing bytes that aren't used in deserialisation of the first object found. This restriction can however be relaxed with the `deserialise_lax` function.
 
 To (conformantly) encode multiple objects in the "root" of a document, put them in an array.
 
@@ -56,7 +56,7 @@ If an integer is within 1 to 64, it can be encoded as one marker byte within ran
 
 If an integer is outside of these ranges: first consider what signedness the integer is, and what the _value_ is. The smallest type that has the correct signedness must be used. For example, an unsigned value of 70,000 should use the type `u24`, while a signed value of 70,000 should use the type `i24`. Then first write the marker for the type, followed by the integer bytes itself.
 
-Note: in v1 there were more number types (one for ever multiple of 8, until 128). We've decided there is probably not much benefit to these extra types for the amount of marker space they hog. With this new data model there are half the amount of integer sizes, half the int markers as before, but still a decent amount more flexibility than just every power of 2 from 8 to 128.
+Note: in v1 there were more number types (one for ever multiple of 8, up to and including 128). We've decided there is probably not much benefit to these extra types for the amount of marker space they hog. With this new data model there are half the amount of integer sizes, half the int markers as before, but still a decent amount more flexibility than just every power of 2 from 8 to 128.
 
 ## floats
 
@@ -114,6 +114,8 @@ We made the design decision that any binary data sent through this encoding meth
 
 First encode the binary marker `0x0c`, followed by an unsigned variable length integer encoding the length in bytes.
 
+Then, write the buffer in without modification. Deserialisation should be able to be done zero-copy the same way strings can be.
+
 ## map
 
 A map is like a record (key value mappings), except it accepts arbitrary types for the keys as well as strings.
@@ -128,7 +130,7 @@ Note: since we accept arbitrary types for the keys, a marker must be used for th
 
 ## interned values, references, and the value registry
 
-The value registry is a global registry of values, where during serialisation, values can be interned into this global registry by serialisers, and then get a reference back to use in the place of where the value would have been. This registry is included in the front of the serialised output (only if there are any entries; ie. if the registry is not used, it won't be included), and during deserialisation, it is deserialised first, then used throughout the rest of the deserialisation to match references with their actual values. Doing this can save many bytes if there are many identical values and/or identical values repeated a lot throughout the data. For example, APIs that return an array of structured objects, where all the keys in each object are the same.
+The value registry is a global registry of values, where during serialisation, any serialisable value can be "intern"ed into this global registry by serialisers, which will assign a reference to this value to use in the place where the value would have been. This registry is included in the front of the serialised output (only if there are any entries; ie. if the registry is not used, it won't be included), and during deserialisation, it is deserialised first, then used throughout the rest of the deserialisation process to match references with their actual values. Doing this can save many bytes depending on the data. For example, APIs that return an array of structured objects, where all the keys in each object are the same. would benefit from interning all the keys and using references in place of the keys.
 
 During serialisation, you should keep one global store of interned values. This can be a map or a vec. With a vec, the item's index becomes its' reference value (which implies that values _cannot_ be moved into a different index once a reference has been returned). Using a map of some kind, a seperate increment counter (starting from 0, ie. first reference is 0) should be used to keep track of the references, and the reference value should be stored with each entry.
 
@@ -150,15 +152,27 @@ If the reference value is between 0 and 63, encode it using a marker in `0xc0` t
 
 If the reference value is 63 or greater, first write the ref marker byte `0xff`, followed by the reference value as an unsigned variable length integer.
 
+### interning values
+
+Any value can be interned. However, some just aren't worth interning. The first 63 references for values interned take up one byte only, after that it takes one byte in addition to the bytes needed to encode the reference value as an unsigned variable length integer.
+
+Values that might be worth interning include floats, strings, arrays, records, maps, and binary buffers. They are worth interning because they are larger than just one or two bytes to encode. But of course, interning values only works well if the items are repeatedly used throughout the document.
+
+Values are straight up used in the place where you might otherwise expect a marker.
+
+### records with interned keys
+
+Since keys in records are always strings and as a result can be encoded without a marker, you cannot use an interned value in its place. For this, a map can be used instead, since keys use a marker too, and so can properly recognise a reference.
+
 ### nested documents and value registries
 
 It would be possible to take a seperate encoded document, and just plop it inline where any other value would otherwise be expected. However, it may have its own value registry, with of course its own reference values, which would overlap with the parent documents' references. To support nesting arbitrary documents without reserialisation, we must also support arbitrarily nesting value registries.
 
 If a value registry declaration is found when expecting a value instead, don't error, but parse that value registry. Then use only the newly deserialised registry to only deserialise the next value, discarding the registry afterwards.
 
-Embedding another document is putting arbitrary bytes into the output buffer, which can cause issues if the inserted payload is invalid/malformed/malicious. We believe the worst case with malicious inputs is to corrupt data and return potentially arbitrary data. However, in a strict type system like Rust with a serialiser that doesn't access the outside world like the internet (why would it though?), this shouldn't cause RCE bugs or anything like that. It could in a language like javascript though, if an implementation isn't careful about eg. prototype pollution. A document inserted like this should either come from a trusted source, or validated for correct _structure_. Checking for correct structure would mean interpreting the markers and lengths, then skipping over regions, assuming the data inside is valid (ex. read the string marker and the length, but skip UTF-8 validation). This ensures the structure is intact and can't cause things to become messy.
+Embedding another document is putting arbitrary bytes into the output buffer, which can cause issues if the inserted payload is invalid/malformed/malicious. We believe the worst case with malicious inputs is to corrupt data and potentially return arbitrary data. However, in a strict type system like Rust with a serialiser that doesn't access the outside world like the internet (why would it though?), this shouldn't cause RCE bugs or anything like that. It could in a language like javascript though, if an implementation isn't careful about eg. prototype pollution. A document inserted like this should either come from a trusted source, or validated for correct _structure_. Checking for correct structure would mean interpreting the markers and lengths to know how far to skip forward, but skipping validation that isn't needed for skipping ahead (ex. read the string marker and the length, but skip UTF-8 validation). This ensures the structure is intact and can't cause things to become messy during deserialisation.
 
-If the document you want to embed is untrusted and/or unverified, and verifying it is not feasible for whatever reason, you can put a "foreign document" header just before putting the document in. This header is optional, and you don't need to use it if the document you're putting in is from a trusted source and/or validated to be structurally correct. First write the intern marker `0x0d`, followed by `0x00` (yes its the marker for `false`.. it works since no where else is `false` written just after the intern marker), followed by the length in bytes of the document to be embedded as an unsigned variable length integer. Then, write the document. In deserialisation, if this header is found, hold on to the position and decoded length just before the embedded document starts (ie. just after the encoded length), then try deserialising. If deserialisation fails, you may be able to recover and continue by skipping forwards the saved amount of bytes, past the embedded document.
+If the document you want to embed is untrusted and/or unverified, and verifying it is not feasible for whatever reason, you can put a "foreign document" header just before putting the document in. This header is optional, and you don't need to use it if the document you're putting in is from a trusted source and/or validated to be structurally correct. First write the intern marker `0x0d`, followed by `0x00` (yes its the marker for `false`.. it works since no where else is `false` written just after the intern marker), followed by the length in bytes of the document to be embedded as an unsigned variable length integer. Then, write the document. In deserialisation, if this header is found, hold on to the position and decoded length just before the embedded document starts (ie. just after the encoded length), then try deserialising. If deserialisation fails, you may be able to recover and continue by skipping forwards the saved amount of bytes, past the embedded document, and continuing after that.
 
 ## variable length integers
 
@@ -190,7 +204,3 @@ There are two variants to this encoding: unsigned only and signed only. Dependin
 - `0x81` - next 8 bytes encodes i64
 - `0x82` - next 12 bytes encodes i96
 - `0x83` - next 16 bytes encodes i128
-
-# ???
-
-Now that I've written the first version... I've figured out a few more things that I think I could do better.
