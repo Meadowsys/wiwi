@@ -74,9 +74,6 @@ I need to stop making such large changes before releasing anything lol
     - they were just different names for `OnDrop::on_drop`, `OnDrop::on_success_drop`, and `OnDrop::on_unwind_drop`, respectively
   - added `into_inner` for `Defer`, to get the value back out
     - makes this viable now for the "drop guard" pattern
-- feature `gpg`
-  - created the feature (unstable)
-  - ...it's empty
 - feature `id`
   - uses `rand` feature's `ChaCha8` generator instead of thread rng from `rand` crate, which is a bit faster, since the last 4 bits is not intended for security, rather just a bit of non-critical unpredictability between 2 IDs if they were generated within the same millisecond
   - move current (64-bit) generator to its own module
@@ -93,12 +90,6 @@ I need to stop making such large changes before releasing anything lol
       - doesn't turn into an increment like ULID has its random field do, since that makes the amount of IDs you can generate per period of time quite... random (ie. if you roll a high value, you can generate less IDs than if you were to roll a low value. Not a problem in practice, but, yknow, in theory it can be a problem)
 - feature `int`
   - implemented (overflowing) add, (overflowing) sub, and (widening) mul for arrays of arbitrary length holding arbitrary integers (powered by `num-traits` feature, very nice)
-- feature `libassuan`
-  - created the feature (unstable)
-  - ...it's empty
-- feature `libgpg-error`
-  - created the feature (unstable)
-  - ...it's empty
 - feature `lsl`
   - yeeted it all, we're starting over lol
   - started sketching out the structs for it again
@@ -116,6 +107,11 @@ I need to stop making such large changes before releasing anything lol
 - feature `serialiser-binary`
   - created the feature (unstable)
   - implement all the basic features (ie. all JSON can be encoded in this format)
+- feature `serialiser-binary-2`
+  - created the feature (unstable)
+  - creating `serialiser-binary` feature has led me to think about it more, and I think I can do things a bit better, but this would change the fundamental structure of the format, so I think it's best I do it in a new feature
+    - `serialiser-binary` is probably never gonna stabilise as a result, and get removed at some point
+  - wrote a small bit of spec
 - feature `unicode`
   - created the feature (unstable)
   - implement some core functionality of unicode code points, UTF-8, UTF-16, and UTF-32 str/string
