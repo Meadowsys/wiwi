@@ -44,7 +44,7 @@ jobs:
     uses: ./.github/workflows/verify-gen-features.yml
 
   publish:
-    name: publish crate
+    name: publish crates
     runs-on: macos-14
     needs:
     - test
