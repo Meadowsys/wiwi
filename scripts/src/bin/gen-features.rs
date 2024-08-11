@@ -78,10 +78,10 @@ fn main() {
 		"export-all-submodules"
 		"A convenience macro for declaring many private modules, then reexporting everything within them using a glob use statement"
 
-		#[unstable]
-		"gpg"
-		"Bindings to [GPGME](https://www.gnupg.org/software/gpgme), GnuPG's official C library"
-		features: ["libassuan", "libgpg-error"]
+		// #[unstable]
+		// "gpg"
+		// "Bindings to [GPGME](https://www.gnupg.org/software/gpgme), GnuPG's official C library"
+		// features: ["libassuan", "libgpg-error"]
 
 		"h"
 		"h"
@@ -110,13 +110,13 @@ fn main() {
 		"Wrappers around a lazily initialised value, and its initialisation function, supporting usage in static variables"
 		dependencies: ["parking-lot"]
 
-		#[unstable]
-		"libassuan"
-		"Bindings to [`libassuan`](https://www.gnupg.org/related_software/libassuan)"
+		// #[unstable]
+		// "libassuan"
+		// "Bindings to [`libassuan`](https://www.gnupg.org/related_software/libassuan)"
 
-		#[unstable]
-		"libgpg-error"
-		"Bindings to [`libgpg-error`](https://www.gnupg.org/related_software/libgpg-error)"
+		// #[unstable]
+		// "libgpg-error"
+		// "Bindings to [`libgpg-error`](https://www.gnupg.org/related_software/libgpg-error)"
 
 		#[unstable]
 		"lsl"
