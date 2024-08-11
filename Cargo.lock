@@ -186,7 +186,7 @@ checksum = "8c3c1a368f70d6cf7302d78f8f7093da241fb8e8807c05cc9e51a125895a6d5b"
 
 [[package]]
 name = "bindings"
-version = "0.10.0-dev"
+version = "0.10.0"
 dependencies = [
  "wiwi",
 ]
@@ -2181,7 +2181,7 @@ dependencies = [
 
 [[package]]
 name = "wiwi"
-version = "0.10.0-dev"
+version = "0.10.0"
 dependencies = [
  "argon2",
  "cc",
@@ -2212,14 +2212,14 @@ dependencies = [
 
 [[package]]
 name = "wiwi-scripts"
-version = "0.10.0-dev"
+version = "0.10.0"
 dependencies = [
  "wiwi",
 ]
 
 [[package]]
 name = "wiwiwiwiwi"
-version = "0.10.0-dev"
+version = "0.10.0"
 dependencies = [
  "proc-macro2",
  "quote",

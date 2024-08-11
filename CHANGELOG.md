@@ -4,7 +4,7 @@ Hallo!
 
 ## table of contents <!-- omit from toc -->
 
-- [unreleased](#unreleased)
+- [v0.10.0](#v0100)
 - [v0.9.0](#v090)
 - [v0.8.0](#v080)
 - [v0.7.0](#v070)
@@ -26,7 +26,7 @@ Hallo!
 - [v0.0.0](#v000)
 - [Yanked versions and reasons](#yanked-versions-and-reasons)
 
-## unreleased
+## v0.10.0
 
 I need to stop making such large changes before releasing anything lol
 
