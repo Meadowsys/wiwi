@@ -93,14 +93,22 @@
 <a href="#93" id="93">93</a>
 <a href="#94" id="94">94</a>
 <a href="#95" id="95">95</a>
-</pre></div><pre class="rust"><code><span class="kw">use </span><span class="kw">crate</span>::_internal::encoding_utils::UnsafeBufWriteGuard;
+<a href="#96" id="96">96</a>
+<a href="#97" id="97">97</a>
+<a href="#98" id="98">98</a>
+<a href="#99" id="99">99</a>
+</pre></div><pre class="rust"><code><span class="doccomment">//! Internal decoding implementations
+
+</span><span class="kw">use </span><span class="kw">crate</span>::_internal::encoding_utils::UnsafeBufWriteGuard;
 <span class="kw">use </span><span class="kw">crate</span>::num_traits::<span class="kw-2">*</span>;
 <span class="kw">use </span><span class="kw">super</span>::DecodeError;
 
-<span class="kw">const </span>TABLE_DECODER_LEN: usize = <span class="number">256</span>;
+<span class="doccomment">/// Length of the table decoder (256)
+</span><span class="kw">const </span>TABLE_DECODER_LEN: usize = <span class="number">256</span>;
 
-<span class="comment">// TODO: this table is mostly empty... I wonder what we could do here to shrink it,
-// without compromising speed
+<span class="doccomment">/// Decoding table (with mappings for both upper and lower hex)
+</span><span class="comment">// TODO: this table is mostly empty... I wonder what we could do here to shrink it,
+// without compromising speed (we could do what we did with z85 with None == 0xff)?
 </span><span class="kw">static </span>TABLE_DECODER: <span class="kw-2">&amp;</span>[<span class="prelude-ty">Option</span>&lt;u8&gt;; TABLE_DECODER_LEN] = <span class="kw-2">&amp;</span>[
 	<span class="prelude-val">None</span>,       <span class="prelude-val">None</span>,       <span class="prelude-val">None</span>,       <span class="prelude-val">None</span>,       <span class="prelude-val">None</span>,       <span class="prelude-val">None</span>,       <span class="prelude-val">None</span>,       <span class="prelude-val">None</span>,       <span class="prelude-val">None</span>,       <span class="prelude-val">None</span>,       <span class="prelude-val">None</span>,       <span class="prelude-val">None</span>,       <span class="prelude-val">None</span>,       <span class="prelude-val">None</span>,       <span class="prelude-val">None</span>,       <span class="prelude-val">None</span>,
 	<span class="prelude-val">None</span>,       <span class="prelude-val">None</span>,       <span class="prelude-val">None</span>,       <span class="prelude-val">None</span>,       <span class="prelude-val">None</span>,       <span class="prelude-val">None</span>,       <span class="prelude-val">None</span>,       <span class="prelude-val">None</span>,       <span class="prelude-val">None</span>,       <span class="prelude-val">None</span>,       <span class="prelude-val">None</span>,       <span class="prelude-val">None</span>,       <span class="prelude-val">None</span>,       <span class="prelude-val">None</span>,       <span class="prelude-val">None</span>,       <span class="prelude-val">None</span>,

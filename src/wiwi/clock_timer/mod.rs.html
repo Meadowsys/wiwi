@@ -220,9 +220,92 @@
 <a href="#220" id="220">220</a>
 <a href="#221" id="221">221</a>
 <a href="#222" id="222">222</a>
+<a href="#223" id="223">223</a>
+<a href="#224" id="224">224</a>
+<a href="#225" id="225">225</a>
+<a href="#226" id="226">226</a>
+<a href="#227" id="227">227</a>
+<a href="#228" id="228">228</a>
+<a href="#229" id="229">229</a>
+<a href="#230" id="230">230</a>
+<a href="#231" id="231">231</a>
+<a href="#232" id="232">232</a>
+<a href="#233" id="233">233</a>
+<a href="#234" id="234">234</a>
+<a href="#235" id="235">235</a>
+<a href="#236" id="236">236</a>
+<a href="#237" id="237">237</a>
+<a href="#238" id="238">238</a>
+<a href="#239" id="239">239</a>
+<a href="#240" id="240">240</a>
+<a href="#241" id="241">241</a>
+<a href="#242" id="242">242</a>
+<a href="#243" id="243">243</a>
+<a href="#244" id="244">244</a>
+<a href="#245" id="245">245</a>
+<a href="#246" id="246">246</a>
+<a href="#247" id="247">247</a>
+<a href="#248" id="248">248</a>
+<a href="#249" id="249">249</a>
+<a href="#250" id="250">250</a>
+<a href="#251" id="251">251</a>
+<a href="#252" id="252">252</a>
+<a href="#253" id="253">253</a>
+<a href="#254" id="254">254</a>
+<a href="#255" id="255">255</a>
+<a href="#256" id="256">256</a>
+<a href="#257" id="257">257</a>
+<a href="#258" id="258">258</a>
+<a href="#259" id="259">259</a>
+<a href="#260" id="260">260</a>
+<a href="#261" id="261">261</a>
+<a href="#262" id="262">262</a>
+<a href="#263" id="263">263</a>
+<a href="#264" id="264">264</a>
+<a href="#265" id="265">265</a>
+<a href="#266" id="266">266</a>
+<a href="#267" id="267">267</a>
+<a href="#268" id="268">268</a>
+<a href="#269" id="269">269</a>
+<a href="#270" id="270">270</a>
+<a href="#271" id="271">271</a>
+<a href="#272" id="272">272</a>
+<a href="#273" id="273">273</a>
+<a href="#274" id="274">274</a>
+<a href="#275" id="275">275</a>
+<a href="#276" id="276">276</a>
+<a href="#277" id="277">277</a>
+<a href="#278" id="278">278</a>
+<a href="#279" id="279">279</a>
+<a href="#280" id="280">280</a>
+<a href="#281" id="281">281</a>
+<a href="#282" id="282">282</a>
+<a href="#283" id="283">283</a>
+<a href="#284" id="284">284</a>
+<a href="#285" id="285">285</a>
+<a href="#286" id="286">286</a>
+<a href="#287" id="287">287</a>
+<a href="#288" id="288">288</a>
+<a href="#289" id="289">289</a>
+<a href="#290" id="290">290</a>
+<a href="#291" id="291">291</a>
+<a href="#292" id="292">292</a>
+<a href="#293" id="293">293</a>
+<a href="#294" id="294">294</a>
+<a href="#295" id="295">295</a>
+<a href="#296" id="296">296</a>
+<a href="#297" id="297">297</a>
+<a href="#298" id="298">298</a>
+<a href="#299" id="299">299</a>
+<a href="#300" id="300">300</a>
+<a href="#301" id="301">301</a>
+<a href="#302" id="302">302</a>
+<a href="#303" id="303">303</a>
+<a href="#304" id="304">304</a>
+<a href="#305" id="305">305</a>
 </pre></div><pre class="rust"><code><span class="kw">pub use </span>chrono;
 
-<span class="kw">use </span>chrono::{ DateTime, Local, NaiveDateTime, TimeDelta, Timelike, TimeZone };
+<span class="kw">use </span>chrono::{ DateTime, Local, TimeDelta, TimeZone };
 <span class="kw">use </span>std::future::Future;
 <span class="kw">use </span>tokio::time::sleep;
 
@@ -233,18 +316,62 @@
 /// If this falls behind time for some reason, the ticks will be yielded with
 /// the time information at when it was supposed to yield, until catching up.
 </span><span class="kw">pub struct </span>ClockTimer {
-	next_tick: DateTime&lt;Local&gt;,
-	interval: TimeDelta,
-	elapsed: TimeDelta,
-	remaining: TimeDelta
+	<span class="doccomment">/// The time the next tick will trigger
+	///
+	/// In a newly created clock timer, this is the starting time
+	</span>next_tick: DateTime&lt;Local&gt;,
+
+	<span class="doccomment">/// How often this clock timer will yield ticks
+	</span>interval: TimeDelta,
+
+	<span class="doccomment">/// How much time has elapsed since the first tick
+	///
+	/// More precisely, this tracks how much time is between the first
+	/// tick, and the next tick if there is one. Otherwise, the value in this
+	/// field is meaningless.
+	</span>elapsed: TimeDelta,
+
+	<span class="doccomment">/// How much time is remaining
+	///
+	/// More precisely, this tracks how much time is remaining after the time in
+	/// [`next_tick`](ClockTimer::next_tick)
+	</span>remaining: TimeDelta
 }
 
 <span class="doccomment">/// Timing information for one tick
 </span><span class="kw">pub struct </span>Tick {
-	this_tick: DateTime&lt;Local&gt;,
-	elapsed: TimeDelta,
-	remaining: TimeDelta,
-	delayed: bool
+	<span class="doccomment">/// The time of this tick (or, if this tick was delayed, what time this tick
+	/// was scheduled to be yielded at)
+	</span>this_tick: DateTime&lt;Local&gt;,
+
+	<span class="doccomment">/// The duration from the first tick to this tick (scheduled time),
+	/// ie. the time the clock timer has been running
+	</span>elapsed: TimeDelta,
+
+	<span class="doccomment">/// The duration from this tick to the last tick (scheduled time),
+	/// ie. the remaining time the clock timer will run before stopping
+	</span>remaining: TimeDelta,
+
+	<span class="doccomment">/// Whether or not this tick has been delayed
+	///
+	/// Note: We have not properly tested this (except in the
+	/// [april fools prank](https://www.fimfiction.net/story/553695/) that this
+	/// was built for of course heh), and we suspect this value is always `true`
+	/// no matter if it was _actually_ delayed by the definition of what you'd
+	/// expect. You might expect this to be `true` if previous task took too long
+	/// or something, ie. this was called delayed because of the application
+	/// logic itself, rather than little OS scheduling runtime things, ie. OS
+	/// thread scheduling, tokio task scheduling, syncronisation stuff, etc etc.
+	/// We expect this to always be `true`, because tokio will not wake up and
+	/// poll again a task until the time has passed, and never before, and if
+	/// there's any tiny bit of delay introduced anywhere detectable by the time
+	/// APIs, be it from OS thread syncronisation, or tokio syncronisation, or
+	/// the arithmetic and time putting the task away to sleep by the async
+	/// runtime, or something, which, based on how these things work, this will
+	/// likely always happen and make ths `true`.
+	///
+	/// ...whew ramble
+	</span>delayed: bool
 }
 
 <span class="kw">impl </span>ClockTimer {
@@ -272,10 +399,16 @@
 
 		<span class="kw">let </span>delta = tick.this_tick - Local::now();
 
-		<span class="kw">if </span>delta &lt;= TimeDelta::zero() {
+		<span class="comment">// TODO: rethink delayed detection?
+		// because it is highly likely that due to various factors out of our
+		// control (eg. OS scheduling, tokio runtime scheduling, work stealing,
+		// syncronisation stuff, etc etc), we won't get polled until technically
+		// after our scheduled time, leading this to always be true? tests needed,
+		// and this delay is in the order of milliseconds, or maybe even micros/nanos
+		</span><span class="kw">if </span>delta &lt;= TimeDelta::zero() {
 			<span class="comment">// highly unlikely, but if delta somehow manages to hit exactly 0,
 			// we consider it on time. Maybe we should say like, if now is
-			// within 1ms after the set tick time? dunno
+			// within 1ms after the set tick time? dunno (see above todo comment)
 			</span><span class="kw">if </span>delta &lt; TimeDelta::zero() { tick.delayed = <span class="bool-val">true </span>}
 			<span class="kw">return </span><span class="prelude-val">Some</span>(tick)
 		}
@@ -364,12 +497,19 @@
 
 	<span class="doccomment">/// Builder for [`ClockTimer`].
 	</span><span class="kw">pub struct </span>Builder {
-		__private: ()
+		<span class="doccomment">/// Forcing users to use [`new`] because I dunno style or something, that
+		/// [`new`] call and this struct is just literally gonna get optimised
+		/// away to nothing
+		///
+		/// [`new`]: Builder::new
+		</span>__private: ()
 	}
 
 	<span class="kw">impl </span>Builder {
 		<span class="doccomment">/// New builder. You can also obtain a builder through [`ClockTimer::builder`]
-		</span><span class="attr">#[inline]
+		</span><span class="comment">// there is no default that makes sense here
+		</span><span class="attr">#[allow(clippy::new_without_default)]
+		#[inline]
 		</span><span class="kw">pub fn </span>new() -&gt; <span class="self">Self </span>{
 			<span class="comment">// its gonna optimise away to be noop lol
 			// I think it provides a good API though,
@@ -385,8 +525,14 @@
 		}
 	}
 
-	<span class="kw">pub struct </span>BuilderWithStart {
-		start: DateTime&lt;Local&gt;
+	<span class="doccomment">/// Intermediate builder state struct, returned after calling a method on
+	/// [`Builder`]
+	///
+	/// Most likely you won't need to ever interact with this type directly.
+	/// You're probably looking for [`Builder`].
+	</span><span class="kw">pub struct </span>BuilderWithStart {
+		<span class="doccomment">/// The provided start datetime
+		</span>start: DateTime&lt;Local&gt;
 	}
 
 	<span class="kw">impl </span>BuilderWithStart {
@@ -410,9 +556,18 @@
 		}
 	}
 
-	<span class="kw">pub struct </span>BuilderWithEnd {
-		start: DateTime&lt;Local&gt;,
-		end: DateTime&lt;Local&gt;
+	<span class="doccomment">/// Intermediate builder state struct, returned after calling a method on
+	/// [`BuilderWithStart`]
+	///
+	/// Most likely you won't need to ever interact with this type directly.
+	/// You're probably looking for [`Builder`].
+	</span><span class="kw">pub struct </span>BuilderWithEnd {
+		<span class="doccomment">/// The provided start datetime (from prev stage of builder)
+		</span>start: DateTime&lt;Local&gt;,
+
+		<span class="doccomment">/// The end datetime, either provided or calculated
+		/// from a runtime duration
+		</span>end: DateTime&lt;Local&gt;
 	}
 
 	<span class="kw">impl </span>BuilderWithEnd {
@@ -424,10 +579,21 @@
 		}
 	}
 
-	<span class="kw">pub struct </span>BuilderWithInterval {
-		start: DateTime&lt;Local&gt;,
-		end: DateTime&lt;Local&gt;,
-		interval: TimeDelta
+	<span class="doccomment">/// Intermediate builder state struct, returned after calling a method on
+	/// [`BuilderWithEnd`]
+	///
+	/// Most likely you won't need to ever interact with this type directly.
+	/// You're probably looking for [`Builder`].
+	</span><span class="kw">pub struct </span>BuilderWithInterval {
+		<span class="doccomment">/// The provided start datetime (from prev stage of builder)
+		</span>start: DateTime&lt;Local&gt;,
+
+		<span class="doccomment">/// The end datetime, either provided or calculated from a runtime
+		/// duration (from prev stage of builder)
+		</span>end: DateTime&lt;Local&gt;,
+
+		<span class="doccomment">/// The provided trigger interval
+		</span>interval: TimeDelta
 	}
 
 	<span class="kw">impl </span>BuilderWithInterval {

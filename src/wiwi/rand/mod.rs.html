@@ -240,12 +240,47 @@
 <a href="#240" id="240">240</a>
 <a href="#241" id="241">241</a>
 <a href="#242" id="242">242</a>
+<a href="#243" id="243">243</a>
+<a href="#244" id="244">244</a>
+<a href="#245" id="245">245</a>
+<a href="#246" id="246">246</a>
+<a href="#247" id="247">247</a>
+<a href="#248" id="248">248</a>
+<a href="#249" id="249">249</a>
+<a href="#250" id="250">250</a>
+<a href="#251" id="251">251</a>
+<a href="#252" id="252">252</a>
+<a href="#253" id="253">253</a>
+<a href="#254" id="254">254</a>
+<a href="#255" id="255">255</a>
+<a href="#256" id="256">256</a>
+<a href="#257" id="257">257</a>
+<a href="#258" id="258">258</a>
+<a href="#259" id="259">259</a>
+<a href="#260" id="260">260</a>
+<a href="#261" id="261">261</a>
+<a href="#262" id="262">262</a>
+<a href="#263" id="263">263</a>
+<a href="#264" id="264">264</a>
+<a href="#265" id="265">265</a>
+<a href="#266" id="266">266</a>
+<a href="#267" id="267">267</a>
+<a href="#268" id="268">268</a>
+<a href="#269" id="269">269</a>
+<a href="#270" id="270">270</a>
+<a href="#271" id="271">271</a>
+<a href="#272" id="272">272</a>
+<a href="#273" id="273">273</a>
+<a href="#274" id="274">274</a>
+<a href="#275" id="275">275</a>
 </pre></div><pre class="rust"><code><span class="kw">use </span>rand::{ CryptoRng, Error, RngCore, SeedableRng };
 <span class="kw">use </span>rand::rngs::{ OsRng, adapter::ReseedingRng };
 <span class="kw">use </span>rand_chacha::{ ChaCha8Core, ChaCha12Core, ChaCha20Core };
 <span class="kw">use </span>std::cell::RefCell;
 
-<span class="macro">macro_rules!</span> decl_thread_local_rng {
+<span class="doccomment">/// Internal macro to declare a thread local rng struct with the provided
+/// struct name, core struct type, and reseeder struct
+</span><span class="macro">macro_rules!</span> decl_thread_local_rng {
 	{
 		$(<span class="attr">#[<span class="macro-nonterminal">$struct_meta</span>:meta]</span>)*
 		<span class="macro-nonterminal">$struct_name</span>:ident <span class="macro-nonterminal">$core</span>:ident <span class="macro-nonterminal">$reseeder</span>:ident
@@ -263,12 +298,17 @@
 			}
 
 			<span class="kw">impl </span><span class="macro-nonterminal">$struct_name </span>{
-				<span class="attr">#[inline]
+				<span class="doccomment">/// Generates a random value of type `T` using this generator
+				</span><span class="attr">#[inline]
 				</span><span class="kw">pub fn </span>gen_rand&lt;T: Randomisable&gt;() -&gt; T {
 					RNG_STATIC.with_borrow_mut(|rng| T::gen_rand(rng))
 				}
 
-				<span class="kw">pub fn </span>fill&lt;T: Randomisable&gt;(slice: <span class="kw-2">&amp;mut </span>[T]) {
+				<span class="doccomment">/// Fills a slice of values of type `T` using this generator
+				/// Doing it with this function is preferable to manually implementing it, as this function
+				/// can provide optimised implementations where available.
+				</span><span class="attr">#[inline]
+				</span><span class="kw">pub fn </span>fill&lt;T: Randomisable&gt;(slice: <span class="kw-2">&amp;mut </span>[T]) {
 					RNG_STATIC.with_borrow_mut(|rng| T::fill(rng, slice))
 				}
 			}
@@ -318,10 +358,17 @@
 
 <span class="kw">impl </span>CryptoRng <span class="kw">for </span>ThreadLocalChaCha20Rng {}
 
-<span class="kw">pub trait </span>Randomisable: Sized {
-	<span class="kw">fn </span>gen_rand&lt;R: RngCore&gt;(rng: <span class="kw-2">&amp;mut </span>R) -&gt; <span class="self">Self</span>;
+<span class="doccomment">/// A trait for items that can be randomly generated from a given
+/// random number generator
+</span><span class="kw">pub trait </span>Randomisable: Sized {
+	<span class="doccomment">/// Generates a random value with the given random number generator
+	</span><span class="kw">fn </span>gen_rand&lt;R: RngCore&gt;(rng: <span class="kw-2">&amp;mut </span>R) -&gt; <span class="self">Self</span>;
 
-	<span class="attr">#[inline]
+	<span class="doccomment">/// Fills a slice with the given random number generator
+	///
+	/// Doing it with this function is preferable to manually implementing it, as this function
+	/// can provide optimised implementations where available.
+	</span><span class="attr">#[inline]
 	</span><span class="kw">fn </span>fill&lt;R: RngCore&gt;(rng: <span class="kw-2">&amp;mut </span>R, slice: <span class="kw-2">&amp;mut </span>[<span class="self">Self</span>]) {
 		<span class="kw">for </span>slot <span class="kw">in </span>slice {
 			<span class="kw-2">*</span>slot = Randomisable::gen_rand(rng);
@@ -329,7 +376,10 @@
 	}
 }
 
-<span class="macro">macro_rules!</span> impl_int_randomisable {
+<span class="doccomment">/// Internal macro to generate implementations of [`Randomisable`] for integers
+/// based on the provided [`gen_rand`](Randomisable::gen_rand) body and optionally
+/// [`fill`](Randomisable::fill) body
+</span><span class="macro">macro_rules!</span> impl_int_randomisable {
 	($(<span class="macro-nonterminal">$num</span>:ident {
 		<span class="macro-nonterminal">$gen_rand_rng</span>:ident =&gt; <span class="macro-nonterminal">$gen_rand_expr</span>:expr
 		$(; (<span class="macro-nonterminal">$fill_rng_rng</span>:ident, <span class="macro-nonterminal">$fill_rng_slice</span>:ident) =&gt; <span class="macro-nonterminal">$fill_expr</span>:expr;)<span class="question-mark">?
@@ -431,54 +481,70 @@
 	}
 }
 
-<span class="attr">#[inline]
+<span class="doccomment">/// Generate a [`u8`] from the provided `rng` by truncating a generated [`u32`]
+</span><span class="attr">#[inline]
 </span><span class="kw">fn </span>rand_u8&lt;R: RngCore&gt;(rng: <span class="kw-2">&amp;mut </span>R) -&gt; u8 {
 	rand_u32(rng) <span class="kw">as _
 </span>}
 
-<span class="attr">#[inline]
+<span class="doccomment">/// Generate a [`u16`] from the provided `rng` by truncating a generated [`u32`]
+</span><span class="attr">#[inline]
 </span><span class="kw">fn </span>rand_u16&lt;R: RngCore&gt;(rng: <span class="kw-2">&amp;mut </span>R) -&gt; u16 {
 	rand_u32(rng) <span class="kw">as _
 </span>}
 
-<span class="attr">#[inline]
+<span class="doccomment">/// Generate a [`u32`] from the provided `rng`
+</span><span class="attr">#[inline]
 </span><span class="kw">fn </span>rand_u32&lt;R: RngCore&gt;(rng: <span class="kw-2">&amp;mut </span>R) -&gt; u32 {
 	rng.next_u32()
 }
 
-<span class="attr">#[inline]
+<span class="doccomment">/// Generate a [`u64`] from the provided `rng`
+</span><span class="attr">#[inline]
 </span><span class="kw">fn </span>rand_u64&lt;R: RngCore&gt;(rng: <span class="kw-2">&amp;mut </span>R) -&gt; u64 {
 	rng.next_u64()
 }
 
-<span class="attr">#[inline]
+<span class="doccomment">/// Generate a [`u128`] from the provided `rng` by generating 2 [`u64`]'s,
+/// using one for the higher 64 bits and one for the lower 64 bits
+</span><span class="attr">#[inline]
 </span><span class="kw">fn </span>rand_u128&lt;R: RngCore&gt;(rng: <span class="kw-2">&amp;mut </span>R) -&gt; u128 {
 	<span class="kw">let </span>lower = rng.next_u64() <span class="kw">as </span>u128;
 	<span class="kw">let </span>upper = rng.next_u64() <span class="kw">as </span>u128;
 	lower | upper &lt;&lt; <span class="number">64
 </span>}
 
-<span class="attr">#[inline]
+<span class="doccomment">/// Generate a [`i8`] from the provided `rng` by generating a [`u8`]
+/// and no-op bitwise casting it to a [`i8`]
+</span><span class="attr">#[inline]
 </span><span class="kw">fn </span>rand_i8&lt;R: RngCore&gt;(rng: <span class="kw-2">&amp;mut </span>R) -&gt; i8 {
 	rand_u8(rng) <span class="kw">as _
 </span>}
 
-<span class="attr">#[inline]
+<span class="doccomment">/// Generate a [`i16`] from the provided `rng` by generating a [`u16`]
+/// and no-op bitwise casting it to a [`i16`]
+</span><span class="attr">#[inline]
 </span><span class="kw">fn </span>rand_i16&lt;R: RngCore&gt;(rng: <span class="kw-2">&amp;mut </span>R) -&gt; i16 {
 	rand_u16(rng) <span class="kw">as _
 </span>}
 
-<span class="attr">#[inline]
+<span class="doccomment">/// Generate a [`i32`] from the provided `rng` by generating a [`u32`]
+/// and no-op bitwise casting it to a [`i32`]
+</span><span class="attr">#[inline]
 </span><span class="kw">fn </span>rand_i32&lt;R: RngCore&gt;(rng: <span class="kw-2">&amp;mut </span>R) -&gt; i32 {
 	rand_u32(rng) <span class="kw">as _
 </span>}
 
-<span class="attr">#[inline]
+<span class="doccomment">/// Generate a [`i64`] from the provided `rng` by generating a [`u64`]
+/// and no-op bitwise casting it to a [`i64`]
+</span><span class="attr">#[inline]
 </span><span class="kw">fn </span>rand_i64&lt;R: RngCore&gt;(rng: <span class="kw-2">&amp;mut </span>R) -&gt; i64 {
 	rand_u64(rng) <span class="kw">as _
 </span>}
 
-<span class="attr">#[inline]
+<span class="doccomment">/// Generate a [`i128`] from the provided `rng` by generating a [`u128`]
+/// and no-op bitwise casting it to a [`i128`]
+</span><span class="attr">#[inline]
 </span><span class="kw">fn </span>rand_i128&lt;R: RngCore&gt;(rng: <span class="kw-2">&amp;mut </span>R) -&gt; i128 {
 	rand_u128(rng) <span class="kw">as _
 </span>}

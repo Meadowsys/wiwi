@@ -184,21 +184,17 @@
 <a href="#184" id="184">184</a>
 <a href="#185" id="185">185</a>
 <a href="#186" id="186">186</a>
-<a href="#187" id="187">187</a>
-<a href="#188" id="188">188</a>
-<a href="#189" id="189">189</a>
 </pre></div><pre class="rust"><code><span class="kw">use </span><span class="kw">crate</span>::_internal::encoding_utils::UnsafeBufWriteGuard;
 <span class="kw">use </span>std::str;
 
-<span class="doccomment">/// Length of encoding table (not actually used in encoding/decoding data)
-</span><span class="kw">pub const </span>TABLE_ENCODER_LEN: usize = <span class="number">16</span>;
-<span class="doccomment">/// Encoding table of lowercased characters (not actually used in encoding/decoding data)
-</span><span class="kw">pub const </span>TABLE_ENCODER_LOWER: [u8; TABLE_ENCODER_LEN] = <span class="kw-2">*</span><span class="string">b"0123456789abcdef"</span>;
-<span class="doccomment">/// Encoding table of uppercased characters (not actually used in encoding/decoding data)
-</span><span class="kw">pub const </span>TABLE_ENCODER_UPPER: [u8; TABLE_ENCODER_LEN] = <span class="kw-2">*</span><span class="string">b"0123456789ABCDEF"</span>;
-
 <span class="kw">mod </span>encode;
 <span class="kw">mod </span>decode;
+
+<span class="kw">pub use </span><span class="self">self</span>::encode::{
+	TABLE_ENCODER_LEN,
+	TABLE_ENCODER_LOWER,
+	TABLE_ENCODER_UPPER
+};
 
 <span class="doccomment">/// Encodes a slice of bytes into a String, using lowercase characters
 </span><span class="attr">#[inline]
@@ -213,8 +209,6 @@
 }
 
 <span class="doccomment">/// Inner function with const generic `UPPER`
-</span><span class="comment">// // mut is used by cfg(target_arch) which is not necessarily cfg enabled
-// #[allow(unused_mut)]
 </span><span class="kw">fn </span>_encode&lt;<span class="kw">const </span>UPPER: bool&gt;(bytes: <span class="kw-2">&amp;</span>[u8]) -&gt; String {
 	<span class="macro">debug_assert!</span>(bytes.len() &gt;&gt; (usize::BITS - <span class="number">1</span>) == <span class="number">0</span>, <span class="string">"size overflow"</span>);
 

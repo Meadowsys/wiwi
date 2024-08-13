@@ -243,6 +243,98 @@
 <a href="#243" id="243">243</a>
 <a href="#244" id="244">244</a>
 <a href="#245" id="245">245</a>
+<a href="#246" id="246">246</a>
+<a href="#247" id="247">247</a>
+<a href="#248" id="248">248</a>
+<a href="#249" id="249">249</a>
+<a href="#250" id="250">250</a>
+<a href="#251" id="251">251</a>
+<a href="#252" id="252">252</a>
+<a href="#253" id="253">253</a>
+<a href="#254" id="254">254</a>
+<a href="#255" id="255">255</a>
+<a href="#256" id="256">256</a>
+<a href="#257" id="257">257</a>
+<a href="#258" id="258">258</a>
+<a href="#259" id="259">259</a>
+<a href="#260" id="260">260</a>
+<a href="#261" id="261">261</a>
+<a href="#262" id="262">262</a>
+<a href="#263" id="263">263</a>
+<a href="#264" id="264">264</a>
+<a href="#265" id="265">265</a>
+<a href="#266" id="266">266</a>
+<a href="#267" id="267">267</a>
+<a href="#268" id="268">268</a>
+<a href="#269" id="269">269</a>
+<a href="#270" id="270">270</a>
+<a href="#271" id="271">271</a>
+<a href="#272" id="272">272</a>
+<a href="#273" id="273">273</a>
+<a href="#274" id="274">274</a>
+<a href="#275" id="275">275</a>
+<a href="#276" id="276">276</a>
+<a href="#277" id="277">277</a>
+<a href="#278" id="278">278</a>
+<a href="#279" id="279">279</a>
+<a href="#280" id="280">280</a>
+<a href="#281" id="281">281</a>
+<a href="#282" id="282">282</a>
+<a href="#283" id="283">283</a>
+<a href="#284" id="284">284</a>
+<a href="#285" id="285">285</a>
+<a href="#286" id="286">286</a>
+<a href="#287" id="287">287</a>
+<a href="#288" id="288">288</a>
+<a href="#289" id="289">289</a>
+<a href="#290" id="290">290</a>
+<a href="#291" id="291">291</a>
+<a href="#292" id="292">292</a>
+<a href="#293" id="293">293</a>
+<a href="#294" id="294">294</a>
+<a href="#295" id="295">295</a>
+<a href="#296" id="296">296</a>
+<a href="#297" id="297">297</a>
+<a href="#298" id="298">298</a>
+<a href="#299" id="299">299</a>
+<a href="#300" id="300">300</a>
+<a href="#301" id="301">301</a>
+<a href="#302" id="302">302</a>
+<a href="#303" id="303">303</a>
+<a href="#304" id="304">304</a>
+<a href="#305" id="305">305</a>
+<a href="#306" id="306">306</a>
+<a href="#307" id="307">307</a>
+<a href="#308" id="308">308</a>
+<a href="#309" id="309">309</a>
+<a href="#310" id="310">310</a>
+<a href="#311" id="311">311</a>
+<a href="#312" id="312">312</a>
+<a href="#313" id="313">313</a>
+<a href="#314" id="314">314</a>
+<a href="#315" id="315">315</a>
+<a href="#316" id="316">316</a>
+<a href="#317" id="317">317</a>
+<a href="#318" id="318">318</a>
+<a href="#319" id="319">319</a>
+<a href="#320" id="320">320</a>
+<a href="#321" id="321">321</a>
+<a href="#322" id="322">322</a>
+<a href="#323" id="323">323</a>
+<a href="#324" id="324">324</a>
+<a href="#325" id="325">325</a>
+<a href="#326" id="326">326</a>
+<a href="#327" id="327">327</a>
+<a href="#328" id="328">328</a>
+<a href="#329" id="329">329</a>
+<a href="#330" id="330">330</a>
+<a href="#331" id="331">331</a>
+<a href="#332" id="332">332</a>
+<a href="#333" id="333">333</a>
+<a href="#334" id="334">334</a>
+<a href="#335" id="335">335</a>
+<a href="#336" id="336">336</a>
+<a href="#337" id="337">337</a>
 </pre></div><pre class="rust"><code><span class="kw">use </span>parking_lot::{ Once, OnceState };
 <span class="kw">use </span>std::cell::UnsafeCell;
 <span class="kw">use </span>std::fmt::{ <span class="self">self</span>, Debug, Display };
@@ -251,15 +343,29 @@
 <span class="kw">use </span>std::panic::{ RefUnwindSafe, UnwindSafe };
 <span class="kw">use </span>std::ptr;
 
-<span class="kw">union </span>Data&lt;T, F&gt; {
-	init: ManuallyDrop&lt;F&gt;,
-	value: ManuallyDrop&lt;T&gt;
+<span class="doccomment">/// Inner data union
+///
+/// Note: in implementation of [`LazyWrap`], the "discriminant" is held by its
+/// [`Once`] instance
+</span><span class="kw">union </span>Data&lt;T, F&gt; {
+	<span class="doccomment">/// Initialisation function
+	</span>init: ManuallyDrop&lt;F&gt;,
+
+	<span class="doccomment">/// Initialised value (from initialisation function)
+	</span>value: ManuallyDrop&lt;T&gt;
 }
 
 <span class="doccomment">/// A lazily initialised data wrapper that initialises itself on first access
 </span><span class="kw">pub struct </span>LazyWrap&lt;T, F = <span class="kw">fn</span>() -&gt; T&gt; {
-	data: UnsafeCell&lt;Data&lt;T, F&gt;&gt;,
-	once: Once
+	<span class="doccomment">/// The data, either the initialisation function or the initialised value
+	///
+	/// Note: state is kept track of in [`once`](LazyWrap::once)
+	</span>data: UnsafeCell&lt;Data&lt;T, F&gt;&gt;,
+
+	<span class="doccomment">/// The [`Once`] instance responsible for syncronising references,
+	/// ensuring the provided initialisation function is only taken/called once,
+	/// and holding the state of the [data union](LazyWrap::data)
+	</span>once: Once
 }
 
 <span class="doccomment">/// Returned by [`LazyWrap::into_inner`], containing the initialised value if
@@ -280,8 +386,12 @@
 	</span><span class="attr">#[inline]
 	</span><span class="kw">pub const fn </span>new(init: F) -&gt; <span class="self">Self </span>{
 		<span class="kw">let </span>init = ManuallyDrop::new(init);
-		<span class="kw">let </span>data = UnsafeCell::new(Data { init });
+
+		<span class="comment">// `Once` instance is just initialised, and data enum instance holds
+		// the init fn
+		</span><span class="kw">let </span>data = UnsafeCell::new(Data { init });
 		<span class="kw">let </span>once = Once::new();
+
 		<span class="self">Self </span>{ data, once }
 	}
 
@@ -292,26 +402,60 @@
 	</span><span class="attr">#[inline]
 	</span><span class="kw">pub fn </span>ensure_initialised(this: <span class="kw-2">&amp;</span><span class="self">Self</span>) {
 		this.once.call_once(|| {
-			<span class="kw">let </span>data = <span class="kw">unsafe </span>{ <span class="kw-2">&amp;mut </span>(<span class="kw-2">*</span>this.data.get()) };
-			<span class="kw">let </span>init = <span class="kw">unsafe </span>{ ManuallyDrop::take(<span class="kw-2">&amp;mut </span>data.init) };
+			<span class="comment">// SAFETY: `Once` ensures only one closure is only being run in one thread
+			// at a time, and this is the only code site that uses `call_once`
+			// (ie. if this closure is running / we're in this closure,
+			// it's guaranteed that no other closures are being run), so its safe
+			// to get a reference to the UnsafeCell contents
+			</span><span class="kw">let </span>data = <span class="kw">unsafe </span>{ <span class="kw-2">&amp;mut *</span>this.data.get() };
+
+			<span class="comment">// SAFETY: `Once` ensures this closure is only called once, globally,
+			// per `LazyWrap` instance, so the data in here must be the
+			// initialisation function
+			</span><span class="kw">let </span>init = <span class="kw">unsafe </span>{ ManuallyDrop::take(<span class="kw-2">&amp;mut </span>data.init) };
+
 			<span class="kw">let </span>value = init();
 			data.value = ManuallyDrop::new(value);
 		});
 	}
 
-	<span class="attr">#[inline]
+	<span class="doccomment">/// Ensures the inner value is initialised, then
+	/// gets a reference to it
+	</span><span class="attr">#[inline]
 	</span><span class="kw">fn </span>ref_inner(this: <span class="kw-2">&amp;</span><span class="self">Self</span>) -&gt; <span class="kw-2">&amp;</span>T {
 		<span class="self">Self</span>::ensure_initialised(this);
-		<span class="kw">unsafe </span>{ <span class="kw-2">&amp;</span>(<span class="kw-2">*</span>this.data.get()).value }
+
+		<span class="comment">// SAFETY: we have immutable borrow access to the data (guaranteed by rust
+		// type system), and so can create an immutable reference to the data
+		// within the `UnsafeCell`
+		</span><span class="kw">let </span>data = <span class="kw">unsafe </span>{ <span class="kw-2">&amp;*</span>this.data.get() };
+
+		<span class="comment">// SAFETY: we just ensured initialised earlier in this fn,
+		// so accessing the data from `value` is sound
+		</span><span class="kw">unsafe </span>{ <span class="kw-2">&amp;</span>data.value }
 	}
 
-	<span class="attr">#[inline]
+	<span class="doccomment">/// Ensures the inner value is initialised, then
+	/// gets a mut reference to it
+	</span><span class="attr">#[inline]
 	</span><span class="kw">fn </span>mut_inner(this: <span class="kw-2">&amp;mut </span><span class="self">Self</span>) -&gt; <span class="kw-2">&amp;mut </span>T {
 		<span class="self">Self</span>::ensure_initialised(this);
-		<span class="kw">unsafe </span>{ <span class="kw-2">&amp;mut </span>(<span class="kw-2">*</span>this.data.get()).value }
+
+		<span class="comment">// SAFETY: we have mut borrow access to the data (guaranteed by rust
+		// type system), and so can create a mut reference to the data
+		// within the `UnsafeCell`
+		</span><span class="kw">let </span>data = <span class="kw">unsafe </span>{ <span class="kw-2">&amp;mut *</span>this.data.get() };
+
+		<span class="comment">// SAFETY: we just ensured initialised earlier in this fn,
+		// so accessing the data from `value` is sound
+		</span><span class="kw">unsafe </span>{ <span class="kw-2">&amp;mut </span>data.value }
 	}
 
 	<span class="doccomment">/// Returns true or false, depending on if the value is initialised.
+	///
+	/// # Panics
+	///
+	/// Panics if the provided initialisation function panicked.
 	</span><span class="attr">#[inline]
 	</span><span class="kw">pub fn </span>is_initialised(this: <span class="kw-2">&amp;</span><span class="self">Self</span>) -&gt; bool {
 		<span class="kw">use </span>OnceState::<span class="kw-2">*</span>;
@@ -330,15 +474,29 @@
 	/// if it isn't.
 	</span><span class="attr">#[inline]
 	</span><span class="kw">pub fn </span>into_inner(this: <span class="self">Self</span>) -&gt; LazyWrapState&lt;T, F&gt; {
-		<span class="kw">let </span>initialised = <span class="self">Self</span>::is_initialised(<span class="kw-2">&amp;</span>this);
 		<span class="kw">let </span>this = ManuallyDrop::new(this);
-		<span class="kw">let </span>data = <span class="kw">unsafe </span>{ ptr::read(this.data.get()) };
 
-		<span class="kw">if </span>initialised {
-			<span class="kw">let </span>value = ManuallyDrop::into_inner(<span class="kw">unsafe </span>{ data.value });
+		<span class="comment">// SAFETY: we own `this` and have wrapped it in `ManuallyDrop` to
+		// prevent double drops, and so taking this will be the only copy of data.
+		// Additionally we wrapped it before taking it, so if `Self::is_initialised`
+		// panicks there's no issue there
+		</span><span class="kw">let </span>data = <span class="kw">unsafe </span>{ ptr::read(this.data.get()) };
+
+		<span class="kw">if </span><span class="self">Self</span>::is_initialised(<span class="kw-2">&amp;</span>this) {
+			<span class="comment">// SAFETY: `this` is initialised (checked by if statement),
+			// so `data` will contain the initialised value
+			// and accessing it is sound
+			</span><span class="kw">let </span>value = <span class="kw">unsafe </span>{ data.value };
+
+			<span class="kw">let </span>value = ManuallyDrop::into_inner(value);
 			LazyWrapState::Initialised(value)
 		} <span class="kw">else </span>{
-			<span class="kw">let </span>init = ManuallyDrop::into_inner(<span class="kw">unsafe </span>{ data.init });
+			<span class="comment">// SAFETY: `this` is not initialised (checked by if statement),
+			// so `init` will contain the initialisation function
+			// and accessing it is sound
+			</span><span class="kw">let </span>init = <span class="kw">unsafe </span>{ data.init };
+
+			<span class="kw">let </span>init = ManuallyDrop::into_inner(init);
 			LazyWrapState::Uninitialised(init)
 		}
 	}
@@ -348,8 +506,18 @@
 	</span><span class="kw">pub fn </span>into_inner_initialised(this: <span class="self">Self</span>) -&gt; T {
 		<span class="self">Self</span>::ensure_initialised(<span class="kw-2">&amp;</span>this);
 		<span class="kw">let </span>this = ManuallyDrop::new(this);
-		<span class="kw">let </span>data = <span class="kw">unsafe </span>{ ptr::read(this.data.get()) };
-		ManuallyDrop::into_inner(<span class="kw">unsafe </span>{ data.value })
+
+		<span class="comment">// SAFETY: we own `this` and have wrapped it in `ManuallyDrop` to
+		// prevent double drops, and so taking this will be the only copy of data.
+		// Additionally we wrapped it before taking it, so if `Self::is_initialised`
+		// panicks there's no issue there
+		</span><span class="kw">let </span>data = <span class="kw">unsafe </span>{ ptr::read(this.data.get()) };
+
+		<span class="comment">// SAFETY: we just ensured initialised earlier in this fn,
+		// so accessing the data from `value` is sound
+		</span><span class="kw">let </span>value = <span class="kw">unsafe </span>{ data.value };
+
+		ManuallyDrop::into_inner(value)
 	}
 }
 
@@ -402,37 +570,32 @@
 	}
 }
 
-<span class="doccomment">/// `Send` if `T` and `F` are both `Send`
-///
-/// Sending `LazyWrap` across threads will send `T` and `F` both. `F` may be run
-/// on the other thread if `LazyWrap` hasn't been initialised/accessed yet, so
-/// `F` must be `Send`.
+<span class="comment">// SAFETY: `LazyWrap` is `Send` if `T` and `F` are both `Send`.
+// Sending `LazyWrap` across threads can cause both `T` and `F` to be sent.
+// `F` can be sent to and run on another thread, so `F` must also be `Send`.
 </span><span class="kw">unsafe impl</span>&lt;T, F&gt; Send <span class="kw">for </span>LazyWrap&lt;T, F&gt; <span class="kw">where </span>T: Send, F: Send {}
 
-<span class="doccomment">/// `Sync` if `T` is `Sync` and `F` is `Send`
-///
-/// Sharing `LazyWrap` across threads will share `T` across threads. `F` may be
-/// run on the other thread if `LazyWrap` hasn't been initialised/accessed yet, so
-/// `F` must be `Send`.
+<span class="comment">// SAFETY: `LazyWrap` is `Sync` if `T` is `Sync` and `F` is `Send`.
+// Sharing `LazyWrap` across threads can cause `T` to be shared. `F` may be
+// run on the other thread via the shared reference if `LazyWrap` hasn't been
+// initialised/accessed yet, so `F` must be `Send`.
 </span><span class="kw">unsafe impl</span>&lt;T, F&gt; Sync <span class="kw">for </span>LazyWrap&lt;T, F&gt; <span class="kw">where </span>T: Sync, F: Send {}
 
-<span class="doccomment">/// `UnwindSafe` if `T` and `F` are both `UnwindSafe`
-///
-/// Sending `LazyWrap` across an unwind boundary will send `T` and `F` both. `T`
-/// may be accessed and `F` may be called across an unwind boundary, and code may
-/// panic while both is happening, so both `T` and `F` must be `UnwindSafe`.
+<span class="comment">// `UnwindSafe` if `T` and `F` are both `UnwindSafe`.
+// Sending `LazyWrap` across an unwind boundary will send `T` and `F` both. `T`
+// may be accessed and `F` may be called across an unwind boundary, and code may
+// panic while both is happening, so both `T` and `F` must be `UnwindSafe`.
 </span><span class="kw">impl</span>&lt;T, F&gt; UnwindSafe <span class="kw">for </span>LazyWrap&lt;T, F&gt; <span class="kw">where </span>T: UnwindSafe, F: UnwindSafe {}
 
-<span class="doccomment">/// `RefUnwindSafe` if `T` is `RefUnwindSafe` and `F` is `UnwindSafe`
-///
-/// Sending references of `LazyWrap` will send `T` as a reference across. `F`
-/// may be run and panic on the other side of the boundary if `LazyWrap` hasn't
-/// been initialised yet, so must be `UnwindSafe`.
+<span class="comment">// `RefUnwindSafe` if `T` is `RefUnwindSafe` and `F` is `UnwindSafe`.
+// Sending references of `LazyWrap` will send `T` as a reference across. `F`
+// may be run and panic on the other side of the boundary if `LazyWrap` hasn't
+// been initialised yet, so must be `UnwindSafe`.
 </span><span class="kw">impl</span>&lt;T, F&gt; RefUnwindSafe <span class="kw">for </span>LazyWrap&lt;T, F&gt; <span class="kw">where </span>T: RefUnwindSafe, F: UnwindSafe {}
 
-<span class="doccomment">/// `Unpin` if `T` and `F` are both `Unpin`
-///
-/// If either `T` or `F` cannot move, we cannot move either.
+<span class="comment">// `Unpin` if `T` and `F` are both `Unpin`.
+// If either `T` or `F` cannot move, we cannot move either
+// (ie. cannot implement Unpin).
 </span><span class="kw">impl</span>&lt;T, F&gt; Unpin <span class="kw">for </span>LazyWrap&lt;T, F&gt; <span class="kw">where </span>T: Unpin, F: Unpin {}
 
 <span class="kw">impl</span>&lt;T, F&gt; Debug <span class="kw">for </span>LazyWrap&lt;T, F&gt;
@@ -471,19 +634,40 @@
 		<span class="kw">use </span>OnceState::<span class="kw-2">*</span>;
 		<span class="kw">match </span><span class="self">self</span>.once.state() {
 			New =&gt; {
-				<span class="kw">unsafe </span>{ ManuallyDrop::drop(<span class="kw-2">&amp;mut </span><span class="self">self</span>.data.get_mut().init) }
+				<span class="comment">// SAFETY: `self.once` has not been run yet, so this must be
+				// the initialisation function, so this field access must be sound
+				</span><span class="kw">let </span>init = <span class="kw">unsafe </span>{ <span class="kw-2">&amp;mut </span><span class="self">self</span>.data.get_mut().init };
+
+				<span class="comment">// SAFETY: no one has dropped `init` before, and we are in drop hook,
+				// so no one can drop after
+				</span><span class="kw">unsafe </span>{ ManuallyDrop::drop(init) }
 			}
-			Poisoned =&gt; {}
+			Poisoned =&gt; {
+				<span class="comment">// just let it drop without panicking again I guess..
+			</span>}
 			InProgress =&gt; {
 				<span class="comment">// ???
-				// lets drop the thing once its done just in case
-				// this cannot happen though. if we're dropping, we're the last one with a reference.
 
+				// lets wait on `call_once`, then drop the thing, just in case
+				// this cannot happen though. if we're dropping, we're the last one with a reference.
 				</span><span class="self">self</span>.once.call_once(|| {});
-				<span class="kw">unsafe </span>{ ManuallyDrop::drop(<span class="kw-2">&amp;mut </span><span class="self">self</span>.data.get_mut().value) }
+
+				<span class="comment">// SAFETY: `self.once` has been run, so this must be
+				// the initialised value, so this field access must be sound
+				</span><span class="kw">let </span>value = <span class="kw">unsafe </span>{ <span class="kw-2">&amp;mut </span><span class="self">self</span>.data.get_mut().value };
+
+				<span class="comment">// SAFETY: no one has dropped `value` before, and we are in drop hook,
+				// so no one can drop after
+				</span><span class="kw">unsafe </span>{ ManuallyDrop::drop(value) }
 			}
 			Done =&gt; {
-				<span class="kw">unsafe </span>{ ManuallyDrop::drop(<span class="kw-2">&amp;mut </span><span class="self">self</span>.data.get_mut().value) }
+				<span class="comment">// SAFETY: `self.once` has been run, so this must be
+				// the initialised value, so this field access must be sound
+				</span><span class="kw">let </span>value = <span class="kw">unsafe </span>{ <span class="kw-2">&amp;mut </span><span class="self">self</span>.data.get_mut().value };
+
+				<span class="comment">// SAFETY: no one has dropped `value` before, and we are in drop hook,
+				// so no one can drop after
+				</span><span class="kw">unsafe </span>{ ManuallyDrop::drop(value) }
 			}
 		}
 	}

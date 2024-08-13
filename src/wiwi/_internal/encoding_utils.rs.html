@@ -330,6 +330,7 @@
 <a href="#330" id="330">330</a>
 <a href="#331" id="331">331</a>
 <a href="#332" id="332">332</a>
+<a href="#333" id="333">333</a>
 </pre></div><pre class="rust"><code><span class="kw">use </span>std::{ slice, ptr };
 
 <span class="doccomment">/// Helper for unsafe buffer operations, when the _exact_ total capacity needed
@@ -350,7 +351,7 @@
 /// these checks are not run (the `bytes_written` field that tracks it is
 /// gated behind `cfg(debug_assertions)`, so doesn't even exist!), and it becomes
 /// essentially just a wrapper around a vec, its ptr, raw ptr copying operations,
-/// and a method that unsafetly sets the len of the vec before unwrapping it.
+/// and a method that unsafely sets the len of the vec before unwrapping it.
 ///
 /// Creating one of these structs is not unsafe, but you can't
 /// really do much with it in safe only code :p
@@ -571,7 +572,8 @@
 </span><span class="comment">// I cannot remember if I rely on this being repr(transparent) anywhere
 </span><span class="attr">#[repr(transparent)]
 </span><span class="kw">pub struct </span>ChunkedSlice&lt;<span class="lifetime">'h</span>, <span class="kw">const </span>N: usize&gt; {
-	bytes: <span class="kw-2">&amp;</span><span class="lifetime">'h </span>[u8]
+	<span class="doccomment">/// The slice to pull bytes from
+	</span>bytes: <span class="kw-2">&amp;</span><span class="lifetime">'h </span>[u8]
 }
 
 <span class="kw">impl</span>&lt;<span class="lifetime">'h</span>, <span class="kw">const </span>N: usize&gt; ChunkedSlice&lt;<span class="lifetime">'h</span>, N&gt; {

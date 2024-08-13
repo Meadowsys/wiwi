@@ -174,7 +174,22 @@
 <a href="#174" id="174">174</a>
 <a href="#175" id="175">175</a>
 <a href="#176" id="176">176</a>
+<a href="#177" id="177">177</a>
+<a href="#178" id="178">178</a>
+<a href="#179" id="179">179</a>
+<a href="#180" id="180">180</a>
+<a href="#181" id="181">181</a>
+<a href="#182" id="182">182</a>
+<a href="#183" id="183">183</a>
+<a href="#184" id="184">184</a>
+<a href="#185" id="185">185</a>
+<a href="#186" id="186">186</a>
+<a href="#187" id="187">187</a>
+<a href="#188" id="188">188</a>
+<a href="#189" id="189">189</a>
+<a href="#190" id="190">190</a>
 </pre></div><pre class="rust"><code><span class="kw">use </span><span class="kw">crate</span>::num_traits::<span class="kw-2">*</span>;
+<span class="kw">use </span><span class="kw">crate</span>::with_cloned;
 <span class="kw">use </span>chrono::{ Local, NaiveDateTime, TimeDelta };
 <span class="kw">use </span>std::{ mem::swap, sync::Arc };
 <span class="kw">use </span>tokio::runtime::Handle;
@@ -256,11 +271,20 @@
 	_debounce(Box::new(f), wait_in_ms, <span class="bool-val">true</span>, handle)
 }
 
-<span class="kw">struct </span>DebounceInternalArgs&lt;F&gt; {
-	f: F,
-	immediate: bool,
-	last_call_time: Arc&lt;Mutex&lt;<span class="prelude-ty">Option</span>&lt;NaiveDateTime&gt;&gt;&gt;,
-	debounce_time: TimeDelta
+<span class="doccomment">/// Internal "named args" struct to make things less unwieldy
+</span><span class="kw">struct </span>DebounceInternalArgs&lt;F&gt; {
+	<span class="doccomment">/// The provided function to be debounced
+	</span>f: F,
+
+	<span class="doccomment">/// Whether to call the function "immediately" (ie. on the first
+	/// fn invocation per "cycle")
+	</span>immediate: bool,
+
+	<span class="doccomment">/// The last time the function was called
+	</span>last_call_time: Arc&lt;Mutex&lt;<span class="prelude-ty">Option</span>&lt;NaiveDateTime&gt;&gt;&gt;,
+
+	<span class="doccomment">/// Time to wait before triggering a call
+	</span>debounce_time: TimeDelta
 }
 
 <span class="doccomment">/// setup fn
@@ -275,8 +299,11 @@
 	<span class="kw">let </span>(fn_caller_sender, fn_caller_receiver) = unbounded_channel();
 	<span class="kw">let </span>last_call_time = Arc::new(Mutex::new(<span class="prelude-val">None</span>));
 
+	<span class="macro">with_cloned!</span> { last_call_time <span class="kw">in
+		</span>rt_handle.spawn(recv_task(receiver, fn_caller_sender, last_call_time));
+	}
+
 	<span class="kw">let </span>args = DebounceInternalArgs { f, immediate, last_call_time, debounce_time };
-	rt_handle.spawn(recv_task(receiver, fn_caller_sender, Arc::clone(<span class="kw-2">&amp;</span>args.last_call_time)));
 	rt_handle.spawn(fn_caller(fn_caller_receiver, args));
 
 	<span class="kw">move </span>|| sender.send(()).expect(<span class="string">"async task for a debounced function was stopped"</span>)
@@ -345,7 +372,8 @@
 	}
 }
 
-<span class="attr">#[inline]
+<span class="doccomment">/// Get the current runtime context, or panic
+</span><span class="attr">#[inline]
 </span><span class="kw">fn </span>current_rt() -&gt; Handle {
 	Handle::try_current()
 		.expect(<span class="string">"debounce functions can only be created within the context of a tokio runtime"</span>)

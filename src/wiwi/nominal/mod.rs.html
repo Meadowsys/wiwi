@@ -489,6 +489,9 @@
 <a href="#489" id="489">489</a>
 <a href="#490" id="490">490</a>
 <a href="#491" id="491">491</a>
+<a href="#492" id="492">492</a>
+<a href="#493" id="493">493</a>
+<a href="#494" id="494">494</a>
 </pre></div><pre class="rust"><code><span class="kw">use </span>std::cmp::Ordering;
 <span class="kw">use </span>std::fmt::{ <span class="self">self</span>, Debug, Display, Formatter };
 <span class="kw">use </span>std::hash::{ Hash, Hasher };
@@ -695,8 +698,11 @@
 /// writing the types and declaring unit structs to use as the marker.
 </span><span class="attr">#[repr(transparent)]
 </span><span class="kw">pub struct </span>Nominal&lt;T, M&gt; {
-	item: T,
-	marker: PhantomData&lt;M&gt;
+	<span class="doccomment">/// The wrapped item
+	</span>item: T,
+
+	<span class="doccomment">/// Marker zero-sized field for the marker type parameter `M`
+	</span>marker: PhantomData&lt;M&gt;
 }
 
 <span class="kw">impl</span>&lt;T, M&gt; Nominal&lt;T, M&gt; {

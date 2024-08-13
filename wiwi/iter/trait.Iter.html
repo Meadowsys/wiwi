@@ -37,7 +37,7 @@ the iter is allowed to rely on it for soundness reasons.</p>
 <p>This method will try to do as little work as possible, and won’t advance
 the iter if it doesn’t have to. If the iter’s <a href="trait.Iter.html#method.size_hint" title="method wiwi::iter::Iter::size_hint"><code>size_hint</code></a>
 returns a <a href="enum.SizeHintInner.html#variant.Single" title="variant wiwi::iter::SizeHintInner::Single"><code>Single</code></a> <a href="enum.SizeHintBound.html#variant.Hard" title="variant wiwi::iter::SizeHintBound::Hard"><code>Hard</code></a>
-bound, this method can safetly return that length, since it is in the
+bound, this method can safely return that length, since it is in the
 contract of <code>size_hint</code> and hard bounds that the iter must return that
 many items. Otherwise, it will iterate through the entire iter, counting
 the number of iterations.</p>
