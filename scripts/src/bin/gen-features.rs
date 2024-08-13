@@ -69,7 +69,7 @@ fn main() {
 		"debounce"
 		"Delay calling a function until a specified period of time has passed since the last time it was called"
 		dependencies: ["chrono", "tokio"]
-		features: ["num-traits"]
+		features: ["num-traits", "with-cloned"]
 
 		#[unstable]
 		"defer"

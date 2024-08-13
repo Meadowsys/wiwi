@@ -3,6 +3,8 @@ use rand::rngs::{ OsRng, adapter::ReseedingRng };
 use rand_chacha::{ ChaCha8Core, ChaCha12Core, ChaCha20Core };
 use std::cell::RefCell;
 
+/// Internal macro to declare a thread local rng struct with the provided
+/// struct name, core struct type, and reseeder struct
 macro_rules! decl_thread_local_rng {
 	{
 		$(#[$struct_meta:meta])*
@@ -28,6 +30,8 @@ macro_rules! decl_thread_local_rng {
 				}
 
 				/// Fills a slice of values of type `T` using this generator
+				/// Doing it with this function is preferable to manually implementing it, as this function
+				/// can provide optimised implementations where available.
 				#[inline]
 				pub fn fill<T: Randomisable>(slice: &mut [T]) {
 					RNG_STATIC.with_borrow_mut(|rng| T::fill(rng, slice))
@@ -86,6 +90,9 @@ pub trait Randomisable: Sized {
 	fn gen_rand<R: RngCore>(rng: &mut R) -> Self;
 
 	/// Fills a slice with the given random number generator
+	///
+	/// Doing it with this function is preferable to manually implementing it, as this function
+	/// can provide optimised implementations where available.
 	#[inline]
 	fn fill<R: RngCore>(rng: &mut R, slice: &mut [Self]) {
 		for slot in slice {
@@ -94,6 +101,9 @@ pub trait Randomisable: Sized {
 	}
 }
 
+/// Internal macro to generate implementations of [`Randomisable`] for integers
+/// based on the provided [`gen_rand`](Randomisable::gen_rand) body and optionally
+/// [`fill`](Randomisable::fill) body
 macro_rules! impl_int_randomisable {
 	($($num:ident {
 		$gen_rand_rng:ident => $gen_rand_expr:expr
@@ -196,26 +206,32 @@ impl_int_randomisable! {
 	}
 }
 
+/// Generate a [`u8`] from the provided `rng` by truncating a generated [`u32`]
 #[inline]
 fn rand_u8<R: RngCore>(rng: &mut R) -> u8 {
 	rand_u32(rng) as _
 }
 
+/// Generate a [`u16`] from the provided `rng` by truncating a generated [`u32`]
 #[inline]
 fn rand_u16<R: RngCore>(rng: &mut R) -> u16 {
 	rand_u32(rng) as _
 }
 
+/// Generate a [`u32`] from the provided `rng`
 #[inline]
 fn rand_u32<R: RngCore>(rng: &mut R) -> u32 {
 	rng.next_u32()
 }
 
+/// Generate a [`u64`] from the provided `rng`
 #[inline]
 fn rand_u64<R: RngCore>(rng: &mut R) -> u64 {
 	rng.next_u64()
 }
 
+/// Generate a [`u128`] from the provided `rng` by generating 2 [`u64`]'s,
+/// using one for the higher 64 bits and one for the lower 64 bits
 #[inline]
 fn rand_u128<R: RngCore>(rng: &mut R) -> u128 {
 	let lower = rng.next_u64() as u128;
@@ -223,26 +239,36 @@ fn rand_u128<R: RngCore>(rng: &mut R) -> u128 {
 	lower | upper << 64
 }
 
+/// Generate a [`i8`] from the provided `rng` by generating a [`u8`]
+/// and no-op bitwise casting it to a [`i8`]
 #[inline]
 fn rand_i8<R: RngCore>(rng: &mut R) -> i8 {
 	rand_u8(rng) as _
 }
 
+/// Generate a [`i16`] from the provided `rng` by generating a [`u16`]
+/// and no-op bitwise casting it to a [`i16`]
 #[inline]
 fn rand_i16<R: RngCore>(rng: &mut R) -> i16 {
 	rand_u16(rng) as _
 }
 
+/// Generate a [`i32`] from the provided `rng` by generating a [`u32`]
+/// and no-op bitwise casting it to a [`i32`]
 #[inline]
 fn rand_i32<R: RngCore>(rng: &mut R) -> i32 {
 	rand_u32(rng) as _
 }
 
+/// Generate a [`i64`] from the provided `rng` by generating a [`u64`]
+/// and no-op bitwise casting it to a [`i64`]
 #[inline]
 fn rand_i64<R: RngCore>(rng: &mut R) -> i64 {
 	rand_u64(rng) as _
 }
 
+/// Generate a [`i128`] from the provided `rng` by generating a [`u128`]
+/// and no-op bitwise casting it to a [`i128`]
 #[inline]
 fn rand_i128<R: RngCore>(rng: &mut R) -> i128 {
 	rand_u128(rng) as _

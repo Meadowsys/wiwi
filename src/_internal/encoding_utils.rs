@@ -18,7 +18,7 @@ use std::{ slice, ptr };
 /// these checks are not run (the `bytes_written` field that tracks it is
 /// gated behind `cfg(debug_assertions)`, so doesn't even exist!), and it becomes
 /// essentially just a wrapper around a vec, its ptr, raw ptr copying operations,
-/// and a method that unsafetly sets the len of the vec before unwrapping it.
+/// and a method that unsafely sets the len of the vec before unwrapping it.
 ///
 /// Creating one of these structs is not unsafe, but you can't
 /// really do much with it in safe only code :p
@@ -239,6 +239,7 @@ impl UnsafeBufWriteGuard {
 // I cannot remember if I rely on this being repr(transparent) anywhere
 #[repr(transparent)]
 pub struct ChunkedSlice<'h, const N: usize> {
+	/// The slice to pull bytes from
 	bytes: &'h [u8]
 }
 

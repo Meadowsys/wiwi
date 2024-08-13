@@ -260,7 +260,7 @@ impl StringChain {
 		self
 	}
 
-	/// Unsafetly truncates the string, with no checks at all...
+	/// Unsafely truncates the string, with no checks at all...
 	///
 	/// Unlike the [`truncate`](Self::truncate) method or it's [`String`]
 	/// equivalent, passing a new len that's past the end of a string

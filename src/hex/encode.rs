@@ -1,4 +1,20 @@
+//! Internal encoding implementations
 use crate::_internal::encoding_utils::UnsafeBufWriteGuard;
+
+/// Length of encoding table (not actually used in encoding/decoding data)
+pub const TABLE_ENCODER_LEN: usize = 16;
+
+/// Encoding table of lowercased characters, length 16, mapping a value from 0-15
+/// to a hex byte (lower letters)
+///
+/// Note: this table is not actually used in the encoding/decoding implementation
+pub static TABLE_ENCODER_LOWER: [u8; TABLE_ENCODER_LEN] = *b"0123456789abcdef";
+
+/// Encoding table of uppercased characters, length 16, mapping a value from 0-15
+/// to a hex byte (upper letters)
+///
+/// Note: this table is not actually used in the encoding/decoding implementation
+pub static TABLE_ENCODER_UPPER: [u8; TABLE_ENCODER_LEN] = *b"0123456789ABCDEF";
 
 /// Reads `rounds` bytes from `bytes_ptr`, encoding them into 2 hex chars
 /// per byte, then writes the output into `dest`

@@ -204,7 +204,10 @@ pub use nominal_mod;
 /// writing the types and declaring unit structs to use as the marker.
 #[repr(transparent)]
 pub struct Nominal<T, M> {
+	/// The wrapped item
 	item: T,
+
+	/// Marker zero-sized field for the marker type parameter `M`
 	marker: PhantomData<M>
 }
 

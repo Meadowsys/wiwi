@@ -97,7 +97,7 @@ pub trait Iter {
 	/// This method will try to do as little work as possible, and won't advance
 	/// the iter if it doesn't have to. If the iter's [`size_hint`](Iter::size_hint)
 	/// returns a [`Single`](SizeHintInner::Single) [`Hard`](SizeHintBound::Hard)
-	/// bound, this method can safetly return that length, since it is in the
+	/// bound, this method can safely return that length, since it is in the
 	/// contract of `size_hint` and hard bounds that the iter must return that
 	/// many items. Otherwise, it will iterate through the entire iter, counting
 	/// the number of iterations.

@@ -1,11 +1,15 @@
+//! Internal decoding implementations
+
 use crate::_internal::encoding_utils::UnsafeBufWriteGuard;
 use crate::num_traits::*;
 use super::DecodeError;
 
+/// Length of the table decoder (256)
 const TABLE_DECODER_LEN: usize = 256;
 
+/// Decoding table (with mappings for both upper and lower hex)
 // TODO: this table is mostly empty... I wonder what we could do here to shrink it,
-// without compromising speed
+// without compromising speed (we could do what we did with z85 with None == 0xff)?
 static TABLE_DECODER: &[Option<u8>; TABLE_DECODER_LEN] = &[
 	None,       None,       None,       None,       None,       None,       None,       None,       None,       None,       None,       None,       None,       None,       None,       None,
 	None,       None,       None,       None,       None,       None,       None,       None,       None,       None,       None,       None,       None,       None,       None,       None,

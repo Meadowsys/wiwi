@@ -1,4 +1,5 @@
 use crate::num_traits::*;
+use crate::with_cloned;
 use chrono::{ Local, NaiveDateTime, TimeDelta };
 use std::{ mem::swap, sync::Arc };
 use tokio::runtime::Handle;
@@ -80,10 +81,19 @@ pub fn debounce_immediate_with_rt(
 	_debounce(Box::new(f), wait_in_ms, true, handle)
 }
 
+/// Internal "named args" struct to make things less unwieldy
 struct DebounceInternalArgs<F> {
+	/// The provided function to be debounced
 	f: F,
+
+	/// Whether to call the function "immediately" (ie. on the first
+	/// fn invocation per "cycle")
 	immediate: bool,
+
+	/// The last time the function was called
 	last_call_time: Arc<Mutex<Option<NaiveDateTime>>>,
+
+	/// Time to wait before triggering a call
 	debounce_time: TimeDelta
 }
 
@@ -99,8 +109,11 @@ fn _debounce(
 	let (fn_caller_sender, fn_caller_receiver) = unbounded_channel();
 	let last_call_time = Arc::new(Mutex::new(None));
 
+	with_cloned! { last_call_time in
+		rt_handle.spawn(recv_task(receiver, fn_caller_sender, last_call_time));
+	}
+
 	let args = DebounceInternalArgs { f, immediate, last_call_time, debounce_time };
-	rt_handle.spawn(recv_task(receiver, fn_caller_sender, Arc::clone(&args.last_call_time)));
 	rt_handle.spawn(fn_caller(fn_caller_receiver, args));
 
 	move || sender.send(()).expect("async task for a debounced function was stopped")
@@ -169,6 +182,7 @@ where
 	}
 }
 
+/// Get the current runtime context, or panic
 #[inline]
 fn current_rt() -> Handle {
 	Handle::try_current()

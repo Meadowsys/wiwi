@@ -100,7 +100,8 @@ clock-timer = [
 debounce = [
 	"dep:chrono",
 	"dep:tokio",
-	"num-traits-unstable"
+	"num-traits-unstable",
+	"with-cloned"
 ]
 defer-unstable = []
 export-all-submodules = []

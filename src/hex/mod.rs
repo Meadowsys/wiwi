@@ -1,15 +1,14 @@
 use crate::_internal::encoding_utils::UnsafeBufWriteGuard;
 use std::str;
 
-/// Length of encoding table (not actually used in encoding/decoding data)
-pub const TABLE_ENCODER_LEN: usize = 16;
-/// Encoding table of lowercased characters (not actually used in encoding/decoding data)
-pub const TABLE_ENCODER_LOWER: [u8; TABLE_ENCODER_LEN] = *b"0123456789abcdef";
-/// Encoding table of uppercased characters (not actually used in encoding/decoding data)
-pub const TABLE_ENCODER_UPPER: [u8; TABLE_ENCODER_LEN] = *b"0123456789ABCDEF";
-
 mod encode;
 mod decode;
+
+pub use self::encode::{
+	TABLE_ENCODER_LEN,
+	TABLE_ENCODER_LOWER,
+	TABLE_ENCODER_UPPER
+};
 
 /// Encodes a slice of bytes into a String, using lowercase characters
 #[inline]
@@ -24,8 +23,6 @@ pub fn encode_hex_upper(bytes: &[u8]) -> String {
 }
 
 /// Inner function with const generic `UPPER`
-// // mut is used by cfg(target_arch) which is not necessarily cfg enabled
-// #[allow(unused_mut)]
 fn _encode<const UPPER: bool>(bytes: &[u8]) -> String {
 	debug_assert!(bytes.len() >> (usize::BITS - 1) == 0, "size overflow");
 

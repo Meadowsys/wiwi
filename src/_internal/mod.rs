@@ -1,3 +1,5 @@
+//! Internal implementation details and stuff
+
 // TODO: expose this?
 #[cfg(any(
 	// feature = "base16",
