@@ -21,11 +21,14 @@ macro_rules! decl_thread_local_rng {
 			}
 
 			impl $struct_name {
+				/// Generates a random value of type `T` using this generator
 				#[inline]
 				pub fn gen_rand<T: Randomisable>() -> T {
 					RNG_STATIC.with_borrow_mut(|rng| T::gen_rand(rng))
 				}
 
+				/// Fills a slice of values of type `T` using this generator
+				#[inline]
 				pub fn fill<T: Randomisable>(slice: &mut [T]) {
 					RNG_STATIC.with_borrow_mut(|rng| T::fill(rng, slice))
 				}
@@ -76,9 +79,13 @@ decl_thread_local_rng! {
 
 impl CryptoRng for ThreadLocalChaCha20Rng {}
 
+/// A trait for items that can be randomly generated from a given
+/// random number generator
 pub trait Randomisable: Sized {
+	/// Generates a random value with the given random number generator
 	fn gen_rand<R: RngCore>(rng: &mut R) -> Self;
 
+	/// Fills a slice with the given random number generator
 	#[inline]
 	fn fill<R: RngCore>(rng: &mut R, slice: &mut [Self]) {
 		for slot in slice {
