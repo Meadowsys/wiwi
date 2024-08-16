@@ -1,345 +1,411 @@
-use std::mem::size_of;
-pub use wiwiwiwiwi::MemoryUsage;
+// pub use wiwiwiwiwi::MemoryUsage;
 
-/// Trait implemented by types that, at compile time, use a
-/// known, fixed amount of memory.
+/// Trait for types that can calculate their actual total memory usage, not
+/// just the stack usage (ie. not just [`size_of`])
 ///
-/// For example, [`u8`] is always 1 byte, [`u64`] is always 8 bytes, etc.
+/// # "Heap"
 ///
-/// There is a blanket implementation of the [`Dynamic`] trait for all types that
-/// implement [`Static`].
+/// For the purposes of this trait, and its [`heap_usage`] and [`heap_usage_with_extra_capacity`]
+/// methods... what counts as the "heap" is just "anything that's not on the
+/// stack". For example, the value a reference is pointing to is considered
+/// part of the "heap" (even if it may be just a reference to a local value),
+/// and the contents of string literals (`&'static str`), despite actually being
+/// embedded somewhere in the binary (and the str reference just points to that),
+/// also count towards the "heap".
+pub trait MemoryUsage {
+	/// Gets the stack usage of this value
+	///
+	/// For [`Sized`] types, using [`size_of`] will almost always be correct.
+	fn stack_usage(&self) -> usize;
+
+	/// Gets the heap usage of this value
+	///
+	/// For simple values like [`u64`], this should be 0, as it does not
+	/// dynamically allocate. For values like [`Box`] or collections like
+	/// [`Vec`], this should be calculated.
+	///
+	/// For values that potentially allocate extra capacity, like [`Vec`], this
+	/// method is for the actual memory being utilised. In other words, the minimum
+	/// amount of memory required without data loss. For vec this would be just its
+	/// `len`.
+	///
+	/// Also see [`heap_usage_with_extra_capacity`].
+	///
+	/// [`heap_usage_with_extra_capacity`]: MemoryUsage::heap_usage_with_extra_capacity
+	fn heap_usage(&self) -> usize;
+
+	/// Gets the heap usage of this value, including "excess capacity" and other
+	/// related extra allocated memory
+	///
+	/// The default implementation just calls [`heap_usage`], which most of the
+	/// time is correct... except for collections like [`Vec`].
+	///
+	/// For values that potentially allocate extra capacity, like [`Vec`], this
+	/// method is for _all_ memory allocated, including "excess capacity". In other
+	/// words, _all_ memory that is currently allocated. For vec this would be its
+	/// `capacity`.
+	///
+	/// Also see [`heap_usage`].
+	///
+	/// [`heap_usage`]: MemoryUsage::heap_usage
+	#[inline]
+	fn heap_usage_with_extra_capacity(&self) -> usize {
+		self.heap_usage()
+	}
+
+	/// Gets the total memory usage of this value, including the stack usage
+	/// and the heap usage
+	#[inline]
+	fn total_usage(&self) -> usize {
+		self.stack_usage() + self.heap_usage()
+	}
+
+	/// Gets the total memory usage of this value, including the stack usage,
+	/// the heap usage, and the "excess capacity" if applicable.
+	#[inline]
+	fn total_usage_with_extra_capacity(&self) -> usize {
+		self.stack_usage() + self.heap_usage_with_extra_capacity()
+	}
+}
+
+/// Trait for types that can know all of their memory usage at compile time
 ///
-/// Note: this is not the same as Rust's [`Sized`] trait. See the docs of the
-/// [`Dynamic`] trait for more information.
+/// [`memory_usage_static`] should be a const fn... but rust doesn't allow
+/// const fn in traits for now, so it doesn't really do anything extra over
+/// [`MemoryUsage`]. If/when const traits / const fn in traits are implemented /
+/// stabilised, this will become a const trait / const fn, and then
+/// [`memory_usage_static`] will be usable in const contexts.
 ///
-/// Prefer to implement this trait over [`Dynamic`] and use [`Dynamic`] (in eg. trait
-/// bounds) over this trait where possible, for maximum flexibility.
-pub trait Static: Dynamic {
-	/// The memory usage of this type in bytes
+/// [`memory_usage_static`]: MemoryUsageStatic::memory_usage_static
+pub trait MemoryUsageStatic: MemoryUsage {
+	/// Statically calculates memory usage
+	///
+	/// This is useful for things like `&'static str` (ie. string literals),
+	/// which can calculate their usage in a `const` context (`.len()` on `str` is
+	/// `const`).
+	///
+	/// See the trait docs for information on the possibility of this fn/trait
+	/// being `const` in the future.
+	fn memory_usage_static(&self) -> usize;
+}
+
+/// Trait for types that can provide their memory usage as a `const` value
+///
+/// This is a little stricter than [`MemoryUsageStatic`], since the provided
+/// `const` would apply to all values of a type. For example, `str` can implement
+/// [`MemoryUsageStatic`] correctly, but not this trait. This is because `.len()`
+/// on str is `const`, but `.len()` requires to be called on an actual str, but
+/// that's not available here.
+pub trait MemoryUsageConst: MemoryUsageStatic {
+	/// The constant memory usage value
 	const MEMORY_USAGE: usize;
 }
 
-/// Trait implemented by types that at compile time, for whatever reason, don't
-/// have a known, fixed memory usage, but can still calculate it at runtime.
-///
-/// For example, [`Vec<u8>`] isn't just 24 bytes (12 bytes on 32 bit), like what
-/// Rust's [`size_of`] function would say... it stores
-/// elements on the heap, right? That's what this trait is for, and how it differs
-/// from Rust's [`Sized`] trait. This trait is implemented by types that can
-/// calculate their current actual memory usage, and not just stack usage. That
-/// is how this differs from Rust's [`Sized`] trait.
-///
-/// There is a blanket implementation of this trait for all types that implement
-/// [`Static`].
-///
-/// Prefer to implement [`Static`] over this trait and use this trait (in eg. trait
-/// bounds) over [`Static`] where possible, for maximum flexibility.
-pub trait Dynamic {
-	/// Calculate the memory usage of this value in bytes, including things like
-	/// excess capacity, if that applies to the type of the value.
-	fn calculate_memory_usage(&self) -> usize;
+fn _assert_memory_usage_obj_safe(_: &dyn MemoryUsage) {}
+fn _assert_memory_usage_static_obj_safe(_: &dyn MemoryUsageStatic) {}
+// const is not object safe
 
-	/// Calculate the memory usage of the value in bytes, but only the memory
-	/// that's "actually" being used.
-	///
-	/// Things like excess capacity would _not_ be
-	/// included here.
-	///
-	/// A default implementation is provided, which just calls
-	/// [`calculate_memory_usage`](Dynamic::calculate_memory_usage). You should
-	/// not rely on this default implementation if your type manages excess
-	/// capacity, and other similar things where there may be some memory that's
-	/// not actually used to store any data.
-	#[inline]
-	fn calculate_values_usage(&self) -> usize {
-		self.calculate_memory_usage()
+/// Provides an impl of [`stack_usage`](MemoryUsage::stack_usage) using [`size_of`]
+///
+/// Use by invoking this macro within an impl block for the trait [`MemoryUsage`].
+macro_rules! stack_usage_size_of_impl {
+	() => {
+		#[inline]
+		fn stack_usage(&self) -> usize {
+			::std::mem::size_of::<Self>()
+		}
 	}
 }
 
-/// Fetches the statically known memory usage of a type.
+/// Provides an impl of [`heap_usage`](MemoryUsage::heap_usage) and
+/// [`heap_usage_with_extra_capacity`](MemoryUsage::heap_usage_with_extra_capacity)
+/// with just 0 (ie. use for types that never allocate onto the heap)
 ///
-/// For many types, this probably does
-/// the same thing as [`size_of`]. However, for many types
-/// like [`Vec`] that store elements on the heap, actual usage cannot be known
-/// at compile time.
-#[inline]
-pub const fn static_mem_usage_of<T: Static>() -> usize {
-	T::MEMORY_USAGE
-}
+/// Use by invoking this macro within an impl block for the trait [`MemoryUsage`].
+macro_rules! heap_usage_zero_impl {
+	() => {
+		#[inline]
+		fn heap_usage(&self) -> usize {
+			0
+		}
 
-/// Fetches the statically known memory usage of a value.
-///
-/// Only use this if for some reason you cannot name the type. If you can name
-/// the type, prefer to use [`static_mem_usage_of`].
-#[inline]
-pub const fn static_mem_usage_of_val<T: Static>(_item: &T) -> usize {
-	T::MEMORY_USAGE
-}
-
-/// Fetches the dynamically calculated memory usage of a value.
-#[inline]
-pub fn dynamic_mem_usage_of_val<T: Dynamic>(item: &T) -> usize {
-	item.calculate_memory_usage()
-}
-
-#[inline]
-pub fn dynamic_values_usage_of_val<T: Dynamic>(item: &T) -> usize {
-	item.calculate_values_usage()
-}
-
-impl<T: Static + ?Sized> Dynamic for T {
-	#[inline]
-	fn calculate_memory_usage(&self) -> usize {
-		Self::MEMORY_USAGE
+		// we don't actually need to override this... but doing so means one can't
+		// use this macro, and then override `heap_usage_with_extra_capacity` with
+		// something else, which is just wrong
+		#[inline]
+		fn heap_usage_with_extra_capacity(&self) -> usize {
+			0
+		}
 	}
 }
 
-macro_rules! impl_static_via_size_of {
-	{ $($type:ty)* } => {
+/// Provides an impl of [`memory_usage_static`](MemoryUsageStatic::memory_usage_static)
+/// using [`size_of`]
+///
+/// Use by invoking this macro within an impl block for the trait [`MemoryUsageStatic`].
+macro_rules! usage_static_impl {
+	() => {
+		#[inline]
+		fn memory_usage_static(&self) -> usize {
+			::std::mem::size_of::<Self>()
+		}
+	}
+}
+
+/// Provides an impl of [`MEMORY_USAGE`](MemoryUsageConst::MEMORY_USAGE)
+/// using [`size_of`]
+///
+/// Use by invoking this macro within an impl block for the trait [`MemoryUsageConst`].\
+macro_rules! usage_const_impl {
+	() => {
+		const MEMORY_USAGE: usize = ::std::mem::size_of::<Self>();
+	}
+}
+
+/// Implements [`MemoryUsage`], [`MemoryUsageStatic`], and [`MemoryUsageConst`]
+/// for types that only live on the stack (stack usage is using [`size_of`],
+/// and heap usage is 0)
+///
+/// Use by invoking in a standalone place. This macro generates the three
+/// entire trait implementations
+macro_rules! stack_only_impl {
+	{ $($type:path)* } => {
 		$(
-			impl Static for $type {
-				const MEMORY_USAGE: usize = size_of::<$type>();
+			impl MemoryUsage for $type {
+				stack_usage_size_of_impl!();
+				heap_usage_zero_impl!();
+			}
+
+			impl MemoryUsageStatic for $type {
+				usage_static_impl!();
+			}
+
+			impl MemoryUsageConst for $type {
+				usage_const_impl!();
 			}
 		)*
 	}
 }
 
-impl_static_via_size_of! {
+stack_only_impl! {
+	bool char
 	u8 u16 u32 u64 u128 usize
 	i8 i16 i32 i64 i128 isize
-	f32 f64 // f16 f128
-	bool char
+	f32 f64
+	// f16 f128
 }
 
-macro_rules! impl_dyn_mem_usage_tuple {
-	// entry point
-	{ $next:ident $($rest:ident)* } => {
-		impl_dyn_mem_usage_tuple! { [$($rest)*] $next }
-	};
-
-	{ [] $curr:ident $($acc:ident)* } => {
-		impl_dyn_mem_usage_tuple! { @impl $($acc)* $curr }
-	};
-
-	{ [$next:ident $($rest:ident)*] $curr:ident $($acc:ident)* } => {
-		impl_dyn_mem_usage_tuple! { @impl $($acc)* $curr }
-		impl_dyn_mem_usage_tuple! { [$($rest)*] $next $($acc)* $curr }
-	};
-
-	{ @impl $($stuff:ident)+ } => {
-		// macro impl reuses idents that are used for generic param names for macro
-		// impl simplicity, those idents are PascalCase and trigger this lint
-		#[allow(non_snake_case)]
-		impl<$($stuff: Dynamic,)+> Dynamic for ($($stuff,)+) {
-			#[inline]
-			fn calculate_memory_usage(&self) -> usize {
-				let ($($stuff,)*) = self;
-				let mut usage = 0;
-				$(usage += <$stuff>::calculate_memory_usage($stuff);)*
-				usage
-			}
-
-			#[inline]
-			fn calculate_values_usage(&self) -> usize {
-				let ($($stuff,)*) = self;
-				let mut usage = 0;
-				$(usage += <$stuff>::calculate_values_usage($stuff);)*
-				usage
-			}
-		}
-	};
-
-	// actual impl
-	(@impl $($t:ident)+) => {
-		impl<$($t: Dynamic,)+> Dynamic for ($($t,)+) {
-			// macro impl reuses idents that are used for generic param names for macro
-			// impl simplicity, those idents are PascalCase and trigger this lint
-			#[allow(non_snake_case)]
-			fn calculate_memory_usage(&self) -> usize {
-				let ($($t,)*) = self;
-				let mut usage = 0;
-				$(usage += <$t>::calculate_memory_usage($t);)*
-				usage
-			}
-
-			// macro impl reuses idents that are used for generic param names for macro
-			// impl simplicity, those idents are PascalCase and trigger this lint
-			#[allow(non_snake_case)]
-			fn calculate_values_usage(&self) -> usize {
-				let ($($t,)*) = self;
-				let mut usage = 0;
-				$(usage += <$t>::calculate_values_usage($t);)*
-				usage
-			}
-		}
-	};
-}
-
-#[cfg(all(
-	not(feature = "large-tuples"),
-	not(feature = "omega-tuples-of-doom")
-))]
-impl_dyn_mem_usage_tuple! {
-	T1 T2 T3 T4
-	T5 T6 T7 T8
-}
-
-#[cfg(all(
-	feature = "large-tuples",
-	not(feature = "omega-tuples-of-doom")
-))]
-impl_dyn_mem_usage_tuple! {
-	T1  T2  T3  T4
-	T5  T6  T7  T8
-	T9  T10 T11 T12
-	T13 T14 T15 T16
-	T17 T18 T19 T20
-	T21 T22 T23 T24
-	T25 T26 T27 T28
-	T29 T30 T31 T32
-}
-
-#[cfg(feature = "omega-tuples-of-doom")]
-impl_dyn_mem_usage_tuple! {
-	T1   T2   T3   T4
-	T5   T6   T7   T8
-	T9   T10  T11  T12
-	T13  T14  T15  T16
-	T17  T18  T19  T20
-	T21  T22  T23  T24
-	T25  T26  T27  T28
-	T29  T30  T31  T32
-	T33  T34  T35  T36
-	T37  T38  T39  T40
-	T41  T42  T43  T44
-	T45  T46  T47  T48
-	T49  T50  T51  T52
-	T53  T54  T55  T56
-	T57  T58  T59  T60
-	T61  T62  T63  T64
-	T65  T66  T67  T68
-	T69  T70  T71  T72
-	T73  T74  T75  T76
-	T77  T78  T79  T80
-	T81  T82  T83  T84
-	T85  T86  T87  T88
-	T89  T90  T91  T92
-	T93  T94  T95  T96
-	T97  T98  T99  T100
-	T101 T102 T103 T104
-	T105 T106 T107 T108
-	T109 T110 T111 T112
-	T113 T114 T115 T116
-	T117 T118 T119 T120
-	T121 T122 T123 T124
-	T125 T126 T127 T128
-}
-
-impl<T: Dynamic, const N: usize> Dynamic for [T; N] {
+impl<'h, T: MemoryUsage> MemoryUsage for &'h T {
 	#[inline]
-	fn calculate_memory_usage(&self) -> usize {
-		self.iter().map(T::calculate_memory_usage).sum()
+	fn stack_usage(&self) -> usize {
+		T::stack_usage(self)
 	}
 
 	#[inline]
-	fn calculate_values_usage(&self) -> usize {
-		self.iter().map(T::calculate_values_usage).sum()
-	}
-}
-
-impl<T: Dynamic> Dynamic for [T] {
-	#[inline]
-	fn calculate_memory_usage(&self) -> usize {
-		let contents = self.iter().map(T::calculate_memory_usage).sum::<usize>();
-		size_of::<&[T]>() + contents
+	fn heap_usage(&self) -> usize {
+		T::heap_usage(self)
 	}
 
 	#[inline]
-	fn calculate_values_usage(&self) -> usize {
-		let contents = self.iter().map(T::calculate_values_usage).sum::<usize>();
-		size_of::<&[T]>() + contents
-	}
-}
-
-impl<T: ?Sized> Static for *const T {
-	const MEMORY_USAGE: usize = size_of::<*const T>();
-}
-
-impl<T: ?Sized> Static for *mut T {
-	const MEMORY_USAGE: usize = size_of::<*mut T>();
-}
-
-impl<T: Dynamic> Dynamic for Vec<T> {
-	#[inline]
-	fn calculate_memory_usage(&self) -> usize {
-		let contents = self.iter().map(T::calculate_memory_usage).sum::<usize>();
-		let uninit = (self.capacity() - self.len()) * size_of::<T>();
-		size_of::<Vec<T>>() + contents + uninit
+	fn heap_usage_with_extra_capacity(&self) -> usize {
+		T::heap_usage_with_extra_capacity(self)
 	}
 
 	#[inline]
-	fn calculate_values_usage(&self) -> usize {
-		let contents = self.iter().map(T::calculate_values_usage).sum::<usize>();
-		size_of::<Vec<T>>() + contents
-	}
-}
-
-impl Dynamic for String {
-	#[inline]
-	fn calculate_memory_usage(&self) -> usize {
-		size_of::<String>() + self.capacity()
+	fn total_usage(&self) -> usize {
+		T::total_usage(self)
 	}
 
 	#[inline]
-	fn calculate_values_usage(&self) -> usize {
-		size_of::<String>() + self.len()
+	fn total_usage_with_extra_capacity(&self) -> usize {
+		T::total_usage_with_extra_capacity(self)
 	}
 }
 
-#[cfg(test)]
-mod tests {
-	use super::*;
+impl<'h, T: MemoryUsage> MemoryUsage for &'h mut T {
+	#[inline]
+	fn stack_usage(&self) -> usize {
+		T::stack_usage(self)
+	}
 
-	#[test]
-	fn static_types_and_std_sized() {
-		fn check<T: Static>() {
-			assert_eq!(T::MEMORY_USAGE, size_of::<T>());
+	#[inline]
+	fn heap_usage(&self) -> usize {
+		T::heap_usage(self)
+	}
+
+	#[inline]
+	fn heap_usage_with_extra_capacity(&self) -> usize {
+		T::heap_usage_with_extra_capacity(self)
+	}
+
+	#[inline]
+	fn total_usage(&self) -> usize {
+		T::total_usage(self)
+	}
+
+	#[inline]
+	fn total_usage_with_extra_capacity(&self) -> usize {
+		T::total_usage_with_extra_capacity(self)
+	}
+}
+
+impl<T: MemoryUsage, const N: usize> MemoryUsage for [T; N] {
+	stack_usage_size_of_impl!();
+
+	#[inline]
+	fn heap_usage(&self) -> usize {
+		self.iter()
+			.map(T::heap_usage)
+			.sum()
+	}
+
+	#[inline]
+	fn heap_usage_with_extra_capacity(&self) -> usize {
+		self.iter()
+			.map(T::heap_usage_with_extra_capacity)
+			.sum()
+	}
+
+	#[inline]
+	fn total_usage(&self) -> usize {
+		self.iter()
+			.map(T::total_usage)
+			.sum()
+	}
+
+	#[inline]
+	fn total_usage_with_extra_capacity(&self) -> usize {
+		self.iter()
+			.map(T::total_usage_with_extra_capacity)
+			.sum()
+	}
+}
+
+impl<T: MemoryUsageStatic, const N: usize> MemoryUsageStatic for [T; N] {
+	fn memory_usage_static(&self) -> usize {
+		// getting ready to make this a const fn
+		let mut usage = 0;
+
+		let mut i = 0;
+		while i < N {
+			usage += self[i].memory_usage_static();
+
+			i += 1;
 		}
 
-		check::<u8>();
-		check::<u16>();
-		check::<u32>();
-		check::<u64>();
-		check::<u128>();
-
-		check::<i8>();
-		check::<i16>();
-		check::<i32>();
-		check::<i64>();
-		check::<i128>();
-
-		check::<usize>();
-		check::<isize>();
-	}
-
-	#[test]
-	fn vec_size() {
-		let mut vec = Vec::<i32>::new();
-		// ??? lol
-		let base_vec_usage = <(*const i32, usize, usize)>::calculate_memory_usage(&(std::ptr::NonNull::dangling().as_ptr(), 0, 0));
-
-		assert_eq!(vec.calculate_memory_usage(), base_vec_usage);
-		assert_eq!(vec.calculate_values_usage(), base_vec_usage);
-
-		vec.reserve(32);
-
-		let mem_use = vec.calculate_memory_usage();
-		let val_use = vec.calculate_values_usage();
-		assert!(mem_use >= base_vec_usage + (32 * i32::MEMORY_USAGE));
-		assert_eq!(val_use, base_vec_usage);
-
-		vec.extend([1, 2, 3, 4, 5, 6, 7, 8]);
-		assert_eq!(vec.calculate_values_usage(), base_vec_usage + (8 * i32::MEMORY_USAGE));
-		assert_eq!(vec.calculate_memory_usage(), mem_use);
+		usage
 	}
 }
+
+impl<T: MemoryUsageConst, const N: usize> MemoryUsageConst for [T; N] {
+	const MEMORY_USAGE: usize = T::MEMORY_USAGE * N;
+}
+
+// impl<T: Dynamic, const N: usize> Dynamic for [T; N] {
+// 	#[inline]
+// 	fn calculate_memory_usage(&self) -> usize {
+// 		self.iter().map(T::calculate_memory_usage).sum()
+// 	}
+//
+// 	#[inline]
+// 	fn calculate_values_usage(&self) -> usize {
+// 		self.iter().map(T::calculate_values_usage).sum()
+// 	}
+// }
+//
+// impl<T: Dynamic> Dynamic for [T] {
+// 	#[inline]
+// 	fn calculate_memory_usage(&self) -> usize {
+// 		let contents = self.iter().map(T::calculate_memory_usage).sum::<usize>();
+// 		size_of::<&[T]>() + contents
+// 	}
+//
+// 	#[inline]
+// 	fn calculate_values_usage(&self) -> usize {
+// 		let contents = self.iter().map(T::calculate_values_usage).sum::<usize>();
+// 		size_of::<&[T]>() + contents
+// 	}
+// }
+//
+// impl<T: ?Sized> Static for *const T {
+// 	const MEMORY_USAGE: usize = size_of::<*const T>();
+// }
+//
+// impl<T: ?Sized> Static for *mut T {
+// 	const MEMORY_USAGE: usize = size_of::<*mut T>();
+// }
+//
+// impl<T: Dynamic> Dynamic for Vec<T> {
+// 	#[inline]
+// 	fn calculate_memory_usage(&self) -> usize {
+// 		let contents = self.iter().map(T::calculate_memory_usage).sum::<usize>();
+// 		let uninit = (self.capacity() - self.len()) * size_of::<T>();
+// 		size_of::<Vec<T>>() + contents + uninit
+// 	}
+//
+// 	#[inline]
+// 	fn calculate_values_usage(&self) -> usize {
+// 		let contents = self.iter().map(T::calculate_values_usage).sum::<usize>();
+// 		size_of::<Vec<T>>() + contents
+// 	}
+// }
+//
+// impl Dynamic for String {
+// 	#[inline]
+// 	fn calculate_memory_usage(&self) -> usize {
+// 		size_of::<String>() + self.capacity()
+// 	}
+//
+// 	#[inline]
+// 	fn calculate_values_usage(&self) -> usize {
+// 		size_of::<String>() + self.len()
+// 	}
+// }
+
+// #[cfg(test)]
+// mod tests {
+// 	use super::*;
+//
+// 	#[test]
+// 	fn static_types_and_std_sized() {
+// 		fn check<T: Static>() {
+// 			assert_eq!(T::MEMORY_USAGE, size_of::<T>());
+// 		}
+//
+// 		check::<u8>();
+// 		check::<u16>();
+// 		check::<u32>();
+// 		check::<u64>();
+// 		check::<u128>();
+//
+// 		check::<i8>();
+// 		check::<i16>();
+// 		check::<i32>();
+// 		check::<i64>();
+// 		check::<i128>();
+//
+// 		check::<usize>();
+// 		check::<isize>();
+// 	}
+//
+// 	#[test]
+// 	fn vec_size() {
+// 		let mut vec = Vec::<i32>::new();
+// 		// ??? lol
+// 		let base_vec_usage = <(*const i32, usize, usize)>::calculate_memory_usage(&(std::ptr::NonNull::dangling().as_ptr(), 0, 0));
+//
+// 		assert_eq!(vec.calculate_memory_usage(), base_vec_usage);
+// 		assert_eq!(vec.calculate_values_usage(), base_vec_usage);
+//
+// 		vec.reserve(32);
+//
+// 		let mem_use = vec.calculate_memory_usage();
+// 		let val_use = vec.calculate_values_usage();
+// 		assert!(mem_use >= base_vec_usage + (32 * i32::MEMORY_USAGE));
+// 		assert_eq!(val_use, base_vec_usage);
+//
+// 		vec.extend([1, 2, 3, 4, 5, 6, 7, 8]);
+// 		assert_eq!(vec.calculate_values_usage(), base_vec_usage + (8 * i32::MEMORY_USAGE));
+// 		assert_eq!(vec.calculate_memory_usage(), mem_use);
+// 	}
+// }
