@@ -615,28 +615,6 @@ impl<'h> SliceMutChain<'h, f64> {
 	}
 }
 
-impl<'h, T> SliceMutChain<'h, T> {
-	#[inline]
-	pub fn nc_ptr(&self) -> *const T {
-		self.as_nonchain().as_ptr()
-	}
-
-	#[inline]
-	pub fn nc_ptr_mut(&mut self) -> *mut T {
-		self.as_nonchain_mut().as_mut_ptr()
-	}
-
-	#[inline]
-	pub fn nc_slice(&'h self) -> &'h [T] {
-		self.as_nonchain()
-	}
-
-	#[inline]
-	pub fn nc_slice_mut(&'h mut self) -> &'h mut [T] {
-		self.as_nonchain_mut()
-	}
-}
-
 // TODO: align_to
 // TODO: align_to_mut
 // TODO: array_chunks

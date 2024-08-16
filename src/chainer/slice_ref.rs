@@ -45,24 +45,12 @@ impl<'h, T, const N: usize> SliceRefChain<'h, [T; N]> {
 		// ptr returned by `self.nc_ptr()` is valid for `self.len()` reads of `[T; N]`,
 		// so casting it to `T` will mean it is valid for `self.len() * N` reads of `T`.
 		// `len` var above is this multiplication amount
-		let ptr = self.nc_ptr().cast::<T>();
+		let ptr = self.as_nonchain().as_ptr().cast::<T>();
 
 		// SAFETY: `ptr` is valid for `len` reads (see comment above)
 		let slice = unsafe { slice::from_raw_parts(ptr, len) };
 
 		slice.into()
-	}
-}
-
-impl<'h, T> SliceRefChain<'h, T> {
-	#[inline]
-	pub fn nc_ptr(&self) -> *const T {
-		self.as_nonchain().as_ptr()
-	}
-
-	#[inline]
-	pub fn nc_slice(&'h self) -> &[T] {
-		self.as_nonchain()
 	}
 }
 

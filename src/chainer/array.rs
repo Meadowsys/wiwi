@@ -48,46 +48,39 @@ impl<const N: usize> ArrayChain<f64, N> {
 }
 
 impl<T, const N: usize> ArrayChain<MaybeUninit<T>, N> {
+	/// Assumes all slots inside the array are initialised according to `T`'s
+	/// requirements, and converts into an array of T
+	///
+	/// Note: this implementation is currently subpar, as it does fully copy `self`
+	/// into a new container. I have to do this because, at the time of writing:
+	///
+	/// - `transmute` is a bit too dumb, and is not able to prove `[T; N]` and
+	///   `[MaybeUninit<T>; N]` are guaranteed to be equal sized, even though
+	///   we can see and prove it
+	/// - `transmute_unchecked` is like `transmute` but without that size check,
+	///   but it is unstable, and according to a code comment will almost certainly
+	///   never be stabilised (reasoning is that it's too unsafe, too much power to
+	///   give users :p, and to hopefully find other methods for achieving things
+	///   without it so its no longer needed)
+	/// - `MaybeUninit::array_assume_init` is unstable (it internally makes use of
+	///   `transmute_unchecked`)
+	///
+	/// # Safety
+	///
+	/// All slots in `self` must be fully initialised with valid values of `T`.
 	#[inline]
 	pub unsafe fn assume_init(self) -> ArrayChain<T, N> {
-		// TODO: this is subpar (its copying), but I can't find a better way to do it?
-		// all ways to do it seem to be unstable (transmute is too dumb, transmute_unchecked
-		// is unstable and likely won't ever be stable, MaybeUninit::array_assume_init
-		// is unstable (it uses transmute_unchecked internally))
-		let me = ManuallyDrop::new(self);
-		let ptr = me.as_nonchain().as_ptr().cast::<[T; N]>();
+		// TODO: this fn's impl is subpar (its copying), see note in doc comment
+
+		let ptr = self.as_nonchain().as_ptr().cast::<[T; N]>();
 
 		// SAFETY: this `ptr::read` call is valid because:
-		// - `me` is made to prevent double-dropping `self` after reading from the
-		//   ptr (...which is also prevented by MaybeUninit, thinking about it)
 		// - `ptr` points to / is obtained from the [MaybeUninit<T>; N] inside ArrayChain
 		// - `ptr`, type [MaybeUninit<T>; N] is cast to ptr of [T; N], which is
 		//   valid because MaybeUninit<T> has same layout as T, so [MaybeUninit<T>; N]
 		//   will have same layout as [T; N]
 		// - caller promises that all elements in the array are initialised `T`
 		unsafe { ptr::read(ptr).into() }
-	}
-}
-
-impl<T, const N: usize> ArrayChain<T, N> {
-	#[inline]
-	pub fn nc_ptr(&self) -> *const T {
-		self.as_nonchain().as_ptr()
-	}
-
-	#[inline]
-	pub fn nc_ptr_mut(&mut self) -> *mut T {
-		self.as_nonchain_mut().as_mut_ptr()
-	}
-
-	#[inline]
-	pub fn nc_slice(&self) -> &[T] {
-		self.as_nonchain()
-	}
-
-	#[inline]
-	pub fn nc_slice_mut(&mut self) -> &mut [T] {
-		self.as_nonchain_mut()
 	}
 }
 

@@ -7,7 +7,7 @@ where
 	Self: Sized + private::Sealed + Into<Self::NonChain> + AsRef<Self::NonChain> + AsMut<Self::NonChain>,
 	Self::NonChain: Into<Self> + NonChainHalf<Chain = Self>
 {
-	/// This chainer's nonchain
+	/// This chainer's nonchain, "inner" type
 	type NonChain;
 
 	/// Borrows `self` as its nonchain
@@ -60,7 +60,7 @@ where
 	Self: Sized + private::Sealed + Into<Self::Chain>,
 	Self::Chain: Into<Self> + ChainHalf<NonChain = Self> + AsRef<Self> + AsMut<Self>
 {
-	/// This type's chainer
+	/// This type's chainer wrapper type
 	type Chain;
 
 	/// Converts `self` into its associated chain type
