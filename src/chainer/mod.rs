@@ -194,10 +194,15 @@ macro_rules! chainer {
 		where
 			$($nonchain)+: ::std::fmt::Debug
 		{
+			#[inline]
 			fn fmt(&self, f: &mut ::std::fmt::Formatter<'_>) -> ::std::fmt::Result {
-				f.debug_struct(stringify!($chainer))
-					.field("_", $crate::chainer::traits::ChainHalf::as_nonchain(self))
-					.finish()
+				let mut dbg_struct = ::std::fmt::Formatter::debug_struct(f, stringify!($chainer));
+				::std::fmt::DebugStruct::field(
+					&mut dbg_struct,
+					"_",
+					<$chainer$(<$($generics)*>)? as $crate::chainer::traits::ChainHalf>::as_nonchain(self)
+				);
+				::std::fmt::DebugStruct::finish(&mut dbg_struct)
 			}
 		}
 
