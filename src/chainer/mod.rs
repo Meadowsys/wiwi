@@ -39,7 +39,10 @@ macro_rules! chainer {
 		{
 			#[inline]
 			fn eq(&self, other: &$($right)+) -> ::std::primitive::bool {
-				<$($nonchain)+ as ::std::cmp::PartialEq<$($nonchain)+>>::eq($left_expr(self), $right_expr(other))
+				<$($nonchain)+ as ::std::cmp::PartialEq<$($nonchain)+>>::eq(
+					$left_expr(self),
+					$right_expr(other)
+				)
 			}
 
 			// we override ne here since nonchain might have overridden ne,
@@ -47,7 +50,10 @@ macro_rules! chainer {
 			#[allow(clippy::partialeq_ne_impl)]
 			#[inline]
 			fn ne(&self, other: &$($right)+) -> ::std::primitive::bool {
-				<$($nonchain)+ as ::std::cmp::PartialEq<$($nonchain)+>>::ne($left_expr(self), $right_expr(other))
+				<$($nonchain)+ as ::std::cmp::PartialEq<$($nonchain)+>>::ne(
+					$left_expr(self),
+					$right_expr(other)
+				)
 			}
 		}
 
@@ -57,27 +63,42 @@ macro_rules! chainer {
 		{
 			#[inline]
 			fn partial_cmp(&self, other: &$($right)+) -> ::std::option::Option<::std::cmp::Ordering> {
-				<$($nonchain)+ as ::std::cmp::PartialOrd<$($nonchain)+>>::partial_cmp($left_expr(self), $right_expr(other))
+				<$($nonchain)+ as ::std::cmp::PartialOrd<$($nonchain)+>>::partial_cmp(
+					$left_expr(self),
+					$right_expr(other)
+				)
 			}
 
 			#[inline]
 			fn lt(&self, other: &$($right)+) -> ::std::primitive::bool {
-				<$($nonchain)+ as ::std::cmp::PartialOrd<$($nonchain)+>>::lt($left_expr(self), $right_expr(other))
+				<$($nonchain)+ as ::std::cmp::PartialOrd<$($nonchain)+>>::lt(
+					$left_expr(self),
+					$right_expr(other)
+				)
 			}
 
 			#[inline]
 			fn le(&self, other: &$($right)+) -> ::std::primitive::bool {
-				<$($nonchain)+ as ::std::cmp::PartialOrd<$($nonchain)+>>::le($left_expr(self), $right_expr(other))
+				<$($nonchain)+ as ::std::cmp::PartialOrd<$($nonchain)+>>::le(
+					$left_expr(self),
+					$right_expr(other)
+				)
 			}
 
 			#[inline]
 			fn gt(&self, other: &$($right)+) -> ::std::primitive::bool {
-				<$($nonchain)+ as ::std::cmp::PartialOrd<$($nonchain)+>>::gt($left_expr(self), $right_expr(other))
+				<$($nonchain)+ as ::std::cmp::PartialOrd<$($nonchain)+>>::gt(
+					$left_expr(self),
+					$right_expr(other)
+				)
 			}
 
 			#[inline]
 			fn ge(&self, other: &$($right)+) -> ::std::primitive::bool {
-				<$($nonchain)+ as ::std::cmp::PartialOrd<$($nonchain)+>>::ge($left_expr(self), $right_expr(other))
+				<$($nonchain)+ as ::std::cmp::PartialOrd<$($nonchain)+>>::ge(
+					$left_expr(self),
+					$right_expr(other)
+				)
 			}
 		}
 	};
@@ -157,7 +178,10 @@ macro_rules! chainer {
 		{
 			#[inline]
 			fn clone(&self) -> Self {
-				<$($nonchain)+ as ::std::clone::Clone>::clone(&self.as_nonchain()).into()
+				let nonchain = <$($nonchain)+ as ::std::clone::Clone>::clone(
+					<$chainer$(<$($generics)*>)? as $crate::chainer::traits::ChainHalf>::as_nonchain(self)
+				);
+				<$chainer$(<$($generics)*>)? as $crate::chainer::traits::ChainHalf>::from_nonchain(nonchain)
 			}
 		}
 
@@ -183,7 +207,8 @@ macro_rules! chainer {
 		{
 			#[inline]
 			fn default() -> Self {
-				<$($nonchain)+ as ::std::default::Default>::default().into()
+				let nonchain = <$($nonchain)+ as ::std::default::Default>::default();
+				<$chainer$(<$($generics)*>)? as $crate::chainer::traits::ChainHalf>::from_nonchain(nonchain)
 			}
 		}
 
@@ -193,7 +218,10 @@ macro_rules! chainer {
 		{
 			#[inline]
 			fn fmt(&self, f: &mut ::std::fmt::Formatter<'_>) -> ::std::fmt::Result {
-				<$($nonchain)+ as ::std::fmt::Display>::fmt(self.as_nonchain(), f)
+				<$($nonchain)+ as ::std::fmt::Display>::fmt(
+					<$chainer$(<$($generics)*>)? as $crate::chainer::traits::ChainHalf>::as_nonchain(self),
+					f
+				)
 			}
 		}
 
@@ -208,22 +236,38 @@ macro_rules! chainer {
 		{
 			#[inline]
 			fn cmp(&self, other: &Self) -> ::std::cmp::Ordering {
-				<$($nonchain)+ as ::std::cmp::Ord>::cmp(self.as_nonchain(), other.as_nonchain())
+				<$($nonchain)+ as ::std::cmp::Ord>::cmp(
+					<$chainer$(<$($generics)*>)? as $crate::chainer::traits::ChainHalf>::as_nonchain(self),
+					<$chainer$(<$($generics)*>)? as $crate::chainer::traits::ChainHalf>::as_nonchain(other)
+				)
 			}
 
 			#[inline]
 			fn max(self, other: Self) -> Self {
-				<$($nonchain)+ as ::std::cmp::Ord>::max(self.into_nonchain(), other.into_nonchain()).into()
+				let nonchain = <$($nonchain)+ as ::std::cmp::Ord>::max(
+					<$chainer$(<$($generics)*>)? as $crate::chainer::traits::ChainHalf>::into_nonchain(self),
+					<$chainer$(<$($generics)*>)? as $crate::chainer::traits::ChainHalf>::into_nonchain(other)
+				);
+				<$chainer$(<$($generics)*>)? as $crate::chainer::traits::ChainHalf>::from_nonchain(nonchain)
 			}
 
 			#[inline]
 			fn min(self, other: Self) -> Self {
-				<$($nonchain)+ as ::std::cmp::Ord>::min(self.into_nonchain(), other.into_nonchain()).into()
+				let nonchain = <$($nonchain)+ as ::std::cmp::Ord>::min(
+					<$chainer$(<$($generics)*>)? as $crate::chainer::traits::ChainHalf>::into_nonchain(self),
+					<$chainer$(<$($generics)*>)? as $crate::chainer::traits::ChainHalf>::into_nonchain(other)
+				);
+				<$chainer$(<$($generics)*>)? as $crate::chainer::traits::ChainHalf>::from_nonchain(nonchain)
 			}
 
 			#[inline]
 			fn clamp(self, min: Self, max: Self) -> Self {
-				<$($nonchain)+ as ::std::cmp::Ord>::clamp(self.into_nonchain(), min.into_nonchain(), max.into_nonchain()).into()
+				let nonchain = <$($nonchain)+ as ::std::cmp::Ord>::clamp(
+					<$chainer$(<$($generics)*>)? as $crate::chainer::traits::ChainHalf>::into_nonchain(self),
+					<$chainer$(<$($generics)*>)? as $crate::chainer::traits::ChainHalf>::into_nonchain(min),
+					<$chainer$(<$($generics)*>)? as $crate::chainer::traits::ChainHalf>::into_nonchain(max)
+				);
+				<$chainer$(<$($generics)*>)? as $crate::chainer::traits::ChainHalf>::from_nonchain(nonchain)
 			}
 		}
 
@@ -234,10 +278,10 @@ macro_rules! chainer {
 			[$($nonchain)+]
 
 			[$chainer$(<$($generics)*>)?]
-			[$crate::chainer::traits::ChainHalf::as_nonchain]
+			[<$chainer$(<$($generics)*>)? as $crate::chainer::traits::ChainHalf>::as_nonchain]
 
 			[$chainer$(<$($generics)*>)?]
-			[$crate::chainer::traits::ChainHalf::as_nonchain]
+			[<$chainer$(<$($generics)*>)? as $crate::chainer::traits::ChainHalf>::as_nonchain]
 		}
 
 		// chain / nonchain
@@ -250,7 +294,7 @@ macro_rules! chainer {
 			[::std::convert::identity]
 
 			[$chainer$(<$($generics)*>)?]
-			[$crate::chainer::traits::ChainHalf::as_nonchain]
+			[<$chainer$(<$($generics)*>)? as $crate::chainer::traits::ChainHalf>::as_nonchain]
 		}
 
 		// nonchain / chain
@@ -260,7 +304,7 @@ macro_rules! chainer {
 			[$($nonchain)+]
 
 			[$chainer$(<$($generics)*>)?]
-			[$crate::chainer::traits::ChainHalf::as_nonchain]
+			[<$chainer$(<$($generics)*>)? as $crate::chainer::traits::ChainHalf>::as_nonchain]
 
 			[$($nonchain)+]
 			[::std::convert::identity]
@@ -340,8 +384,9 @@ macro_rules! chain_fn {
 		$(#[$meta])*
 		#[inline]
 		pub unsafe fn $fn_name$(<$($generics)*>)?(mut self $(, $($args)*)?) -> Self $(where $($where_clause)*)? {
+			#[allow(unused_mut)]
 			let mut $nc = $crate::chainer::traits::ChainHalf::into_nonchain(self);
-			$crate::chainer::traits::NonChainHalf::into_chainer($body)
+			$crate::chainer::traits::ChainHalf::from_nonchain($body)
 		}
 	};
 
@@ -364,7 +409,7 @@ macro_rules! chain_fn {
 		#[inline]
 		pub fn $fn_name$(<$($generics)*>)?(mut self $(, $($args)*)?) -> Self $(where $($where_clause)*)? {
 			let mut $nc = $crate::chainer::traits::ChainHalf::into_nonchain(self);
-			$crate::chainer::traits::NonChainHalf::into_chainer($body)
+			$crate::chainer::traits::ChainHalf::from_nonchain($body)
 		}
 	};
 
