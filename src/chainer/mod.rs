@@ -407,7 +407,8 @@ macro_rules! chain_fn {
 	} => {
 		$(#[$meta])*
 		#[inline]
-		pub fn $fn_name$(<$($generics)*>)?(mut self $(, $($args)*)?) -> Self $(where $($where_clause)*)? {
+		pub fn $fn_name$(<$($generics)*>)?(#[allow(unused_mut)] mut self $(, $($args)*)?) -> Self $(where $($where_clause)*)? {
+			#[allow(unused_mut)]
 			let mut $nc = $crate::chainer::traits::ChainHalf::into_nonchain(self);
 			$crate::chainer::traits::ChainHalf::from_nonchain($body)
 		}
