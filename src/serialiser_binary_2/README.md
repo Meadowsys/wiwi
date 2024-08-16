@@ -158,7 +158,7 @@ Any value can be interned. However, some just aren't worth interning. The first 
 
 Values that might be worth interning include floats, strings, arrays, records, maps, and binary buffers. They are worth interning because they are larger than just one or two bytes to encode. But of course, interning values only works well if the items are repeatedly used throughout the document.
 
-Values are straight up used in the place where you might otherwise expect a marker.
+Refs are straight up used in the place where you might otherwise expect a value (with a marker).
 
 ### records with interned keys
 
