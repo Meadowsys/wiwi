@@ -1548,7 +1548,7 @@ mod tests {
 	}
 
 	#[test]
-	fn with_chunks() {
+	fn as_chunks() {
 		const N: usize = 5;
 
 		let slice = b"1234";
