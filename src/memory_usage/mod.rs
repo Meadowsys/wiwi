@@ -55,6 +55,14 @@ pub trait MemoryUsage {
 
 	/// Gets the total memory usage of this value, including the stack usage
 	/// and the heap usage
+	///
+	/// The default implementation just calls [`stack_usage`] and [`heap_usage`],
+	/// then adds them up. This should always be correct, but perhaps there is a
+	/// more optimised way to do it for a specific type, which you can then
+	/// override this method for.
+	///
+	/// [`stack_usage`]: MemoryUsage::stack_usage
+	/// [`heap_usage`]: MemoryUsage::heap_usage
 	#[inline]
 	fn total_usage(&self) -> usize {
 		self.stack_usage() + self.heap_usage()
@@ -62,6 +70,14 @@ pub trait MemoryUsage {
 
 	/// Gets the total memory usage of this value, including the stack usage,
 	/// the heap usage, and the "excess capacity" if applicable.
+	///
+	/// The default implementation just calls [`stack_usage`] and
+	/// [`heap_usage_with_extra_capacity`], then adds them up. This should always
+	/// be correct, but perhaps there is a more optimised way to do it for a
+	/// specific type, which you can then override this method for.
+	///
+	/// [`stack_usage`]: MemoryUsage::stack_usage
+	/// [`heap_usage_with_extra_capacity`]: MemoryUsage::heap_usage_with_extra_capacity
 	#[inline]
 	fn total_usage_with_extra_capacity(&self) -> usize {
 		self.stack_usage() + self.heap_usage_with_extra_capacity()
