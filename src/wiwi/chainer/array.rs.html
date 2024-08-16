@@ -428,13 +428,6 @@
 <a href="#428" id="428">428</a>
 <a href="#429" id="429">429</a>
 <a href="#430" id="430">430</a>
-<a href="#431" id="431">431</a>
-<a href="#432" id="432">432</a>
-<a href="#433" id="433">433</a>
-<a href="#434" id="434">434</a>
-<a href="#435" id="435">435</a>
-<a href="#436" id="436">436</a>
-<a href="#437" id="437">437</a>
 </pre></div><pre class="rust"><code><span class="kw">use super</span>::{ chainer, chain_fn, ChainHalf, NonChainHalf };
 <span class="kw">use </span>std::mem::{ ManuallyDrop, MaybeUninit };
 <span class="kw">use </span>std::ptr;
@@ -485,46 +478,39 @@
 }
 
 <span class="kw">impl</span>&lt;T, <span class="kw">const </span>N: usize&gt; ArrayChain&lt;MaybeUninit&lt;T&gt;, N&gt; {
-	<span class="attr">#[inline]
+	<span class="doccomment">/// Assumes all slots inside the array are initialised according to `T`'s
+	/// requirements, and converts into an array of T
+	///
+	/// Note: this implementation is currently subpar, as it does fully copy `self`
+	/// into a new container. I have to do this because, at the time of writing:
+	///
+	/// - `transmute` is a bit too dumb, and is not able to prove `[T; N]` and
+	///   `[MaybeUninit&lt;T&gt;; N]` are guaranteed to be equal sized, even though
+	///   we can see and prove it
+	/// - `transmute_unchecked` is like `transmute` but without that size check,
+	///   but it is unstable, and according to a code comment will almost certainly
+	///   never be stabilised (reasoning is that it's too unsafe, too much power to
+	///   give users :p, and to hopefully find other methods for achieving things
+	///   without it so its no longer needed)
+	/// - `MaybeUninit::array_assume_init` is unstable (it internally makes use of
+	///   `transmute_unchecked`)
+	///
+	/// # Safety
+	///
+	/// All slots in `self` must be fully initialised with valid values of `T`.
+	</span><span class="attr">#[inline]
 	</span><span class="kw">pub unsafe fn </span>assume_init(<span class="self">self</span>) -&gt; ArrayChain&lt;T, N&gt; {
-		<span class="comment">// TODO: this is subpar (its copying), but I can't find a better way to do it?
-		// all ways to do it seem to be unstable (transmute is too dumb, transmute_unchecked
-		// is unstable and likely won't ever be stable, MaybeUninit::array_assume_init
-		// is unstable (it uses transmute_unchecked internally))
-		</span><span class="kw">let </span>me = ManuallyDrop::new(<span class="self">self</span>);
-		<span class="kw">let </span>ptr = me.as_nonchain().as_ptr().cast::&lt;[T; N]&gt;();
+		<span class="comment">// TODO: this fn's impl is subpar (its copying), see note in doc comment
+
+		</span><span class="kw">let </span>ptr = <span class="self">self</span>.as_nonchain().as_ptr().cast::&lt;[T; N]&gt;();
 
 		<span class="comment">// SAFETY: this `ptr::read` call is valid because:
-		// - `me` is made to prevent double-dropping `self` after reading from the
-		//   ptr (...which is also prevented by MaybeUninit, thinking about it)
 		// - `ptr` points to / is obtained from the [MaybeUninit&lt;T&gt;; N] inside ArrayChain
 		// - `ptr`, type [MaybeUninit&lt;T&gt;; N] is cast to ptr of [T; N], which is
 		//   valid because MaybeUninit&lt;T&gt; has same layout as T, so [MaybeUninit&lt;T&gt;; N]
 		//   will have same layout as [T; N]
 		// - caller promises that all elements in the array are initialised `T`
 		</span><span class="kw">unsafe </span>{ ptr::read(ptr).into() }
-	}
-}
-
-<span class="kw">impl</span>&lt;T, <span class="kw">const </span>N: usize&gt; ArrayChain&lt;T, N&gt; {
-	<span class="attr">#[inline]
-	</span><span class="kw">pub fn </span>nc_ptr(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; <span class="kw-2">*const </span>T {
-		<span class="self">self</span>.as_nonchain().as_ptr()
-	}
-
-	<span class="attr">#[inline]
-	</span><span class="kw">pub fn </span>nc_ptr_mut(<span class="kw-2">&amp;mut </span><span class="self">self</span>) -&gt; <span class="kw-2">*mut </span>T {
-		<span class="self">self</span>.as_nonchain_mut().as_mut_ptr()
-	}
-
-	<span class="attr">#[inline]
-	</span><span class="kw">pub fn </span>nc_slice(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; <span class="kw-2">&amp;</span>[T] {
-		<span class="self">self</span>.as_nonchain()
-	}
-
-	<span class="attr">#[inline]
-	</span><span class="kw">pub fn </span>nc_slice_mut(<span class="kw-2">&amp;mut </span><span class="self">self</span>) -&gt; <span class="kw-2">&amp;mut </span>[T] {
-		<span class="self">self</span>.as_nonchain_mut()
 	}
 }
 

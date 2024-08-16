@@ -1,1 +1,1 @@
-window.SIDEBAR_ITEMS = {};
+window.SIDEBAR_ITEMS = {"enum":["Value","ValueBorrowed"],"fn":["serialise_into"],"trait":["Deserialise","Internable","Output","Serialise","Serialiser"]};

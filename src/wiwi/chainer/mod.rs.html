@@ -419,6 +419,57 @@
 <a href="#419" id="419">419</a>
 <a href="#420" id="420">420</a>
 <a href="#421" id="421">421</a>
+<a href="#422" id="422">422</a>
+<a href="#423" id="423">423</a>
+<a href="#424" id="424">424</a>
+<a href="#425" id="425">425</a>
+<a href="#426" id="426">426</a>
+<a href="#427" id="427">427</a>
+<a href="#428" id="428">428</a>
+<a href="#429" id="429">429</a>
+<a href="#430" id="430">430</a>
+<a href="#431" id="431">431</a>
+<a href="#432" id="432">432</a>
+<a href="#433" id="433">433</a>
+<a href="#434" id="434">434</a>
+<a href="#435" id="435">435</a>
+<a href="#436" id="436">436</a>
+<a href="#437" id="437">437</a>
+<a href="#438" id="438">438</a>
+<a href="#439" id="439">439</a>
+<a href="#440" id="440">440</a>
+<a href="#441" id="441">441</a>
+<a href="#442" id="442">442</a>
+<a href="#443" id="443">443</a>
+<a href="#444" id="444">444</a>
+<a href="#445" id="445">445</a>
+<a href="#446" id="446">446</a>
+<a href="#447" id="447">447</a>
+<a href="#448" id="448">448</a>
+<a href="#449" id="449">449</a>
+<a href="#450" id="450">450</a>
+<a href="#451" id="451">451</a>
+<a href="#452" id="452">452</a>
+<a href="#453" id="453">453</a>
+<a href="#454" id="454">454</a>
+<a href="#455" id="455">455</a>
+<a href="#456" id="456">456</a>
+<a href="#457" id="457">457</a>
+<a href="#458" id="458">458</a>
+<a href="#459" id="459">459</a>
+<a href="#460" id="460">460</a>
+<a href="#461" id="461">461</a>
+<a href="#462" id="462">462</a>
+<a href="#463" id="463">463</a>
+<a href="#464" id="464">464</a>
+<a href="#465" id="465">465</a>
+<a href="#466" id="466">466</a>
+<a href="#467" id="467">467</a>
+<a href="#468" id="468">468</a>
+<a href="#469" id="469">469</a>
+<a href="#470" id="470">470</a>
+<a href="#471" id="471">471</a>
+<a href="#472" id="472">472</a>
 </pre></div><pre class="rust"><code><span class="kw">mod </span>traits;
 <span class="kw">pub use </span>traits::{ ChainHalf, NonChainHalf };
 
@@ -460,7 +511,10 @@
 		{
 			<span class="attr">#[inline]
 			</span><span class="kw">fn </span>eq(<span class="kw-2">&amp;</span><span class="self">self</span>, other: <span class="kw-2">&amp;</span>$(<span class="macro-nonterminal">$right</span>)+) -&gt; ::std::primitive::bool {
-				&lt;$(<span class="macro-nonterminal">$nonchain</span>)+ <span class="kw">as </span>::std::cmp::PartialEq&lt;$(<span class="macro-nonterminal">$nonchain</span>)+&gt;&gt;::eq(<span class="macro-nonterminal">$left_expr</span>(<span class="self">self</span>), <span class="macro-nonterminal">$right_expr</span>(other))
+				&lt;$(<span class="macro-nonterminal">$nonchain</span>)+ <span class="kw">as </span>::std::cmp::PartialEq&lt;$(<span class="macro-nonterminal">$nonchain</span>)+&gt;&gt;::eq(
+					<span class="macro-nonterminal">$left_expr</span>(<span class="self">self</span>),
+					<span class="macro-nonterminal">$right_expr</span>(other)
+				)
 			}
 
 			<span class="comment">// we override ne here since nonchain might have overridden ne,
@@ -468,7 +522,10 @@
 			</span><span class="attr">#[allow(clippy::partialeq_ne_impl)]
 			#[inline]
 			</span><span class="kw">fn </span>ne(<span class="kw-2">&amp;</span><span class="self">self</span>, other: <span class="kw-2">&amp;</span>$(<span class="macro-nonterminal">$right</span>)+) -&gt; ::std::primitive::bool {
-				&lt;$(<span class="macro-nonterminal">$nonchain</span>)+ <span class="kw">as </span>::std::cmp::PartialEq&lt;$(<span class="macro-nonterminal">$nonchain</span>)+&gt;&gt;::ne(<span class="macro-nonterminal">$left_expr</span>(<span class="self">self</span>), <span class="macro-nonterminal">$right_expr</span>(other))
+				&lt;$(<span class="macro-nonterminal">$nonchain</span>)+ <span class="kw">as </span>::std::cmp::PartialEq&lt;$(<span class="macro-nonterminal">$nonchain</span>)+&gt;&gt;::ne(
+					<span class="macro-nonterminal">$left_expr</span>(<span class="self">self</span>),
+					<span class="macro-nonterminal">$right_expr</span>(other)
+				)
 			}
 		}
 
@@ -478,27 +535,42 @@
 		{
 			<span class="attr">#[inline]
 			</span><span class="kw">fn </span>partial_cmp(<span class="kw-2">&amp;</span><span class="self">self</span>, other: <span class="kw-2">&amp;</span>$(<span class="macro-nonterminal">$right</span>)+) -&gt; ::std::option::Option&lt;::std::cmp::Ordering&gt; {
-				&lt;$(<span class="macro-nonterminal">$nonchain</span>)+ <span class="kw">as </span>::std::cmp::PartialOrd&lt;$(<span class="macro-nonterminal">$nonchain</span>)+&gt;&gt;::partial_cmp(<span class="macro-nonterminal">$left_expr</span>(<span class="self">self</span>), <span class="macro-nonterminal">$right_expr</span>(other))
+				&lt;$(<span class="macro-nonterminal">$nonchain</span>)+ <span class="kw">as </span>::std::cmp::PartialOrd&lt;$(<span class="macro-nonterminal">$nonchain</span>)+&gt;&gt;::partial_cmp(
+					<span class="macro-nonterminal">$left_expr</span>(<span class="self">self</span>),
+					<span class="macro-nonterminal">$right_expr</span>(other)
+				)
 			}
 
 			<span class="attr">#[inline]
 			</span><span class="kw">fn </span>lt(<span class="kw-2">&amp;</span><span class="self">self</span>, other: <span class="kw-2">&amp;</span>$(<span class="macro-nonterminal">$right</span>)+) -&gt; ::std::primitive::bool {
-				&lt;$(<span class="macro-nonterminal">$nonchain</span>)+ <span class="kw">as </span>::std::cmp::PartialOrd&lt;$(<span class="macro-nonterminal">$nonchain</span>)+&gt;&gt;::lt(<span class="macro-nonterminal">$left_expr</span>(<span class="self">self</span>), <span class="macro-nonterminal">$right_expr</span>(other))
+				&lt;$(<span class="macro-nonterminal">$nonchain</span>)+ <span class="kw">as </span>::std::cmp::PartialOrd&lt;$(<span class="macro-nonterminal">$nonchain</span>)+&gt;&gt;::lt(
+					<span class="macro-nonterminal">$left_expr</span>(<span class="self">self</span>),
+					<span class="macro-nonterminal">$right_expr</span>(other)
+				)
 			}
 
 			<span class="attr">#[inline]
 			</span><span class="kw">fn </span>le(<span class="kw-2">&amp;</span><span class="self">self</span>, other: <span class="kw-2">&amp;</span>$(<span class="macro-nonterminal">$right</span>)+) -&gt; ::std::primitive::bool {
-				&lt;$(<span class="macro-nonterminal">$nonchain</span>)+ <span class="kw">as </span>::std::cmp::PartialOrd&lt;$(<span class="macro-nonterminal">$nonchain</span>)+&gt;&gt;::le(<span class="macro-nonterminal">$left_expr</span>(<span class="self">self</span>), <span class="macro-nonterminal">$right_expr</span>(other))
+				&lt;$(<span class="macro-nonterminal">$nonchain</span>)+ <span class="kw">as </span>::std::cmp::PartialOrd&lt;$(<span class="macro-nonterminal">$nonchain</span>)+&gt;&gt;::le(
+					<span class="macro-nonterminal">$left_expr</span>(<span class="self">self</span>),
+					<span class="macro-nonterminal">$right_expr</span>(other)
+				)
 			}
 
 			<span class="attr">#[inline]
 			</span><span class="kw">fn </span>gt(<span class="kw-2">&amp;</span><span class="self">self</span>, other: <span class="kw-2">&amp;</span>$(<span class="macro-nonterminal">$right</span>)+) -&gt; ::std::primitive::bool {
-				&lt;$(<span class="macro-nonterminal">$nonchain</span>)+ <span class="kw">as </span>::std::cmp::PartialOrd&lt;$(<span class="macro-nonterminal">$nonchain</span>)+&gt;&gt;::gt(<span class="macro-nonterminal">$left_expr</span>(<span class="self">self</span>), <span class="macro-nonterminal">$right_expr</span>(other))
+				&lt;$(<span class="macro-nonterminal">$nonchain</span>)+ <span class="kw">as </span>::std::cmp::PartialOrd&lt;$(<span class="macro-nonterminal">$nonchain</span>)+&gt;&gt;::gt(
+					<span class="macro-nonterminal">$left_expr</span>(<span class="self">self</span>),
+					<span class="macro-nonterminal">$right_expr</span>(other)
+				)
 			}
 
 			<span class="attr">#[inline]
 			</span><span class="kw">fn </span>ge(<span class="kw-2">&amp;</span><span class="self">self</span>, other: <span class="kw-2">&amp;</span>$(<span class="macro-nonterminal">$right</span>)+) -&gt; ::std::primitive::bool {
-				&lt;$(<span class="macro-nonterminal">$nonchain</span>)+ <span class="kw">as </span>::std::cmp::PartialOrd&lt;$(<span class="macro-nonterminal">$nonchain</span>)+&gt;&gt;::ge(<span class="macro-nonterminal">$left_expr</span>(<span class="self">self</span>), <span class="macro-nonterminal">$right_expr</span>(other))
+				&lt;$(<span class="macro-nonterminal">$nonchain</span>)+ <span class="kw">as </span>::std::cmp::PartialOrd&lt;$(<span class="macro-nonterminal">$nonchain</span>)+&gt;&gt;::ge(
+					<span class="macro-nonterminal">$left_expr</span>(<span class="self">self</span>),
+					<span class="macro-nonterminal">$right_expr</span>(other)
+				)
 			}
 		}
 	};
@@ -578,7 +650,10 @@
 		{
 			<span class="attr">#[inline]
 			</span><span class="kw">fn </span>clone(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; <span class="self">Self </span>{
-				&lt;$(<span class="macro-nonterminal">$nonchain</span>)+ <span class="kw">as </span>::std::clone::Clone&gt;::clone(<span class="kw-2">&amp;</span><span class="self">self</span>.as_nonchain()).into()
+				<span class="kw">let </span>nonchain = &lt;$(<span class="macro-nonterminal">$nonchain</span>)+ <span class="kw">as </span>::std::clone::Clone&gt;::clone(
+					&lt;<span class="macro-nonterminal">$chainer</span>$(&lt;$(<span class="macro-nonterminal">$generics</span>)<span class="kw-2">*</span>&gt;)<span class="question-mark">? </span><span class="kw">as </span><span class="macro-nonterminal">$crate::chainer::traits::ChainHalf</span>&gt;::as_nonchain(<span class="self">self</span>)
+				);
+				&lt;<span class="macro-nonterminal">$chainer</span>$(&lt;$(<span class="macro-nonterminal">$generics</span>)<span class="kw-2">*</span>&gt;)<span class="question-mark">? </span><span class="kw">as </span><span class="macro-nonterminal">$crate::chainer::traits::ChainHalf</span>&gt;::from_nonchain(nonchain)
 			}
 		}
 
@@ -591,10 +666,15 @@
 		</span><span class="kw">where
 			</span>$(<span class="macro-nonterminal">$nonchain</span>)+: ::std::fmt::Debug
 		{
-			<span class="kw">fn </span>fmt(<span class="kw-2">&amp;</span><span class="self">self</span>, f: <span class="kw-2">&amp;mut </span>::std::fmt::Formatter&lt;<span class="lifetime">'_</span>&gt;) -&gt; ::std::fmt::Result {
-				f.debug_struct(<span class="macro">stringify!</span>(<span class="macro-nonterminal">$chainer</span>))
-					.field(<span class="string">"_"</span>, <span class="macro-nonterminal">$crate::chainer::traits::ChainHalf::as_nonchain</span>(<span class="self">self</span>))
-					.finish()
+			<span class="attr">#[inline]
+			</span><span class="kw">fn </span>fmt(<span class="kw-2">&amp;</span><span class="self">self</span>, f: <span class="kw-2">&amp;mut </span>::std::fmt::Formatter&lt;<span class="lifetime">'_</span>&gt;) -&gt; ::std::fmt::Result {
+				<span class="kw">let </span><span class="kw-2">mut </span>dbg_struct = ::std::fmt::Formatter::debug_struct(f, <span class="macro">stringify!</span>(<span class="macro-nonterminal">$chainer</span>));
+				::std::fmt::DebugStruct::field(
+					<span class="kw-2">&amp;mut </span>dbg_struct,
+					<span class="string">"_"</span>,
+					&lt;<span class="macro-nonterminal">$chainer</span>$(&lt;$(<span class="macro-nonterminal">$generics</span>)<span class="kw-2">*</span>&gt;)<span class="question-mark">? </span><span class="kw">as </span><span class="macro-nonterminal">$crate::chainer::traits::ChainHalf</span>&gt;::as_nonchain(<span class="self">self</span>)
+				);
+				::std::fmt::DebugStruct::finish(<span class="kw-2">&amp;mut </span>dbg_struct)
 			}
 		}
 
@@ -604,7 +684,8 @@
 		{
 			<span class="attr">#[inline]
 			</span><span class="kw">fn </span>default() -&gt; <span class="self">Self </span>{
-				&lt;$(<span class="macro-nonterminal">$nonchain</span>)+ <span class="kw">as </span>::std::default::Default&gt;::default().into()
+				<span class="kw">let </span>nonchain = &lt;$(<span class="macro-nonterminal">$nonchain</span>)+ <span class="kw">as </span>::std::default::Default&gt;::default();
+				&lt;<span class="macro-nonterminal">$chainer</span>$(&lt;$(<span class="macro-nonterminal">$generics</span>)<span class="kw-2">*</span>&gt;)<span class="question-mark">? </span><span class="kw">as </span><span class="macro-nonterminal">$crate::chainer::traits::ChainHalf</span>&gt;::from_nonchain(nonchain)
 			}
 		}
 
@@ -614,7 +695,10 @@
 		{
 			<span class="attr">#[inline]
 			</span><span class="kw">fn </span>fmt(<span class="kw-2">&amp;</span><span class="self">self</span>, f: <span class="kw-2">&amp;mut </span>::std::fmt::Formatter&lt;<span class="lifetime">'_</span>&gt;) -&gt; ::std::fmt::Result {
-				&lt;$(<span class="macro-nonterminal">$nonchain</span>)+ <span class="kw">as </span>::std::fmt::Display&gt;::fmt(<span class="self">self</span>.as_nonchain(), f)
+				&lt;$(<span class="macro-nonterminal">$nonchain</span>)+ <span class="kw">as </span>::std::fmt::Display&gt;::fmt(
+					&lt;<span class="macro-nonterminal">$chainer</span>$(&lt;$(<span class="macro-nonterminal">$generics</span>)<span class="kw-2">*</span>&gt;)<span class="question-mark">? </span><span class="kw">as </span><span class="macro-nonterminal">$crate::chainer::traits::ChainHalf</span>&gt;::as_nonchain(<span class="self">self</span>),
+					f
+				)
 			}
 		}
 
@@ -629,22 +713,38 @@
 		{
 			<span class="attr">#[inline]
 			</span><span class="kw">fn </span>cmp(<span class="kw-2">&amp;</span><span class="self">self</span>, other: <span class="kw-2">&amp;</span><span class="self">Self</span>) -&gt; ::std::cmp::Ordering {
-				&lt;$(<span class="macro-nonterminal">$nonchain</span>)+ <span class="kw">as </span>::std::cmp::Ord&gt;::cmp(<span class="self">self</span>.as_nonchain(), other.as_nonchain())
+				&lt;$(<span class="macro-nonterminal">$nonchain</span>)+ <span class="kw">as </span>::std::cmp::Ord&gt;::cmp(
+					&lt;<span class="macro-nonterminal">$chainer</span>$(&lt;$(<span class="macro-nonterminal">$generics</span>)<span class="kw-2">*</span>&gt;)<span class="question-mark">? </span><span class="kw">as </span><span class="macro-nonterminal">$crate::chainer::traits::ChainHalf</span>&gt;::as_nonchain(<span class="self">self</span>),
+					&lt;<span class="macro-nonterminal">$chainer</span>$(&lt;$(<span class="macro-nonterminal">$generics</span>)<span class="kw-2">*</span>&gt;)<span class="question-mark">? </span><span class="kw">as </span><span class="macro-nonterminal">$crate::chainer::traits::ChainHalf</span>&gt;::as_nonchain(other)
+				)
 			}
 
 			<span class="attr">#[inline]
 			</span><span class="kw">fn </span>max(<span class="self">self</span>, other: <span class="self">Self</span>) -&gt; <span class="self">Self </span>{
-				&lt;$(<span class="macro-nonterminal">$nonchain</span>)+ <span class="kw">as </span>::std::cmp::Ord&gt;::max(<span class="self">self</span>.into_nonchain(), other.into_nonchain()).into()
+				<span class="kw">let </span>nonchain = &lt;$(<span class="macro-nonterminal">$nonchain</span>)+ <span class="kw">as </span>::std::cmp::Ord&gt;::max(
+					&lt;<span class="macro-nonterminal">$chainer</span>$(&lt;$(<span class="macro-nonterminal">$generics</span>)<span class="kw-2">*</span>&gt;)<span class="question-mark">? </span><span class="kw">as </span><span class="macro-nonterminal">$crate::chainer::traits::ChainHalf</span>&gt;::into_nonchain(<span class="self">self</span>),
+					&lt;<span class="macro-nonterminal">$chainer</span>$(&lt;$(<span class="macro-nonterminal">$generics</span>)<span class="kw-2">*</span>&gt;)<span class="question-mark">? </span><span class="kw">as </span><span class="macro-nonterminal">$crate::chainer::traits::ChainHalf</span>&gt;::into_nonchain(other)
+				);
+				&lt;<span class="macro-nonterminal">$chainer</span>$(&lt;$(<span class="macro-nonterminal">$generics</span>)<span class="kw-2">*</span>&gt;)<span class="question-mark">? </span><span class="kw">as </span><span class="macro-nonterminal">$crate::chainer::traits::ChainHalf</span>&gt;::from_nonchain(nonchain)
 			}
 
 			<span class="attr">#[inline]
 			</span><span class="kw">fn </span>min(<span class="self">self</span>, other: <span class="self">Self</span>) -&gt; <span class="self">Self </span>{
-				&lt;$(<span class="macro-nonterminal">$nonchain</span>)+ <span class="kw">as </span>::std::cmp::Ord&gt;::min(<span class="self">self</span>.into_nonchain(), other.into_nonchain()).into()
+				<span class="kw">let </span>nonchain = &lt;$(<span class="macro-nonterminal">$nonchain</span>)+ <span class="kw">as </span>::std::cmp::Ord&gt;::min(
+					&lt;<span class="macro-nonterminal">$chainer</span>$(&lt;$(<span class="macro-nonterminal">$generics</span>)<span class="kw-2">*</span>&gt;)<span class="question-mark">? </span><span class="kw">as </span><span class="macro-nonterminal">$crate::chainer::traits::ChainHalf</span>&gt;::into_nonchain(<span class="self">self</span>),
+					&lt;<span class="macro-nonterminal">$chainer</span>$(&lt;$(<span class="macro-nonterminal">$generics</span>)<span class="kw-2">*</span>&gt;)<span class="question-mark">? </span><span class="kw">as </span><span class="macro-nonterminal">$crate::chainer::traits::ChainHalf</span>&gt;::into_nonchain(other)
+				);
+				&lt;<span class="macro-nonterminal">$chainer</span>$(&lt;$(<span class="macro-nonterminal">$generics</span>)<span class="kw-2">*</span>&gt;)<span class="question-mark">? </span><span class="kw">as </span><span class="macro-nonterminal">$crate::chainer::traits::ChainHalf</span>&gt;::from_nonchain(nonchain)
 			}
 
 			<span class="attr">#[inline]
 			</span><span class="kw">fn </span>clamp(<span class="self">self</span>, min: <span class="self">Self</span>, max: <span class="self">Self</span>) -&gt; <span class="self">Self </span>{
-				&lt;$(<span class="macro-nonterminal">$nonchain</span>)+ <span class="kw">as </span>::std::cmp::Ord&gt;::clamp(<span class="self">self</span>.into_nonchain(), min.into_nonchain(), max.into_nonchain()).into()
+				<span class="kw">let </span>nonchain = &lt;$(<span class="macro-nonterminal">$nonchain</span>)+ <span class="kw">as </span>::std::cmp::Ord&gt;::clamp(
+					&lt;<span class="macro-nonterminal">$chainer</span>$(&lt;$(<span class="macro-nonterminal">$generics</span>)<span class="kw-2">*</span>&gt;)<span class="question-mark">? </span><span class="kw">as </span><span class="macro-nonterminal">$crate::chainer::traits::ChainHalf</span>&gt;::into_nonchain(<span class="self">self</span>),
+					&lt;<span class="macro-nonterminal">$chainer</span>$(&lt;$(<span class="macro-nonterminal">$generics</span>)<span class="kw-2">*</span>&gt;)<span class="question-mark">? </span><span class="kw">as </span><span class="macro-nonterminal">$crate::chainer::traits::ChainHalf</span>&gt;::into_nonchain(min),
+					&lt;<span class="macro-nonterminal">$chainer</span>$(&lt;$(<span class="macro-nonterminal">$generics</span>)<span class="kw-2">*</span>&gt;)<span class="question-mark">? </span><span class="kw">as </span><span class="macro-nonterminal">$crate::chainer::traits::ChainHalf</span>&gt;::into_nonchain(max)
+				);
+				&lt;<span class="macro-nonterminal">$chainer</span>$(&lt;$(<span class="macro-nonterminal">$generics</span>)<span class="kw-2">*</span>&gt;)<span class="question-mark">? </span><span class="kw">as </span><span class="macro-nonterminal">$crate::chainer::traits::ChainHalf</span>&gt;::from_nonchain(nonchain)
 			}
 		}
 
@@ -655,10 +755,10 @@
 			[$(<span class="macro-nonterminal">$nonchain</span>)+]
 
 			[<span class="macro-nonterminal">$chainer</span>$(&lt;$(<span class="macro-nonterminal">$generics</span>)<span class="kw-2">*</span>&gt;)<span class="question-mark">?</span>]
-			[<span class="macro-nonterminal">$crate::chainer::traits::ChainHalf::as_nonchain</span>]
+			[&lt;<span class="macro-nonterminal">$chainer</span>$(&lt;$(<span class="macro-nonterminal">$generics</span>)<span class="kw-2">*</span>&gt;)<span class="question-mark">? </span><span class="kw">as </span><span class="macro-nonterminal">$crate::chainer::traits::ChainHalf</span>&gt;::as_nonchain]
 
 			[<span class="macro-nonterminal">$chainer</span>$(&lt;$(<span class="macro-nonterminal">$generics</span>)<span class="kw-2">*</span>&gt;)<span class="question-mark">?</span>]
-			[<span class="macro-nonterminal">$crate::chainer::traits::ChainHalf::as_nonchain</span>]
+			[&lt;<span class="macro-nonterminal">$chainer</span>$(&lt;$(<span class="macro-nonterminal">$generics</span>)<span class="kw-2">*</span>&gt;)<span class="question-mark">? </span><span class="kw">as </span><span class="macro-nonterminal">$crate::chainer::traits::ChainHalf</span>&gt;::as_nonchain]
 		}
 
 		<span class="comment">// chain / nonchain
@@ -671,7 +771,7 @@
 			[::std::convert::identity]
 
 			[<span class="macro-nonterminal">$chainer</span>$(&lt;$(<span class="macro-nonterminal">$generics</span>)<span class="kw-2">*</span>&gt;)<span class="question-mark">?</span>]
-			[<span class="macro-nonterminal">$crate::chainer::traits::ChainHalf::as_nonchain</span>]
+			[&lt;<span class="macro-nonterminal">$chainer</span>$(&lt;$(<span class="macro-nonterminal">$generics</span>)<span class="kw-2">*</span>&gt;)<span class="question-mark">? </span><span class="kw">as </span><span class="macro-nonterminal">$crate::chainer::traits::ChainHalf</span>&gt;::as_nonchain]
 		}
 
 		<span class="comment">// nonchain / chain
@@ -681,7 +781,7 @@
 			[$(<span class="macro-nonterminal">$nonchain</span>)+]
 
 			[<span class="macro-nonterminal">$chainer</span>$(&lt;$(<span class="macro-nonterminal">$generics</span>)<span class="kw-2">*</span>&gt;)<span class="question-mark">?</span>]
-			[<span class="macro-nonterminal">$crate::chainer::traits::ChainHalf::as_nonchain</span>]
+			[&lt;<span class="macro-nonterminal">$chainer</span>$(&lt;$(<span class="macro-nonterminal">$generics</span>)<span class="kw-2">*</span>&gt;)<span class="question-mark">? </span><span class="kw">as </span><span class="macro-nonterminal">$crate::chainer::traits::ChainHalf</span>&gt;::as_nonchain]
 
 			[$(<span class="macro-nonterminal">$nonchain</span>)+]
 			[::std::convert::identity]
@@ -761,8 +861,9 @@
 		$(<span class="attr">#[<span class="macro-nonterminal">$meta</span>]</span>)*
 		<span class="attr">#[inline]
 		</span><span class="kw">pub unsafe fn </span><span class="macro-nonterminal">$fn_name</span>$(&lt;$(<span class="macro-nonterminal">$generics</span>)<span class="kw-2">*</span>&gt;)<span class="question-mark">?</span>(<span class="kw-2">mut </span><span class="self">self </span>$(, $(<span class="macro-nonterminal">$args</span>)<span class="kw-2">*</span>)<span class="question-mark">?</span>) -&gt; <span class="self">Self </span>$(<span class="kw">where </span>$(<span class="macro-nonterminal">$where_clause</span>)<span class="kw-2">*</span>)<span class="question-mark">? </span>{
-			<span class="kw">let </span><span class="kw-2">mut </span><span class="macro-nonterminal">$nc </span>= <span class="macro-nonterminal">$crate::chainer::traits::ChainHalf::into_nonchain</span>(<span class="self">self</span>);
-			<span class="macro-nonterminal">$crate::chainer::traits::NonChainHalf::into_chainer</span>(<span class="macro-nonterminal">$body</span>)
+			<span class="attr">#[allow(unused_mut)]
+			</span><span class="kw">let </span><span class="kw-2">mut </span><span class="macro-nonterminal">$nc </span>= <span class="macro-nonterminal">$crate::chainer::traits::ChainHalf::into_nonchain</span>(<span class="self">self</span>);
+			<span class="macro-nonterminal">$crate::chainer::traits::ChainHalf::from_nonchain</span>(<span class="macro-nonterminal">$body</span>)
 		}
 	};
 
@@ -783,9 +884,10 @@
 	} =&gt; {
 		$(<span class="attr">#[<span class="macro-nonterminal">$meta</span>]</span>)*
 		<span class="attr">#[inline]
-		</span><span class="kw">pub fn </span><span class="macro-nonterminal">$fn_name</span>$(&lt;$(<span class="macro-nonterminal">$generics</span>)<span class="kw-2">*</span>&gt;)<span class="question-mark">?</span>(<span class="kw-2">mut </span><span class="self">self </span>$(, $(<span class="macro-nonterminal">$args</span>)<span class="kw-2">*</span>)<span class="question-mark">?</span>) -&gt; <span class="self">Self </span>$(<span class="kw">where </span>$(<span class="macro-nonterminal">$where_clause</span>)<span class="kw-2">*</span>)<span class="question-mark">? </span>{
-			<span class="kw">let </span><span class="kw-2">mut </span><span class="macro-nonterminal">$nc </span>= <span class="macro-nonterminal">$crate::chainer::traits::ChainHalf::into_nonchain</span>(<span class="self">self</span>);
-			<span class="macro-nonterminal">$crate::chainer::traits::NonChainHalf::into_chainer</span>(<span class="macro-nonterminal">$body</span>)
+		</span><span class="kw">pub fn </span><span class="macro-nonterminal">$fn_name</span>$(&lt;$(<span class="macro-nonterminal">$generics</span>)<span class="kw-2">*</span>&gt;)<span class="question-mark">?</span>(<span class="attr">#[allow(unused_mut)] </span><span class="kw-2">mut </span><span class="self">self </span>$(, $(<span class="macro-nonterminal">$args</span>)<span class="kw-2">*</span>)<span class="question-mark">?</span>) -&gt; <span class="self">Self </span>$(<span class="kw">where </span>$(<span class="macro-nonterminal">$where_clause</span>)<span class="kw-2">*</span>)<span class="question-mark">? </span>{
+			<span class="attr">#[allow(unused_mut)]
+			</span><span class="kw">let </span><span class="kw-2">mut </span><span class="macro-nonterminal">$nc </span>= <span class="macro-nonterminal">$crate::chainer::traits::ChainHalf::into_nonchain</span>(<span class="self">self</span>);
+			<span class="macro-nonterminal">$crate::chainer::traits::ChainHalf::from_nonchain</span>(<span class="macro-nonterminal">$body</span>)
 		}
 	};
 
