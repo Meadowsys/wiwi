@@ -158,6 +158,7 @@ serialiser-binary-unstable = [
 ]
 serialiser-binary-2-unstable = [
 	"wiwiwiwiwi/serialiser-binary-2",
+	"dep:ordered-float",
 	"defer-unstable",
 	"num-traits-unstable"
 ]

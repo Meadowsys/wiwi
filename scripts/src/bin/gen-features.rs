@@ -165,7 +165,7 @@ fn main() {
 		#[unstable]
 		"serialiser-binary-2"
 		"Self describing and stable binary format/serialiser, aiming for small output size (v2)"
-		dependencies: ["macro"]
+		dependencies: ["macro", "ordered-float"]
 		features: ["defer", "num-traits"]
 
 		#[unstable]
