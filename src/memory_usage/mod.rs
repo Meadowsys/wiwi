@@ -37,9 +37,6 @@ pub trait MemoryUsage {
 	/// Gets the heap usage of this value, including "excess capacity" and other
 	/// related extra allocated memory
 	///
-	/// The default implementation just calls [`heap_usage`], which most of the
-	/// time is correct... except for collections like [`Vec`].
-	///
 	/// For values that potentially allocate extra capacity, like [`Vec`], this
 	/// method is for _all_ memory allocated, including "excess capacity". In other
 	/// words, _all_ memory that is currently allocated. For vec this would be its
@@ -48,40 +45,27 @@ pub trait MemoryUsage {
 	/// Also see [`heap_usage`].
 	///
 	/// [`heap_usage`]: MemoryUsage::heap_usage
-	#[inline]
-	fn heap_usage_with_extra_capacity(&self) -> usize {
-		self.heap_usage()
-	}
+	fn heap_usage_with_extra_capacity(&self) -> usize;
 
 	/// Gets the total memory usage of this value, including the stack usage
 	/// and the heap usage
 	///
-	/// The default implementation just calls [`stack_usage`] and [`heap_usage`],
-	/// then adds them up. This should always be correct, but perhaps there is a
-	/// more optimised way to do it for a specific type, which you can then
-	/// override this method for.
+	/// This should be equivalent to calling [`stack_usage`] and [`heap_usage`]
+	/// and adding them up.
 	///
 	/// [`stack_usage`]: MemoryUsage::stack_usage
 	/// [`heap_usage`]: MemoryUsage::heap_usage
-	#[inline]
-	fn total_usage(&self) -> usize {
-		self.stack_usage() + self.heap_usage()
-	}
+	fn total_usage(&self) -> usize;
 
 	/// Gets the total memory usage of this value, including the stack usage,
 	/// the heap usage, and the "excess capacity" if applicable.
 	///
-	/// The default implementation just calls [`stack_usage`] and
-	/// [`heap_usage_with_extra_capacity`], then adds them up. This should always
-	/// be correct, but perhaps there is a more optimised way to do it for a
-	/// specific type, which you can then override this method for.
+	/// This should be equivalent to calling [`stack_usage`] and
+	/// [`heap_usage_with_extra_capacity`] and adding them up.
 	///
 	/// [`stack_usage`]: MemoryUsage::stack_usage
 	/// [`heap_usage_with_extra_capacity`]: MemoryUsage::heap_usage_with_extra_capacity
-	#[inline]
-	fn total_usage_with_extra_capacity(&self) -> usize {
-		self.stack_usage() + self.heap_usage_with_extra_capacity()
-	}
+	fn total_usage_with_extra_capacity(&self) -> usize;
 }
 
 /// Trait for types that can know all of their memory usage at compile time
@@ -135,7 +119,7 @@ macro_rules! stack_usage_size_of_impl {
 
 /// Provides an impl of [`heap_usage`](MemoryUsage::heap_usage) and
 /// [`heap_usage_with_extra_capacity`](MemoryUsage::heap_usage_with_extra_capacity)
-/// with just 0 (ie. use for types that never allocate onto the heap)
+/// for types that never allocate onto the heap, returning just 0
 ///
 /// Use by invoking this macro within an impl block for the trait [`MemoryUsage`].
 macro_rules! heap_usage_zero_impl {
@@ -151,6 +135,24 @@ macro_rules! heap_usage_zero_impl {
 		#[inline]
 		fn heap_usage_with_extra_capacity(&self) -> usize {
 			0
+		}
+	}
+}
+
+macro_rules! total_usage_default_impl {
+	() => {
+		#[inline]
+		fn total_usage(&self) -> usize {
+			self.stack_usage() + self.heap_usage()
+		}
+	}
+}
+
+macro_rules! total_usage_with_extra_capacity_default_impl {
+	() => {
+		#[inline]
+		fn total_usage_with_extra_capacity(&self) -> usize {
+			self.stack_usage() + self.heap_usage_with_extra_capacity()
 		}
 	}
 }
@@ -190,6 +192,8 @@ macro_rules! stack_only_impl {
 			impl MemoryUsage for $type {
 				stack_usage_size_of_impl!();
 				heap_usage_zero_impl!();
+				total_usage_default_impl!();
+				total_usage_with_extra_capacity_default_impl!();
 			}
 
 			impl MemoryUsageStatic for $type {
@@ -299,7 +303,8 @@ impl<T: MemoryUsage, const N: usize> MemoryUsage for [T; N] {
 
 impl<T: MemoryUsageStatic, const N: usize> MemoryUsageStatic for [T; N] {
 	fn memory_usage_static(&self) -> usize {
-		// getting ready to make this a const fn
+		// while loop instead of for loop, for loops aren't available in const
+		// fn (yet?),getting ready to make this a const fn
 		let mut usage = 0;
 
 		let mut i = 0;
