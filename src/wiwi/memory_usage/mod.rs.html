@@ -409,25 +409,108 @@
 <a href="#409" id="409">409</a>
 <a href="#410" id="410">410</a>
 <a href="#411" id="411">411</a>
+<a href="#412" id="412">412</a>
+<a href="#413" id="413">413</a>
+<a href="#414" id="414">414</a>
+<a href="#415" id="415">415</a>
+<a href="#416" id="416">416</a>
+<a href="#417" id="417">417</a>
+<a href="#418" id="418">418</a>
+<a href="#419" id="419">419</a>
+<a href="#420" id="420">420</a>
+<a href="#421" id="421">421</a>
+<a href="#422" id="422">422</a>
+<a href="#423" id="423">423</a>
+<a href="#424" id="424">424</a>
+<a href="#425" id="425">425</a>
+<a href="#426" id="426">426</a>
+<a href="#427" id="427">427</a>
+<a href="#428" id="428">428</a>
+<a href="#429" id="429">429</a>
+<a href="#430" id="430">430</a>
+<a href="#431" id="431">431</a>
+<a href="#432" id="432">432</a>
+<a href="#433" id="433">433</a>
+<a href="#434" id="434">434</a>
+<a href="#435" id="435">435</a>
+<a href="#436" id="436">436</a>
+<a href="#437" id="437">437</a>
+<a href="#438" id="438">438</a>
+<a href="#439" id="439">439</a>
+<a href="#440" id="440">440</a>
+<a href="#441" id="441">441</a>
+<a href="#442" id="442">442</a>
+<a href="#443" id="443">443</a>
+<a href="#444" id="444">444</a>
+<a href="#445" id="445">445</a>
+<a href="#446" id="446">446</a>
+<a href="#447" id="447">447</a>
+<a href="#448" id="448">448</a>
+<a href="#449" id="449">449</a>
+<a href="#450" id="450">450</a>
+<a href="#451" id="451">451</a>
+<a href="#452" id="452">452</a>
+<a href="#453" id="453">453</a>
+<a href="#454" id="454">454</a>
+<a href="#455" id="455">455</a>
+<a href="#456" id="456">456</a>
+<a href="#457" id="457">457</a>
+<a href="#458" id="458">458</a>
+<a href="#459" id="459">459</a>
+<a href="#460" id="460">460</a>
+<a href="#461" id="461">461</a>
+<a href="#462" id="462">462</a>
+<a href="#463" id="463">463</a>
+<a href="#464" id="464">464</a>
+<a href="#465" id="465">465</a>
+<a href="#466" id="466">466</a>
+<a href="#467" id="467">467</a>
+<a href="#468" id="468">468</a>
+<a href="#469" id="469">469</a>
+<a href="#470" id="470">470</a>
+<a href="#471" id="471">471</a>
+<a href="#472" id="472">472</a>
+<a href="#473" id="473">473</a>
+<a href="#474" id="474">474</a>
+<a href="#475" id="475">475</a>
+<a href="#476" id="476">476</a>
+<a href="#477" id="477">477</a>
+<a href="#478" id="478">478</a>
+<a href="#479" id="479">479</a>
+<a href="#480" id="480">480</a>
+<a href="#481" id="481">481</a>
+<a href="#482" id="482">482</a>
+<a href="#483" id="483">483</a>
+<a href="#484" id="484">484</a>
+<a href="#485" id="485">485</a>
+<a href="#486" id="486">486</a>
+<a href="#487" id="487">487</a>
+<a href="#488" id="488">488</a>
+<a href="#489" id="489">489</a>
 </pre></div><pre class="rust"><code><span class="comment">// pub use wiwiwiwiwi::MemoryUsage;
+
+// todo: write doc comments on the _impl fns themselves_ describing the logic inside
 
 </span><span class="doccomment">/// Trait for types that can calculate their actual total memory usage, not
 /// just the stack usage (ie. not just [`size_of`])
 ///
-/// # "Heap"
+/// # Definition of "heap"
 ///
-/// For the purposes of this trait, and its [`heap_usage`] and [`heap_usage_with_extra_capacity`]
-/// methods... what counts as the "heap" is just "anything that's not on the
-/// stack". For example, the value a reference is pointing to is considered
-/// part of the "heap" (even if it may be just a reference to a local value),
-/// and the contents of string literals (`&amp;'static str`), despite actually being
-/// embedded somewhere in the binary (and the str reference just points to that),
-/// also count towards the "heap".
+/// For the purposes of this trait, and its [`mem_use_heap`] and
+/// [`mem_use_heap_incl_extra_capacity`] methods... what counts as the "heap" is
+/// just "anything that's not on the stack". For example, the value a reference
+/// is pointing to is considered part of the "heap" (even if it may be just a
+/// reference to a local value), and the contents of string literals (`&amp;'static str`),
+/// despite actually being embedded somewhere in the binary (and the str
+/// reference just points to that), also count towards the "heap".
+///
+/// [`mem_use_heap`]: MemoryUsage::mem_use_heap
+/// [`mem_use_heap_incl_extra_capacity`]: MemoryUsage::mem_use_heap_incl_extra_capacity
 </span><span class="kw">pub trait </span>MemoryUsage {
 	<span class="doccomment">/// Gets the stack usage of this value
 	///
 	/// For [`Sized`] types, using [`size_of`] will almost always be correct.
-	</span><span class="kw">fn </span>stack_usage(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; usize;
+	</span><span class="kw">fn </span>mem_use_stack(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; usize;
 
 	<span class="doccomment">/// Gets the heap usage of this value
 	///
@@ -436,58 +519,57 @@
 	/// [`Vec`], this should be calculated.
 	///
 	/// For values that potentially allocate extra capacity, like [`Vec`], this
-	/// method is for the actual memory being utilised. In other words, the minimum
-	/// amount of memory required without data loss. For vec this would be just its
-	/// `len`.
+	/// method is for the actual memory being utilised (ie. that contain data).
+	/// For vec this would be just its len.
 	///
-	/// Also see [`heap_usage_with_extra_capacity`].
+	/// Also see [`mem_use_heap_incl_extra_capacity`].
 	///
-	/// [`heap_usage_with_extra_capacity`]: MemoryUsage::heap_usage_with_extra_capacity
-	</span><span class="kw">fn </span>heap_usage(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; usize;
+	/// [`mem_use_heap_incl_extra_capacity`]: MemoryUsage::mem_use_heap_incl_extra_capacity
+	</span><span class="kw">fn </span>mem_use_heap(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; usize;
 
 	<span class="doccomment">/// Gets the heap usage of this value, including "excess capacity" and other
 	/// related extra allocated memory
-	///
-	/// The default implementation just calls [`heap_usage`], which most of the
-	/// time is correct... except for collections like [`Vec`].
 	///
 	/// For values that potentially allocate extra capacity, like [`Vec`], this
 	/// method is for _all_ memory allocated, including "excess capacity". In other
 	/// words, _all_ memory that is currently allocated. For vec this would be its
 	/// `capacity`.
 	///
-	/// Also see [`heap_usage`].
+	/// Also see [`mem_use_heap`].
 	///
-	/// [`heap_usage`]: MemoryUsage::heap_usage
-	</span><span class="attr">#[inline]
-	</span><span class="kw">fn </span>heap_usage_with_extra_capacity(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; usize {
-		<span class="self">self</span>.heap_usage()
-	}
+	/// [`mem_use_heap`]: MemoryUsage::mem_use_heap
+	</span><span class="kw">fn </span>mem_use_heap_incl_extra_capacity(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; usize;
 
 	<span class="doccomment">/// Gets the total memory usage of this value, including the stack usage
 	/// and the heap usage
-	</span><span class="attr">#[inline]
-	</span><span class="kw">fn </span>total_usage(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; usize {
-		<span class="self">self</span>.stack_usage() + <span class="self">self</span>.heap_usage()
-	}
+	///
+	/// This should be equivalent to calling [`mem_use_stack`] and [`mem_use_heap`]
+	/// and adding them up.
+	///
+	/// [`mem_use_stack`]: MemoryUsage::mem_use_stack
+	/// [`mem_use_heap`]: MemoryUsage::mem_use_heap
+	</span><span class="kw">fn </span>mem_use_total(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; usize;
 
 	<span class="doccomment">/// Gets the total memory usage of this value, including the stack usage,
 	/// the heap usage, and the "excess capacity" if applicable.
-	</span><span class="attr">#[inline]
-	</span><span class="kw">fn </span>total_usage_with_extra_capacity(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; usize {
-		<span class="self">self</span>.stack_usage() + <span class="self">self</span>.heap_usage_with_extra_capacity()
-	}
+	///
+	/// This should be equivalent to calling [`mem_use_stack`] and
+	/// [`mem_use_heap_incl_extra_capacity`] and adding them up.
+	///
+	/// [`mem_use_stack`]: MemoryUsage::mem_use_stack
+	/// [`mem_use_heap_incl_extra_capacity`]: MemoryUsage::mem_use_heap_incl_extra_capacity
+	</span><span class="kw">fn </span>mem_use_total_incl_extra_capacity(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; usize;
 }
 
 <span class="doccomment">/// Trait for types that can know all of their memory usage at compile time
 ///
-/// [`memory_usage_static`] should be a const fn... but rust doesn't allow
+/// [`mem_use_static`] should be a const fn... but rust doesn't allow
 /// const fn in traits for now, so it doesn't really do anything extra over
 /// [`MemoryUsage`]. If/when const traits / const fn in traits are implemented /
 /// stabilised, this will become a const trait / const fn, and then
-/// [`memory_usage_static`] will be usable in const contexts.
+/// [`mem_use_static`] will be usable in const contexts.
 ///
-/// [`memory_usage_static`]: MemoryUsageStatic::memory_usage_static
+/// [`mem_use_static`]: MemoryUsageStatic::mem_use_static
 </span><span class="kw">pub trait </span>MemoryUsageStatic: MemoryUsage {
 	<span class="doccomment">/// Statically calculates memory usage
 	///
@@ -497,7 +579,7 @@
 	///
 	/// See the trait docs for information on the possibility of this fn/trait
 	/// being `const` in the future.
-	</span><span class="kw">fn </span>memory_usage_static(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; usize;
+	</span><span class="kw">fn </span>mem_use_static(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; usize;
 }
 
 <span class="doccomment">/// Trait for types that can provide their memory usage as a `const` value
@@ -509,34 +591,34 @@
 /// that's not available here.
 </span><span class="kw">pub trait </span>MemoryUsageConst: MemoryUsageStatic {
 	<span class="doccomment">/// The constant memory usage value
-	</span><span class="kw">const </span>MEMORY_USAGE: usize;
+	</span><span class="kw">const </span>MEM_USE_CONST: usize;
 }
 
-<span class="kw">fn </span>_assert_memory_usage_obj_safe(<span class="kw">_</span>: <span class="kw-2">&amp;</span><span class="kw">dyn </span>MemoryUsage) {}
-<span class="kw">fn </span>_assert_memory_usage_static_obj_safe(<span class="kw">_</span>: <span class="kw-2">&amp;</span><span class="kw">dyn </span>MemoryUsageStatic) {}
+<span class="kw">fn </span>_assert_mem_use_obj_safe(<span class="kw">_</span>: <span class="kw-2">&amp;</span><span class="kw">dyn </span>MemoryUsage) {}
+<span class="kw">fn </span>_assert_mem_use_static_obj_safe(<span class="kw">_</span>: <span class="kw-2">&amp;</span><span class="kw">dyn </span>MemoryUsageStatic) {}
 <span class="comment">// const is not object safe
 
 </span><span class="doccomment">/// Provides an impl of [`stack_usage`](MemoryUsage::stack_usage) using [`size_of`]
 ///
 /// Use by invoking this macro within an impl block for the trait [`MemoryUsage`].
-</span><span class="macro">macro_rules!</span> stack_usage_size_of_impl {
+</span><span class="macro">macro_rules!</span> mem_use_stack_size_of_impl {
 	() =&gt; {
 		<span class="attr">#[inline]
-		</span><span class="kw">fn </span>stack_usage(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; usize {
+		</span><span class="kw">fn </span>mem_use_stack(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; usize {
 			::std::mem::size_of::&lt;<span class="self">Self</span>&gt;()
 		}
 	}
 }
 
-<span class="doccomment">/// Provides an impl of [`heap_usage`](MemoryUsage::heap_usage) and
-/// [`heap_usage_with_extra_capacity`](MemoryUsage::heap_usage_with_extra_capacity)
-/// with just 0 (ie. use for types that never allocate onto the heap)
+<span class="doccomment">/// Provides an impl of [`mem_use_heap`](MemoryUsage::mem_use_heap) and
+/// [`mem_use_heap_incl_extra_capacity`](MemoryUsage::mem_use_heap_incl_extra_capacity)
+/// for types that never allocate onto the heap, returning just 0
 ///
 /// Use by invoking this macro within an impl block for the trait [`MemoryUsage`].
-</span><span class="macro">macro_rules!</span> heap_usage_zero_impl {
+</span><span class="macro">macro_rules!</span> mem_use_heap_zero_impl {
 	() =&gt; {
 		<span class="attr">#[inline]
-		</span><span class="kw">fn </span>heap_usage(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; usize {
+		</span><span class="kw">fn </span>mem_use_heap(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; usize {
 			<span class="number">0
 		</span>}
 
@@ -544,9 +626,27 @@
 		// use this macro, and then override `heap_usage_with_extra_capacity` with
 		// something else, which is just wrong
 		</span><span class="attr">#[inline]
-		</span><span class="kw">fn </span>heap_usage_with_extra_capacity(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; usize {
+		</span><span class="kw">fn </span>mem_use_heap_incl_extra_capacity(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; usize {
 			<span class="number">0
 		</span>}
+	}
+}
+
+<span class="macro">macro_rules!</span> mem_use_total_default_impl {
+	() =&gt; {
+		<span class="attr">#[inline]
+		</span><span class="kw">fn </span>mem_use_total(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; usize {
+			<span class="self">self</span>.mem_use_stack() + <span class="self">self</span>.mem_use_heap()
+		}
+	}
+}
+
+<span class="macro">macro_rules!</span> mem_use_total_incl_extra_capacity_default_impl {
+	() =&gt; {
+		<span class="attr">#[inline]
+		</span><span class="kw">fn </span>mem_use_total_incl_extra_capacity(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; usize {
+			<span class="self">self</span>.mem_use_stack() + <span class="self">self</span>.mem_use_heap_incl_extra_capacity()
+		}
 	}
 }
 
@@ -554,10 +654,10 @@
 /// using [`size_of`]
 ///
 /// Use by invoking this macro within an impl block for the trait [`MemoryUsageStatic`].
-</span><span class="macro">macro_rules!</span> usage_static_impl {
+</span><span class="macro">macro_rules!</span> mem_use_static_size_of_impl {
 	() =&gt; {
 		<span class="attr">#[inline]
-		</span><span class="kw">fn </span>memory_usage_static(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; usize {
+		</span><span class="kw">fn </span>mem_use_static(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; usize {
 			::std::mem::size_of::&lt;<span class="self">Self</span>&gt;()
 		}
 	}
@@ -567,9 +667,9 @@
 /// using [`size_of`]
 ///
 /// Use by invoking this macro within an impl block for the trait [`MemoryUsageConst`].\
-</span><span class="macro">macro_rules!</span> usage_const_impl {
+</span><span class="macro">macro_rules!</span> mem_use_const_size_of_impl {
 	() =&gt; {
-		<span class="kw">const </span>MEMORY_USAGE: usize = ::std::mem::size_of::&lt;<span class="self">Self</span>&gt;();
+		<span class="kw">const </span>MEM_USE_CONST: usize = ::std::mem::size_of::&lt;<span class="self">Self</span>&gt;();
 	}
 }
 
@@ -580,19 +680,21 @@
 /// Use by invoking in a standalone place. This macro generates the three
 /// entire trait implementations
 </span><span class="macro">macro_rules!</span> stack_only_impl {
-	{ $(<span class="macro-nonterminal">$</span><span class="kw">type</span>:<span class="macro-nonterminal">path</span>)* } =&gt; {
+	{ $(<span class="macro-nonterminal">$</span><span class="kw">type</span>:<span class="macro-nonterminal">ident</span>)* } =&gt; {
 		$(
 			<span class="kw">impl </span>MemoryUsage <span class="kw">for </span><span class="macro-nonterminal">$</span><span class="kw">type </span>{
-				<span class="macro">stack_usage_size_of_impl!</span>();
-				<span class="macro">heap_usage_zero_impl!</span>();
+				<span class="macro">mem_use_stack_size_of_impl!</span>();
+				<span class="macro">mem_use_heap_zero_impl!</span>();
+				<span class="macro">mem_use_total_default_impl!</span>();
+				<span class="macro">mem_use_total_incl_extra_capacity_default_impl!</span>();
 			}
 
 			<span class="kw">impl </span><span class="macro-nonterminal">MemoryUsageStatic </span><span class="kw">for </span><span class="macro-nonterminal">$</span><span class="kw">type </span>{
-				<span class="macro">usage_static_impl!</span>();
+				<span class="macro">mem_use_static_size_of_impl!</span>();
 			}
 
 			<span class="kw">impl </span><span class="macro-nonterminal">MemoryUsageConst </span><span class="kw">for </span><span class="macro-nonterminal">$</span><span class="kw">type </span>{
-				<span class="macro">usage_const_impl!</span>();
+				<span class="macro">mem_use_const_size_of_impl!</span>();
 			}
 		)*
 	}
@@ -606,101 +708,104 @@
 	<span class="comment">// f16 f128
 </span>}
 
-<span class="kw">impl</span>&lt;<span class="lifetime">'h</span>, T: MemoryUsage&gt; MemoryUsage <span class="kw">for </span><span class="kw-2">&amp;</span><span class="lifetime">'h </span>T {
+<span class="kw">impl</span>&lt;<span class="lifetime">'h</span>, T: <span class="question-mark">?</span>Sized + MemoryUsage&gt; MemoryUsage <span class="kw">for </span><span class="kw-2">&amp;</span><span class="lifetime">'h </span>T {
+	<span class="macro">mem_use_stack_size_of_impl!</span>();
+
 	<span class="attr">#[inline]
-	</span><span class="kw">fn </span>stack_usage(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; usize {
-		T::stack_usage(<span class="self">self</span>)
+	</span><span class="kw">fn </span>mem_use_heap(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; usize {
+		T::mem_use_total(<span class="self">self</span>)
 	}
 
 	<span class="attr">#[inline]
-	</span><span class="kw">fn </span>heap_usage(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; usize {
-		T::heap_usage(<span class="self">self</span>)
+	</span><span class="kw">fn </span>mem_use_heap_incl_extra_capacity(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; usize {
+		T::mem_use_total_incl_extra_capacity(<span class="self">self</span>)
 	}
 
-	<span class="attr">#[inline]
-	</span><span class="kw">fn </span>heap_usage_with_extra_capacity(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; usize {
-		T::heap_usage_with_extra_capacity(<span class="self">self</span>)
-	}
+	<span class="macro">mem_use_total_default_impl!</span>();
+	<span class="macro">mem_use_total_incl_extra_capacity_default_impl!</span>();
+}
 
+<span class="kw">impl</span>&lt;<span class="lifetime">'h</span>, T: <span class="question-mark">?</span>Sized + MemoryUsageStatic&gt; MemoryUsageStatic <span class="kw">for </span><span class="kw-2">&amp;</span><span class="lifetime">'h </span>T {
 	<span class="attr">#[inline]
-	</span><span class="kw">fn </span>total_usage(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; usize {
-		T::total_usage(<span class="self">self</span>)
-	}
-
-	<span class="attr">#[inline]
-	</span><span class="kw">fn </span>total_usage_with_extra_capacity(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; usize {
-		T::total_usage_with_extra_capacity(<span class="self">self</span>)
+	</span><span class="kw">fn </span>mem_use_static(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; usize {
+		size_of::&lt;<span class="kw-2">&amp;</span><span class="lifetime">'h </span>T&gt;() + T::mem_use_static(<span class="self">self</span>)
 	}
 }
 
-<span class="kw">impl</span>&lt;<span class="lifetime">'h</span>, T: MemoryUsage&gt; MemoryUsage <span class="kw">for </span><span class="kw-2">&amp;</span><span class="lifetime">'h </span><span class="kw-2">mut </span>T {
+<span class="kw">impl</span>&lt;<span class="lifetime">'h</span>, T: <span class="question-mark">?</span>Sized + MemoryUsageConst&gt; MemoryUsageConst <span class="kw">for </span><span class="kw-2">&amp;</span><span class="lifetime">'h </span>T {
+	<span class="kw">const </span>MEM_USE_CONST: usize = size_of::&lt;<span class="kw-2">&amp;</span><span class="lifetime">'h </span>T&gt;() + T::MEM_USE_CONST;
+}
+
+<span class="kw">impl</span>&lt;<span class="lifetime">'h</span>, T: <span class="question-mark">?</span>Sized + MemoryUsage&gt; MemoryUsage <span class="kw">for </span><span class="kw-2">&amp;</span><span class="lifetime">'h </span><span class="kw-2">mut </span>T {
+	<span class="macro">mem_use_stack_size_of_impl!</span>();
+
 	<span class="attr">#[inline]
-	</span><span class="kw">fn </span>stack_usage(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; usize {
-		T::stack_usage(<span class="self">self</span>)
+	</span><span class="kw">fn </span>mem_use_heap(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; usize {
+		T::mem_use_total(<span class="self">self</span>)
 	}
 
 	<span class="attr">#[inline]
-	</span><span class="kw">fn </span>heap_usage(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; usize {
-		T::heap_usage(<span class="self">self</span>)
+	</span><span class="kw">fn </span>mem_use_heap_incl_extra_capacity(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; usize {
+		T::mem_use_total_incl_extra_capacity(<span class="self">self</span>)
 	}
 
-	<span class="attr">#[inline]
-	</span><span class="kw">fn </span>heap_usage_with_extra_capacity(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; usize {
-		T::heap_usage_with_extra_capacity(<span class="self">self</span>)
-	}
+	<span class="macro">mem_use_total_default_impl!</span>();
+	<span class="macro">mem_use_total_incl_extra_capacity_default_impl!</span>();
+}
 
+<span class="kw">impl</span>&lt;<span class="lifetime">'h</span>, T: <span class="question-mark">?</span>Sized + MemoryUsageStatic&gt; MemoryUsageStatic <span class="kw">for </span><span class="kw-2">&amp;</span><span class="lifetime">'h </span><span class="kw-2">mut </span>T {
 	<span class="attr">#[inline]
-	</span><span class="kw">fn </span>total_usage(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; usize {
-		T::total_usage(<span class="self">self</span>)
+	</span><span class="kw">fn </span>mem_use_static(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; usize {
+		size_of::&lt;<span class="kw-2">&amp;</span><span class="lifetime">'h </span><span class="kw-2">mut </span>T&gt;() + T::mem_use_static(<span class="self">self</span>)
 	}
+}
 
-	<span class="attr">#[inline]
-	</span><span class="kw">fn </span>total_usage_with_extra_capacity(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; usize {
-		T::total_usage_with_extra_capacity(<span class="self">self</span>)
-	}
+<span class="kw">impl</span>&lt;<span class="lifetime">'h</span>, T: <span class="question-mark">?</span>Sized + MemoryUsageConst&gt; MemoryUsageConst <span class="kw">for </span><span class="kw-2">&amp;</span><span class="lifetime">'h </span><span class="kw-2">mut </span>T {
+	<span class="kw">const </span>MEM_USE_CONST: usize = size_of::&lt;<span class="kw-2">&amp;</span><span class="lifetime">'h </span><span class="kw-2">mut </span>T&gt;() + T::MEM_USE_CONST;
 }
 
 <span class="kw">impl</span>&lt;T: MemoryUsage, <span class="kw">const </span>N: usize&gt; MemoryUsage <span class="kw">for </span>[T; N] {
-	<span class="macro">stack_usage_size_of_impl!</span>();
+	<span class="macro">mem_use_stack_size_of_impl!</span>();
 
 	<span class="attr">#[inline]
-	</span><span class="kw">fn </span>heap_usage(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; usize {
+	</span><span class="kw">fn </span>mem_use_heap(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; usize {
 		<span class="self">self</span>.iter()
-			.map(T::heap_usage)
+			.map(T::mem_use_heap)
 			.sum()
 	}
 
 	<span class="attr">#[inline]
-	</span><span class="kw">fn </span>heap_usage_with_extra_capacity(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; usize {
+	</span><span class="kw">fn </span>mem_use_heap_incl_extra_capacity(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; usize {
 		<span class="self">self</span>.iter()
-			.map(T::heap_usage_with_extra_capacity)
+			.map(T::mem_use_heap_incl_extra_capacity)
 			.sum()
 	}
 
 	<span class="attr">#[inline]
-	</span><span class="kw">fn </span>total_usage(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; usize {
+	</span><span class="kw">fn </span>mem_use_total(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; usize {
 		<span class="self">self</span>.iter()
-			.map(T::total_usage)
+			.map(T::mem_use_total)
 			.sum()
 	}
 
 	<span class="attr">#[inline]
-	</span><span class="kw">fn </span>total_usage_with_extra_capacity(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; usize {
+	</span><span class="kw">fn </span>mem_use_total_incl_extra_capacity(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; usize {
 		<span class="self">self</span>.iter()
-			.map(T::total_usage_with_extra_capacity)
+			.map(T::mem_use_total_incl_extra_capacity)
 			.sum()
 	}
 }
 
 <span class="kw">impl</span>&lt;T: MemoryUsageStatic, <span class="kw">const </span>N: usize&gt; MemoryUsageStatic <span class="kw">for </span>[T; N] {
-	<span class="kw">fn </span>memory_usage_static(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; usize {
-		<span class="comment">// getting ready to make this a const fn
+	<span class="attr">#[inline]
+	</span><span class="kw">fn </span>mem_use_static(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; usize {
+		<span class="comment">// while loop instead of for loop, for loops aren't available in const
+		// fn (yet?),getting ready to make this a const fn
 		</span><span class="kw">let </span><span class="kw-2">mut </span>usage = <span class="number">0</span>;
 
 		<span class="kw">let </span><span class="kw-2">mut </span>i = <span class="number">0</span>;
 		<span class="kw">while </span>i &lt; N {
-			usage += <span class="self">self</span>[i].memory_usage_static();
-
+			usage += T::mem_use_static(<span class="kw-2">&amp;</span><span class="self">self</span>[i]);
 			i += <span class="number">1</span>;
 		}
 
@@ -709,43 +814,94 @@
 }
 
 <span class="kw">impl</span>&lt;T: MemoryUsageConst, <span class="kw">const </span>N: usize&gt; MemoryUsageConst <span class="kw">for </span>[T; N] {
-	<span class="kw">const </span>MEMORY_USAGE: usize = T::MEMORY_USAGE * N;
+	<span class="kw">const </span>MEM_USE_CONST: usize = T::MEM_USE_CONST * N;
 }
 
-<span class="comment">// impl&lt;T: Dynamic, const N: usize&gt; Dynamic for [T; N] {
-// 	#[inline]
-// 	fn calculate_memory_usage(&amp;self) -&gt; usize {
-// 		self.iter().map(T::calculate_memory_usage).sum()
-// 	}
-//
-// 	#[inline]
-// 	fn calculate_values_usage(&amp;self) -&gt; usize {
-// 		self.iter().map(T::calculate_values_usage).sum()
-// 	}
-// }
-//
-// impl&lt;T: Dynamic&gt; Dynamic for [T] {
-// 	#[inline]
-// 	fn calculate_memory_usage(&amp;self) -&gt; usize {
-// 		let contents = self.iter().map(T::calculate_memory_usage).sum::&lt;usize&gt;();
-// 		size_of::&lt;&amp;[T]&gt;() + contents
-// 	}
-//
-// 	#[inline]
-// 	fn calculate_values_usage(&amp;self) -&gt; usize {
-// 		let contents = self.iter().map(T::calculate_values_usage).sum::&lt;usize&gt;();
-// 		size_of::&lt;&amp;[T]&gt;() + contents
-// 	}
-// }
-//
-// impl&lt;T: ?Sized&gt; Static for *const T {
-// 	const MEMORY_USAGE: usize = size_of::&lt;*const T&gt;();
-// }
-//
-// impl&lt;T: ?Sized&gt; Static for *mut T {
-// 	const MEMORY_USAGE: usize = size_of::&lt;*mut T&gt;();
-// }
-//
+<span class="kw">impl</span>&lt;T: MemoryUsage&gt; MemoryUsage <span class="kw">for </span>[T] {
+	<span class="attr">#[inline]
+	</span><span class="kw">fn </span>mem_use_stack(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; usize {
+		<span class="number">0
+	</span>}
+
+	<span class="attr">#[inline]
+	</span><span class="kw">fn </span>mem_use_heap(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; usize {
+		<span class="self">self</span>.iter()
+			.map(T::mem_use_total)
+			.sum()
+	}
+
+	<span class="attr">#[inline]
+	</span><span class="kw">fn </span>mem_use_heap_incl_extra_capacity(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; usize {
+		<span class="self">self</span>.iter()
+			.map(T::mem_use_total_incl_extra_capacity)
+			.sum()
+	}
+
+	<span class="macro">mem_use_total_default_impl!</span>();
+	<span class="macro">mem_use_total_incl_extra_capacity_default_impl!</span>();
+}
+
+<span class="kw">impl</span>&lt;T: MemoryUsageStatic&gt; MemoryUsageStatic <span class="kw">for </span>[T] {
+	<span class="attr">#[inline]
+	</span><span class="kw">fn </span>mem_use_static(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; usize {
+		<span class="self">self</span>.iter()
+			.map(T::mem_use_static)
+			.sum()
+	}
+}
+
+<span class="kw">impl</span>&lt;T: <span class="question-mark">?</span>Sized&gt; MemoryUsage <span class="kw">for </span><span class="kw-2">*const </span>T {
+	<span class="macro">mem_use_stack_size_of_impl!</span>();
+	<span class="macro">mem_use_heap_zero_impl!</span>();
+	<span class="macro">mem_use_total_default_impl!</span>();
+	<span class="macro">mem_use_total_incl_extra_capacity_default_impl!</span>();
+}
+
+<span class="kw">impl</span>&lt;T: <span class="question-mark">?</span>Sized&gt; MemoryUsageStatic <span class="kw">for </span><span class="kw-2">*const </span>T {
+	<span class="macro">mem_use_static_size_of_impl!</span>();
+}
+
+<span class="kw">impl</span>&lt;T: <span class="question-mark">?</span>Sized&gt; MemoryUsageConst <span class="kw">for </span><span class="kw-2">*const </span>T {
+	<span class="macro">mem_use_const_size_of_impl!</span>();
+}
+
+<span class="kw">impl</span>&lt;T: <span class="question-mark">?</span>Sized&gt; MemoryUsage <span class="kw">for </span><span class="kw-2">*mut </span>T {
+	<span class="macro">mem_use_stack_size_of_impl!</span>();
+	<span class="macro">mem_use_heap_zero_impl!</span>();
+	<span class="macro">mem_use_total_default_impl!</span>();
+	<span class="macro">mem_use_total_incl_extra_capacity_default_impl!</span>();
+}
+
+<span class="kw">impl</span>&lt;T: <span class="question-mark">?</span>Sized&gt; MemoryUsageStatic <span class="kw">for </span><span class="kw-2">*mut </span>T {
+	<span class="macro">mem_use_static_size_of_impl!</span>();
+}
+
+<span class="kw">impl</span>&lt;T: <span class="question-mark">?</span>Sized&gt; MemoryUsageConst <span class="kw">for </span><span class="kw-2">*mut </span>T {
+	<span class="macro">mem_use_const_size_of_impl!</span>();
+}
+
+<span class="kw">impl</span>&lt;T: MemoryUsage&gt; MemoryUsage <span class="kw">for </span>Vec&lt;T&gt; {
+	<span class="macro">mem_use_stack_size_of_impl!</span>();
+
+	<span class="attr">#[inline]
+	</span><span class="kw">fn </span>mem_use_heap(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; usize {
+		<span class="self">self</span>.as_slice().mem_use_heap()
+	}
+
+	<span class="attr">#[inline]
+	</span><span class="kw">fn </span>mem_use_heap_incl_extra_capacity(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; usize {
+		<span class="kw">let </span>extra_cap = <span class="self">self</span>.capacity() - <span class="self">self</span>.len();
+		<span class="kw">let </span>mem_extra_cap = extra_cap * size_of::&lt;T&gt;();
+
+		&lt;[T]&gt;::mem_use_total(<span class="self">self</span>) + mem_extra_cap
+	}
+
+	<span class="macro">mem_use_total_default_impl!</span>();
+	<span class="macro">mem_use_total_incl_extra_capacity_default_impl!</span>();
+}
+
+<span class="comment">// TODO: do we impl static or const for vec?
+
 // impl&lt;T: Dynamic&gt; Dynamic for Vec&lt;T&gt; {
 // 	#[inline]
 // 	fn calculate_memory_usage(&amp;self) -&gt; usize {
