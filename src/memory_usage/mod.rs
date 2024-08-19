@@ -153,6 +153,8 @@ impl<'h, T: ?Sized + MemoryUsage> MemoryUsage for &'h T {
 	fn mem_use_heap_excl_extra_capacity(&self) -> usize {
 		T::mem_use_excl_extra_capacity(self)
 	}
+
+	// what to do about shrink extra? should we panic? or is no op fine?
 }
 
 impl<'h, T: ?Sized + MemoryUsageStatic> MemoryUsageStatic for &'h T {
@@ -177,6 +179,11 @@ impl<'h, T: ?Sized + MemoryUsage> MemoryUsage for &'h mut T {
 	#[inline]
 	fn mem_use_heap_excl_extra_capacity(&self) -> usize {
 		T::mem_use_excl_extra_capacity(self)
+	}
+
+	#[inline]
+	fn shrink_extra(&mut self) {
+		T::shrink_extra(self)
 	}
 }
 
@@ -227,6 +234,12 @@ impl<T: MemoryUsage> MemoryUsage for [T] {
 			.map(T::mem_use_excl_extra_capacity)
 			.sum()
 	}
+
+	#[inline]
+	fn shrink_extra(&mut self) {
+		self.iter_mut()
+			.for_each(T::shrink_extra)
+	}
 }
 
 impl<T: MemoryUsageStatic> MemoryUsageStatic for [T] {
@@ -241,6 +254,22 @@ impl<T: MemoryUsageStatic> MemoryUsageStatic for [T] {
 		}
 
 		mem_use
+	}
+}
+
+impl MemoryUsage for str {
+	#[inline]
+	fn mem_use_stack(&self) -> usize {
+		self.len()
+	}
+
+	mem_use_heap_zero_impl!();
+}
+
+impl MemoryUsageStatic for str {
+	#[inline]
+	fn mem_use_static(&self) -> usize {
+		self.len()
 	}
 }
 
@@ -266,6 +295,11 @@ impl<T: MemoryUsage, const N: usize> MemoryUsage for [T; N] {
 	fn mem_use_excl_extra_capacity(&self) -> usize {
 		<[T]>::mem_use_excl_extra_capacity(self)
 	}
+
+	#[inline]
+	fn shrink_extra(&mut self) {
+		<[T]>::shrink_extra(self)
+	}
 }
 
 impl<T: MemoryUsageStatic, const N: usize> MemoryUsageStatic for [T; N] {
@@ -277,6 +311,78 @@ impl<T: MemoryUsageStatic, const N: usize> MemoryUsageStatic for [T; N] {
 
 impl<T: MemoryUsageConst, const N: usize> MemoryUsageConst for [T; N] {
 	const MEM_USE_CONST: usize = T::MEM_USE_CONST * N;
+}
+
+impl<T: ?Sized + MemoryUsage> MemoryUsage for Box<T> {
+	mem_use_stack_size_of_impl!();
+
+	#[inline]
+	fn mem_use_heap(&self) -> usize {
+		size_of::<Box<T>>() + T::mem_use_heap(self)
+	}
+
+	#[inline]
+	fn mem_use_heap_excl_extra_capacity(&self) -> usize {
+		size_of::<Box<T>>() + T::mem_use_heap_excl_extra_capacity(self)
+	}
+
+	#[inline]
+	fn mem_use(&self) -> usize {
+		size_of::<Box<T>>() + T::mem_use(self)
+	}
+
+	#[inline]
+	fn mem_use_excl_extra_capacity(&self) -> usize {
+		size_of::<Box<T>>() + T::mem_use_excl_extra_capacity(self)
+	}
+
+	#[inline]
+	fn shrink_extra(&mut self) {
+		T::shrink_extra(self)
+	}
+}
+
+impl<T: MemoryUsage> MemoryUsage for Vec<T> {
+	mem_use_stack_size_of_impl!();
+
+	#[inline]
+	fn mem_use_heap(&self) -> usize {
+		let full = self.mem_use_excl_extra_capacity();
+		let empty = (self.capacity() + self.len()) * size_of::<T>();
+
+		full + empty
+	}
+
+	#[inline]
+	fn mem_use_heap_excl_extra_capacity(&self) -> usize {
+		<[T]>::mem_use_heap_excl_extra_capacity(self)
+	}
+
+	#[inline]
+	fn shrink_extra(&mut self) {
+		self.iter_mut()
+			.for_each(T::shrink_extra);
+		self.shrink_to_fit();
+	}
+}
+
+impl MemoryUsage for String {
+	mem_use_stack_size_of_impl!();
+
+	#[inline]
+	fn mem_use_heap(&self) -> usize {
+		self.capacity()
+	}
+
+	#[inline]
+	fn mem_use_heap_excl_extra_capacity(&self) -> usize {
+		self.len()
+	}
+
+	#[inline]
+	fn shrink_extra(&mut self) {
+		self.shrink_to_fit()
+	}
 }
 
 // /// Trait for types that can calculate their actual total memory usage, not
