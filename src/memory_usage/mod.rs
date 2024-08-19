@@ -37,6 +37,11 @@ fn _assert_mem_use_obj_safe(_: &dyn MemoryUsage) {}
 fn _assert_mem_use_static_obj_safe(_: &dyn MemoryUsageStatic) {}
 // const is not object safe
 
+/// Provides an impl of [`MemoryUsage::mem_use_stack`]
+/// using [`size_of`]
+///
+/// Use by invoking this macro within an impl block for the
+/// trait [`MemoryUsage`].
 macro_rules! mem_use_stack_size_of_impl {
 	() => {
 		#[inline]
@@ -46,6 +51,12 @@ macro_rules! mem_use_stack_size_of_impl {
 	}
 }
 
+/// Provides an impl of [`MemoryUsage::mem_use_heap`] and
+/// [`MemoryUsage::mem_use_heap_excl_extra_capacity`]
+/// for types that never allocate onto the heap, returning just 0
+///
+/// Use by invoking this macro within an impl block for the
+/// trait [`MemoryUsage`].
 macro_rules! mem_use_heap_zero_impl {
 	() => {
 		#[inline]
@@ -60,6 +71,11 @@ macro_rules! mem_use_heap_zero_impl {
 	}
 }
 
+/// Provides an impl of [`MemoryUsageStatic::mem_use_static`]
+/// using [`size_of`]
+///
+/// Use by invoking this macro within an impl block for the
+/// trait [`MemoryUsageStatic`].
 macro_rules! mem_use_static_size_of_impl {
 	() => {
 		#[inline]
@@ -69,12 +85,20 @@ macro_rules! mem_use_static_size_of_impl {
 	}
 }
 
+/// Provides an impl of [`MemoryUsageConst::MEM_USE_CONST`]
+/// using [`size_of`]
+///
+/// Use by invoking this macro within an impl block for the
+/// trait [`MemoryUsageConst`].
 macro_rules! mem_use_const_size_of_impl {
 	() => {
 		const MEM_USE_CONST: usize = ::std::mem::size_of::<Self>();
 	}
 }
 
+/// Implements [`MemoryUsage`], [`MemoryUsageStatic`], and [`MemoryUsageConst`]
+/// for types that only live on the stack (stack usage is using [`size_of`],
+/// and heap usage is 0)
 macro_rules! stack_only_impl {
 	{ $($type:tt)+ } => {
 		impl MemoryUsage for $($type)+ {
@@ -307,172 +331,6 @@ impl<T: MemoryUsageStatic> MemoryUsageStatic for [T] {
 // fn _assert_mem_use_static_obj_safe(_: &dyn MemoryUsageStatic) {}
 // // const is not object safe
 //
-// /// Provides an impl of [`stack_usage`](MemoryUsage::stack_usage) using [`size_of`]
-// ///
-// /// Use by invoking this macro within an impl block for the trait [`MemoryUsage`].
-// macro_rules! mem_use_stack_size_of_impl {
-// 	() => {
-// 		#[inline]
-// 		fn mem_use_stack(&self) -> usize {
-// 			::std::mem::size_of::<Self>()
-// 		}
-// 	}
-// }
-//
-// /// Provides an impl of [`mem_use_heap`](MemoryUsage::mem_use_heap) and
-// /// [`mem_use_heap_incl_extra_capacity`](MemoryUsage::mem_use_heap_incl_extra_capacity)
-// /// for types that never allocate onto the heap, returning just 0
-// ///
-// /// Use by invoking this macro within an impl block for the trait [`MemoryUsage`].
-// macro_rules! mem_use_heap_zero_impl {
-// 	() => {
-// 		#[inline]
-// 		fn mem_use_heap(&self) -> usize {
-// 			0
-// 		}
-//
-// 		// we don't actually need to override this... but doing so means one can't
-// 		// use this macro, and then override `heap_usage_with_extra_capacity` with
-// 		// something else, which is just wrong
-// 		#[inline]
-// 		fn mem_use_heap_incl_extra_capacity(&self) -> usize {
-// 			0
-// 		}
-// 	}
-// }
-//
-// macro_rules! mem_use_total_default_impl {
-// 	() => {
-// 		#[inline]
-// 		fn mem_use_total(&self) -> usize {
-// 			self.mem_use_stack() + self.mem_use_heap()
-// 		}
-// 	}
-// }
-//
-// macro_rules! mem_use_total_incl_extra_capacity_default_impl {
-// 	() => {
-// 		#[inline]
-// 		fn mem_use_total_incl_extra_capacity(&self) -> usize {
-// 			self.mem_use_stack() + self.mem_use_heap_incl_extra_capacity()
-// 		}
-// 	}
-// }
-//
-// /// Provides an impl of [`memory_usage_static`](MemoryUsageStatic::memory_usage_static)
-// /// using [`size_of`]
-// ///
-// /// Use by invoking this macro within an impl block for the trait [`MemoryUsageStatic`].
-// macro_rules! mem_use_static_size_of_impl {
-// 	() => {
-// 		#[inline]
-// 		fn mem_use_static(&self) -> usize {
-// 			::std::mem::size_of::<Self>()
-// 		}
-// 	}
-// }
-//
-// /// Provides an impl of [`MEMORY_USAGE`](MemoryUsageConst::MEMORY_USAGE)
-// /// using [`size_of`]
-// ///
-// /// Use by invoking this macro within an impl block for the trait [`MemoryUsageConst`].\
-// macro_rules! mem_use_const_size_of_impl {
-// 	() => {
-// 		const MEM_USE_CONST: usize = ::std::mem::size_of::<Self>();
-// 	}
-// }
-//
-// /// Implements [`MemoryUsage`], [`MemoryUsageStatic`], and [`MemoryUsageConst`]
-// /// for types that only live on the stack (stack usage is using [`size_of`],
-// /// and heap usage is 0)
-// ///
-// /// Use by invoking in a standalone place. This macro generates the three
-// /// entire trait implementations
-// macro_rules! stack_only_impl {
-// 	{ $($type:ident)* } => {
-// 		$(
-// 			impl MemoryUsage for $type {
-// 				mem_use_stack_size_of_impl!();
-// 				mem_use_heap_zero_impl!();
-// 				mem_use_total_default_impl!();
-// 				mem_use_total_incl_extra_capacity_default_impl!();
-// 			}
-//
-// 			impl MemoryUsageStatic for $type {
-// 				mem_use_static_size_of_impl!();
-// 			}
-//
-// 			impl MemoryUsageConst for $type {
-// 				mem_use_const_size_of_impl!();
-// 			}
-// 		)*
-// 	}
-// }
-//
-// stack_only_impl! {
-// 	bool char
-// 	u8 u16 u32 u64 u128 usize
-// 	i8 i16 i32 i64 i128 isize
-// 	f32 f64
-// 	// f16 f128
-// }
-//
-// impl<'h, T: ?Sized + MemoryUsage> MemoryUsage for &'h T {
-// 	mem_use_stack_size_of_impl!();
-//
-// 	#[inline]
-// 	fn mem_use_heap(&self) -> usize {
-// 		T::mem_use_total(self)
-// 	}
-//
-// 	#[inline]
-// 	fn mem_use_heap_incl_extra_capacity(&self) -> usize {
-// 		T::mem_use_total_incl_extra_capacity(self)
-// 	}
-//
-// 	mem_use_total_default_impl!();
-// 	mem_use_total_incl_extra_capacity_default_impl!();
-// }
-//
-// impl<'h, T: ?Sized + MemoryUsageStatic> MemoryUsageStatic for &'h T {
-// 	#[inline]
-// 	fn mem_use_static(&self) -> usize {
-// 		size_of::<&'h T>() + T::mem_use_static(self)
-// 	}
-// }
-//
-// impl<'h, T: ?Sized + MemoryUsageConst> MemoryUsageConst for &'h T {
-// 	const MEM_USE_CONST: usize = size_of::<&'h T>() + T::MEM_USE_CONST;
-// }
-//
-// impl<'h, T: ?Sized + MemoryUsage> MemoryUsage for &'h mut T {
-// 	mem_use_stack_size_of_impl!();
-//
-// 	#[inline]
-// 	fn mem_use_heap(&self) -> usize {
-// 		T::mem_use_total(self)
-// 	}
-//
-// 	#[inline]
-// 	fn mem_use_heap_incl_extra_capacity(&self) -> usize {
-// 		T::mem_use_total_incl_extra_capacity(self)
-// 	}
-//
-// 	mem_use_total_default_impl!();
-// 	mem_use_total_incl_extra_capacity_default_impl!();
-// }
-//
-// impl<'h, T: ?Sized + MemoryUsageStatic> MemoryUsageStatic for &'h mut T {
-// 	#[inline]
-// 	fn mem_use_static(&self) -> usize {
-// 		size_of::<&'h mut T>() + T::mem_use_static(self)
-// 	}
-// }
-//
-// impl<'h, T: ?Sized + MemoryUsageConst> MemoryUsageConst for &'h mut T {
-// 	const MEM_USE_CONST: usize = size_of::<&'h mut T>() + T::MEM_USE_CONST;
-// }
-//
 // impl<T: MemoryUsage, const N: usize> MemoryUsage for [T; N] {
 // 	mem_use_stack_size_of_impl!();
 //
@@ -524,39 +382,6 @@ impl<T: MemoryUsageStatic> MemoryUsageStatic for [T] {
 //
 // impl<T: MemoryUsageConst, const N: usize> MemoryUsageConst for [T; N] {
 // 	const MEM_USE_CONST: usize = T::MEM_USE_CONST * N;
-// }
-//
-// impl<T: MemoryUsage> MemoryUsage for [T] {
-// 	#[inline]
-// 	fn mem_use_stack(&self) -> usize {
-// 		0
-// 	}
-//
-// 	#[inline]
-// 	fn mem_use_heap(&self) -> usize {
-// 		self.iter()
-// 			.map(T::mem_use_total)
-// 			.sum()
-// 	}
-//
-// 	#[inline]
-// 	fn mem_use_heap_incl_extra_capacity(&self) -> usize {
-// 		self.iter()
-// 			.map(T::mem_use_total_incl_extra_capacity)
-// 			.sum()
-// 	}
-//
-// 	mem_use_total_default_impl!();
-// 	mem_use_total_incl_extra_capacity_default_impl!();
-// }
-//
-// impl<T: MemoryUsageStatic> MemoryUsageStatic for [T] {
-// 	#[inline]
-// 	fn mem_use_static(&self) -> usize {
-// 		self.iter()
-// 			.map(T::mem_use_static)
-// 			.sum()
-// 	}
 // }
 //
 // impl<T: ?Sized> MemoryUsage for *const T {
