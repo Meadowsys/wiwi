@@ -100,41 +100,46 @@ macro_rules! mem_use_const_size_of_impl {
 /// for types that only live on the stack (stack usage is using [`size_of`],
 /// and heap usage is 0)
 macro_rules! stack_only_impl {
-	{ $($type:tt)+ } => {
-		impl MemoryUsage for $($type)+ {
+	{ [$($generics:tt)*] $($type:tt)+ } => {
+		impl<$($generics)*> MemoryUsage for $($type)+ {
 			mem_use_stack_size_of_impl!();
 			mem_use_heap_zero_impl!();
 		}
 
-		impl MemoryUsageStatic for $($type)+ {
+		impl<$($generics)*> MemoryUsageStatic for $($type)+ {
 			mem_use_static_size_of_impl!();
 		}
 
-		impl MemoryUsageConst for $($type)+ {
+		impl<$($generics)*> MemoryUsageConst for $($type)+ {
 			mem_use_const_size_of_impl!();
 		}
 	}
 }
 
-stack_only_impl!(bool);
-stack_only_impl!(char);
+stack_only_impl!([] ());
 
-stack_only_impl!(u8);
-stack_only_impl!(u16);
-stack_only_impl!(u32);
-stack_only_impl!(u64);
-stack_only_impl!(u128);
+stack_only_impl!([] bool);
+stack_only_impl!([] char);
 
-stack_only_impl!(i8);
-stack_only_impl!(i16);
-stack_only_impl!(i32);
-stack_only_impl!(i64);
-stack_only_impl!(i128);
+stack_only_impl!([] u8);
+stack_only_impl!([] u16);
+stack_only_impl!([] u32);
+stack_only_impl!([] u64);
+stack_only_impl!([] u128);
 
-// stack_only_impl!(f16);
-stack_only_impl!(f32);
-stack_only_impl!(f64);
-// stack_only_impl!(f128);
+stack_only_impl!([] i8);
+stack_only_impl!([] i16);
+stack_only_impl!([] i32);
+stack_only_impl!([] i64);
+stack_only_impl!([] i128);
+
+// stack_only_impl!([] f16);
+stack_only_impl!([] f32);
+stack_only_impl!([] f64);
+// stack_only_impl!([] f128);
+
+stack_only_impl!([T: ?Sized] *const T);
+stack_only_impl!([T: ?Sized] *mut T);
 
 impl<'h, T: ?Sized + MemoryUsage> MemoryUsage for &'h T {
 	mem_use_stack_size_of_impl!();
@@ -207,6 +212,21 @@ impl<T: MemoryUsage> MemoryUsage for [T] {
 			.map(T::mem_use_heap_excl_extra_capacity)
 			.sum()
 	}
+
+
+	#[inline]
+	fn mem_use(&self) -> usize {
+		self.iter()
+			.map(T::mem_use)
+			.sum()
+	}
+
+	#[inline]
+	fn mem_use_excl_extra_capacity(&self) -> usize {
+		self.iter()
+			.map(T::mem_use_excl_extra_capacity)
+			.sum()
+	}
 }
 
 impl<T: MemoryUsageStatic> MemoryUsageStatic for [T] {
@@ -222,6 +242,41 @@ impl<T: MemoryUsageStatic> MemoryUsageStatic for [T] {
 
 		mem_use
 	}
+}
+
+impl<T: MemoryUsage, const N: usize> MemoryUsage for [T; N] {
+	mem_use_stack_size_of_impl!();
+
+	#[inline]
+	fn mem_use_heap(&self) -> usize {
+		<[T]>::mem_use_heap(self)
+	}
+
+	#[inline]
+	fn mem_use_heap_excl_extra_capacity(&self) -> usize {
+		<[T]>::mem_use_heap_excl_extra_capacity(self)
+	}
+
+	#[inline]
+	fn mem_use(&self) -> usize {
+		<[T]>::mem_use(self)
+	}
+
+	#[inline]
+	fn mem_use_excl_extra_capacity(&self) -> usize {
+		<[T]>::mem_use_excl_extra_capacity(self)
+	}
+}
+
+impl<T: MemoryUsageStatic, const N: usize> MemoryUsageStatic for [T; N] {
+	#[inline]
+	fn mem_use_static(&self) -> usize {
+		<[T]>::mem_use_static(self)
+	}
+}
+
+impl<T: MemoryUsageConst, const N: usize> MemoryUsageConst for [T; N] {
+	const MEM_USE_CONST: usize = T::MEM_USE_CONST * N;
 }
 
 // /// Trait for types that can calculate their actual total memory usage, not
@@ -330,59 +385,6 @@ impl<T: MemoryUsageStatic> MemoryUsageStatic for [T] {
 // fn _assert_mem_use_obj_safe(_: &dyn MemoryUsage) {}
 // fn _assert_mem_use_static_obj_safe(_: &dyn MemoryUsageStatic) {}
 // // const is not object safe
-//
-// impl<T: MemoryUsage, const N: usize> MemoryUsage for [T; N] {
-// 	mem_use_stack_size_of_impl!();
-//
-// 	#[inline]
-// 	fn mem_use_heap(&self) -> usize {
-// 		self.iter()
-// 			.map(T::mem_use_heap)
-// 			.sum()
-// 	}
-//
-// 	#[inline]
-// 	fn mem_use_heap_incl_extra_capacity(&self) -> usize {
-// 		self.iter()
-// 			.map(T::mem_use_heap_incl_extra_capacity)
-// 			.sum()
-// 	}
-//
-// 	#[inline]
-// 	fn mem_use_total(&self) -> usize {
-// 		self.iter()
-// 			.map(T::mem_use_total)
-// 			.sum()
-// 	}
-//
-// 	#[inline]
-// 	fn mem_use_total_incl_extra_capacity(&self) -> usize {
-// 		self.iter()
-// 			.map(T::mem_use_total_incl_extra_capacity)
-// 			.sum()
-// 	}
-// }
-//
-// impl<T: MemoryUsageStatic, const N: usize> MemoryUsageStatic for [T; N] {
-// 	#[inline]
-// 	fn mem_use_static(&self) -> usize {
-// 		// while loop instead of for loop, for loops aren't available in const
-// 		// fn (yet?),getting ready to make this a const fn
-// 		let mut usage = 0;
-//
-// 		let mut i = 0;
-// 		while i < N {
-// 			usage += T::mem_use_static(&self[i]);
-// 			i += 1;
-// 		}
-//
-// 		usage
-// 	}
-// }
-//
-// impl<T: MemoryUsageConst, const N: usize> MemoryUsageConst for [T; N] {
-// 	const MEM_USE_CONST: usize = T::MEM_USE_CONST * N;
-// }
 //
 // impl<T: ?Sized> MemoryUsage for *const T {
 // 	mem_use_stack_size_of_impl!();
