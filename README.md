@@ -57,7 +57,7 @@ reminder: **Unstable features are NOT covered by semver!**
 - **`iter`** - Iterator utilities
 - **`lsl`** - Experimental lib to help with writing Second Life scripts in Rust... because yes, I got fed up with it very quickly and immediately missed Rust lol
 - **`mcu`** - [Material colour utilities](https://github.com/material-foundation/material-color-utilities)
-- **`memory-usage`** - Calculate actual memory usage of Rust structs, including derive macro for custom types (not the same as `size_of::<T>()`)
+- **`memory-usage`** - Calculate actual memory usage of values, including derive macro (not the same as `size_of::<T>()`)
 - **`minesweeper`** - Core logic components for minesweeper games of arbitrary size
 - **`num-traits`** - More traits for numbers and their various functionality, including things like [`MulWidening`]
 - **`path`** - UTF-8 only path manipulation utilities written from scratch

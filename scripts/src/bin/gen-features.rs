@@ -131,7 +131,7 @@ fn main() {
 
 		#[unstable]
 		"memory-usage"
-		"Calculate actual memory usage of Rust structs, including derive macro for custom types (not the same as `size_of::<T>()`)"
+		"Calculate actual memory usage of values, including derive macro (not the same as `size_of::<T>()`)"
 		dependencies: ["macro"]
 
 		#[unstable]
