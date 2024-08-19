@@ -2,6 +2,204 @@
 
 // todo: write doc comments on the _impl fns themselves_ describing the logic inside
 
+pub trait MemoryUsage {
+	fn mem_use_stack(&self) -> usize;
+	fn mem_use_heap(&self) -> usize;
+	fn mem_use_heap_excl_extra_capacity(&self) -> usize;
+
+	#[inline]
+	fn mem_use(&self) -> usize {
+		self.mem_use_stack() + self.mem_use_heap()
+	}
+
+	#[inline]
+	fn mem_use_excl_extra_capacity(&self) -> usize {
+		self.mem_use_stack() + self.mem_use_heap_excl_extra_capacity()
+	}
+
+	/// Tells a value to shrink its extra capacity, if it can
+	///
+	/// For types where this is not applicable (ex. simple number types), this
+	/// will just silently do nothing.
+	#[inline]
+	fn shrink_extra(&mut self) {}
+}
+
+pub trait MemoryUsageStatic: MemoryUsage {
+	fn mem_use_static(&self) -> usize;
+}
+
+pub trait MemoryUsageConst: Sized + MemoryUsageStatic {
+	const MEM_USE_CONST: usize;
+}
+
+fn _assert_mem_use_obj_safe(_: &dyn MemoryUsage) {}
+fn _assert_mem_use_static_obj_safe(_: &dyn MemoryUsageStatic) {}
+// const is not object safe
+
+macro_rules! mem_use_stack_size_of_impl {
+	() => {
+		#[inline]
+		fn mem_use_stack(&self) -> usize {
+			::std::mem::size_of::<Self>()
+		}
+	}
+}
+
+macro_rules! mem_use_heap_zero_impl {
+	() => {
+		#[inline]
+		fn mem_use_heap(&self) -> usize {
+			0
+		}
+
+		#[inline]
+		fn mem_use_heap_excl_extra_capacity(&self) -> usize {
+			0
+		}
+	}
+}
+
+macro_rules! mem_use_static_size_of_impl {
+	() => {
+		#[inline]
+		fn mem_use_static(&self) -> usize {
+			::std::mem::size_of::<Self>()
+		}
+	}
+}
+
+macro_rules! mem_use_const_size_of_impl {
+	() => {
+		const MEM_USE_CONST: usize = ::std::mem::size_of::<Self>();
+	}
+}
+
+macro_rules! stack_only_impl {
+	{ $($type:tt)+ } => {
+		impl MemoryUsage for $($type)+ {
+			mem_use_stack_size_of_impl!();
+			mem_use_heap_zero_impl!();
+		}
+
+		impl MemoryUsageStatic for $($type)+ {
+			mem_use_static_size_of_impl!();
+		}
+
+		impl MemoryUsageConst for $($type)+ {
+			mem_use_const_size_of_impl!();
+		}
+	}
+}
+
+stack_only_impl!(bool);
+stack_only_impl!(char);
+
+stack_only_impl!(u8);
+stack_only_impl!(u16);
+stack_only_impl!(u32);
+stack_only_impl!(u64);
+stack_only_impl!(u128);
+
+stack_only_impl!(i8);
+stack_only_impl!(i16);
+stack_only_impl!(i32);
+stack_only_impl!(i64);
+stack_only_impl!(i128);
+
+// stack_only_impl!(f16);
+stack_only_impl!(f32);
+stack_only_impl!(f64);
+// stack_only_impl!(f128);
+
+impl<'h, T: ?Sized + MemoryUsage> MemoryUsage for &'h T {
+	mem_use_stack_size_of_impl!();
+
+	#[inline]
+	fn mem_use_heap(&self) -> usize {
+		T::mem_use(self)
+	}
+
+	#[inline]
+	fn mem_use_heap_excl_extra_capacity(&self) -> usize {
+		T::mem_use_excl_extra_capacity(self)
+	}
+}
+
+impl<'h, T: ?Sized + MemoryUsageStatic> MemoryUsageStatic for &'h T {
+	#[inline]
+	fn mem_use_static(&self) -> usize {
+		size_of::<&'h T>() + T::mem_use_static(self)
+	}
+}
+
+impl<'h, T: MemoryUsageConst> MemoryUsageConst for &'h T {
+	const MEM_USE_CONST: usize = size_of::<&'h T>() + T::MEM_USE_CONST;
+}
+
+impl<'h, T: ?Sized + MemoryUsage> MemoryUsage for &'h mut T {
+	mem_use_stack_size_of_impl!();
+
+	#[inline]
+	fn mem_use_heap(&self) -> usize {
+		T::mem_use(self)
+	}
+
+	#[inline]
+	fn mem_use_heap_excl_extra_capacity(&self) -> usize {
+		T::mem_use_excl_extra_capacity(self)
+	}
+}
+
+impl<'h, T: ?Sized + MemoryUsageStatic> MemoryUsageStatic for &'h mut T {
+	#[inline]
+	fn mem_use_static(&self) -> usize {
+		size_of::<&'h mut T>() + T::mem_use_static(self)
+	}
+}
+
+impl<'h, T: MemoryUsageConst> MemoryUsageConst for &'h mut T {
+	const MEM_USE_CONST: usize = size_of::<&'h mut T>() + T::MEM_USE_CONST;
+}
+
+impl<T: MemoryUsage> MemoryUsage for [T] {
+	#[inline]
+	fn mem_use_stack(&self) -> usize {
+		self.iter()
+			.map(T::mem_use_stack)
+			.sum()
+	}
+
+	#[inline]
+	fn mem_use_heap(&self) -> usize {
+		self.iter()
+			.map(T::mem_use_heap)
+			.sum()
+	}
+
+	#[inline]
+	fn mem_use_heap_excl_extra_capacity(&self) -> usize {
+		self.iter()
+			.map(T::mem_use_heap_excl_extra_capacity)
+			.sum()
+	}
+}
+
+impl<T: MemoryUsageStatic> MemoryUsageStatic for [T] {
+	#[inline]
+	fn mem_use_static(&self) -> usize {
+		let mut i = 0;
+		let mut mem_use = 0;
+
+		while i < self.len() {
+			mem_use += self[i].mem_use_static();
+			i += 1;
+		}
+
+		mem_use
+	}
+}
+
 // /// Trait for types that can calculate their actual total memory usage, not
 // /// just the stack usage (ie. not just [`size_of`])
 // ///
