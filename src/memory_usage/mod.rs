@@ -33,8 +33,8 @@ pub trait MemoryUsageConst: Sized + MemoryUsageStatic {
 	const MEM_USE_CONST: usize;
 }
 
-fn _assert_mem_use_obj_safe(_: &dyn MemoryUsage) {}
-fn _assert_mem_use_static_obj_safe(_: &dyn MemoryUsageStatic) {}
+const _: &dyn MemoryUsage = &0u8;
+const _: &dyn MemoryUsageStatic = &0u8;
 // const is not object safe
 
 /// Provides an impl of [`MemoryUsage::mem_use_stack`]
