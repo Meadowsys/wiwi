@@ -19,6 +19,9 @@ pub trait MemoryUsage {
 
 	/// Tells a value to shrink its extra capacity, if it can
 	///
+	/// This will cause all structs and nested structs to deallocate as much as
+	/// it can. It will recurse into inner types.
+	///
 	/// For types where this is not applicable (ex. simple number types), this
 	/// will just silently do nothing.
 	#[inline]
