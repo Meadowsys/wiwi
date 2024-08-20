@@ -649,6 +649,55 @@
 <a href="#649" id="649">649</a>
 <a href="#650" id="650">650</a>
 <a href="#651" id="651">651</a>
+<a href="#652" id="652">652</a>
+<a href="#653" id="653">653</a>
+<a href="#654" id="654">654</a>
+<a href="#655" id="655">655</a>
+<a href="#656" id="656">656</a>
+<a href="#657" id="657">657</a>
+<a href="#658" id="658">658</a>
+<a href="#659" id="659">659</a>
+<a href="#660" id="660">660</a>
+<a href="#661" id="661">661</a>
+<a href="#662" id="662">662</a>
+<a href="#663" id="663">663</a>
+<a href="#664" id="664">664</a>
+<a href="#665" id="665">665</a>
+<a href="#666" id="666">666</a>
+<a href="#667" id="667">667</a>
+<a href="#668" id="668">668</a>
+<a href="#669" id="669">669</a>
+<a href="#670" id="670">670</a>
+<a href="#671" id="671">671</a>
+<a href="#672" id="672">672</a>
+<a href="#673" id="673">673</a>
+<a href="#674" id="674">674</a>
+<a href="#675" id="675">675</a>
+<a href="#676" id="676">676</a>
+<a href="#677" id="677">677</a>
+<a href="#678" id="678">678</a>
+<a href="#679" id="679">679</a>
+<a href="#680" id="680">680</a>
+<a href="#681" id="681">681</a>
+<a href="#682" id="682">682</a>
+<a href="#683" id="683">683</a>
+<a href="#684" id="684">684</a>
+<a href="#685" id="685">685</a>
+<a href="#686" id="686">686</a>
+<a href="#687" id="687">687</a>
+<a href="#688" id="688">688</a>
+<a href="#689" id="689">689</a>
+<a href="#690" id="690">690</a>
+<a href="#691" id="691">691</a>
+<a href="#692" id="692">692</a>
+<a href="#693" id="693">693</a>
+<a href="#694" id="694">694</a>
+<a href="#695" id="695">695</a>
+<a href="#696" id="696">696</a>
+<a href="#697" id="697">697</a>
+<a href="#698" id="698">698</a>
+<a href="#699" id="699">699</a>
+<a href="#700" id="700">700</a>
 </pre></div><pre class="rust"><code><span class="comment">// pub use wiwiwiwiwi::MemoryUsage;
 
 // todo: write doc comments on the _impl fns themselves_ describing the logic inside
@@ -684,8 +733,8 @@
 	<span class="kw">const </span>MEM_USE_CONST: usize;
 }
 
-<span class="kw">fn </span>_assert_mem_use_obj_safe(<span class="kw">_</span>: <span class="kw-2">&amp;</span><span class="kw">dyn </span>MemoryUsage) {}
-<span class="kw">fn </span>_assert_mem_use_static_obj_safe(<span class="kw">_</span>: <span class="kw-2">&amp;</span><span class="kw">dyn </span>MemoryUsageStatic) {}
+<span class="kw">const _</span>: <span class="kw-2">&amp;</span><span class="kw">dyn </span>MemoryUsage = <span class="kw-2">&amp;</span><span class="number">0u8</span>;
+<span class="kw">const _</span>: <span class="kw-2">&amp;</span><span class="kw">dyn </span>MemoryUsageStatic = <span class="kw-2">&amp;</span><span class="number">0u8</span>;
 <span class="comment">// const is not object safe
 
 </span><span class="doccomment">/// Provides an impl of [`MemoryUsage::mem_use_stack`]
@@ -1253,32 +1302,32 @@
 	</span><span class="kw">type </span><span class="macro-nonterminal">Unit </span>= ();
 
 	<span class="macro">test_stack_only_impl!</span> {
-		[stack_only_unit Unit ()]
-		[stack_only_bool bool <span class="bool-val">false</span>]
-		[stack_only_char char <span class="string">'0'</span>]
+		[mem_use_unit Unit ()]
+		[mem_use_bool bool <span class="bool-val">false</span>]
+		[mem_use_char char <span class="string">'0'</span>]
 
-		[stack_only_u8 u8 <span class="number">0</span>]
-		[stack_only_u16 u16 <span class="number">0</span>]
-		[stack_only_u32 u32 <span class="number">0</span>]
-		[stack_only_u64 u64 <span class="number">0</span>]
-		[stack_only_u128 u128 <span class="number">0</span>]
-		[stack_only_usize usize <span class="number">0</span>]
+		[mem_use_u8 u8 <span class="number">0</span>]
+		[mem_use_u16 u16 <span class="number">0</span>]
+		[mem_use_u32 u32 <span class="number">0</span>]
+		[mem_use_u64 u64 <span class="number">0</span>]
+		[mem_use_u128 u128 <span class="number">0</span>]
+		[mem_use_usize usize <span class="number">0</span>]
 
-		[stack_only_i8 i8 <span class="number">0</span>]
-		[stack_only_i16 i16 <span class="number">0</span>]
-		[stack_only_i32 i32 <span class="number">0</span>]
-		[stack_only_i64 i64 <span class="number">0</span>]
-		[stack_only_i128 i128 <span class="number">0</span>]
-		[stack_only_isize isize <span class="number">0</span>]
+		[mem_use_i8 i8 <span class="number">0</span>]
+		[mem_use_i16 i16 <span class="number">0</span>]
+		[mem_use_i32 i32 <span class="number">0</span>]
+		[mem_use_i64 i64 <span class="number">0</span>]
+		[mem_use_i128 i128 <span class="number">0</span>]
+		[mem_use_isize isize <span class="number">0</span>]
 
-		<span class="comment">// [stack_only_f16 f16 0.0]
-		</span>[stack_only_f32 f32 <span class="number">0.0</span>]
-		[stack_only_f64 f64 <span class="number">0.0</span>]
-		<span class="comment">// [stack_only_f128 f128 0.0]
+		<span class="comment">// [mem_use_f16 f16 0.0]
+		</span>[mem_use_f32 f32 <span class="number">0.0</span>]
+		[mem_use_f64 f64 <span class="number">0.0</span>]
+		<span class="comment">// [mem_use_f128 f128 0.0]
 	</span>}
 
 	<span class="attr">#[test]
-	</span><span class="kw">fn </span>vec_size() {
+	</span><span class="kw">fn </span>mem_use_vec() {
 		<span class="kw">type </span>TestVec = Vec&lt;i32&gt;;
 		<span class="kw">let </span><span class="kw-2">mut </span>vec = TestVec::new();
 		<span class="kw">let </span>vec_size = size_of::&lt;TestVec&gt;();
@@ -1299,5 +1348,54 @@
 		<span class="macro">assert_eq!</span>(vec.mem_use(), mem_use);
 		<span class="macro">assert_eq!</span>(vec.mem_use_excl_extra_capacity(), vec_size + (<span class="number">8 </span>* i32::MEM_USE_CONST));
 	}
+
+	<span class="attr">#[test]
+	</span><span class="kw">fn </span>shrink_extra_vec() {
+		<span class="kw">type </span>TestVec = Vec&lt;Vec&lt;i32&gt;&gt;;
+		<span class="kw">let </span><span class="kw-2">mut </span>vec = TestVec::from([
+			Vec::with_capacity(<span class="number">1</span>),
+			Vec::with_capacity(<span class="number">1</span>),
+			Vec::with_capacity(<span class="number">1</span>),
+			Vec::with_capacity(<span class="number">1</span>),
+			Vec::with_capacity(<span class="number">1</span>)
+		]);
+
+		<span class="macro">assert!</span>(vec.iter().all(|v| v.capacity() &gt; <span class="number">0</span>), <span class="string">"test setup failed, for some reason"</span>);
+
+		vec.shrink_extra();
+		<span class="comment">// I went in and read std's code, if shrinking
+		// to 0, it'll just deallocate
+		</span><span class="macro">assert!</span>(vec.iter().all(|v| v.capacity() == <span class="number">0</span>));
+	}
+
+	<span class="attr">#[test]
+	</span><span class="kw">fn </span>shrink_extra_slice() {
+		<span class="kw">type </span>TestVec = Vec&lt;Vec&lt;i32&gt;&gt;;
+		<span class="kw">let </span><span class="kw-2">mut </span>vec = TestVec::from([
+			Vec::with_capacity(<span class="number">1</span>),
+			Vec::with_capacity(<span class="number">1</span>),
+			Vec::with_capacity(<span class="number">1</span>),
+			Vec::with_capacity(<span class="number">1</span>),
+			Vec::with_capacity(<span class="number">1</span>)
+		]);
+
+		<span class="kw">let </span>slice = <span class="kw-2">&amp;mut *</span>vec;
+
+		<span class="macro">assert!</span>(slice.iter().all(|v| v.capacity() &gt; <span class="number">0</span>), <span class="string">"test setup failed, for some reason"</span>);
+
+		slice.shrink_extra();
+		<span class="comment">// I went in and read std's code, if shrinking
+		// to 0, it'll just deallocate
+		</span><span class="macro">assert!</span>(slice.iter().all(|v| v.capacity() == <span class="number">0</span>));
+	}
+
+	<span class="attr">#[test]
+	</span><span class="kw">fn </span>shrink_extra_noop() {
+		<span class="kw">let </span><span class="kw-2">mut </span>value = <span class="number">27478</span>;
+		<span class="kw">let </span>orig_value = value;
+		value.shrink_extra();
+		<span class="macro">assert_eq!</span>(value, orig_value);
+		<span class="comment">// ...
+	</span>}
 }
 </code></pre></div></section></main></body></html>
