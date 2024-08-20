@@ -602,32 +602,32 @@ mod tests {
 	type Unit = ();
 
 	test_stack_only_impl! {
-		[stack_only_unit Unit ()]
-		[stack_only_bool bool false]
-		[stack_only_char char '0']
+		[mem_use_unit Unit ()]
+		[mem_use_bool bool false]
+		[mem_use_char char '0']
 
-		[stack_only_u8 u8 0]
-		[stack_only_u16 u16 0]
-		[stack_only_u32 u32 0]
-		[stack_only_u64 u64 0]
-		[stack_only_u128 u128 0]
-		[stack_only_usize usize 0]
+		[mem_use_u8 u8 0]
+		[mem_use_u16 u16 0]
+		[mem_use_u32 u32 0]
+		[mem_use_u64 u64 0]
+		[mem_use_u128 u128 0]
+		[mem_use_usize usize 0]
 
-		[stack_only_i8 i8 0]
-		[stack_only_i16 i16 0]
-		[stack_only_i32 i32 0]
-		[stack_only_i64 i64 0]
-		[stack_only_i128 i128 0]
-		[stack_only_isize isize 0]
+		[mem_use_i8 i8 0]
+		[mem_use_i16 i16 0]
+		[mem_use_i32 i32 0]
+		[mem_use_i64 i64 0]
+		[mem_use_i128 i128 0]
+		[mem_use_isize isize 0]
 
-		// [stack_only_f16 f16 0.0]
-		[stack_only_f32 f32 0.0]
-		[stack_only_f64 f64 0.0]
-		// [stack_only_f128 f128 0.0]
+		// [mem_use_f16 f16 0.0]
+		[mem_use_f32 f32 0.0]
+		[mem_use_f64 f64 0.0]
+		// [mem_use_f128 f128 0.0]
 	}
 
 	#[test]
-	fn vec_size() {
+	fn mem_use_vec() {
 		type TestVec = Vec<i32>;
 		let mut vec = TestVec::new();
 		let vec_size = size_of::<TestVec>();
@@ -647,5 +647,54 @@ mod tests {
 		vec.extend([1, 2, 3, 4, 5, 6, 7, 8]);
 		assert_eq!(vec.mem_use(), mem_use);
 		assert_eq!(vec.mem_use_excl_extra_capacity(), vec_size + (8 * i32::MEM_USE_CONST));
+	}
+
+	#[test]
+	fn shrink_extra_vec() {
+		type TestVec = Vec<Vec<i32>>;
+		let mut vec = TestVec::from([
+			Vec::with_capacity(1),
+			Vec::with_capacity(1),
+			Vec::with_capacity(1),
+			Vec::with_capacity(1),
+			Vec::with_capacity(1)
+		]);
+
+		assert!(vec.iter().all(|v| v.capacity() > 0), "test setup failed, for some reason");
+
+		vec.shrink_extra();
+		// I went in and read std's code, if shrinking
+		// to 0, it'll just deallocate
+		assert!(vec.iter().all(|v| v.capacity() == 0));
+	}
+
+	#[test]
+	fn shrink_extra_slice() {
+		type TestVec = Vec<Vec<i32>>;
+		let mut vec = TestVec::from([
+			Vec::with_capacity(1),
+			Vec::with_capacity(1),
+			Vec::with_capacity(1),
+			Vec::with_capacity(1),
+			Vec::with_capacity(1)
+		]);
+
+		let slice = &mut *vec;
+
+		assert!(slice.iter().all(|v| v.capacity() > 0), "test setup failed, for some reason");
+
+		slice.shrink_extra();
+		// I went in and read std's code, if shrinking
+		// to 0, it'll just deallocate
+		assert!(slice.iter().all(|v| v.capacity() == 0));
+	}
+
+	#[test]
+	fn shrink_extra_noop() {
+		let mut value = 27478;
+		let orig_value = value;
+		value.shrink_extra();
+		assert_eq!(value, orig_value);
+		// ...
 	}
 }
