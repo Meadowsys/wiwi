@@ -126,12 +126,14 @@ stack_only_impl!([] u16);
 stack_only_impl!([] u32);
 stack_only_impl!([] u64);
 stack_only_impl!([] u128);
+stack_only_impl!([] usize);
 
 stack_only_impl!([] i8);
 stack_only_impl!([] i16);
 stack_only_impl!([] i32);
 stack_only_impl!([] i64);
 stack_only_impl!([] i128);
+stack_only_impl!([] isize);
 
 // stack_only_impl!([] f16);
 stack_only_impl!([] f32);
@@ -347,15 +349,15 @@ impl<T: MemoryUsage> MemoryUsage for Vec<T> {
 
 	#[inline]
 	fn mem_use_heap(&self) -> usize {
-		let full = self.mem_use_excl_extra_capacity();
-		let empty = (self.capacity() + self.len()) * size_of::<T>();
+		let full = <[T]>::mem_use(self);
+		let empty = (self.capacity() - self.len()) * size_of::<T>();
 
 		full + empty
 	}
 
 	#[inline]
 	fn mem_use_heap_excl_extra_capacity(&self) -> usize {
-		<[T]>::mem_use_heap_excl_extra_capacity(self)
+		<[T]>::mem_use(self)
 	}
 
 	#[inline]
@@ -571,50 +573,79 @@ impl MemoryUsage for String {
 // 	}
 // }
 
-// #[cfg(test)]
-// mod tests {
-// 	use super::*;
-//
-// 	#[test]
-// 	fn static_types_and_std_sized() {
-// 		fn check<T: Static>() {
-// 			assert_eq!(T::MEMORY_USAGE, size_of::<T>());
-// 		}
-//
-// 		check::<u8>();
-// 		check::<u16>();
-// 		check::<u32>();
-// 		check::<u64>();
-// 		check::<u128>();
-//
-// 		check::<i8>();
-// 		check::<i16>();
-// 		check::<i32>();
-// 		check::<i64>();
-// 		check::<i128>();
-//
-// 		check::<usize>();
-// 		check::<isize>();
-// 	}
-//
-// 	#[test]
-// 	fn vec_size() {
-// 		let mut vec = Vec::<i32>::new();
-// 		// ??? lol
-// 		let base_vec_usage = <(*const i32, usize, usize)>::calculate_memory_usage(&(std::ptr::NonNull::dangling().as_ptr(), 0, 0));
-//
-// 		assert_eq!(vec.calculate_memory_usage(), base_vec_usage);
-// 		assert_eq!(vec.calculate_values_usage(), base_vec_usage);
-//
-// 		vec.reserve(32);
-//
-// 		let mem_use = vec.calculate_memory_usage();
-// 		let val_use = vec.calculate_values_usage();
-// 		assert!(mem_use >= base_vec_usage + (32 * i32::MEMORY_USAGE));
-// 		assert_eq!(val_use, base_vec_usage);
-//
-// 		vec.extend([1, 2, 3, 4, 5, 6, 7, 8]);
-// 		assert_eq!(vec.calculate_values_usage(), base_vec_usage + (8 * i32::MEMORY_USAGE));
-// 		assert_eq!(vec.calculate_memory_usage(), mem_use);
-// 	}
-// }
+#[cfg(test)]
+mod tests {
+	use super::*;
+
+	macro_rules! test_stack_only_impl {
+		{ $([$test_name:ident $type:ident $val:expr])* } => {
+			$(
+				#[test]
+				fn $test_name() {
+					// MemoryUsage
+					assert_eq!(<$type>::mem_use_stack(&$val), size_of::<$type>());
+					assert_eq!(<$type>::mem_use_heap(&$val), 0);
+					assert_eq!(<$type>::mem_use_heap_excl_extra_capacity(&$val), 0);
+					assert_eq!(<$type>::mem_use(&$val), size_of::<$type>());
+
+					// MemoryUsageStatic
+					assert_eq!(<$type>::mem_use_static(&$val), size_of::<$type>());
+
+					// MemoryUsageConst
+					assert_eq!(<$type>::MEM_USE_CONST, size_of::<$type>());
+				}
+			)*
+		}
+	}
+
+	/// a
+	type Unit = ();
+
+	test_stack_only_impl! {
+		[stack_only_unit Unit ()]
+		[stack_only_bool bool false]
+		[stack_only_char char '0']
+
+		[stack_only_u8 u8 0]
+		[stack_only_u16 u16 0]
+		[stack_only_u32 u32 0]
+		[stack_only_u64 u64 0]
+		[stack_only_u128 u128 0]
+		[stack_only_usize usize 0]
+
+		[stack_only_i8 i8 0]
+		[stack_only_i16 i16 0]
+		[stack_only_i32 i32 0]
+		[stack_only_i64 i64 0]
+		[stack_only_i128 i128 0]
+		[stack_only_isize isize 0]
+
+		// [stack_only_f16 f16 0.0]
+		[stack_only_f32 f32 0.0]
+		[stack_only_f64 f64 0.0]
+		// [stack_only_f128 f128 0.0]
+	}
+
+	#[test]
+	fn vec_size() {
+		type TestVec = Vec<i32>;
+		let mut vec = TestVec::new();
+		let vec_size = size_of::<TestVec>();
+
+		assert_eq!(vec.mem_use(), vec_size);
+		assert_eq!(vec.mem_use_excl_extra_capacity(), vec_size);
+
+		vec.reserve(32);
+
+		let mem_use = vec.mem_use();
+		let mem_excl = vec.mem_use_excl_extra_capacity();
+		assert!(mem_use >= vec_size + (32 * i32::MEM_USE_CONST));
+		assert_eq!(mem_excl, vec_size);
+
+		// we allocated 32, then extended with 8, this should not reallocate (8 <= 32)
+
+		vec.extend([1, 2, 3, 4, 5, 6, 7, 8]);
+		assert_eq!(vec.mem_use(), mem_use);
+		assert_eq!(vec.mem_use_excl_extra_capacity(), vec_size + (8 * i32::MEM_USE_CONST));
+	}
+}
