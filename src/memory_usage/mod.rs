@@ -2,40 +2,95 @@
 
 // todo: write doc comments on the _impl fns themselves_ describing the logic inside
 
+/// Trait for types that can report its current total memory usage
 pub trait MemoryUsage {
+	/// Gets the amount of memory this value uses on the "stack"
+	///
+	/// "Stack" here is defined vaguely as the amount of memory that a value
+	/// itself takes up, excluding any indirections. Self-explanatorily, for
+	/// sized values, this is the same as [`size_of`], (ie. `u64` would return
+	/// 8 (bytes), and `&str` would return 16 (bytes) on a 64-bit platform)).
+	/// However... this trait and method can be implemented on unsized types,
+	/// such as `[T]` (not `&[T]`). For `[T]` this would be the len of the slice
+	/// multiplied by the size of T (so does not include the reference size).
 	fn mem_use_stack(&self) -> usize;
+
+	/// Gets the amount of memory this value uses on the "heap", excluding extra
+	/// if applicable
+	///
+	/// For example, a [`Vec`] would be using its `capacity`, rather than its `len`.
+	///
+	/// "Heap" here is defined vaguely as the amount of memory that a value itself
+	/// holds, via indirections. So this would include the contents for a [`Box`],
+	/// including its total usage.
 	fn mem_use_heap(&self) -> usize;
+
+	/// Gets the amount of memory this value uses on the "heap", excluding extra
+	/// if applicable
+	///
+	/// For example, a [`Vec`] would be using its `len`, rather than its `capacity`.
+	///
+	/// See [`mem_use_heap`](MemoryUsage::mem_use_heap) for information on what
+	/// "heap" means here.
 	fn mem_use_heap_excl_extra_capacity(&self) -> usize;
 
+	/// Gets the total amount of memory this value has allocated, including extra
+	/// if applicable
+	///
+	/// This is the same as adding the values from
+	/// [`mem_use_stack`](MemoryUsage::mem_use_stack) and
+	/// [`mem_use_heap`](MemoryUsage::mem_use_heap) together, but can be
+	/// overridden if there are more efficient ways to calculate this for a
+	/// specific type.
 	#[inline]
 	fn mem_use(&self) -> usize {
 		self.mem_use_stack() + self.mem_use_heap()
 	}
 
+	/// Gets the total amount of memory this value is using, excluding extra
+	/// if applicable
+	///
+	/// This is the same as adding the values from
+	/// [`mem_use_stack`](MemoryUsage::mem_use_stack) and
+	/// [`mem_use_heap`](MemoryUsage::mem_use_heap_excl_extra_capacity) together,
+	/// but can be overridden if there are more efficient ways to calculate this
+	/// for a specific type.
 	#[inline]
 	fn mem_use_excl_extra_capacity(&self) -> usize {
 		self.mem_use_stack() + self.mem_use_heap_excl_extra_capacity()
 	}
 
-	/// Tells a value to shrink its extra capacity, if it can
+	/// Tells a value to remove its extra unused memory, if applicable and possible
 	///
-	/// This will cause all structs and nested structs to deallocate as much as
-	/// it can. It will recurse into inner types.
+	/// This will recurse into inner types, causing all structs and nested
+	/// structs to deallocate as much as possible.
 	///
 	/// For types where this is not applicable (ex. simple number types), this
-	/// will just silently do nothing.
+	/// will just silently do nothing. There is a default implementation provided
+	/// that is a noop.
 	#[inline]
 	fn shrink_extra(&mut self) {}
 }
 
+/// Trait for types that can report its total memory usage in a static context
+///
+/// Currently this trait is kinda... useless, but it'll become more useful once
+/// traits can be `const`.
 pub trait MemoryUsageStatic: MemoryUsage {
+	/// Gets the static memory usage for this value
 	fn mem_use_static(&self) -> usize;
 }
 
+/// Trait for types that have the same size no matter the value
+///
+/// For example, number types: [`u64`] will always be size 8, etc.
 pub trait MemoryUsageConst: Sized + MemoryUsageStatic {
+	/// The constant memory usage for this type
 	const MEM_USE_CONST: usize;
 }
 
+// if possible I think `MemoryUsage` and `MemoryUsageStatic` can be
+// trait objects... I'm not sure for what use case exactly, but still
 const _: &dyn MemoryUsage = &0u8;
 const _: &dyn MemoryUsageStatic = &0u8;
 // const is not object safe
@@ -151,12 +206,12 @@ impl<'h, T: ?Sized + MemoryUsage> MemoryUsage for &'h T {
 
 	#[inline]
 	fn mem_use_heap(&self) -> usize {
-		T::mem_use(self)
+		T::mem_use(*self)
 	}
 
 	#[inline]
 	fn mem_use_heap_excl_extra_capacity(&self) -> usize {
-		T::mem_use_excl_extra_capacity(self)
+		T::mem_use_excl_extra_capacity(*self)
 	}
 
 	// what to do about shrink extra? should we panic? or is no op fine?
@@ -165,7 +220,7 @@ impl<'h, T: ?Sized + MemoryUsage> MemoryUsage for &'h T {
 impl<'h, T: ?Sized + MemoryUsageStatic> MemoryUsageStatic for &'h T {
 	#[inline]
 	fn mem_use_static(&self) -> usize {
-		size_of::<&'h T>() + T::mem_use_static(self)
+		size_of::<&'h T>() + T::mem_use_static(*self)
 	}
 }
 
@@ -178,24 +233,24 @@ impl<'h, T: ?Sized + MemoryUsage> MemoryUsage for &'h mut T {
 
 	#[inline]
 	fn mem_use_heap(&self) -> usize {
-		T::mem_use(self)
+		T::mem_use(*self)
 	}
 
 	#[inline]
 	fn mem_use_heap_excl_extra_capacity(&self) -> usize {
-		T::mem_use_excl_extra_capacity(self)
+		T::mem_use_excl_extra_capacity(*self)
 	}
 
 	#[inline]
 	fn shrink_extra(&mut self) {
-		T::shrink_extra(self)
+		T::shrink_extra(*self)
 	}
 }
 
 impl<'h, T: ?Sized + MemoryUsageStatic> MemoryUsageStatic for &'h mut T {
 	#[inline]
 	fn mem_use_static(&self) -> usize {
-		size_of::<&'h mut T>() + T::mem_use_static(self)
+		size_of::<&'h mut T>() + T::mem_use_static(*self)
 	}
 }
 
