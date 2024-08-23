@@ -258,6 +258,126 @@ impl<'h, T: MemoryUsageConst> MemoryUsageConst for &'h mut T {
 	const MEM_USE_CONST: usize = size_of::<&'h mut T>() + T::MEM_USE_CONST;
 }
 
+macro_rules! tuple_impl {
+	{ $($params:ident)* } => {
+		tuple_impl! { @impl [$($params)*] [] }
+	};
+
+	{ @impl [] [$($done:ident)*] } => {
+		// done
+	};
+
+	{ @impl [$first:ident $($remainder:ident)*] [$($done:ident)*] } => {
+		tuple_impl! { @impl_real $($done)* $first }
+		tuple_impl! { @impl [$($remainder)*] [$($done)* $first] }
+	};
+
+	{ @impl_real $($params:ident)* } => {
+		impl<$($params: MemoryUsage,)*> MemoryUsage for ($($params,)*) {
+			mem_use_stack_size_of_impl!();
+
+			#[inline]
+			fn mem_use_heap(&self) -> usize {
+				tuple_impl! {
+					@impl_fn
+					self
+					mem_use_heap
+					$($params)*
+				}
+			}
+
+			#[inline]
+			fn mem_use_heap_excl_extra_capacity(&self) -> usize {
+				tuple_impl! {
+					@impl_fn
+					self
+					mem_use_heap_excl_extra_capacity
+					$($params)*
+				}
+			}
+
+			#[inline]
+			fn mem_use(&self) -> usize {
+				tuple_impl! {
+					@impl_fn
+					self
+					mem_use
+					$($params)*
+				}
+			}
+
+			#[inline]
+			fn mem_use_excl_extra_capacity(&self) -> usize {
+				tuple_impl! {
+					@impl_fn
+					self
+					mem_use_excl_extra_capacity
+					$($params)*
+				}
+			}
+		}
+	};
+
+	{
+		@impl_fn
+		$self:ident
+		$fn_name:ident
+		$($params:ident)*
+	} => {
+		{
+			#[allow(non_snake_case)]
+			let ($($params,)*) = $self;
+			let mut val = 0;
+			$(val += $params.$fn_name();)*
+			val
+		}
+	};
+}
+
+#[cfg(all(
+	not(feature = "large-tuples"),
+	not(feature = "omega-tuples-of-doom")
+))]
+tuple_impl! {
+	T1 T2 T3 T4
+	T5 T6 T7 T8
+}
+
+#[cfg(all(
+	feature = "large-tuples",
+	not(feature = "omega-tuples-of-doom")
+))]
+tuple_impl! {
+	T1  T2  T3  T4
+	T5  T6  T7  T8
+	T9  T10 T11 T12
+	T13 T14 T15 T16
+	T17 T18 T19 T20
+	T21 T22 T23 T24
+	T25 T26 T27 T28
+	T29 T30 T31 T32
+}
+
+#[cfg(feature = "omega-tuples-of-doom")]
+tuple_impl! {
+	T1 T2 T3 T4 T5 T6 T7 T8
+	T9 T10 T11 T12 T13 T14 T15 T16
+	T17 T18 T19 T20 T21 T22 T23 T24
+	T25 T26 T27 T28 T29 T30 T31 T32
+	T33 T34 T35 T36 T37 T38 T39 T40
+	T41 T42 T43 T44 T45 T46 T47 T48
+	T49 T50 T51 T52 T53 T54 T55 T56
+	T57 T58 T59 T60 T61 T62 T63 T64
+	T65 T66 T67 T68 T69 T70 T71 T72
+	T73 T74 T75 T76 T77 T78 T79 T80
+	T81 T82 T83 T84 T85 T86 T87 T88
+	T89 T90 T91 T92 T93 T94 T95 T96
+	T97 T98 T99 T100 T101 T102 T103 T104
+	T105 T106 T107 T108 T109 T110 T111 T112
+	T113 T114 T115 T116 T117 T118 T119 T120
+	T121 T122 T123 T124 T125 T126 T127 T128
+}
+
 impl<T: MemoryUsage> MemoryUsage for [T] {
 	#[inline]
 	fn mem_use_stack(&self) -> usize {
