@@ -875,4 +875,42 @@ mod tests {
 		assert_eq!(value, orig_value);
 		// ...
 	}
+
+	#[test]
+	fn brief_tuple_impl_mem_use() {
+		let tuple = (1u8, 2u32, 4u16, 8u8, 16u64);
+		assert_eq!(tuple.mem_use(), 16);
+		assert_eq!(tuple.mem_use_excl_extra_capacity(), 16);
+		assert_eq!(tuple.mem_use_stack(), 16);
+		assert_eq!(tuple.mem_use_heap(), 0);
+		assert_eq!(tuple.mem_use_heap_excl_extra_capacity(), 0);
+
+		let size_of_usize = size_of::<usize>();
+
+		let tuple = (3usize, &[1u8, 2, 3, 4, 5]);
+		assert_eq!(tuple.mem_use(), (size_of_usize * 2) + 5);
+		assert_eq!(tuple.mem_use_excl_extra_capacity(), (size_of_usize * 2) + 5);
+		assert_eq!(tuple.mem_use_stack(), size_of_usize * 2);
+		assert_eq!(tuple.mem_use_heap(), 5);
+		assert_eq!(tuple.mem_use_heap_excl_extra_capacity(), 5);
+
+		let tuple = (3usize, &[1u8, 2, 3, 4, 5] as &[u8]);
+		assert_eq!(tuple.mem_use(), (size_of_usize * 3) + 5);
+		assert_eq!(tuple.mem_use_excl_extra_capacity(), (size_of_usize * 3) + 5);
+		assert_eq!(tuple.mem_use_stack(), size_of_usize * 3);
+		assert_eq!(tuple.mem_use_heap(), 5);
+		assert_eq!(tuple.mem_use_heap_excl_extra_capacity(), 5);
+
+		let tuple = (3usize, {
+			let mut vec = Vec::with_capacity(8);
+			[1u8, 2, 3, 4, 5].into_iter().for_each(|e| vec.push(e));
+			vec
+		});
+		let vec_size = size_of::<Vec<u8>>();
+		assert_eq!(tuple.mem_use(), size_of_usize + vec_size + 8);
+		assert_eq!(tuple.mem_use_excl_extra_capacity(), size_of_usize + vec_size + 5);
+		assert_eq!(tuple.mem_use_stack(), size_of_usize + vec_size);
+		assert_eq!(tuple.mem_use_heap(), 8);
+		assert_eq!(tuple.mem_use_heap_excl_extra_capacity(), 5);
+	}
 }
