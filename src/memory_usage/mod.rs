@@ -1,4 +1,5 @@
-// pub use wiwiwiwiwi::MemoryUsage;
+use std::num::NonZero;
+use std::sync::atomic::*;
 
 // todo: write doc comments on the _impl fns themselves_ describing the logic inside
 
@@ -201,6 +202,52 @@ stack_only_impl!([] f64);
 stack_only_impl!([T: ?Sized] *const T);
 stack_only_impl!([T: ?Sized] *mut T);
 
+stack_only_impl!([] NonZero<u8>);
+stack_only_impl!([] NonZero<u16>);
+stack_only_impl!([] NonZero<u32>);
+stack_only_impl!([] NonZero<u64>);
+stack_only_impl!([] NonZero<u128>);
+stack_only_impl!([] NonZero<usize>);
+
+stack_only_impl!([] NonZero<i8>);
+stack_only_impl!([] NonZero<i16>);
+stack_only_impl!([] NonZero<i32>);
+stack_only_impl!([] NonZero<i64>);
+stack_only_impl!([] NonZero<i128>);
+stack_only_impl!([] NonZero<isize>);
+
+#[cfg(target_has_atomic = "8")]
+stack_only_impl!([] AtomicBool);
+
+#[cfg(target_has_atomic = "8")]
+stack_only_impl!([] AtomicU8);
+#[cfg(target_has_atomic = "16")]
+stack_only_impl!([] AtomicU16);
+#[cfg(target_has_atomic = "32")]
+stack_only_impl!([] AtomicU32);
+#[cfg(target_has_atomic = "64")]
+stack_only_impl!([] AtomicU64);
+// #[cfg(target_has_atomic = "128")]
+// stack_only_impl!([] AtomicU128);
+#[cfg(target_has_atomic = "ptr")]
+stack_only_impl!([] AtomicUsize);
+
+#[cfg(target_has_atomic = "8")]
+stack_only_impl!([] AtomicI8);
+#[cfg(target_has_atomic = "16")]
+stack_only_impl!([] AtomicI16);
+#[cfg(target_has_atomic = "32")]
+stack_only_impl!([] AtomicI32);
+#[cfg(target_has_atomic = "64")]
+stack_only_impl!([] AtomicI64);
+// #[cfg(target_has_atomic = "128")]
+// stack_only_impl!([] AtomicI128);
+#[cfg(target_has_atomic = "ptr")]
+stack_only_impl!([] AtomicIsize);
+
+#[cfg(target_has_atomic = "ptr")]
+stack_only_impl!([T] AtomicPtr<T>);
+
 impl<'h, T: ?Sized + MemoryUsage> MemoryUsage for &'h T {
 	mem_use_stack_size_of_impl!();
 
@@ -256,6 +303,34 @@ impl<'h, T: ?Sized + MemoryUsageStatic> MemoryUsageStatic for &'h mut T {
 
 impl<'h, T: MemoryUsageConst> MemoryUsageConst for &'h mut T {
 	const MEM_USE_CONST: usize = size_of::<&'h mut T>() + T::MEM_USE_CONST;
+}
+
+impl<T: MemoryUsage> MemoryUsage for Option<T> {
+	mem_use_stack_size_of_impl!();
+
+	#[inline]
+	fn mem_use_heap(&self) -> usize {
+		match self {
+			Some(val) => { val.mem_use_heap() }
+			None => { 0 }
+		}
+	}
+
+	#[inline]
+	fn mem_use_heap_excl_extra_capacity(&self) -> usize {
+		match self {
+			Some(val) => { val.mem_use_heap_excl_extra_capacity() }
+			None => { 0 }
+		}
+	}
+
+	#[inline]
+	fn shrink_extra(&mut self) {
+		match self {
+			Some(val) => { val.shrink_extra() }
+			None => { /* noop uwu */ }
+		}
+	}
 }
 
 macro_rules! tuple_impl {
