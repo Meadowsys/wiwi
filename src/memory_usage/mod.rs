@@ -1,3 +1,5 @@
+use std::ffi::{ CStr, CString, OsStr, OsString };
+use std::path::{ Path, PathBuf };
 use std::num::NonZero;
 use std::sync::atomic::*;
 
@@ -106,6 +108,20 @@ macro_rules! mem_use_stack_size_of_impl {
 		#[inline]
 		fn mem_use_stack(&self) -> usize {
 			::std::mem::size_of::<Self>()
+		}
+	}
+}
+
+/// Provides an impl of [`MemoryUsage::mem_use_stack`] by just returning 0, for
+/// implementations on unsized types directly (instead of a reference to them)
+///
+/// Use by invoking this macro within an impl block for the
+/// trait [`MemoryUsage`].
+macro_rules! mem_use_stack_zero_impl {
+	() => {
+		#[inline]
+		fn mem_use_stack(&self) -> usize {
+			0
 		}
 	}
 }
@@ -637,6 +653,104 @@ impl MemoryUsage for String {
 	#[inline]
 	fn shrink_extra(&mut self) {
 		self.shrink_to_fit()
+	}
+}
+
+impl MemoryUsage for Path {
+	mem_use_stack_zero_impl!();
+
+	#[inline]
+	fn mem_use_heap(&self) -> usize {
+		self.as_os_str().len()
+	}
+
+	#[inline]
+	fn mem_use_heap_excl_extra_capacity(&self) -> usize {
+		self.as_os_str().len()
+	}
+}
+
+impl MemoryUsage for PathBuf {
+	mem_use_stack_size_of_impl!();
+
+	#[inline]
+	fn mem_use_heap(&self) -> usize {
+		self.capacity()
+	}
+
+	#[inline]
+	fn mem_use_heap_excl_extra_capacity(&self) -> usize {
+		self.as_os_str().len()
+	}
+
+	#[inline]
+	fn shrink_extra(&mut self) {
+		self.shrink_to_fit()
+	}
+}
+
+impl MemoryUsage for OsStr {
+	mem_use_stack_zero_impl!();
+
+	#[inline]
+	fn mem_use_heap(&self) -> usize {
+		self.len()
+	}
+
+	#[inline]
+	fn mem_use_heap_excl_extra_capacity(&self) -> usize {
+		self.len()
+	}
+}
+
+impl MemoryUsage for OsString {
+	mem_use_stack_size_of_impl!();
+
+	#[inline]
+	fn mem_use_heap(&self) -> usize {
+		self.capacity()
+	}
+
+	#[inline]
+	fn mem_use_heap_excl_extra_capacity(&self) -> usize {
+		self.len()
+	}
+
+	#[inline]
+	fn shrink_extra(&mut self) {
+		self.shrink_to_fit()
+	}
+}
+
+impl MemoryUsage for CStr {
+	mem_use_stack_zero_impl!();
+
+	#[inline]
+	fn mem_use_heap(&self) -> usize {
+		// nul byte still uses space
+		self.count_bytes() + 1
+	}
+
+	#[inline]
+	fn mem_use_heap_excl_extra_capacity(&self) -> usize {
+		// nul byte still uses space
+		self.count_bytes() + 1
+	}
+}
+
+impl MemoryUsage for CString {
+	mem_use_stack_size_of_impl!();
+
+	#[inline]
+	fn mem_use_heap(&self) -> usize {
+		// nul byte still uses space
+		self.count_bytes() + 1
+	}
+
+	#[inline]
+	fn mem_use_heap_excl_extra_capacity(&self) -> usize {
+		// nul byte still uses space
+		self.count_bytes() + 1
 	}
 }
 
