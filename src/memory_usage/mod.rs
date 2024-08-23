@@ -903,7 +903,7 @@ mod tests {
 
 		let tuple = (3usize, {
 			let mut vec = Vec::with_capacity(8);
-			[1u8, 2, 3, 4, 5].into_iter().for_each(|e| vec.push(e));
+			vec.extend_from_slice(&[1u8, 2, 3, 4, 5]);
 			vec
 		});
 		let vec_size = size_of::<Vec<u8>>();
