@@ -1,3 +1,4 @@
+use std::cell::{ Cell, LazyCell, OnceCell, RefCell, UnsafeCell };
 use std::ffi::{ CStr, CString, OsStr, OsString };
 use std::path::{ Path, PathBuf };
 use std::num::NonZero;
@@ -342,9 +343,8 @@ impl<T: MemoryUsage> MemoryUsage for Option<T> {
 
 	#[inline]
 	fn shrink_extra(&mut self) {
-		match self {
-			Some(val) => { val.shrink_extra() }
-			None => { /* noop uwu */ }
+		if let Some(val) = self {
+			val.shrink_extra()
 		}
 	}
 }
@@ -686,6 +686,130 @@ impl MemoryUsage for PathBuf {
 	#[inline]
 	fn shrink_extra(&mut self) {
 		self.shrink_to_fit()
+	}
+}
+
+impl<T: ?Sized + MemoryUsage> MemoryUsage for UnsafeCell<T> {
+	#[inline]
+	fn mem_use_stack(&self) -> usize {
+		// if `T` is `Sized`, this will probably be `size_of` impl, else it's
+		// the unsized "stack" definition
+		T::mem_use_stack(
+			// SAFETY: we have shared access via `&self`
+			unsafe { &*self.get() }
+		)
+	}
+	#[inline]
+	fn mem_use_heap(&self) -> usize {
+		T::mem_use_heap(
+			// SAFETY: we have shared access via `&self`
+			unsafe { &*self.get() }
+		)
+	}
+
+	#[inline]
+	fn mem_use_heap_excl_extra_capacity(&self) -> usize {
+		T::mem_use_heap_excl_extra_capacity(
+			// SAFETY: we have shared access via `&self`
+			unsafe { &*self.get() }
+		)
+	}
+
+	#[inline]
+	fn shrink_extra(&mut self) {
+		T::shrink_extra(
+			// SAFETY: we have exclusive access via `&mut self`
+			unsafe { &mut *self.get() }
+		)
+	}
+}
+
+impl<T: ?Sized + MemoryUsage> MemoryUsage for Cell<T> {
+	#[inline]
+	fn mem_use_stack(&self) -> usize {
+		// if `T` is `Sized`, this will probably be `size_of` impl, else it's
+		// the unsized "stack" definition
+		T::mem_use_stack(
+			// SAFETY: `Cell<T>` has same memory layout as `T`
+			unsafe { &*(self as *const Cell<T> as *const T) }
+		)
+	}
+
+	#[inline]
+	fn mem_use_heap(&self) -> usize {
+		T::mem_use_heap(
+			// SAFETY: `Cell<T>` has same memory layout as `T`
+			unsafe { &*(self as *const Cell<T> as *const T) }
+		)
+	}
+
+	#[inline]
+	fn mem_use_heap_excl_extra_capacity(&self) -> usize {
+		T::mem_use_heap_excl_extra_capacity(
+			// SAFETY: `Cell<T>` has same memory layout as `T`
+			unsafe { &*(self as *const Cell<T> as *const T) }
+		)
+	}
+
+	#[inline]
+	fn shrink_extra(&mut self) {
+		self.get_mut().shrink_extra()
+	}
+}
+
+impl<T, F> MemoryUsage for LazyCell<T, F>
+where
+	T: MemoryUsage,
+	F: FnOnce() -> T
+{
+	// mem use is the same, initialised or not
+	mem_use_stack_size_of_impl!();
+
+	#[inline]
+	fn mem_use_heap(&self) -> usize {
+		// TODO: there doesn't seem to be a stable way to check/get uninitialised,
+		// nor is there really a way to access the captured variables in closures
+		// so we can really only force initialisation here
+		let value_initialised = &**self;
+
+		value_initialised.mem_use_heap()
+	}
+
+	#[inline]
+	fn mem_use_heap_excl_extra_capacity(&self) -> usize {
+		// TODO: see note in [`mem_use_heap`] about initialisation stuff
+		let value_initialised = &**self;
+
+		value_initialised.mem_use_heap_excl_extra_capacity()
+	}
+
+	// cannot implement shrink_extra, cannot get mut reference to inner
+}
+
+impl<T: MemoryUsage> MemoryUsage for OnceCell<T> {
+	mem_use_stack_size_of_impl!();
+
+	#[inline]
+	fn mem_use_heap(&self) -> usize {
+		match self.get() {
+			Some(val) => { val.mem_use_heap() }
+			None => { 0 }
+		}
+	}
+
+	#[inline]
+	fn mem_use_heap_excl_extra_capacity(&self) -> usize {
+		match self.get() {
+			Some(val) => { val.mem_use_heap_excl_extra_capacity() }
+			None => { 0 }
+		}
+	}
+
+	#[inline]
+	fn shrink_extra(&mut self) {
+		if let Some(val) = self.get_mut() {
+			val.shrink_extra()
+		}
 	}
 }
 
