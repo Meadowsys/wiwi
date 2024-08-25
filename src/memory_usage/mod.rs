@@ -813,6 +813,27 @@ impl<T: MemoryUsage> MemoryUsage for OnceCell<T> {
 	}
 }
 
+// TODO: this should support `?Sized` but I dunno how to do it without relying
+// on refcell internals
+impl<T: MemoryUsage> MemoryUsage for RefCell<T> {
+	mem_use_stack_size_of_impl!();
+
+	#[inline]
+	fn mem_use_heap(&self) -> usize {
+		T::mem_use_heap(&*self.borrow())
+	}
+
+	#[inline]
+	fn mem_use_heap_excl_extra_capacity(&self) -> usize {
+		T::mem_use_heap_excl_extra_capacity(&*self.borrow())
+	}
+
+	#[inline]
+	fn shrink_extra(&mut self) {
+		T::shrink_extra(&mut *self.borrow_mut())
+	}
+}
+
 impl MemoryUsage for OsStr {
 	mem_use_stack_zero_impl!();
 
