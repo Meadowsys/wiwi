@@ -1,8 +1,12 @@
 use std::cell::{ Cell, LazyCell, OnceCell, RefCell, UnsafeCell };
 use std::ffi::{ CStr, CString, OsStr, OsString };
-use std::path::{ Path, PathBuf };
+use std::marker::{ PhantomData, PhantomPinned };
+use std::net::{ IpAddr, Ipv4Addr, Ipv6Addr };
 use std::num::NonZero;
+use std::path::{ Path, PathBuf };
+use std::ops::{ Bound, ControlFlow, Range, RangeFull, RangeFrom, RangeInclusive, RangeTo, RangeToInclusive };
 use std::sync::atomic::*;
+use std::time::Duration;
 
 // todo: write doc comments on the _impl fns themselves_ describing the logic inside
 
@@ -264,6 +268,17 @@ stack_only_impl!([] AtomicIsize);
 
 #[cfg(target_has_atomic = "ptr")]
 stack_only_impl!([T] AtomicPtr<T>);
+
+stack_only_impl!([] Duration);
+
+stack_only_impl!([] IpAddr);
+stack_only_impl!([] Ipv4Addr);
+stack_only_impl!([] Ipv6Addr);
+
+stack_only_impl!([T: ?Sized] PhantomData<T>);
+stack_only_impl!([] PhantomPinned);
+
+stack_only_impl!([] RangeFull);
 
 impl<'h, T: ?Sized + MemoryUsage> MemoryUsage for &'h T {
 	mem_use_stack_size_of_impl!();
@@ -653,6 +668,156 @@ impl MemoryUsage for String {
 	#[inline]
 	fn shrink_extra(&mut self) {
 		self.shrink_to_fit()
+	}
+}
+
+impl<Idx: MemoryUsage> MemoryUsage for Range<Idx> {
+	mem_use_stack_size_of_impl!();
+
+	#[inline]
+	fn mem_use_heap(&self) -> usize {
+		self.start.mem_use_heap() + self.end.mem_use_heap()
+	}
+
+	#[inline]
+	fn mem_use_heap_excl_extra_capacity(&self) -> usize {
+		self.start.mem_use_heap_excl_extra_capacity() + self.end.mem_use_heap_excl_extra_capacity()
+	}
+
+	#[inline]
+	fn shrink_extra(&mut self) {
+		self.start.shrink_extra();
+		self.end.shrink_extra();
+	}
+}
+
+impl<Idx: MemoryUsage> MemoryUsage for RangeFrom<Idx> {
+	mem_use_stack_size_of_impl!();
+
+	#[inline]
+	fn mem_use_heap(&self) -> usize {
+		self.start.mem_use_heap()
+	}
+
+	#[inline]
+	fn mem_use_heap_excl_extra_capacity(&self) -> usize {
+		self.start.mem_use_heap_excl_extra_capacity()
+	}
+
+	#[inline]
+	fn shrink_extra(&mut self) {
+		self.start.shrink_extra()
+	}
+}
+
+impl<Idx: MemoryUsage> MemoryUsage for RangeInclusive<Idx> {
+	mem_use_stack_size_of_impl!();
+
+	#[inline]
+	fn mem_use_heap(&self) -> usize {
+		self.start().mem_use_heap() + self.end().mem_use_heap()
+	}
+
+	#[inline]
+	fn mem_use_heap_excl_extra_capacity(&self) -> usize {
+		self.start().mem_use_heap_excl_extra_capacity() + self.end().mem_use_heap_excl_extra_capacity()
+	}
+
+	// I don't think I can impl that shrinkie thing..
+}
+
+impl<Idx: MemoryUsage> MemoryUsage for RangeTo<Idx> {
+	mem_use_stack_size_of_impl!();
+
+	#[inline]
+	fn mem_use_heap(&self) -> usize {
+		self.end.mem_use_heap()
+	}
+
+	#[inline]
+	fn mem_use_heap_excl_extra_capacity(&self) -> usize {
+		self.end.mem_use_heap_excl_extra_capacity()
+	}
+
+	#[inline]
+	fn shrink_extra(&mut self) {
+		self.end.shrink_extra()
+	}
+}
+
+impl<Idx: MemoryUsage> MemoryUsage for RangeToInclusive<Idx> {
+	mem_use_stack_size_of_impl!();
+
+	#[inline]
+	fn mem_use_heap(&self) -> usize {
+		self.end.mem_use_heap()
+	}
+
+	#[inline]
+	fn mem_use_heap_excl_extra_capacity(&self) -> usize {
+		self.end.mem_use_heap_excl_extra_capacity()
+	}
+
+	#[inline]
+	fn shrink_extra(&mut self) {
+		self.end.shrink_extra()
+	}
+}
+
+impl<T: MemoryUsage> MemoryUsage for Bound<T> {
+	mem_use_stack_size_of_impl!();
+
+	#[inline]
+	fn mem_use_heap(&self) -> usize {
+		match self {
+			Bound::Included(bound) => { bound.mem_use_heap() }
+			Bound::Excluded(bound) => { bound.mem_use_heap() }
+			Bound::Unbounded => { 0 }
+		}
+	}
+
+	#[inline]
+	fn mem_use_heap_excl_extra_capacity(&self) -> usize {
+		match self {
+			Bound::Included(bound) => { bound.mem_use_heap_excl_extra_capacity() }
+			Bound::Excluded(bound) => { bound.mem_use_heap_excl_extra_capacity() }
+			Bound::Unbounded => { 0 }
+		}
+	}
+
+	#[inline]
+	fn shrink_extra(&mut self) {
+		if let Bound::Included(bound) | Bound::Excluded(bound) = self {
+			bound.shrink_extra()
+		}
+	}
+}
+
+impl<B: MemoryUsage, C: MemoryUsage> MemoryUsage for ControlFlow<B, C> {
+	mem_use_stack_size_of_impl!();
+
+	#[inline]
+	fn mem_use_heap(&self) -> usize {
+		match self {
+			ControlFlow::Continue(cont) => { cont.mem_use_heap() }
+			ControlFlow::Break(br) => { br.mem_use_heap() }
+		}
+	}
+
+	#[inline]
+	fn mem_use_heap_excl_extra_capacity(&self) -> usize {
+		match self {
+			ControlFlow::Continue(cont) => { cont.mem_use_heap_excl_extra_capacity() }
+			ControlFlow::Break(br) => { br.mem_use_heap_excl_extra_capacity() }
+		}
+	}
+
+	#[inline]
+	fn shrink_extra(&mut self) {
+		match self {
+			ControlFlow::Continue(cont) => { cont.shrink_extra() }
+			ControlFlow::Break(br) => { br.shrink_extra() }
+		}
 	}
 }
 
