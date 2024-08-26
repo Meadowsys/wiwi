@@ -2,7 +2,7 @@ use std::cell::{ Cell, LazyCell, OnceCell, RefCell, UnsafeCell };
 use std::ffi::{ CStr, CString, OsStr, OsString };
 use std::marker::{ PhantomData, PhantomPinned };
 use std::net::{ IpAddr, Ipv4Addr, Ipv6Addr };
-use std::num::NonZero;
+use std::num::{ NonZero, Saturating, Wrapping };
 use std::path::{ Path, PathBuf };
 use std::ops::{ Bound, ControlFlow, Range, RangeFull, RangeFrom, RangeInclusive, RangeTo, RangeToInclusive };
 use std::sync::atomic::*;
@@ -236,6 +236,34 @@ stack_only_impl!([] NonZero<i32>);
 stack_only_impl!([] NonZero<i64>);
 stack_only_impl!([] NonZero<i128>);
 stack_only_impl!([] NonZero<isize>);
+
+stack_only_impl!([] Saturating<u8>);
+stack_only_impl!([] Saturating<u16>);
+stack_only_impl!([] Saturating<u32>);
+stack_only_impl!([] Saturating<u64>);
+stack_only_impl!([] Saturating<u128>);
+stack_only_impl!([] Saturating<usize>);
+
+stack_only_impl!([] Saturating<i8>);
+stack_only_impl!([] Saturating<i16>);
+stack_only_impl!([] Saturating<i32>);
+stack_only_impl!([] Saturating<i64>);
+stack_only_impl!([] Saturating<i128>);
+stack_only_impl!([] Saturating<isize>);
+
+stack_only_impl!([] Wrapping<u8>);
+stack_only_impl!([] Wrapping<u16>);
+stack_only_impl!([] Wrapping<u32>);
+stack_only_impl!([] Wrapping<u64>);
+stack_only_impl!([] Wrapping<u128>);
+stack_only_impl!([] Wrapping<usize>);
+
+stack_only_impl!([] Wrapping<i8>);
+stack_only_impl!([] Wrapping<i16>);
+stack_only_impl!([] Wrapping<i32>);
+stack_only_impl!([] Wrapping<i64>);
+stack_only_impl!([] Wrapping<i128>);
+stack_only_impl!([] Wrapping<isize>);
 
 #[cfg(target_has_atomic = "8")]
 stack_only_impl!([] AtomicBool);
