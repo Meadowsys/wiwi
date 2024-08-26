@@ -1227,11 +1227,39 @@
 <a href="#1227" id="1227">1227</a>
 <a href="#1228" id="1228">1228</a>
 <a href="#1229" id="1229">1229</a>
+<a href="#1230" id="1230">1230</a>
+<a href="#1231" id="1231">1231</a>
+<a href="#1232" id="1232">1232</a>
+<a href="#1233" id="1233">1233</a>
+<a href="#1234" id="1234">1234</a>
+<a href="#1235" id="1235">1235</a>
+<a href="#1236" id="1236">1236</a>
+<a href="#1237" id="1237">1237</a>
+<a href="#1238" id="1238">1238</a>
+<a href="#1239" id="1239">1239</a>
+<a href="#1240" id="1240">1240</a>
+<a href="#1241" id="1241">1241</a>
+<a href="#1242" id="1242">1242</a>
+<a href="#1243" id="1243">1243</a>
+<a href="#1244" id="1244">1244</a>
+<a href="#1245" id="1245">1245</a>
+<a href="#1246" id="1246">1246</a>
+<a href="#1247" id="1247">1247</a>
+<a href="#1248" id="1248">1248</a>
+<a href="#1249" id="1249">1249</a>
+<a href="#1250" id="1250">1250</a>
+<a href="#1251" id="1251">1251</a>
+<a href="#1252" id="1252">1252</a>
+<a href="#1253" id="1253">1253</a>
+<a href="#1254" id="1254">1254</a>
+<a href="#1255" id="1255">1255</a>
+<a href="#1256" id="1256">1256</a>
+<a href="#1257" id="1257">1257</a>
 </pre></div><pre class="rust"><code><span class="kw">use </span>std::cell::{ Cell, LazyCell, OnceCell, RefCell, UnsafeCell };
 <span class="kw">use </span>std::ffi::{ CStr, CString, OsStr, OsString };
 <span class="kw">use </span>std::marker::{ PhantomData, PhantomPinned };
 <span class="kw">use </span>std::net::{ IpAddr, Ipv4Addr, Ipv6Addr };
-<span class="kw">use </span>std::num::NonZero;
+<span class="kw">use </span>std::num::{ NonZero, Saturating, Wrapping };
 <span class="kw">use </span>std::path::{ Path, PathBuf };
 <span class="kw">use </span>std::ops::{ Bound, ControlFlow, Range, RangeFull, RangeFrom, RangeInclusive, RangeTo, RangeToInclusive };
 <span class="kw">use </span>std::sync::atomic::<span class="kw-2">*</span>;
@@ -1465,6 +1493,34 @@
 <span class="macro">stack_only_impl!</span>([] NonZero&lt;i64&gt;);
 <span class="macro">stack_only_impl!</span>([] NonZero&lt;i128&gt;);
 <span class="macro">stack_only_impl!</span>([] NonZero&lt;isize&gt;);
+
+<span class="macro">stack_only_impl!</span>([] Saturating&lt;u8&gt;);
+<span class="macro">stack_only_impl!</span>([] Saturating&lt;u16&gt;);
+<span class="macro">stack_only_impl!</span>([] Saturating&lt;u32&gt;);
+<span class="macro">stack_only_impl!</span>([] Saturating&lt;u64&gt;);
+<span class="macro">stack_only_impl!</span>([] Saturating&lt;u128&gt;);
+<span class="macro">stack_only_impl!</span>([] Saturating&lt;usize&gt;);
+
+<span class="macro">stack_only_impl!</span>([] Saturating&lt;i8&gt;);
+<span class="macro">stack_only_impl!</span>([] Saturating&lt;i16&gt;);
+<span class="macro">stack_only_impl!</span>([] Saturating&lt;i32&gt;);
+<span class="macro">stack_only_impl!</span>([] Saturating&lt;i64&gt;);
+<span class="macro">stack_only_impl!</span>([] Saturating&lt;i128&gt;);
+<span class="macro">stack_only_impl!</span>([] Saturating&lt;isize&gt;);
+
+<span class="macro">stack_only_impl!</span>([] Wrapping&lt;u8&gt;);
+<span class="macro">stack_only_impl!</span>([] Wrapping&lt;u16&gt;);
+<span class="macro">stack_only_impl!</span>([] Wrapping&lt;u32&gt;);
+<span class="macro">stack_only_impl!</span>([] Wrapping&lt;u64&gt;);
+<span class="macro">stack_only_impl!</span>([] Wrapping&lt;u128&gt;);
+<span class="macro">stack_only_impl!</span>([] Wrapping&lt;usize&gt;);
+
+<span class="macro">stack_only_impl!</span>([] Wrapping&lt;i8&gt;);
+<span class="macro">stack_only_impl!</span>([] Wrapping&lt;i16&gt;);
+<span class="macro">stack_only_impl!</span>([] Wrapping&lt;i32&gt;);
+<span class="macro">stack_only_impl!</span>([] Wrapping&lt;i64&gt;);
+<span class="macro">stack_only_impl!</span>([] Wrapping&lt;i128&gt;);
+<span class="macro">stack_only_impl!</span>([] Wrapping&lt;isize&gt;);
 
 <span class="attr">#[cfg(target_has_atomic = <span class="string">"8"</span>)]
 </span><span class="macro">stack_only_impl!</span>([] AtomicBool);
