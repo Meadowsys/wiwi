@@ -33,7 +33,8 @@ All values that are sensitive to endianness, will use the little endian byte ord
 - `0xa0` to `0xaf` - array, length 1 to 16
 - `0xb0` to `0xb7` - record, length 1 to 8
 - `0xb8` to `0xbf` - map, length 1 to 8
-- `0xc0` to `0xfe` - reference to interned value, ref 0 to 62
+- `0xc0` - char
+- `0xc1` to `0xfe` - reference to interned value, ref 0 to 61
 - `0xff` - reference to interned value
 
 ## `none`/`null`/`nil`/`None`/etc
@@ -83,6 +84,14 @@ If the string has a byte length within the range `1..=32` (note, _does not_ incl
 If the string is either 0 bytes long (ie. empty string), or is length 33 bytes or longer, first encode the marker byte `0x08`, followed by an unsigned variable length integer encoding the byte length of the string.
 
 After writing the marker byte(s), write the string in verbatim (ie. during deserialisation you should be able to zero-copy deserialise it just by doing something like `std::str::from_str(&input[pos..pos + len]`, where `len` is the length of the string, and `pos` is the current position in deserialisation)).
+
+## chars
+
+A char is an integer value representing a unicode codepoint.
+
+A codepoint is any value between `0` and `0x10ffff`, excluding the surrogate ranges (`0xd800` to `0xdfff`).
+
+Since the range of values is small enough to fit in a u24, we do just that. First encode the char marker (`0xc0`), then the codepoint value in the following 3 bytes, for a total of 4 bytes used.
 
 ## arrays
 
@@ -148,7 +157,7 @@ Each interned entry written should have the same index as its reference value. T
 
 References should be encoded in place of another value.
 
-If the reference value is between 0 and 63, encode it using a marker in `0xc0` to `0xfe` (ie. ref 0 is `0xc0`, and ref 62 is `0xfe`).
+If the reference value is between 0 and 63, encode it using a marker in `0xc1` to `0xfe` (ie. ref 0 is `0xc1`, and ref 61 is `0xfe`).
 
 If the reference value is 63 or greater, first write the ref marker byte `0xff`, followed by the reference value as an unsigned variable length integer.
 
