@@ -175,7 +175,7 @@ pub mod bitstream;
 
 #[cfg(feature = "chainer-unstable")]
 #[cfg_attr(docsrs, doc(cfg(feature = "chainer-unstable")))]
-/// Wrappers around common structs that provide chaining APIs (take ownership, do operation, then return back)
+/// Wrappers around common structs that provide chaining APIs (take ownership, do operation, then return ownership back with the new value)
 #[doc = ""]
 #[doc = include_str!("./chainer/README.md")]
 pub mod chainer;
@@ -231,7 +231,7 @@ pub mod hex;
 
 #[cfg(feature = "id-unstable")]
 #[cfg_attr(docsrs, doc(cfg(feature = "id-unstable")))]
-/// ID generators, of various output sizes, and guarantees of uniqueness and ordering
+/// ID generators that guarantee uniqueness and ordering, and of various output sizes
 #[doc = ""]
 #[doc = include_str!("./id/README.md")]
 pub mod id;
@@ -308,7 +308,7 @@ pub mod path;
 
 #[cfg(feature = "rand")]
 #[cfg_attr(docsrs, doc(cfg(feature = "rand")))]
-/// More random number generators and utilities
+/// Random number generators and utilities
 #[doc = ""]
 #[doc = include_str!("./rand/README.md")]
 pub mod rand;
@@ -364,7 +364,7 @@ pub mod with_cloned;
 
 #[cfg(feature = "z85")]
 #[cfg_attr(docsrs, doc(cfg(feature = "z85")))]
-/// Fast encoder and decoder for [ZeroMQ](https://zeromq.org)'s [zZ85](https://rfc.zeromq.org/spec/32) format
+/// Fast encoder and decoder for [ZeroMQ](https://zeromq.org)'s [Z85](https://rfc.zeromq.org/spec/32) format
 #[doc = ""]
 #[doc = include_str!("./z85/README.md")]
 pub mod z85;

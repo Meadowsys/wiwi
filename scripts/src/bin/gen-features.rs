@@ -56,7 +56,7 @@ fn main() {
 
 		#[unstable]
 		"chainer"
-		"Wrappers around common structs that provide chaining APIs (take ownership, do operation, then return back)"
+		"Wrappers around common structs that provide chaining APIs (take ownership, do operation, then return ownership back with the new value)"
 
 		#[unstable]
 		"cli"
@@ -93,7 +93,7 @@ fn main() {
 
 		#[unstable]
 		"id"
-		"ID generators, of various output sizes, and guarantees of uniqueness and ordering"
+		"ID generators that guarantee uniqueness and ordering, and of various output sizes"
 		features: ["export-all-submodules", "num-traits", "rand"]
 
 		#[unstable]
@@ -153,7 +153,7 @@ fn main() {
 		"UTF-8 only path manipulation utilities written from scratch"
 
 		"rand"
-		"More random number generators and utilities"
+		"Random number generators and utilities"
 		dependencies: ["rand", "rand-chacha"]
 
 		#[unstable]
@@ -192,7 +192,7 @@ fn main() {
 		"Convenience macro for the clone-and-move pattern (yes, we're calling it that :p)"
 
 		"z85"
-		"Fast encoder and decoder for [ZeroMQ](https://zeromq.org)'s [zZ85](https://rfc.zeromq.org/spec/32) format"
+		"Fast encoder and decoder for [ZeroMQ](https://zeromq.org)'s [Z85](https://rfc.zeromq.org/spec/32) format"
 		dependencies: ["thiserror"]
 		features: ["num-traits"]
 

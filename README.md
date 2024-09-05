@@ -28,9 +28,9 @@ There exist features `all` to enable all stable features, `all-unstable` to enab
 - **`hex`** - Fast hex encoder and decoder for both upper hex and lower hex
 - **`lazy-wrap`** - Wrappers around a lazily initialised value, and its initialisation function, supporting usage in static variables
 - **`nominal`** - Generic newtype wrappers, for increased type safety through Rust's nominal type system
-- **`rand`** - More random number generators and utilities
+- **`rand`** - Random number generators and utilities
 - **`with-cloned`** - Convenience macro for the clone-and-move pattern (yes, we're calling it that :p)
-- **`z85`** - Fast encoder and decoder for [ZeroMQ](https://zeromq.org)'s [zZ85](https://rfc.zeromq.org/spec/32) format
+- **`z85`** - Fast encoder and decoder for [ZeroMQ](https://zeromq.org)'s [Z85](https://rfc.zeromq.org/spec/32) format
 
 ### Addon features
 
@@ -49,10 +49,10 @@ reminder: **Unstable features are NOT covered by semver!**
 - **`aoc`** - Utilities specific for writing solutions for [Advent of Code](https://adventofcode.com)
 - **`auth`** - Lower-level(ish) utilities for writing an authentication system, in which the client password is never sent over the wire
 - **`bitstream`** - Encoder and decoder for a stream of bits
-- **`chainer`** - Wrappers around common structs that provide chaining APIs (take ownership, do operation, then return back)
+- **`chainer`** - Wrappers around common structs that provide chaining APIs (take ownership, do operation, then return ownership back with the new value)
 - **`cli`** - CLI arguments parser
 - **`defer`** - Defer running code until the end of the current scope or until something gets dropped
-- **`id`** - ID generators, of various output sizes, and guarantees of uniqueness and ordering
+- **`id`** - ID generators that guarantee uniqueness and ordering, and of various output sizes
 - **`int`** - Bigints (ex. u384) and uneven sized ints (ex. u15)
 - **`iter`** - Iterator utilities
 - **`lsl`** - Experimental lib to help with writing Second Life scripts in Rust... because yes, I got fed up with it very quickly and immediately missed Rust lol
