@@ -547,7 +547,7 @@
 
 <span class="attr">#[cfg(feature = <span class="string">"chainer-unstable"</span>)]
 #[cfg_attr(docsrs, doc(cfg(feature = <span class="string">"chainer-unstable"</span>)))]
-</span><span class="doccomment">/// Wrappers around common structs that provide chaining APIs (take ownership, do operation, then return back)
+</span><span class="doccomment">/// Wrappers around common structs that provide chaining APIs (take ownership, do operation, then return ownership back with the new value)
 </span><span class="attr">#[doc = <span class="string">""</span>]
 #[doc = <span class="macro">include_str!</span>(<span class="string">"./chainer/README.md"</span>)]
 </span><span class="kw">pub mod </span>chainer;
@@ -603,7 +603,7 @@
 
 <span class="attr">#[cfg(feature = <span class="string">"id-unstable"</span>)]
 #[cfg_attr(docsrs, doc(cfg(feature = <span class="string">"id-unstable"</span>)))]
-</span><span class="doccomment">/// ID generators, of various output sizes, and guarantees of uniqueness and ordering
+</span><span class="doccomment">/// ID generators that guarantee uniqueness and ordering, and of various output sizes
 </span><span class="attr">#[doc = <span class="string">""</span>]
 #[doc = <span class="macro">include_str!</span>(<span class="string">"./id/README.md"</span>)]
 </span><span class="kw">pub mod </span>id;
@@ -680,7 +680,7 @@
 
 <span class="attr">#[cfg(feature = <span class="string">"rand"</span>)]
 #[cfg_attr(docsrs, doc(cfg(feature = <span class="string">"rand"</span>)))]
-</span><span class="doccomment">/// More random number generators and utilities
+</span><span class="doccomment">/// Random number generators and utilities
 </span><span class="attr">#[doc = <span class="string">""</span>]
 #[doc = <span class="macro">include_str!</span>(<span class="string">"./rand/README.md"</span>)]
 </span><span class="kw">pub mod </span>rand;
@@ -736,7 +736,7 @@
 
 <span class="attr">#[cfg(feature = <span class="string">"z85"</span>)]
 #[cfg_attr(docsrs, doc(cfg(feature = <span class="string">"z85"</span>)))]
-</span><span class="doccomment">/// Fast encoder and decoder for [ZeroMQ](https://zeromq.org)'s [zZ85](https://rfc.zeromq.org/spec/32) format
+</span><span class="doccomment">/// Fast encoder and decoder for [ZeroMQ](https://zeromq.org)'s [Z85](https://rfc.zeromq.org/spec/32) format
 </span><span class="attr">#[doc = <span class="string">""</span>]
 #[doc = <span class="macro">include_str!</span>(<span class="string">"./z85/README.md"</span>)]
 </span><span class="kw">pub mod </span>z85;
