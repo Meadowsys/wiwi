@@ -4,6 +4,7 @@ Hallo!
 
 ## table of contents <!-- omit from toc -->
 
+- [unreleased](#unreleased)
 - [v0.10.0](#v0100)
 - [v0.9.0](#v090)
 - [v0.8.0](#v080)
@@ -25,6 +26,10 @@ Hallo!
 - [v0.1.0](#v010)
 - [v0.0.0](#v000)
 - [Yanked versions and reasons](#yanked-versions-and-reasons)
+
+## unreleased
+
+- added a decent chunk of documentation overall
 
 ## v0.10.0
 
