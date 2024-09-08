@@ -1,8 +1,0 @@
-#!/usr/bin/env sh
-
-# run from root of the repo
-
-cd scripts
-cargo build --bin gen-features
-cd ..
-./target/debug/gen-features

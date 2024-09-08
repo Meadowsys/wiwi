@@ -8,12 +8,7 @@ publish = false
 wiwi = { path = ".." }
 
 [[bin]]
-name = "gen-features"
-
-[[bin]]
 name = "generate-hex-table-decoder"
-required-features = ["wiwi/hex"]
 
 [[bin]]
 name = "generate-z85-table-decoder"
-required-features = ["wiwi/z85"]
