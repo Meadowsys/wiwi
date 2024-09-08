@@ -87,6 +87,9 @@ pub enum DecodeError {
 
 #[cfg(test)]
 mod tests {
+	extern crate hex;
+	extern crate rand;
+
 	use super::*;
 	use rand::{ Rng, thread_rng };
 

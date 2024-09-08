@@ -152,7 +152,6 @@ impl_num_trait_base! {
 #[cfg(test)]
 mod tests {
 	use super::*;
-	use std::fmt::Debug;
 
 	#[test]
 	fn bits_and_bytes() {

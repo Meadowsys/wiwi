@@ -18,6 +18,8 @@ pub fn H() -> String {
 
 #[cfg(test)]
 mod tests {
+	use crate::prelude::*;
+
 	#[test]
 	pub fn h() {
 		assert_eq!(super::h(), "h", "h should be h");

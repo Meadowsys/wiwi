@@ -7,7 +7,7 @@ use super::Base;
 /// generic parameter. For example:
 ///
 /// ```
-/// # use wiwi::num_traits::ArrayConversions;
+/// # use wiwi::num::ArrayConversions;
 /// //                 ↓ your parameter    ↓↓ const generic ↓↓
 /// fn number_function<T: ArrayConversions<BYTES>, const BYTES: usize>(num: T) {
 ///    let array: [u8; BYTES] = num.into_le_bytes();

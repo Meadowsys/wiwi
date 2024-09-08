@@ -27,13 +27,20 @@ pub use rust_std::{
 	column,
 	format,
 	format_args,
-	stringify
+	stringify,
+	vec
 };
 pub use rust_std::borrow::{
 	Cow,
 	ToOwned
 };
 pub use rust_std::clone::Clone;
+pub use rust_std::cmp::{
+	PartialEq,
+	Eq,
+	PartialOrd,
+	Ord
+};
 pub use rust_std::convert::{
 	From,
 	Into,
@@ -42,6 +49,10 @@ pub use rust_std::convert::{
 	AsMut,
 	AsRef,
 	identity
+};
+pub use rust_std::fmt::{
+	Debug,
+	Display
 };
 pub use rust_std::future::{
 	Future,

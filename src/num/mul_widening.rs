@@ -59,36 +59,36 @@ impl_num_trait_mul_widening! { usize u32 }
 // 		// but it won't cause an infinite recursion loop, since it calls
 // 		// int::widening_mul with [u64; 2], and MulWidening for u64 doesn't depend
 // 		// on int::widening_mul
-
+//
 // 		let (lhs1, lhs2) = <u128 as Narrowing<u64>>::split(self);
 // 		let (rhs1, rhs2) = <u128 as Narrowing<u64>>::split(rhs);
-
+//
 // 		let [[lhs1, lhs2], [rhs1, rhs2]] = crate::int::mul::mul_widening(
 // 			&[lhs1, lhs2],
 // 			&[rhs1, rhs2]
 // 		);
-
+//
 // 		let lhs = <u128 as Narrowing<u64>>::join(lhs1, lhs2);
 // 		let rhs = <u128 as Narrowing<u64>>::join(rhs1, rhs2);
-
+//
 // 		(lhs, rhs)
 // 	}
 // }
 
 #[cfg(test)]
 mod tests {
-	use super::*;
-
-	#[test]
-	fn u128_widening_mul() {
-		// effectively just testing that we split/reassemble everything properly
-		// (like, in the right order etc), since widening_mul from int mod is
-		// tested already
-		let i1 = 0xffff_ffff_ffff_ffff_ffff_ffff_ffff_ffffu128;
-		let i2 = 0x1_0000_0000u128;
-		let expected_res = (0xffff_ffff_ffff_ffff_ffff_ffff_0000_0000u128, 0xffff_ffffu128);
-
-		let res = i1.mul_widening(i2);
-		assert_eq!(res, expected_res);
-	}
+	// use super::*;
+	//
+	// #[test]
+	// fn u128_widening_mul() {
+	// 	// effectively just testing that we split/reassemble everything properly
+	// 	// (like, in the right order etc), since widening_mul from int mod is
+	// 	// tested already
+	// 	let i1 = 0xffff_ffff_ffff_ffff_ffff_ffff_ffff_ffffu128;
+	// 	let i2 = 0x1_0000_0000u128;
+	// 	let expected_res = (0xffff_ffff_ffff_ffff_ffff_ffff_0000_0000u128, 0xffff_ffffu128);
+	//
+	// 	let res = i1.mul_widening(i2);
+	// 	assert_eq!(res, expected_res);
+	// }
 }

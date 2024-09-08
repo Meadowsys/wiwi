@@ -524,6 +524,9 @@ where
 
 #[cfg(test)]
 mod tests {
+	extern crate rand;
+	extern crate z85;
+
 	use super::*;
 	use rand::{ Rng, thread_rng };
 
