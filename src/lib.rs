@@ -46,6 +46,8 @@ pub mod rust_core;
 pub mod rust_std;
 
 #[cfg(feature = "unstable")]
+pub mod alloc;
+#[cfg(feature = "unstable")]
 pub mod cli;
 pub mod encoding;
 pub mod h;
