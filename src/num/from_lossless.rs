@@ -29,6 +29,7 @@ macro_rules! decl_from_lossless {
 				#[doc = concat!("`", stringify!($from), "`")]
 				/// into
 				#[doc = concat!("`", stringify!($to), "`")]
+				#[expect(clippy::as_conversions)]
 				#[inline(always)]
 				fn $fn_name(val: $from) -> $to { val as _ }
 			}

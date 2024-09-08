@@ -19,6 +19,7 @@ macro_rules! impl_signed {
 		impl IntSigned for $signed {
 			type Unsigned = $unsigned;
 
+			#[expect(clippy::as_conversions)]
 			#[inline(always)]
 			fn cast_unsigned(self) -> $unsigned { self as _ }
 		}
@@ -26,6 +27,7 @@ macro_rules! impl_signed {
 		impl IntUnsigned for $unsigned {
 			type Signed = $signed;
 
+			#[expect(clippy::as_conversions)]
 			#[inline(always)]
 			fn cast_signed(self) -> $signed { self as _ }
 		}

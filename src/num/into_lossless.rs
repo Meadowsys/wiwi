@@ -24,6 +24,7 @@ macro_rules! decl_into_lossless {
 		$(
 			$(#[$meta])*
 			impl $trait_name for $from {
+				#[expect(clippy::as_conversions)]
 				#[inline(always)]
 				fn $fn_name(self) -> $into { self as _ }
 			}

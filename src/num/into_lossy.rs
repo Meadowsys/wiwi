@@ -41,6 +41,7 @@ macro_rules! decl_into_lossy {
 	} => {
 		$(
 			impl $trait_name for $num {
+				#[expect(clippy::as_conversions)]
 				#[inline(always)]
 				fn $fn_name(self) -> $into { self as _ }
 			}

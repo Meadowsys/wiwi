@@ -11,7 +11,9 @@
 #![deny(
 	unconditional_recursion,
 	unexpected_cfgs,
+	unfulfilled_lint_expectations,
 	unsafe_op_in_unsafe_fn,
+	clippy::as_conversions,
 	clippy::empty_docs,
 	clippy::mixed_attributes_style,
 	clippy::unnecessary_safety_comment

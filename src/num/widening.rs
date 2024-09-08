@@ -18,9 +18,11 @@ pub trait Widening<Wide>: Base {
 macro_rules! impl_num_trait_widening {
 	{ $num:ident $wide:ident $($next_wide:ident $($rest:ident)*)? } => {
 		impl Widening<$wide> for $num {
+			#[expect(clippy::as_conversions)]
 			#[inline(always)]
 			fn widen(self) -> $wide { self as _ }
 
+			#[expect(clippy::as_conversions)]
 			#[inline]
 			fn split(wide: $wide) -> ($num, $num) {
 				(wide as _, (wide >> <$num as Base>::BITS) as _)

@@ -49,6 +49,7 @@ macro_rules! decl_from_lossy {
 				/// into
 				#[doc = concat!("`", stringify!($num), "`,")]
 				/// potentially lossily
+				#[expect(clippy::as_conversions)]
 				#[inline(always)]
 				fn $fn_name(val: $from) -> $num { val as _ }
 			}

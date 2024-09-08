@@ -38,8 +38,18 @@ macro_rules! impl_num_trait_base {
 			base: $num;
 			zero: 0;
 			one: 1;
-			bits: $num::BITS as _;
-			from_bool: b => b as _;
+			bits: {
+				// attributes on expressions are experimental, so. we do this
+				#[expect(clippy::as_conversions)]
+				let val = $num::BITS as _;
+				val
+			};
+			from_bool: b => {
+				// attributes on expressions are experimental, so. we do this
+				#[expect(clippy::as_conversions)]
+				let val = b as _;
+				val
+			};
 		}
 	};
 
@@ -50,8 +60,18 @@ macro_rules! impl_num_trait_base {
 			base: $num;
 			zero: 0;
 			one: 1;
-			bits: $num::BITS as _;
-			from_bool: b => b as _;
+			bits: {
+				// attributes on expressions are experimental, so. we do this
+				#[expect(clippy::as_conversions)]
+				let val = $num::BITS as _;
+				val
+			};
+			from_bool: b => {
+				// attributes on expressions are experimental, so. we do this
+				#[expect(clippy::as_conversions)]
+				let val = b as _;
+				val
+			};
 		}
 	};
 
@@ -62,7 +82,11 @@ macro_rules! impl_num_trait_base {
 			base: $num;
 			zero: 0.0;
 			one: 1.0;
-			bits: (size_of::<$num>() * 8) as _;
+			bits: {
+				#[expect(clippy::as_conversions)]
+				let thing = (size_of::<$num>() * 8) as _;
+				thing
+			};
 			from_bool: b => if b { 1.0 } else { 0.0 };
 		}
 	};
@@ -81,10 +105,15 @@ macro_rules! impl_num_trait_base {
 			const ZERO: $num = $zero;
 			const ONE: $num = $one;
 			const BITS: $num = $bits;
+			#[expect(clippy::as_conversions)]
 			const BYTES: $num = size_of::<$num>() as _;
+			#[expect(clippy::as_conversions)]
 			const ALIGN: $num = align_of::<$num>() as _;
+			#[expect(clippy::as_conversions)]
 			const BITS_USIZE: usize = Self::BITS as _;
+			#[expect(clippy::as_conversions)]
 			const BYTES_USIZE: usize = Self::BYTES as _;
+			#[expect(clippy::as_conversions)]
 			const ALIGN_USIZE: usize = Self::ALIGN as _;
 
 			#[inline(always)]
