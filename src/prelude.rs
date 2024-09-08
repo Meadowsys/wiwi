@@ -5,6 +5,10 @@ pub use crate::{
 	rust_core,
 	rust_std
 };
+pub use crate::ptr::{
+	coerce_ptr,
+	coerce_mut_ptr
+};
 
 pub use rust_std::{
 	assert,
@@ -50,6 +54,7 @@ pub use rust_std::convert::{
 	AsRef,
 	identity
 };
+pub use rust_std::default::Default;
 pub use rust_std::fmt::{
 	Debug,
 	Display
@@ -57,6 +62,10 @@ pub use rust_std::fmt::{
 pub use rust_std::future::{
 	Future,
 	IntoFuture
+};
+pub use rust_std::hash::{
+	Hash,
+	Hasher
 };
 pub use rust_std::iter::{
 	Iterator,
@@ -67,6 +76,7 @@ pub use rust_std::iter::{
 	Extend
 };
 pub use rust_std::marker::{
+	Copy,
 	Send,
 	Sync,
 	Sized,

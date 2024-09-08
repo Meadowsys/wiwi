@@ -1,8 +1,9 @@
-use std::cmp::Ordering;
-use std::fmt::{ self, Debug, Display, Formatter };
-use std::hash::{ Hash, Hasher };
-use std::marker::PhantomData;
-use std::future::Future;
+//! Utilities for nominal typing
+
+use crate::prelude::*;
+use rust_std::cmp::Ordering;
+use rust_std::fmt::{ self, Formatter };
+use rust_std::slice;
 
 /// Declare a new nominal type (alias), with the provided name, a name for the
 /// marker type struct, and the wrapped type
@@ -421,8 +422,11 @@ impl<T: Hash, M> Hash for Nominal<T, M> {
 	where
 		Self: Sized
 	{
+		let t_data = coerce_ptr(data).cast::<T>();
+
 		// SAFETY: we're repr(transparent)
-		let t_data = unsafe { &*(data as *const [Self] as *const [T]) };
+		let t_data = unsafe { slice::from_raw_parts(t_data, data.len()) };
+
 		T::hash_slice(t_data, state)
 	}
 }
