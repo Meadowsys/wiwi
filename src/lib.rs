@@ -31,6 +31,8 @@ pub mod rust_alloc;
 pub mod rust_core;
 pub mod rust_std;
 
+pub mod h;
+
 // pub mod clone;
 // pub mod compare;
 // pub mod convert;

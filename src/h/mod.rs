@@ -1,5 +1,7 @@
 //! h
 
+use crate::prelude::*;
+
 /// h
 #[inline]
 pub fn h() -> String {
