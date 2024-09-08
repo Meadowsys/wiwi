@@ -45,6 +45,7 @@ pub mod rust_alloc;
 pub mod rust_core;
 pub mod rust_std;
 
+pub mod cli;
 pub mod encoding;
 pub mod h;
 pub mod nom;
