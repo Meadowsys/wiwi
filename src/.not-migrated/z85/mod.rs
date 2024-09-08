@@ -1,4 +1,4 @@
-use crate::_internal::encoding_utils::{ ChunkedSlice, UnsafeBufWriteGuard};
+use crate::_internal::encoding_utils::{ ChunkedSlice, UnsafeBufWriteGuard };
 use crate::num_traits::*;
 use std::{ slice, str };
 
