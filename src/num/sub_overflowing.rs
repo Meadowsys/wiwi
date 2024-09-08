@@ -10,7 +10,6 @@ pub trait SubOverflowing: Sub {
 	fn sub_overflowing(self, rhs: Self) -> (Self, bool);
 }
 
-
 macro_rules! impl_num_trait_sub_overflowing {
 	{ $($num:ident)* } => {
 		$(

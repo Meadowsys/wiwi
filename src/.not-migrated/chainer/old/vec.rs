@@ -1401,7 +1401,6 @@ mod tests {
 		let _ = VecChain::<u8>::with_capacity(8)
 			.is_empty(&mut is_empty_with_cap);
 
-
 		assert_eq!(len1, 8);
 		assert!(cap1 >= 8);
 

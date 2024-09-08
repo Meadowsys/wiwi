@@ -17,7 +17,6 @@ struct CellValue {
 	bitfield: u16
 }
 
-
 impl Board {
 	pub fn new(game: [[u8; 9]; 9]) -> Self {
 		debug_assert_eq!({

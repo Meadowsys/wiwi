@@ -534,7 +534,6 @@ impl<T: MemoryUsage> MemoryUsage for [T] {
 			.sum()
 	}
 
-
 	#[inline]
 	fn mem_use(&self) -> usize {
 		self.iter()

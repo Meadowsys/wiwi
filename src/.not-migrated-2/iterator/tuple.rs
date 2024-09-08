@@ -597,7 +597,6 @@ mod tests {
 			}
 		}
 
-
 		// all unknown
 		check! {
 			h1: SizeHintImpl::unknown(),

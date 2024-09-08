@@ -75,7 +75,6 @@ pub(super) unsafe fn generic(
 			}
 		}
 
-
 		// SAFETY: a byte can only be between `0..256`, which fits
 		// within the lookup table
 

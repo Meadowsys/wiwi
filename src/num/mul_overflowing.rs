@@ -10,7 +10,6 @@ pub trait MulOverflowing: Mul {
 	fn mul_overflowing(self, rhs: Self) -> (Self, bool);
 }
 
-
 macro_rules! impl_num_trait_mul_overflowing {
 	{ $($num:ident)* } => {
 		$(

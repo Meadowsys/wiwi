@@ -27,5 +27,4 @@ impl Server {
 	}
 }
 
-
 use url::Url;

@@ -50,7 +50,6 @@ impl Serialise for u16 {
 	}
 }
 
-
 gen_int_deserialise! {
 	u16
 	unsigned_smallint_range

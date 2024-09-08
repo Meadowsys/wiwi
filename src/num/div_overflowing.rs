@@ -10,7 +10,6 @@ pub trait DivOverflowing: Div {
 	fn div_overflowing(self, rhs: Self) -> (Self, bool);
 }
 
-
 macro_rules! impl_num_trait_div_overflowing {
 	{ $($num:ident)* } => {
 		$(

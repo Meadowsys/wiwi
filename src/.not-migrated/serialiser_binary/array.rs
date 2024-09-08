@@ -121,7 +121,6 @@ impl<'h, T: Deserialise<'h>, const N: usize> Deserialise<'h> for [T; N] {
 				.wrap_foreign()
 		}
 
-
 		let arr = MaybeUninit::<[T; N]>::uninit();
 		let count = 0;
 
