@@ -28,6 +28,11 @@ compile_error!("16-bit platforms are not supported yet (but please do file an is
 pub mod _changelog {}
 pub mod prelude;
 
+pub mod clone;
+pub mod convert;
+pub mod function;
+pub mod macros;
+pub mod memory;
 pub mod option;
 pub mod phantom;
 pub mod result;
