@@ -1,3 +1,5 @@
+//! h
+
 /// h
 #[inline]
 pub fn h() -> String {

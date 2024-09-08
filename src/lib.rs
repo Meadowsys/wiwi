@@ -32,6 +32,7 @@ pub mod clone;
 pub mod compare;
 pub mod convert;
 pub mod function;
+pub mod h;
 pub mod iterator;
 pub mod macros;
 pub mod memory;
