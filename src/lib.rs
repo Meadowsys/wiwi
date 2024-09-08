@@ -3,14 +3,14 @@
 #![cfg_attr(feature = "omega-tuples-of-doom", recursion_limit = "256")]
 
 // TODO: review these
-#![warn(
-	missing_docs,
-	unsafe_op_in_unsafe_fn,
-	clippy::missing_docs_in_private_items,
-	clippy::missing_safety_doc,
-	clippy::multiple_unsafe_ops_per_block,
-	clippy::undocumented_unsafe_blocks
-)]
+// #![warn(
+// 	missing_docs,
+// 	unsafe_op_in_unsafe_fn,
+// 	clippy::missing_docs_in_private_items,
+// 	clippy::missing_safety_doc,
+// 	clippy::multiple_unsafe_ops_per_block,
+// 	clippy::undocumented_unsafe_blocks
+// )]
 #![deny(
 	unconditional_recursion,
 	unexpected_cfgs,
