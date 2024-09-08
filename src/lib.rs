@@ -1,4 +1,3 @@
-#![cfg_attr(not(feature = "std"), no_std)]
 #![no_implicit_prelude]
 
 // TODO: review these
@@ -26,7 +25,11 @@ compile_error!("16-bit platforms are not supported yet (but please do file an is
 #[cfg(any(doc, docsrs, kiwingay))]
 #[doc = include_str!("../CHANGELOG.md")]
 pub mod _changelog {}
-// pub mod prelude;
+pub mod prelude;
+
+pub mod rust_alloc;
+pub mod rust_core;
+pub mod rust_std;
 
 // pub mod clone;
 // pub mod compare;

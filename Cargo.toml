@@ -66,8 +66,6 @@ wiwiwiwiwi = { path = "macro", version = "=0.10.0" }
 # zeroize = { version = "1.7.0", optional = true }
 
 [features]
-alloc = []
-std = []
 
 [build-dependencies]
 # cc = "1.1.6"
