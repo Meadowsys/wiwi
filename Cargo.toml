@@ -1,6 +1,5 @@
 [workspace]
 members = [
-	"bindings",
 	"macro",
 	"scripts"
 ]
