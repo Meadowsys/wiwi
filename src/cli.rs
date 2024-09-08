@@ -1,6 +1,5 @@
 extern crate hashbrown;
 
-use crate::prelude::*;
 use hashbrown::HashMap;
 
 pub struct Cli {

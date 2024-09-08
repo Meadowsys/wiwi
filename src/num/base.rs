@@ -1,4 +1,6 @@
-use crate::prelude::*;
+use crate::rust_std::clone::Clone;
+use crate::rust_std::marker::Sized;
+use crate::rust_std::mem::{ align_of, size_of };
 
 /// Common base for all numbers
 pub trait Base: Sized + Clone + private::Sealed {
@@ -180,6 +182,9 @@ impl_num_trait_base! {
 
 #[cfg(test)]
 mod tests {
+	use crate::rust_std::assert_eq;
+	use crate::rust_std::cmp::Eq;
+	use crate::rust_std::fmt::Debug;
 	use super::*;
 
 	#[test]

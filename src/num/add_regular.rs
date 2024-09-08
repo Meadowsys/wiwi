@@ -1,8 +1,7 @@
-use crate::prelude::*;
 use super::Base;
 
 /// Addition
-pub trait Add: Base + rust_std::ops::Add<Self, Output = Self> {
+pub trait Add: Base + crate::rust_std::ops::Add<Self, Output = Self> {
 	/// Performs plain addition
 	///
 	/// It does the same as what the `+` operator does

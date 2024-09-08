@@ -1,8 +1,7 @@
-use crate::prelude::*;
 use super::Base;
 
 /// Bitwise NOT
-pub trait Not: Base + rust_std::ops::Not<Output = Self> {
+pub trait Not: Base + crate::rust_std::ops::Not<Output = Self> {
 	#[inline]
 	fn not_regular(self) -> Self {
 		!self

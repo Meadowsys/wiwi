@@ -1,6 +1,10 @@
 extern crate thiserror;
 
-use crate::prelude::*;
+use crate::rust_std::debug_assert;
+use crate::rust_std::ops::FnOnce;
+use crate::rust_std::result::{ Result, Result::Ok, Result::Err };
+use crate::rust_std::string::String;
+use crate::rust_std::vec::Vec;
 use crate::util_unsafe::{ ChunkedSlice, UnsafeBufWriteGuard };
 use crate::num::*;
 // TODO: `thiserror` wants `std`
@@ -527,6 +531,7 @@ mod tests {
 	extern crate rand;
 	extern crate z85;
 
+	use crate::rust_std::{ assert_eq, vec };
 	use super::*;
 	use rand::{ Rng, thread_rng };
 

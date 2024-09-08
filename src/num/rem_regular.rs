@@ -1,8 +1,7 @@
-use crate::prelude::*;
 use super::Base;
 
 /// Modulo (the remainder operator)
-pub trait Rem: Base + rust_std::ops::Rem<Self, Output = Self> {
+pub trait Rem: Base + crate::rust_std::ops::Rem<Self, Output = Self> {
 	#[inline]
 	fn rem_regular(self, rhs: Self) -> Self {
 		self % rhs

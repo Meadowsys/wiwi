@@ -1,8 +1,11 @@
+extern crate std;
 extern crate thiserror;
 
-use crate::prelude::*;
+use crate::rust_std::{ debug_assert, str };
+use crate::rust_std::result::{ Result, Result::Ok, Result::Err };
+use crate::rust_std::string::String;
+use crate::rust_std::vec::Vec;
 use crate::util_unsafe::UnsafeBufWriteGuard;
-use rust_std::{ self as std, str };
 
 mod encode;
 mod decode;
@@ -90,6 +93,7 @@ mod tests {
 	extern crate hex;
 	extern crate rand;
 
+	use crate::rust_std::{ assert_eq, vec };
 	use super::*;
 	use rand::{ Rng, thread_rng };
 

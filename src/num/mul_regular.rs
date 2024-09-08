@@ -1,8 +1,7 @@
-use crate::prelude::*;
 use super::Base;
 
 /// Multiplication
-pub trait Mul: Base + rust_std::ops::Mul<Self, Output = Self> {
+pub trait Mul: Base + crate::rust_std::ops::Mul<Self, Output = Self> {
 	/// Performs plain multiplication
 	///
 	/// It does the same as what the `*` operator does

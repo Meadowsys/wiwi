@@ -1,8 +1,7 @@
-use crate::prelude::*;
 use super::Base;
 
 /// Bitwise AND
-pub trait And: Base + rust_std::ops::BitAnd<Self, Output = Self> {
+pub trait And: Base + crate::rust_std::ops::BitAnd<Self, Output = Self> {
 	#[inline]
 	fn and_regular(self, rhs: Self) -> Self {
 		self & rhs

@@ -1,8 +1,7 @@
-use crate::prelude::*;
 use super::Base;
 
 /// Right shift
-pub trait Shr: Base + rust_std::ops::Shr<Self, Output = Self> {
+pub trait Shr: Base + crate::rust_std::ops::Shr<Self, Output = Self> {
 	#[inline]
 	fn shr_regular(self, rhs: Self) -> Self {
 		self >> rhs

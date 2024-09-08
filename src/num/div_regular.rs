@@ -1,8 +1,7 @@
-use crate::prelude::*;
 use super::Base;
 
 /// Division
-pub trait Div: Base + rust_std::ops::Div<Self, Output = Self> {
+pub trait Div: Base + crate::rust_std::ops::Div<Self, Output = Self> {
 	/// Performs regular division
 	///
 	/// It does the same as what the `/` operator does

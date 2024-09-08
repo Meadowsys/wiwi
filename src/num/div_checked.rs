@@ -1,4 +1,4 @@
-use crate::prelude::*;
+use crate::rust_std::option::Option;
 use super::Div;
 
 pub trait DivChecked: Div {

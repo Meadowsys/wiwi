@@ -1,6 +1,7 @@
 //! h
 
-use crate::prelude::*;
+use crate::rust_std::convert::Into;
+use crate::rust_std::string::String;
 
 /// h
 #[inline]
@@ -18,7 +19,7 @@ pub fn H() -> String {
 
 #[cfg(test)]
 mod tests {
-	use crate::prelude::*;
+	use crate::rust_std::assert_eq;
 
 	#[test]
 	pub fn h() {

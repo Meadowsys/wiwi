@@ -1,8 +1,7 @@
-use crate::prelude::*;
 use super::Base;
 
 /// Subtraction
-pub trait Sub: Base + rust_std::ops::Sub<Self, Output = Self> {
+pub trait Sub: Base + crate::rust_std::ops::Sub<Self, Output = Self> {
 	/// Performs plain subtraction
 	///
 	/// It does the same as what the `-` operator does

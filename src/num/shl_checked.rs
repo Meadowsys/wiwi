@@ -1,4 +1,4 @@
-use crate::prelude::*;
+use crate::rust_std::option::{ Option, Option::Some, Option::None };
 use super::{ Base, Shl };
 
 /// Checked left shift

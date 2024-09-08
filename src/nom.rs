@@ -1,9 +1,19 @@
 //! Utilities for nominal typing
 
-use crate::prelude::*;
-use rust_std::cmp::Ordering;
-use rust_std::fmt::{ self, Formatter };
-use rust_std::slice;
+use crate::ptr::coerce_ptr;
+use crate::rust_std::clone::Clone;
+use crate::rust_std::cmp::{ Eq, Ord, PartialEq, PartialOrd, Ordering };
+use crate::rust_std::convert::{ From, Into };
+use crate::rust_std::default::Default;
+use crate::rust_std::fmt::{ self, Formatter };
+use crate::rust_std::fmt::{ Debug, Display };
+use crate::rust_std::future::IntoFuture;
+use crate::rust_std::hash::{ Hash, Hasher };
+use crate::rust_std::marker::{ Copy, PhantomData, Sized };
+use crate::rust_std::ops::FnOnce;
+use crate::rust_std::option::Option;
+use crate::rust_std::result::Result;
+use crate::rust_std::slice;
 
 /// Declare a new nominal type (alias), with the provided name, a name for the
 /// marker type struct, and the wrapped type
@@ -20,26 +30,26 @@ use rust_std::slice;
 /// Basic usage:
 ///
 /// ```
-/// # use wiwi::nominal::{ Nominal, nominal };
-/// // type NewType = Nominal<String, NewTypeMarker>;
-/// nominal!(NewType, marker: NewTypeMarker, wraps: String);
+/// # use wiwi::nom::{ Nom, nom };
+/// // type NewType = Nom<String, NewTypeMarker>;
+/// nom!(NewType, marker: NewTypeMarker, wraps: String);
 ///
 /// // these two are identical
 /// let item: NewType = NewType::new(String::new());
-/// let item: Nominal<String, NewTypeMarker> = Nominal::new(String::new());
+/// let item: Nom<String, NewTypeMarker> = Nom::new(String::new());
 ///
 /// // and of course, it's a type alias
-/// let item: NewType = Nominal::new(String::new());
-/// let item: Nominal<String, NewTypeMarker> = NewType::new(String::new());
+/// let item: NewType = Nom::new(String::new());
+/// let item: Nom<String, NewTypeMarker> = NewType::new(String::new());
 /// ```
 ///
 /// The macro does indeed create a unique newtype:
 ///
 /// ```compile_fail
 /// # // TODO: use err code E0308 (currently nightly only)
-/// # use wiwi::nominal::nominal;
-/// # nominal!(NewType, marker: NewTypeMarker, wraps: String);
-/// nominal!(AnotherNewType, marker: AnotherNewTypeMarker, wraps: String);
+/// # use wiwi::nom::nom;
+/// # nom!(NewType, marker: NewTypeMarker, wraps: String);
+/// nom!(AnotherNewType, marker: AnotherNewTypeMarker, wraps: String);
 ///
 /// let item: NewType = NewType::new(String::new());
 /// // this won't compile
@@ -50,9 +60,9 @@ use rust_std::slice;
 ///
 /// ```
 /// mod inner {
-///    # use wiwi::nominal::nominal;
-///    nominal!(pub NewType, marker: NewTypeMarker, wraps: String);
-///    //       ↑
+///    # use wiwi::nom::nom;
+///    nom!(pub NewType, marker: NewTypeMarker, wraps: String);
+///    //   ↑
 /// }
 ///
 /// let item = inner::NewType::new(String::new());
@@ -63,8 +73,8 @@ use rust_std::slice;
 /// ```compile_fail
 /// # // TODO: use err code E0603 (currently nightly only)
 /// mod inner {
-///    # use wiwi::nominal::nominal;
-///    nominal!(NewType, marker: NewTypeMarker, wraps: String);
+///    # use wiwi::nom::nom;
+///    nom!(NewType, marker: NewTypeMarker, wraps: String);
 ///    //       ↑ no `pub`
 /// }
 ///
@@ -79,8 +89,8 @@ use rust_std::slice;
 /// mod outer {
 ///    mod inner {
 ///       # // pag
-///       # use wiwi::nominal::nominal;
-///       nominal!(pub(super) NewType, marker: NewTypeMarker, wraps: String);
+///       # use wiwi::nom::nom;
+///       nom!(pub(super) NewType, marker: NewTypeMarker, wraps: String);
 ///    }
 ///
 ///    # fn _maybe_this_fn_decl_shouldnt_be_hidden_i_dont_know() {
@@ -93,17 +103,17 @@ use rust_std::slice;
 /// let item = outer::inner::NewType::new(String::new());
 /// ```
 #[macro_export]
-macro_rules! nominal {
+macro_rules! nom {
 	($vis:vis $name:ident, marker: $marker:ident, wraps: $( ref <$($lifetimes:lifetime),+> )? $ty:ty) => {
 		$vis struct $marker;
-		$vis type $name$(<$($lifetimes),+>)? = $crate::nominal::Nominal<$ty, $marker>;
+		$vis type $name$(<$($lifetimes),+>)? = $crate::nom::Nom<$ty, $marker>;
 	};
 }
-pub use nominal;
+pub use nom;
 
 /// Declare many new nominal types (aliases), in a module
 ///
-/// Usage is more or less identical to [`nominal`], but you define a module
+/// Usage is more or less identical to [`nom`], but you define a module
 /// inside the macro invocation. Because this macro creates a new module
 /// (with the name you specify), and the created module is only used for defining
 /// these
@@ -118,10 +128,10 @@ pub use nominal;
 /// # Examples
 ///
 /// ```
-/// # use wiwi::nominal::nominal_mod;
-/// nominal_mod! {
+/// # use wiwi::nom::nom_mod;
+/// nom_mod! {
 ///    pub mod nom {
-///       nominal!(pub NewType, wraps: String);
+///       nom!(pub NewType, wraps: String);
 ///    }
 /// }
 ///
@@ -132,11 +142,11 @@ pub use nominal;
 ///
 /// ```compile_fail
 /// # // TODO: use err code E0308 (currently nightly only)
-/// # use wiwi::nominal::nominal_mod;
-/// nominal_mod! {
+/// # use wiwi::nom::nom_mod;
+/// nom_mod! {
 ///    pub mod nom {
-///       nominal!(pub NewType, wraps: String);
-///       nominal!(pub AnotherNewType, wraps: String);
+///       nom!(pub NewType, wraps: String);
+///       nom!(pub AnotherNewType, wraps: String);
 ///    }
 /// }
 ///
@@ -148,36 +158,36 @@ pub use nominal;
 /// Still "just" a type alias:
 ///
 /// ```
-/// # use wiwi::nominal::{ Nominal, nominal_mod };
-/// # nominal_mod! {
+/// # use wiwi::nom::{ Nom, nom_mod };
+/// # nom_mod! {
 /// #    pub mod nom {
-/// #       nominal!(pub NewType, wraps: String);
+/// #       nom!(pub NewType, wraps: String);
 /// #    }
 /// # }
 ///
-/// let item: nom::NewType = Nominal::new(String::new());
+/// let item: nom::NewType = Nom::new(String::new());
 /// ```
 ///
 /// Created marker structs are in a `marker` submodule:
 ///
 /// ```
-/// # use wiwi::nominal::{ Nominal, nominal_mod };
-/// # nominal_mod! {
+/// # use wiwi::nom::{ Nom, nom_mod };
+/// # nom_mod! {
 /// #    pub mod nom {
-/// #       nominal!(pub NewType, wraps: String);
-/// #       nominal!(pub AnotherNewType, wraps: String);
+/// #       nom!(pub NewType, wraps: String);
+/// #       nom!(pub AnotherNewType, wraps: String);
 /// #    }
 /// # }
 ///
-/// let item: Nominal<String, nom::marker::NewType> = nom::NewType::new(String::new());
-/// let item: Nominal<String, nom::marker::AnotherNewType> = nom::AnotherNewType::new(String::new());
+/// let item: Nom<String, nom::marker::NewType> = nom::NewType::new(String::new());
+/// let item: Nom<String, nom::marker::AnotherNewType> = nom::AnotherNewType::new(String::new());
 /// ```
 #[macro_export]
-macro_rules! nominal_mod {
+macro_rules! nom_mod {
 	{
 		$(
 			$mod_vis:vis mod $mod_name:ident {
-				$( nominal!($item_vis:vis $name:ident, wraps: $( ref <$($lifetimes:lifetime),+> )? $type:ty); )*
+				$( nom!($item_vis:vis $name:ident, wraps: $( ref <$($lifetimes:lifetime),+> )? $type:ty); )*
 			}
 		)*
 	} => {
@@ -188,23 +198,23 @@ macro_rules! nominal_mod {
 				}
 
 				use super::*;
-				$( $item_vis type $name$( <$($lifetimes),+> )? = $crate::nominal::Nominal<$type, marker::$name>; )*
+				$( $item_vis type $name$( <$($lifetimes),+> )? = $crate::nom::Nom<$type, marker::$name>; )*
 			}
 		)*
 	}
 }
-pub use nominal_mod;
+pub use nom_mod;
 
 /// Nominal wrapper struct
 ///
 /// This struct consists of a value `T` and a marker [`PhantomData<M>`]. It does
 /// not incur any overhead for the marker type; it is simply a type safe wrapper.
 ///
-/// Newtypes are primarily created with assistance from the [`nominal`] and
-/// [`nominal_mod`] macros. The macros will help save you the boilerplate of
+/// Newtypes are primarily created with assistance from the [`nom`] and
+/// [`nom_mod`] macros. The macros will help save you the boilerplate of
 /// writing the types and declaring unit structs to use as the marker.
 #[repr(transparent)]
-pub struct Nominal<T, M> {
+pub struct Nom<T, M> {
 	/// The wrapped item
 	item: T,
 
@@ -212,7 +222,7 @@ pub struct Nominal<T, M> {
 	marker: PhantomData<M>
 }
 
-impl<T, M> Nominal<T, M> {
+impl<T, M> Nom<T, M> {
 	/// Creates a nominal struct with the given value
 	#[inline]
 	pub fn new(item: T) -> Self {
@@ -257,18 +267,18 @@ impl<T, M> Nominal<T, M> {
 	/// after all, the whole point of this is to seperate otherwise identical
 	/// types into newtypes based on semantic meaning.
 	#[inline]
-	pub fn transmute_wrapper<M2>(self) -> Nominal<T, M2> {
-		Nominal::new(self.unwrap_value())
+	pub fn transmute_wrapper<M2>(self) -> Nom<T, M2> {
+		Nom::new(self.unwrap_value())
 	}
 
 	/// Consumes and "map"s the wrapped value into another value, wrapping it in
 	/// a nominal type with the same marker
 	#[inline]
-	pub fn map_value<T2, F>(self, f: F) -> Nominal<T2, M>
+	pub fn map_value<T2, F>(self, f: F) -> Nom<T2, M>
 	where
 		F: FnOnce(T) -> T2
 	{
-		Nominal::new(f(self.unwrap_value()))
+		Nom::new(f(self.unwrap_value()))
 	}
 
 	/// Maps the wrapped value and transmutes the wrapper type
@@ -278,7 +288,7 @@ impl<T, M> Nominal<T, M> {
 	/// [`map_value`]: Self::map_value
 	/// [`transmute_wrapper`]: Self::transmute_wrapper
 	#[inline]
-	pub fn map_transmute<T2, M2, F>(self, f: F) -> Nominal<T2, M2>
+	pub fn map_transmute<T2, M2, F>(self, f: F) -> Nom<T2, M2>
 	where
 		F: FnOnce(T) -> T2
 	{
@@ -288,12 +298,12 @@ impl<T, M> Nominal<T, M> {
 	/// Consumes and asyncronously "map"s the wrapped value into another value,
 	/// wrapping it in a nominal type with the same marker
 	#[inline]
-	pub async fn async_map_value<T2, F, Fu>(self, f: F) -> Nominal<T2, M>
+	pub async fn async_map_value<T2, F, Fu>(self, f: F) -> Nom<T2, M>
 	where
 		F: FnOnce(T) -> Fu,
-		Fu: Future<Output = T2>
+		Fu: IntoFuture<Output = T2>
 	{
-		Nominal::new(f(self.unwrap_value()).await)
+		Nom::new(f(self.unwrap_value()).await)
 	}
 
 	/// Asyncronously maps the wrapped value and transmutes the wrapper type
@@ -303,69 +313,69 @@ impl<T, M> Nominal<T, M> {
 	/// [`async_map_value`]: Self::async_map_value
 	/// [`transmute_wrapper`]: Self::transmute_wrapper
 	#[inline]
-	pub async fn async_map_transmute<T2, M2, F, Fu>(self, f: F) -> Nominal<T2, M>
+	pub async fn async_map_transmute<T2, M2, F, Fu>(self, f: F) -> Nom<T2, M>
 	where
 		F: FnOnce(T) -> Fu,
-		Fu: Future<Output = T2>
+		Fu: IntoFuture<Output = T2>
 	{
 		self.async_map_value(f).await.transmute_wrapper()
 	}
 }
 
-impl<T, M, E> Nominal<Result<T, E>, M> {
+impl<T, M, E> Nom<Result<T, E>, M> {
 	/// Transpose a nominal wrapped [`Result`] into a [`Result`] of a nominal
 	/// wrapped value
 	///
 	/// The value gets wrapped, but the error does not. Both are not otherwise
 	/// modified in any way.
 	#[inline]
-	pub fn transpose(self) -> Result<Nominal<T, M>, E> {
-		self.unwrap_value().map(Nominal::new)
+	pub fn transpose(self) -> Result<Nom<T, M>, E> {
+		self.unwrap_value().map(Nom::new)
 	}
 
 	/// Maps the [`Ok`] value of a [`Result`], wrapping the resulting [`Result`]
 	/// in a nominal type with the same marker
 	#[inline]
-	pub fn map_result_ok<T2, F>(self, f: F) -> Nominal<Result<T2, E>, M>
+	pub fn map_result_ok<T2, F>(self, f: F) -> Nom<Result<T2, E>, M>
 	where
 		F: FnOnce(T) -> T2
 	{
-		Nominal::new(self.unwrap_value().map(f))
+		Nom::new(self.unwrap_value().map(f))
 	}
 
 	/// Maps the [`Err`] value of a [`Result`], wrapping the resulting [`Result`]
 	/// in a nominal type with the same marker
 	#[inline]
-	pub fn map_result_err<E2, F>(self, f: F) -> Nominal<Result<T, E2>, M>
+	pub fn map_result_err<E2, F>(self, f: F) -> Nom<Result<T, E2>, M>
 	where
 		F: FnOnce(E) -> E2
 	{
-		Nominal::new(self.unwrap_value().map_err(f))
+		Nom::new(self.unwrap_value().map_err(f))
 	}
 }
 
-impl<T, M> Nominal<Option<T>, M> {
+impl<T, M> Nom<Option<T>, M> {
 	/// Transpose a nominal wrapped [`Option`] into an [`Option`] of a nominal
 	/// wrapped value
 	///
 	/// The value is not otherwise modified in any way.
 	#[inline]
-	pub fn transpose(self) -> Option<Nominal<T, M>> {
-		self.unwrap_value().map(Nominal::new)
+	pub fn transpose(self) -> Option<Nom<T, M>> {
+		self.unwrap_value().map(Nom::new)
 	}
 
 	/// Maps the [`Some`] value of an [`Option`], wrapping the resulting [`Option`]
 	/// in a nominal type with the same marker
 	#[inline]
-	pub fn map_option_some<T2, F>(self, f: F) -> Nominal<Option<T2>, M>
+	pub fn map_option_some<T2, F>(self, f: F) -> Nom<Option<T2>, M>
 	where
 		F: FnOnce(T) -> T2
 	{
-		Nominal::new(self.unwrap_value().map(f))
+		Nom::new(self.unwrap_value().map(f))
 	}
 }
 
-impl<T, M> From<T> for Nominal<T, M> {
+impl<T, M> From<T> for Nom<T, M> {
 	#[inline]
 	fn from(value: T) -> Self {
 		Self::new(value)
@@ -374,7 +384,7 @@ impl<T, M> From<T> for Nominal<T, M> {
 
 // delegate trait impls by just calling T's impl
 
-impl<T: Clone, M> Clone for Nominal<T, M> {
+impl<T: Clone, M> Clone for Nom<T, M> {
 	#[inline]
 	fn clone(&self) -> Self {
 		self.wrapped_ref().clone().into()
@@ -386,32 +396,32 @@ impl<T: Clone, M> Clone for Nominal<T, M> {
 	}
 }
 
-impl<T: Copy, M> Copy for Nominal<T, M> {}
+impl<T: Copy, M> Copy for Nom<T, M> {}
 
-impl<T: Debug, M> Debug for Nominal<T, M> {
+impl<T: Debug, M> Debug for Nom<T, M> {
 	#[inline]
 	fn fmt(&self, f: &mut Formatter<'_>) -> fmt::Result {
-		f.debug_struct("Nominal")
+		f.debug_struct("Nom")
 			.field("value", self.wrapped_ref())
 			.finish()
 	}
 }
 
-impl<T: Display, M> Display for Nominal<T, M> {
+impl<T: Display, M> Display for Nom<T, M> {
 	#[inline]
 	fn fmt(&self, f: &mut Formatter<'_>) -> fmt::Result {
 		self.wrapped_ref().fmt(f)
 	}
 }
 
-impl<T: Default, M> Default for Nominal<T, M> {
+impl<T: Default, M> Default for Nom<T, M> {
 	#[inline]
 	fn default() -> Self {
 		T::default().into()
 	}
 }
 
-impl<T: Hash, M> Hash for Nominal<T, M> {
+impl<T: Hash, M> Hash for Nom<T, M> {
 	#[inline]
 	fn hash<H: Hasher>(&self, state: &mut H) {
 		self.wrapped_ref().hash(state)
@@ -431,9 +441,9 @@ impl<T: Hash, M> Hash for Nominal<T, M> {
 	}
 }
 
-impl<T: PartialEq<TR>, M, TR, MR> PartialEq<Nominal<TR, MR>> for Nominal<T, M> {
+impl<T: PartialEq<TR>, M, TR, MR> PartialEq<Nom<TR, MR>> for Nom<T, M> {
 	#[inline]
-	fn eq(&self, other: &Nominal<TR, MR>) -> bool {
+	fn eq(&self, other: &Nom<TR, MR>) -> bool {
 		self.wrapped_ref().eq(other.wrapped_ref())
 	}
 
@@ -441,41 +451,41 @@ impl<T: PartialEq<TR>, M, TR, MR> PartialEq<Nominal<TR, MR>> for Nominal<T, M> {
 	// and we should use it if so
 	#[allow(clippy::partialeq_ne_impl)]
 	#[inline]
-	fn ne(&self, other: &Nominal<TR, MR>) -> bool {
+	fn ne(&self, other: &Nom<TR, MR>) -> bool {
 		self.wrapped_ref().ne(other.wrapped_ref())
 	}
 }
 
-impl<T: Eq, M> Eq for Nominal<T, M> {}
+impl<T: Eq, M> Eq for Nom<T, M> {}
 
-impl<T: PartialOrd<TR>, M, TR, MR> PartialOrd<Nominal<TR, MR>> for Nominal<T, M> {
+impl<T: PartialOrd<TR>, M, TR, MR> PartialOrd<Nom<TR, MR>> for Nom<T, M> {
 	#[inline]
-	fn partial_cmp(&self, other: &Nominal<TR, MR>) -> Option<Ordering> {
+	fn partial_cmp(&self, other: &Nom<TR, MR>) -> Option<Ordering> {
 		self.wrapped_ref().partial_cmp(other.wrapped_ref())
 	}
 
 	#[inline]
-	fn lt(&self, other: &Nominal<TR, MR>) -> bool {
+	fn lt(&self, other: &Nom<TR, MR>) -> bool {
 		self.wrapped_ref().lt(other.wrapped_ref())
 	}
 
 	#[inline]
-	fn le(&self, other: &Nominal<TR, MR>) -> bool {
+	fn le(&self, other: &Nom<TR, MR>) -> bool {
 		self.wrapped_ref().le(other.wrapped_ref())
 	}
 
 	#[inline]
-	fn gt(&self, other: &Nominal<TR, MR>) -> bool {
+	fn gt(&self, other: &Nom<TR, MR>) -> bool {
 		self.wrapped_ref().gt(other.wrapped_ref())
 	}
 
 	#[inline]
-	fn ge(&self, other: &Nominal<TR, MR>) -> bool {
+	fn ge(&self, other: &Nom<TR, MR>) -> bool {
 		self.wrapped_ref().ge(other.wrapped_ref())
 	}
 }
 
-impl<T: Ord, M> Ord for Nominal<T, M> {
+impl<T: Ord, M> Ord for Nom<T, M> {
 	#[inline]
 	fn cmp(&self, other: &Self) -> Ordering {
 		self.wrapped_ref().cmp(other.wrapped_ref())

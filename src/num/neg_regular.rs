@@ -1,8 +1,7 @@
-use crate::prelude::*;
 use super::Base;
 
 /// Negation
-pub trait Neg: Base + rust_std::ops::Neg<Output = Self> {
+pub trait Neg: Base + crate::rust_std::ops::Neg<Output = Self> {
 	#[inline]
 	fn neg_regular(self) -> Self {
 		-self

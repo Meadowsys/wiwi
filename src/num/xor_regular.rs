@@ -1,8 +1,7 @@
-use crate::prelude::*;
 use super::Base;
 
 /// Bitwise XOR
-pub trait Xor: Base + rust_std::ops::BitXor<Self, Output = Self> {
+pub trait Xor: Base + crate::rust_std::ops::BitXor<Self, Output = Self> {
 	#[inline]
 	fn xor_regular(self, rhs: Self) -> Self {
 		self ^ rhs

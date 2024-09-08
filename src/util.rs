@@ -1,5 +1,7 @@
-use crate::prelude::*;
-use rust_std::panic::{ self, PanicHookInfo };
+use crate::rust_std::boxed::Box;
+use crate::rust_std::marker::{ Send, Sync };
+use crate::rust_std::ops::Fn;
+use crate::rust_std::panic::{ self, PanicHookInfo };
 
 /// Augment the panic hook, adding a closure with your own code to
 /// be run before the currently set panic hook
