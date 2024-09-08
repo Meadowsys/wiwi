@@ -1,4 +1,8 @@
+use crate::function::FnMut;
+use crate::option::Option;
 use super::Iter;
+
+// TODO: make a fused version of this?
 
 #[repr(transparent)]
 pub struct FromFn<F> {

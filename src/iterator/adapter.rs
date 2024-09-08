@@ -1,7 +1,12 @@
 //! Adapter traits and [`IterAdapter`], to aid in converting between and using std
 //! [`Iterator`]s as wiwi [`Iter`]s, and vice versa
 
+extern crate core;
+
+use crate::convert::Into;
+use crate::option::Option;
 use super::{ DoubleEndedIter, IntoIter, Iter, SizeHintImpl, SizeHintMarker };
+use core::iter::{ DoubleEndedIterator, IntoIterator, Iterator };
 
 /// An adapter that wraps either a std [`Iterator`] or a wiwi [`Iter`], and then
 /// acts as the other. Basically, with every layer you layer it, it flip flops

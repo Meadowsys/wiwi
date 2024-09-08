@@ -1,3 +1,8 @@
+extern crate core;
+
+use crate::function::FnMut;
+use crate::memory::Sized;
+use crate::option::Option;
 use super::{ Iter, Rev };
 
 pub trait DoubleEndedIter: Iter {

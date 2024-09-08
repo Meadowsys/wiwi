@@ -1,3 +1,4 @@
+use crate::option::{ Option, Option::None };
 use super::{ Iter, SizeHintBound, SizeHintImpl, SizeHintInner, SizeHintMarker };
 
 pub trait Peekable: Iter {
@@ -44,21 +45,21 @@ where
 		let peeked = self.peeked.is_some() as usize;
 
 		match self.iter.size_hint().into_inner() {
-			Unknown => { SizeHintImpl::unknown() }
+			Unknown => unsafe { SizeHintImpl::unknown() }
 
-			Upper { bound: Hard { count } } => { SizeHintImpl::upper_hard(count + peeked) }
-			Upper { bound: Estimate { count } } => { SizeHintImpl::upper_estimate(count + peeked) }
+			Upper { bound: Hard { count } } => unsafe { SizeHintImpl::upper_hard(count + peeked) }
+			Upper { bound: Estimate { count } } => unsafe { SizeHintImpl::upper_estimate(count + peeked) }
 
-			Lower { bound: Hard { count } } => { SizeHintImpl::lower_hard(count + peeked) }
-			Lower { bound: Estimate { count } } => { SizeHintImpl::lower_estimate(count + peeked) }
+			Lower { bound: Hard { count } } => unsafe { SizeHintImpl::lower_hard(count + peeked) }
+			Lower { bound: Estimate { count } } => unsafe { SizeHintImpl::lower_estimate(count + peeked) }
 
-			Single { bound: Hard { count } } => { SizeHintImpl::hard(count + peeked) }
-			Single { bound: Estimate { count } } => { SizeHintImpl::estimate(count + peeked) }
+			Single { bound: Hard { count } } => unsafe { SizeHintImpl::hard(count + peeked) }
+			Single { bound: Estimate { count } } => unsafe { SizeHintImpl::estimate(count + peeked) }
 
-			Range { lower: Estimate { count: cl }, upper: Estimate { count: cu } } => { SizeHintImpl::range_estimate(cl + peeked, cu + peeked) }
-			Range { lower: Estimate { count: cl }, upper: Hard { count: cu } } => { SizeHintImpl::range_lestimate_uhard(cl + peeked, cu + peeked) }
-			Range { lower: Hard { count: cl }, upper: Estimate { count: cu } } => { SizeHintImpl::range_lhard_uestimate(cl + peeked, cu + peeked) }
-			Range { lower: Hard { count: cl }, upper: Hard { count: cu } } => { SizeHintImpl::range_hard(cl + peeked, cu + peeked) }
+			Range { lower: Estimate { count: cl }, upper: Estimate { count: cu } } => unsafe { SizeHintImpl::range_estimate(cl + peeked, cu + peeked) }
+			Range { lower: Estimate { count: cl }, upper: Hard { count: cu } } => unsafe { SizeHintImpl::range_lestimate_uhard(cl + peeked, cu + peeked) }
+			Range { lower: Hard { count: cl }, upper: Estimate { count: cu } } => unsafe { SizeHintImpl::range_lhard_uestimate(cl + peeked, cu + peeked) }
+			Range { lower: Hard { count: cl }, upper: Hard { count: cu } } => unsafe { SizeHintImpl::range_hard(cl + peeked, cu + peeked) }
 		}
 	}
 }

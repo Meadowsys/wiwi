@@ -1,3 +1,5 @@
+use crate::convert::Into;
+use crate::option::{ Option, Option::Some };
 use super::{ Iter, SizeHintImpl, SizeHintMarker };
 
 pub struct Enumerate<I> {

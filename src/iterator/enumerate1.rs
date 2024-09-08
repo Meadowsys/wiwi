@@ -1,3 +1,5 @@
+use crate::convert::Into;
+use crate::option::Option;
 use super::{ Enumerate, Iter, SizeHintImpl, SizeHintMarker };
 
 #[repr(transparent)]

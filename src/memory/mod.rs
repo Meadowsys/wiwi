@@ -20,5 +20,10 @@ pub use core::mem::{
 	transmute,
 	transmute_copy,
 
-	zeroed
+	zeroed,
+	ManuallyDrop,
+	MaybeUninit
 };
+
+#[doc(inline)]
+pub use core::ops::Drop;

@@ -1,3 +1,9 @@
+use crate::clone::Clone;
+use crate::function::FnMut;
+use crate::macros::debug_assert;
+use crate::memory::Sized;
+use crate::option::{ Option, Option::Some };
+
 mod adapter;
 pub use adapter::{
 	AsStdIterator,
@@ -40,7 +46,9 @@ pub use rev::Rev;
 mod size_hint;
 pub use size_hint::{ SizeHint, SizeHintBound, SizeHintImpl, SizeHintInner, SizeHintMarker };
 
-mod std_impl;
+// TODO: there's only Vec in there
+// also call it rust_impl or something?
+// mod std_impl;
 
 mod tuple;
 pub use tuple::*;
@@ -69,7 +77,8 @@ pub trait Iter {
 	/// the iter is allowed to rely on it for soundness reasons.
 	#[inline]
 	unsafe fn size_hint_impl(&self, _: SizeHintMarker) -> SizeHintImpl {
-		SizeHintImpl::unknown()
+		// SAFETY: `unknown` is always correct
+		unsafe { SizeHintImpl::unknown() }
 	}
 
 	#[inline]

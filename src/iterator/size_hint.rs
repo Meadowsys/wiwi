@@ -1,3 +1,5 @@
+use crate::convert::From;
+use crate::option::{ Option, Option::Some, Option::None };
 use super::Iter;
 
 #[derive(Debug)]
@@ -53,85 +55,102 @@ impl SizeHintImpl {
 
 	#[inline]
 	unsafe fn single(bound: SizeHintBound) -> Self {
-		Self::with_inner(SizeHintInner::Single { bound })
+		// SAFETY: caller promises to uphold the invariants of this type of bound
+		unsafe { Self::with_inner(SizeHintInner::Single { bound }) }
 	}
 
 	#[inline]
 	unsafe fn lower(bound: SizeHintBound) -> Self {
-		Self::with_inner(SizeHintInner::Lower { bound })
+		// SAFETY: caller promises to uphold the invariants of this type of bound
+		unsafe { Self::with_inner(SizeHintInner::Lower { bound }) }
 	}
 
 	#[inline]
 	unsafe fn upper(bound: SizeHintBound) -> Self {
-		Self::with_inner(SizeHintInner::Upper { bound })
+		// SAFETY: caller promises to uphold the invariants of this type of bound
+		unsafe { Self::with_inner(SizeHintInner::Upper { bound }) }
 	}
 
 	#[inline]
 	unsafe fn range(lower: SizeHintBound, upper: SizeHintBound) -> Self {
-		Self::with_inner(SizeHintInner::Range { lower, upper })
+		// SAFETY: caller promises to uphold the invariants of this type of bound
+		unsafe { Self::with_inner(SizeHintInner::Range { lower, upper }) }
 	}
 
 	#[inline]
 	pub unsafe fn unknown() -> Self {
-		Self::with_inner(SizeHintInner::Unknown)
+		// SAFETY: caller promises to uphold the invariants of this type of bound
+		unsafe { Self::with_inner(SizeHintInner::Unknown) }
 	}
 
 	#[inline]
 	pub unsafe fn hard(count: usize) -> Self {
-		Self::single(SizeHintBound::Hard { count })
+		// SAFETY: caller promises to uphold the invariants of this type of bound
+		unsafe { Self::single(SizeHintBound::Hard { count }) }
 	}
 
 	#[inline]
 	pub unsafe fn estimate(count: usize) -> Self {
-		Self::single(SizeHintBound::Estimate { count })
+		// SAFETY: caller promises to uphold the invariants of this type of bound
+		unsafe { Self::single(SizeHintBound::Estimate { count }) }
 	}
 
 	#[inline]
 	pub unsafe fn lower_hard(count: usize) -> Self {
-		Self::lower(SizeHintBound::Hard { count })
+		// SAFETY: caller promises to uphold the invariants of this type of bound
+		unsafe { Self::lower(SizeHintBound::Hard { count }) }
 	}
 
 	#[inline]
 	pub unsafe fn lower_estimate(count: usize) -> Self {
-		Self::lower(SizeHintBound::Estimate { count })
+		// SAFETY: caller promises to uphold the invariants of this type of bound
+		unsafe { Self::lower(SizeHintBound::Estimate { count }) }
 	}
 
 	#[inline]
 	pub unsafe fn upper_hard(count: usize) -> Self {
-		Self::upper(SizeHintBound::Hard { count })
+		// SAFETY: caller promises to uphold the invariants of this type of bound
+		unsafe { Self::upper(SizeHintBound::Hard { count }) }
 	}
 
 	#[inline]
 	pub unsafe fn upper_estimate(count: usize) -> Self {
-		Self::upper(SizeHintBound::Estimate { count })
+		// SAFETY: caller promises to uphold the invariants of this type of bound
+		unsafe { Self::upper(SizeHintBound::Estimate { count }) }
 	}
 
 	#[inline]
 	pub unsafe fn range_hard(lower: usize, upper: usize) -> Self {
 		if lower == upper {
-			Self::single(SizeHintBound::Hard { count: lower })
+			// SAFETY: caller promises to uphold the invariants of this type of bound
+			unsafe { Self::single(SizeHintBound::Hard { count: lower }) }
 		} else {
-			Self::range(SizeHintBound::Hard { count: lower }, SizeHintBound::Hard { count: upper })
+			// SAFETY: caller promises to uphold the invariants of this type of bound
+			unsafe { Self::range(SizeHintBound::Hard { count: lower }, SizeHintBound::Hard { count: upper }) }
 		}
 	}
 
 	#[inline]
 	pub unsafe fn range_estimate(lower: usize, upper: usize) -> Self {
 		if lower == upper {
-			Self::single(SizeHintBound::Estimate { count: lower })
+			// SAFETY: caller promises to uphold the invariants of this type of bound
+			unsafe { Self::single(SizeHintBound::Estimate { count: lower }) }
 		} else {
-			Self::range(SizeHintBound::Estimate { count: lower }, SizeHintBound::Estimate { count: upper })
+			// SAFETY: caller promises to uphold the invariants of this type of bound
+			unsafe { Self::range(SizeHintBound::Estimate { count: lower }, SizeHintBound::Estimate { count: upper }) }
 		}
 	}
 
 	#[inline]
 	pub unsafe fn range_lhard_uestimate(lower: usize, upper: usize) -> Self {
-		Self::range(SizeHintBound::Hard { count: lower }, SizeHintBound::Estimate { count: upper })
+		// SAFETY: caller promises to uphold the invariants of this type of bound
+		unsafe { Self::range(SizeHintBound::Hard { count: lower }, SizeHintBound::Estimate { count: upper }) }
 	}
 
 	#[inline]
 	pub unsafe fn range_lestimate_uhard(lower: usize, upper: usize) -> Self {
-		Self::range(SizeHintBound::Estimate { count: lower }, SizeHintBound::Hard { count: upper })
+		// SAFETY: caller promises to uphold the invariants of this type of bound
+		unsafe { Self::range(SizeHintBound::Estimate { count: lower }, SizeHintBound::Hard { count: upper }) }
 	}
 
 	#[inline]

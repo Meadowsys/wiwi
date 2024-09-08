@@ -1,7 +1,7 @@
-use std::{ slice, vec };
-use std::marker::PhantomData;
-use std::mem::{ ManuallyDrop, size_of };
-use std::ptr::{ self, NonNull };
+use crate::memory::{ Drop, ManuallyDrop, size_of };
+use crate::option::{ Option, Option::Some, Option::None };
+use crate::phantom::PhantomData;
+use crate::pointer;
 use super::{ IntoIter, Iter, SizeHintImpl, SizeHintMarker };
 
 pub struct VecIntoIter<T> {
@@ -40,7 +40,8 @@ impl<T> Iter for VecIntoIter<T> {
 
 	#[inline]
 	unsafe fn size_hint_impl(&self, _: SizeHintMarker) -> SizeHintImpl {
-		SizeHintImpl::hard(self.remaining)
+		// SAFETY: we have self.remaining elements remaining (invariant)
+		unsafe { SizeHintImpl::hard(self.remaining) }
 	}
 }
 
@@ -54,7 +55,7 @@ impl<T> Drop for VecIntoIter<T> {
 				let original_ptr = self.ptr.sub(consumed).cast_mut();
 
 				// copy remaining elements to the front of ptr
-				ptr::copy(self.ptr, original_ptr, self.remaining);
+				pointer::copy(self.ptr, original_ptr, self.remaining);
 
 				original_ptr
 			}

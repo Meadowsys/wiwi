@@ -1,3 +1,6 @@
+use crate::convert::Into;
+use crate::function::FnMut;
+use crate::option::Option;
 use super::{ Iter, SizeHintImpl, SizeHintMarker };
 
 pub struct Map<I, F> {

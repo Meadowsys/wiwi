@@ -1,4 +1,5 @@
-use std::marker::PhantomData;
+use crate::option::{ Option, Option::None };
+use crate::phantom::PhantomData;
 use super::{ Iter, SizeHintImpl, SizeHintMarker };
 
 pub struct Empty<T> {
@@ -20,7 +21,8 @@ impl<T> Iter for Empty<T> {
 
 	#[inline]
 	unsafe fn size_hint_impl(&self, _: SizeHintMarker) -> SizeHintImpl {
-		SizeHintImpl::hard(0)
+		// SAFETY: we always emit zero elements (always `None`)
+		unsafe { SizeHintImpl::hard(0) }
 	}
 }
 

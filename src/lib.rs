@@ -29,13 +29,16 @@ pub mod _changelog {}
 pub mod prelude;
 
 pub mod clone;
+pub mod compare;
 pub mod convert;
 pub mod function;
+pub mod iterator;
 pub mod macros;
 pub mod memory;
 pub mod option;
 pub mod phantom;
 pub mod primitive;
+pub mod pointer;
 pub mod result;
 
 // mod _internal;

@@ -1,3 +1,5 @@
+use crate::convert::Into;
+use crate::option::Option;
 use super::{ DoubleEndedIter, Iter, SizeHintImpl, SizeHintMarker };
 
 pub struct Rev<I> {
