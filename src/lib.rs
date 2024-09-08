@@ -19,6 +19,18 @@
 
 #![cfg_attr(docsrs, feature(doc_cfg))]
 
+#![cfg_attr(all(docsrs, kiwingay), doc = "")]
+#![cfg_attr(
+	all(docsrs, kiwingay),
+	doc = concat!(
+		"These docs have been built from commit [",
+		env!("KIWINGAY_DEPLOY_COMMIT_SHORT"),
+		"](https://github.com/meadowsys/wiwi/commit/",
+		env!("KIWINGAY_DEPLOY_COMMIT"),
+		")."
+	)
+)]
+
 #[cfg(target_pointer_width = "16")]
 compile_error!("16-bit platforms are not supported yet (but please do file an issue if for whatever reason you do need it, I would be happy to add support!)");
 
