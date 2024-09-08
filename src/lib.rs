@@ -18,7 +18,7 @@
 #![cfg_attr(docsrs, feature(doc_cfg))]
 
 #[cfg(target_pointer_width = "16")]
-compile_error!("16-bit platforms are not supported (but please do file an issue if for whatever reason you do need it, I would be happy to add support!)");
+compile_error!("16-bit platforms are not supported yet (but please do file an issue if for whatever reason you do need it, I would be happy to add support!)");
 
 #[cfg(any(doc, docsrs, kiwingay))]
 #[doc = include_str!("../CHANGELOG.md")]
