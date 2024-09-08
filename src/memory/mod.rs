@@ -11,14 +11,14 @@ pub use core::mem::{
 	align_of,
 	align_of_val,
 
-	transmute,
-	transmute_copy,
-
 	drop,
 	forget,
 	replace,
 	swap,
 	take,
+
+	transmute,
+	transmute_copy,
 
 	zeroed
 };
