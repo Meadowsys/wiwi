@@ -1,3 +1,6 @@
+#![cfg_attr(not(feature = "std"), no_std)]
+#![no_implicit_prelude]
+
 // TODO: review these
 #![warn(
 	// missing_docs,
@@ -23,6 +26,8 @@ compile_error!("16-bit platforms are not supported yet (but please do file an is
 #[cfg(any(doc, docsrs, kiwingay))]
 #[doc = include_str!("../CHANGELOG.md")]
 pub mod _changelog {}
+
+pub mod phantom;
 
 // mod _internal;
 // pub mod prelude;
