@@ -26,6 +26,7 @@ compile_error!("16-bit platforms are not supported yet (but please do file an is
 #[cfg(any(doc, docsrs, kiwingay))]
 #[doc = include_str!("../CHANGELOG.md")]
 pub mod _changelog {}
+pub mod prelude;
 
 pub mod phantom;
 
