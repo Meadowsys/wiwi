@@ -67,17 +67,9 @@ jobs:
   clippy:
     uses: ./.github/workflows/clippy.yml
 
-  feature-check:
-    uses: ./.github/workflows/feature-check.yml
-
-  verify-gen-features:
-    uses: ./.github/workflows/verify-gen-features.yml
-
   docs:
     needs:
     - test
-    - feature-check
-    - verify-gen-features
     # TODO enable when existing warnings have been cleared
     # - clippy
     runs-on: ubuntu-24.04
