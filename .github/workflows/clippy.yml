@@ -17,4 +17,4 @@ jobs:
 
     - name: run clippy
       run: |
-        cargo clippy --verbose --features all-unstable,all-addons -- --deny warnings
+        cargo clippy --verbose -- --deny warnings

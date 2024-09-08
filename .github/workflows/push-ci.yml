@@ -28,10 +28,10 @@ jobs:
       run: rustc --version
 
     - name: build
-      run: cargo build --verbose --features all-unstable,all-addons
+      run: cargo build --verbose
 
     - name: test
-      run: cargo test --verbose --features all-unstable,all-addons
+      run: cargo test --verbose
       env:
         CARGO_INCREMENTAL: "0"
         LLVM_PROFILE_FILE: "target/coverage/test-%m-%p.profraw"
@@ -92,7 +92,7 @@ jobs:
       run: |
         set -gx RUSTDOCFLAGS "--cfg docsrs --cfg kiwingay -Z unstable-options --enable-index-page --theme "(pwd)"/.cargo/rustdoc-custom-theme/meadow.css"
         set -gx KIWINGAY_DEPLOY_COMMIT_SHORT (string sub --length 8 $KIWINGAY_DEPLOY_COMMIT)
-        cargo doc --verbose --no-deps --features all-unstable,all-addons --lib -p wiwi -p wiwiwiwiwi
+        cargo doc --verbose --no-deps --lib -p wiwi -p wiwiwiwiwi
       env:
         KIWINGAY_DEPLOY_COMMIT: ${{ github.sha }}
 

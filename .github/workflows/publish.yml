@@ -25,14 +25,14 @@ jobs:
       run: rustc --version
 
     - name: build
-      run: cargo build --verbose --features all,all-addons
+      run: cargo build --verbose
     - name: build in release
-      run: cargo build --release --verbose --features all,all-addons
+      run: cargo build --release --verbose
 
     - name: test
-      run: cargo test --verbose --features all,all-addons
+      run: cargo test --verbose
     - name: test in release
-      run: cargo test --release --verbose --features all,all-addons
+      run: cargo test --release --verbose
 
   clippy:
     uses: ./.github/workflows/clippy.yml
