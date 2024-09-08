@@ -1,3 +1,17 @@
+use crate::prelude::*;
+use rust_std::panic::{ self, PanicHookInfo };
+
+/// Augment the panic hook, adding a closure with your own code to
+/// be run before the currently set panic hook
+#[inline]
+pub fn augment_panic_hook(hook: impl Fn(&PanicHookInfo<'_>) + Send + Sync + 'static) {
+	let old = panic::take_hook();
+	panic::set_hook(Box::new(move |panic_info| {
+		hook(panic_info);
+		old(panic_info);
+	}))
+}
+
 /// Convenience macro that declares many private submodules, and glob reexports
 /// all items from them
 ///

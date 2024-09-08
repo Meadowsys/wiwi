@@ -38,6 +38,7 @@ pub use rust_std::borrow::{
 	Cow,
 	ToOwned
 };
+pub use rust_std::boxed::Box;
 pub use rust_std::clone::Clone;
 pub use rust_std::cmp::{
 	PartialEq,
