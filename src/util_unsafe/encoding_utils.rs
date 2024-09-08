@@ -1,4 +1,8 @@
-use std::{ slice, ptr };
+use crate::prelude::*;
+use crate::rust_std::{ ptr, slice };
+
+// TODO: I don't think this file structure is finalised,
+// maybe move each struct to its own file, or all in same file? I dunno
 
 /// Helper for unsafe buffer operations, when the _exact_ total capacity needed
 /// is known ahead of time and requested up front

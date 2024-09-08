@@ -33,6 +33,7 @@ pub mod rust_std;
 
 pub mod encoding;
 pub mod h;
+pub mod util_unsafe;
 
 // pub mod clone;
 // pub mod compare;
