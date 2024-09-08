@@ -35,6 +35,7 @@ pub mod macros;
 pub mod memory;
 pub mod option;
 pub mod phantom;
+pub mod primitive;
 pub mod result;
 
 // mod _internal;
