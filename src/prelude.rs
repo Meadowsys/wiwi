@@ -1,6 +1,10 @@
 //! Prelude module, exporting commonly-used items
 
-use crate::rust_std;
+pub use crate::{
+	rust_alloc,
+	rust_core,
+	rust_std
+};
 
 pub use rust_std::{
 	assert,
@@ -29,6 +33,7 @@ pub use rust_std::borrow::{
 	Cow,
 	ToOwned
 };
+pub use rust_std::clone::Clone;
 pub use rust_std::convert::{
 	From,
 	Into,
