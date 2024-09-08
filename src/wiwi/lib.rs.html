@@ -1,4 +1,4 @@
-<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><meta name="generator" content="rustdoc"><meta name="description" content="Source of the Rust file `src/lib.rs`."><title>lib.rs - source</title><script>if(window.location.protocol!=="file:")document.head.insertAdjacentHTML("beforeend","SourceSerif4-Regular-46f98efaafac5295.ttf.woff2,FiraSans-Regular-018c141bf0843ffd.woff2,FiraSans-Medium-8f9a781e4970d388.woff2,SourceCodePro-Regular-562dcc5011b6de7d.ttf.woff2,SourceCodePro-Semibold-d899c5a5c4aeb14a.ttf.woff2".split(",").map(f=>`<link rel="preload" as="font" type="font/woff2" crossorigin href="../../static.files/${f}">`).join(""))</script><link rel="stylesheet" href="../../static.files/normalize-76eba96aa4d2e634.css"><link rel="stylesheet" href="../../static.files/rustdoc-dd39b87e5fcfba68.css"><meta name="rustdoc-vars" data-root-path="../../" data-static-root-path="../../static.files/" data-current-crate="wiwi" data-themes="meadow" data-resource-suffix="" data-rustdoc-version="1.81.0-nightly (e9e6e2e44 2024-06-28)" data-channel="nightly" data-search-js="search-0fe7219eb170c82e.js" data-settings-js="settings-4313503d2e1961c2.js" ><script src="../../static.files/storage-118b08c4c78b968e.js"></script><script defer src="../../static.files/src-script-e66d777a5a92e9b2.js"></script><script defer src="../../src-files.js"></script><script defer src="../../static.files/main-20a3ad099b048cf2.js"></script><noscript><link rel="stylesheet" href="../../static.files/noscript-df360f571f6edeae.css"></noscript><link rel="alternate icon" type="image/png" href="../../static.files/favicon-32x32-422f7d1d52889060.png"><link rel="icon" type="image/svg+xml" href="../../static.files/favicon-2c020d218678b618.svg"></head><body class="rustdoc src"><!--[if lte IE 11]><div class="warning">This old browser is unsupported and will most likely display funky things.</div><![endif]--><nav class="sidebar"><div class="src-sidebar-title"><h2>Files</h2></div></nav><div class="sidebar-resizer"></div><main><rustdoc-search></rustdoc-search><section id="main-content" class="content"><div class="example-wrap"><div data-nosnippet><pre class="src-line-numbers"><a href="#1" id="1">1</a>
+<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><meta name="generator" content="rustdoc"><meta name="description" content="Source of the Rust file `src/lib.rs`."><title>lib.rs - source</title><script>if(window.location.protocol!=="file:")document.head.insertAdjacentHTML("beforeend","SourceSerif4-Regular-46f98efaafac5295.ttf.woff2,FiraSans-Regular-018c141bf0843ffd.woff2,FiraSans-Medium-8f9a781e4970d388.woff2,SourceCodePro-Regular-562dcc5011b6de7d.ttf.woff2,SourceCodePro-Semibold-d899c5a5c4aeb14a.ttf.woff2".split(",").map(f=>`<link rel="preload" as="font" type="font/woff2" crossorigin href="../../static.files/${f}">`).join(""))</script><link rel="stylesheet" href="../../static.files/normalize-76eba96aa4d2e634.css"><link rel="stylesheet" href="../../static.files/rustdoc-fecee23daa4e8a6d.css"><meta name="rustdoc-vars" data-root-path="../../" data-static-root-path="../../static.files/" data-current-crate="wiwi" data-themes="meadow" data-resource-suffix="" data-rustdoc-version="1.83.0-nightly (d6c8169c1 2024-09-03)" data-channel="nightly" data-search-js="search-a99f1315e7cc5121.js" data-settings-js="settings-4313503d2e1961c2.js" ><script src="../../static.files/storage-118b08c4c78b968e.js"></script><script defer src="../../static.files/src-script-e66d777a5a92e9b2.js"></script><script defer src="../../src-files.js"></script><script defer src="../../static.files/main-921df33f47b8780c.js"></script><noscript><link rel="stylesheet" href="../../static.files/noscript-3b12f09e550e0385.css"></noscript><link rel="alternate icon" type="image/png" href="../../static.files/favicon-32x32-422f7d1d52889060.png"><link rel="icon" type="image/svg+xml" href="../../static.files/favicon-2c020d218678b618.svg"></head><body class="rustdoc src"><!--[if lte IE 11]><div class="warning">This old browser is unsupported and will most likely display funky things.</div><![endif]--><nav class="sidebar"><div class="src-sidebar-title"><h2>Files</h2></div></nav><div class="sidebar-resizer"></div><main><rustdoc-search></rustdoc-search><section id="main-content" class="content"><div class="example-wrap"><div data-nosnippet><pre class="src-line-numbers"><a href="#1" id="1">1</a>
 <a href="#2" id="2">2</a>
 <a href="#3" id="3">3</a>
 <a href="#4" id="4">4</a>
@@ -271,121 +271,20 @@
 <a href="#271" id="271">271</a>
 <a href="#272" id="272">272</a>
 <a href="#273" id="273">273</a>
-<a href="#274" id="274">274</a>
-<a href="#275" id="275">275</a>
-<a href="#276" id="276">276</a>
-<a href="#277" id="277">277</a>
-<a href="#278" id="278">278</a>
-<a href="#279" id="279">279</a>
-<a href="#280" id="280">280</a>
-<a href="#281" id="281">281</a>
-<a href="#282" id="282">282</a>
-<a href="#283" id="283">283</a>
-<a href="#284" id="284">284</a>
-<a href="#285" id="285">285</a>
-<a href="#286" id="286">286</a>
-<a href="#287" id="287">287</a>
-<a href="#288" id="288">288</a>
-<a href="#289" id="289">289</a>
-<a href="#290" id="290">290</a>
-<a href="#291" id="291">291</a>
-<a href="#292" id="292">292</a>
-<a href="#293" id="293">293</a>
-<a href="#294" id="294">294</a>
-<a href="#295" id="295">295</a>
-<a href="#296" id="296">296</a>
-<a href="#297" id="297">297</a>
-<a href="#298" id="298">298</a>
-<a href="#299" id="299">299</a>
-<a href="#300" id="300">300</a>
-<a href="#301" id="301">301</a>
-<a href="#302" id="302">302</a>
-<a href="#303" id="303">303</a>
-<a href="#304" id="304">304</a>
-<a href="#305" id="305">305</a>
-<a href="#306" id="306">306</a>
-<a href="#307" id="307">307</a>
-<a href="#308" id="308">308</a>
-<a href="#309" id="309">309</a>
-<a href="#310" id="310">310</a>
-<a href="#311" id="311">311</a>
-<a href="#312" id="312">312</a>
-<a href="#313" id="313">313</a>
-<a href="#314" id="314">314</a>
-<a href="#315" id="315">315</a>
-<a href="#316" id="316">316</a>
-<a href="#317" id="317">317</a>
-<a href="#318" id="318">318</a>
-<a href="#319" id="319">319</a>
-<a href="#320" id="320">320</a>
-<a href="#321" id="321">321</a>
-<a href="#322" id="322">322</a>
-<a href="#323" id="323">323</a>
-<a href="#324" id="324">324</a>
-<a href="#325" id="325">325</a>
-<a href="#326" id="326">326</a>
-<a href="#327" id="327">327</a>
-<a href="#328" id="328">328</a>
-<a href="#329" id="329">329</a>
-<a href="#330" id="330">330</a>
-<a href="#331" id="331">331</a>
-<a href="#332" id="332">332</a>
-<a href="#333" id="333">333</a>
-<a href="#334" id="334">334</a>
-<a href="#335" id="335">335</a>
-<a href="#336" id="336">336</a>
-<a href="#337" id="337">337</a>
-<a href="#338" id="338">338</a>
-<a href="#339" id="339">339</a>
-<a href="#340" id="340">340</a>
-<a href="#341" id="341">341</a>
-<a href="#342" id="342">342</a>
-<a href="#343" id="343">343</a>
-<a href="#344" id="344">344</a>
-<a href="#345" id="345">345</a>
-<a href="#346" id="346">346</a>
-<a href="#347" id="347">347</a>
-<a href="#348" id="348">348</a>
-<a href="#349" id="349">349</a>
-<a href="#350" id="350">350</a>
-<a href="#351" id="351">351</a>
-<a href="#352" id="352">352</a>
-<a href="#353" id="353">353</a>
-<a href="#354" id="354">354</a>
-<a href="#355" id="355">355</a>
-<a href="#356" id="356">356</a>
-<a href="#357" id="357">357</a>
-<a href="#358" id="358">358</a>
-<a href="#359" id="359">359</a>
-<a href="#360" id="360">360</a>
-<a href="#361" id="361">361</a>
-<a href="#362" id="362">362</a>
-<a href="#363" id="363">363</a>
-<a href="#364" id="364">364</a>
-<a href="#365" id="365">365</a>
-<a href="#366" id="366">366</a>
-<a href="#367" id="367">367</a>
-<a href="#368" id="368">368</a>
-<a href="#369" id="369">369</a>
-<a href="#370" id="370">370</a>
-<a href="#371" id="371">371</a>
-<a href="#372" id="372">372</a>
-</pre></div><pre class="rust"><code><span class="attr">#![cfg_attr(feature = <span class="string">"nightly"</span>, feature(cfg_overflow_checks))]
-
-#![cfg_attr(feature = <span class="string">"omega-tuples-of-doom"</span>, recursion_limit = <span class="string">"256"</span>)]
+</pre></div><pre class="rust"><code><span class="attr">#![no_implicit_prelude]
 
 </span><span class="comment">// TODO: review these
 </span><span class="attr">#![warn(
-	missing_docs,
-	unsafe_op_in_unsafe_fn,
-	clippy::missing_docs_in_private_items,
-	clippy::missing_safety_doc,
-	clippy::multiple_unsafe_ops_per_block,
+	<span class="comment">// missing_docs,
+	// clippy::missing_docs_in_private_items,
+	// clippy::missing_safety_doc,
+	</span>clippy::multiple_unsafe_ops_per_block,
 	clippy::undocumented_unsafe_blocks
 )]
 #![deny(
 	unconditional_recursion,
 	unexpected_cfgs,
+	unsafe_op_in_unsafe_fn,
 	clippy::empty_docs,
 	clippy::mixed_attributes_style,
 	clippy::unnecessary_safety_comment
@@ -393,353 +292,256 @@
 
 #![cfg_attr(docsrs, feature(doc_cfg))]
 
-#![doc = <span class="macro">include_str!</span>(<span class="string">"../README.md"</span>)]
-#![doc = <span class="string">""</span>]
-#![doc = <span class="string">"[wiwi.kiwin.gay]: https://wiwi.kiwin.gay"</span>]
-#![doc = <span class="string">""</span>]
-#![cfg_attr(all(not(docsrs), feature = <span class="string">"all-unstable"</span>), doc = <span class="string">"## Enabled features (`all-unstable` is enabled)"</span>)]
-#![cfg_attr(all(not(docsrs), feature = <span class="string">"all"</span>, not(feature = <span class="string">"all-unstable"</span>)), doc = <span class="string">"## Enabled features (`all` is enabled)"</span>)]
-#![cfg_attr(all(not(docsrs), not(feature = <span class="string">"all"</span>), not(feature = <span class="string">"all-unstable"</span>)), doc = <span class="string">"## Enabled features"</span>)]
-#![cfg_attr(all(docsrs, not(kiwingay)), doc = <span class="string">"## Enabled features (docs.rs)"</span>)]
-#![cfg_attr(kiwingay, doc = <span class="string">"## Enabled features (wiwi.kiwin.gay)"</span>)]
-#![doc = <span class="string">""</span>]
-
-#![cfg_attr(all(docsrs, not(kiwingay)), doc = <span class="string">"On docs.rs, the feature `all` is enabled. This means that all stable features,"</span>)]
-#![cfg_attr(all(docsrs, not(kiwingay)), doc = <span class="string">"and only stable features, will appear in these docs."</span>)]
-#![cfg_attr(kiwingay, doc = <span class="string">"On [wiwi.kiwin.gay], as many features as possible are enabled. This means"</span>)]
-#![cfg_attr(kiwingay, doc = <span class="string">"everything, including unstable features!"</span>)]
-#![cfg_attr(any(docsrs, kiwingay), doc = <span class="string">""</span>)]
-
-</span><span class="comment">// ----- start autogenerated region (doc cfgs) (see gen-features script) -----
-
-</span><span class="attr">#![cfg_attr(all(not(any(docsrs, kiwingay)), feature = <span class="string">"aoc-unstable"</span>), doc = <span class="string">"- `aoc` (unstable)"</span>)]
-#![cfg_attr(all(not(any(docsrs, kiwingay)), feature = <span class="string">"augment-panic-hook"</span>), doc = <span class="string">"- `augment-panic-hook`"</span>)]
-#![cfg_attr(all(not(any(docsrs, kiwingay)), feature = <span class="string">"auth-unstable"</span>), doc = <span class="string">"- `auth` (unstable)"</span>)]
-#![cfg_attr(all(not(any(docsrs, kiwingay)), feature = <span class="string">"bitstream-unstable"</span>), doc = <span class="string">"- `bitstream` (unstable)"</span>)]
-#![cfg_attr(all(not(any(docsrs, kiwingay)), feature = <span class="string">"chainer-unstable"</span>), doc = <span class="string">"- `chainer` (unstable)"</span>)]
-#![cfg_attr(all(not(any(docsrs, kiwingay)), feature = <span class="string">"cli-unstable"</span>), doc = <span class="string">"- `cli` (unstable)"</span>)]
-#![cfg_attr(all(not(any(docsrs, kiwingay)), feature = <span class="string">"clock-timer"</span>), doc = <span class="string">"- `clock-timer`"</span>)]
-#![cfg_attr(all(not(any(docsrs, kiwingay)), feature = <span class="string">"debounce"</span>), doc = <span class="string">"- `debounce`"</span>)]
-#![cfg_attr(all(not(any(docsrs, kiwingay)), feature = <span class="string">"defer-unstable"</span>), doc = <span class="string">"- `defer` (unstable)"</span>)]
-#![cfg_attr(all(not(any(docsrs, kiwingay)), feature = <span class="string">"export-all-submodules"</span>), doc = <span class="string">"- `export-all-submodules`"</span>)]
-#![cfg_attr(all(not(any(docsrs, kiwingay)), feature = <span class="string">"h"</span>), doc = <span class="string">"- `h`"</span>)]
-#![cfg_attr(all(not(any(docsrs, kiwingay)), feature = <span class="string">"hex"</span>), doc = <span class="string">"- `hex`"</span>)]
-#![cfg_attr(all(not(any(docsrs, kiwingay)), feature = <span class="string">"id-unstable"</span>), doc = <span class="string">"- `id` (unstable)"</span>)]
-#![cfg_attr(all(not(any(docsrs, kiwingay)), feature = <span class="string">"int-unstable"</span>), doc = <span class="string">"- `int` (unstable)"</span>)]
-#![cfg_attr(all(not(any(docsrs, kiwingay)), feature = <span class="string">"iter-unstable"</span>), doc = <span class="string">"- `iter` (unstable)"</span>)]
-#![cfg_attr(all(not(any(docsrs, kiwingay)), feature = <span class="string">"lazy-wrap"</span>), doc = <span class="string">"- `lazy-wrap`"</span>)]
-#![cfg_attr(all(not(any(docsrs, kiwingay)), feature = <span class="string">"lsl-unstable"</span>), doc = <span class="string">"- `lsl` (unstable)"</span>)]
-#![cfg_attr(all(not(any(docsrs, kiwingay)), feature = <span class="string">"mcu-unstable"</span>), doc = <span class="string">"- `mcu` (unstable)"</span>)]
-#![cfg_attr(all(not(any(docsrs, kiwingay)), feature = <span class="string">"memory-usage-unstable"</span>), doc = <span class="string">"- `memory-usage` (unstable)"</span>)]
-#![cfg_attr(all(not(any(docsrs, kiwingay)), feature = <span class="string">"minesweeper-unstable"</span>), doc = <span class="string">"- `minesweeper` (unstable)"</span>)]
-#![cfg_attr(all(not(any(docsrs, kiwingay)), feature = <span class="string">"nominal"</span>), doc = <span class="string">"- `nominal`"</span>)]
-#![cfg_attr(all(not(any(docsrs, kiwingay)), feature = <span class="string">"num-traits-unstable"</span>), doc = <span class="string">"- `num-traits` (unstable)"</span>)]
-#![cfg_attr(all(not(any(docsrs, kiwingay)), feature = <span class="string">"path-unstable"</span>), doc = <span class="string">"- `path` (unstable)"</span>)]
-#![cfg_attr(all(not(any(docsrs, kiwingay)), feature = <span class="string">"rand"</span>), doc = <span class="string">"- `rand`"</span>)]
-#![cfg_attr(all(not(any(docsrs, kiwingay)), feature = <span class="string">"serialiser-binary-unstable"</span>), doc = <span class="string">"- `serialiser-binary` (unstable)"</span>)]
-#![cfg_attr(all(not(any(docsrs, kiwingay)), feature = <span class="string">"serialiser-binary-2-unstable"</span>), doc = <span class="string">"- `serialiser-binary-2` (unstable)"</span>)]
-#![cfg_attr(all(not(any(docsrs, kiwingay)), feature = <span class="string">"serialiser-text-unstable"</span>), doc = <span class="string">"- `serialiser-text` (unstable)"</span>)]
-#![cfg_attr(all(not(any(docsrs, kiwingay)), feature = <span class="string">"string-pool-unstable"</span>), doc = <span class="string">"- `string-pool` (unstable)"</span>)]
-#![cfg_attr(all(not(any(docsrs, kiwingay)), feature = <span class="string">"sudoku-unstable"</span>), doc = <span class="string">"- `sudoku` (unstable)"</span>)]
-#![cfg_attr(all(not(any(docsrs, kiwingay)), feature = <span class="string">"unicode-unstable"</span>), doc = <span class="string">"- `unicode` (unstable)"</span>)]
-#![cfg_attr(all(not(any(docsrs, kiwingay)), feature = <span class="string">"with-cloned"</span>), doc = <span class="string">"- `with-cloned`"</span>)]
-#![cfg_attr(all(not(any(docsrs, kiwingay)), feature = <span class="string">"z85"</span>), doc = <span class="string">"- `z85`"</span>)]
-
-#![cfg_attr(all(
-	not(feature = <span class="string">"aoc-unstable"</span>),
-	not(feature = <span class="string">"augment-panic-hook"</span>),
-	not(feature = <span class="string">"auth-unstable"</span>),
-	not(feature = <span class="string">"bitstream-unstable"</span>),
-	not(feature = <span class="string">"chainer-unstable"</span>),
-	not(feature = <span class="string">"cli-unstable"</span>),
-	not(feature = <span class="string">"clock-timer"</span>),
-	not(feature = <span class="string">"debounce"</span>),
-	not(feature = <span class="string">"defer-unstable"</span>),
-	not(feature = <span class="string">"export-all-submodules"</span>),
-	not(feature = <span class="string">"h"</span>),
-	not(feature = <span class="string">"hex"</span>),
-	not(feature = <span class="string">"id-unstable"</span>),
-	not(feature = <span class="string">"int-unstable"</span>),
-	not(feature = <span class="string">"iter-unstable"</span>),
-	not(feature = <span class="string">"lazy-wrap"</span>),
-	not(feature = <span class="string">"lsl-unstable"</span>),
-	not(feature = <span class="string">"mcu-unstable"</span>),
-	not(feature = <span class="string">"memory-usage-unstable"</span>),
-	not(feature = <span class="string">"minesweeper-unstable"</span>),
-	not(feature = <span class="string">"nominal"</span>),
-	not(feature = <span class="string">"num-traits-unstable"</span>),
-	not(feature = <span class="string">"path-unstable"</span>),
-	not(feature = <span class="string">"rand"</span>),
-	not(feature = <span class="string">"serialiser-binary-unstable"</span>),
-	not(feature = <span class="string">"serialiser-binary-2-unstable"</span>),
-	not(feature = <span class="string">"serialiser-text-unstable"</span>),
-	not(feature = <span class="string">"string-pool-unstable"</span>),
-	not(feature = <span class="string">"sudoku-unstable"</span>),
-	not(feature = <span class="string">"unicode-unstable"</span>),
-	not(feature = <span class="string">"with-cloned"</span>),
-	not(feature = <span class="string">"z85"</span>),
-	not(docsrs)
-), doc = <span class="string">"No features enabled! (you should probably enable something, otherwise this crate does nothing :p)"</span>)]
-
-</span><span class="comment">// ----- end autogenerated region (doc cfgs) -----
-
-</span><span class="attr">#![cfg_attr(all(docsrs, not(kiwingay)), doc = <span class="string">""</span>)]
-#![cfg_attr(all(docsrs, not(kiwingay)), doc = <span class="string">"If you would like to see documentation for unstable features, please use"</span>)]
-#![cfg_attr(all(docsrs, not(kiwingay)), doc = <span class="string">"`cargo doc` to build them locally (or alternatively `cargo doc --open` to"</span>)]
-#![cfg_attr(all(docsrs, not(kiwingay)), doc = <span class="string">"open the locally built docs in your default browser). Running `cargo doc`"</span>)]
-#![cfg_attr(all(docsrs, not(kiwingay)), doc = <span class="string">"will by default also generate documentation for all crates in your dependency"</span>)]
-#![cfg_attr(all(docsrs, not(kiwingay)), doc = <span class="string">"tree, including wiwi, so no need to clone the `wiwi` repository just for"</span>)]
-#![cfg_attr(all(docsrs, not(kiwingay)), doc = <span class="string">"unstable feature docs."</span>)]
-#![cfg_attr(all(docsrs, not(kiwingay)), doc = <span class="string">""</span>)]
-#![cfg_attr(all(docsrs, not(kiwingay)), doc = <span class="string">"Unstable documentation for the in-development version of wiwi is available at [wiwi.kiwin.gay]."</span>)]
-
-#![cfg_attr(all(docsrs, kiwingay), doc = <span class="string">""</span>)]
-#![cfg_attr(
-	all(docsrs, kiwingay),
-	doc = <span class="macro">concat!</span>(
-		<span class="string">"These docs have been built from commit ["</span>,
-		<span class="macro">env!</span>(<span class="string">"KIWINGAY_DEPLOY_COMMIT_SHORT"</span>),
-		<span class="string">"](https://github.com/meadowsys/wiwi/commit/"</span>,
-		<span class="macro">env!</span>(<span class="string">"KIWINGAY_DEPLOY_COMMIT"</span>),
-		<span class="string">")."
-	</span>)
-)]
-
 #[cfg(target_pointer_width = <span class="string">"16"</span>)]
-</span><span class="macro">compile_error!</span>(<span class="string">"16-bit platforms are not supported (but please do file an issue if for whatever reason you do need it, I would be happy to add support!)"</span>);
+</span><span class="macro">compile_error!</span>(<span class="string">"16-bit platforms are not supported yet (but please do file an issue if for whatever reason you do need it, I would be happy to add support!)"</span>);
 
 <span class="attr">#[cfg(any(doc, docsrs, kiwingay))]
 #[doc = <span class="macro">include_str!</span>(<span class="string">"../CHANGELOG.md"</span>)]
 </span><span class="kw">pub mod </span>_changelog {}
-
-<span class="kw">mod </span>_internal;
 <span class="kw">pub mod </span>prelude;
 
-<span class="comment">// ----- start autogenerated region (lib) (see gen-features script) -----
+<span class="kw">pub mod </span>rust_alloc;
+<span class="kw">pub mod </span>rust_core;
+<span class="kw">pub mod </span>rust_std;
 
-</span><span class="attr">#[cfg(feature = <span class="string">"aoc-unstable"</span>)]
-#[cfg_attr(docsrs, doc(cfg(feature = <span class="string">"aoc-unstable"</span>)))]
-</span><span class="doccomment">/// Utilities specific for writing solutions for [Advent of Code](https://adventofcode.com)
-</span><span class="attr">#[doc = <span class="string">""</span>]
-#[doc = <span class="macro">include_str!</span>(<span class="string">"./aoc/README.md"</span>)]
-</span><span class="kw">pub mod </span>aoc;
+<span class="comment">// pub mod clone;
+// pub mod compare;
+// pub mod convert;
+// pub mod function;
+// // pub mod h;
+// pub mod iterator;
+// pub mod macros;
+// pub mod memory;
+// pub mod option;
+// pub mod phantom;
+// pub mod primitive;
+// pub mod pointer;
+// pub mod result;
 
-<span class="attr">#[cfg(feature = <span class="string">"augment-panic-hook"</span>)]
-#[cfg_attr(docsrs, doc(cfg(feature = <span class="string">"augment-panic-hook"</span>)))]
-</span><span class="doccomment">/// Conveniently augment the panic hook (instead of replacing it), running some of your code before calling the existing one
-</span><span class="attr">#[doc = <span class="string">""</span>]
-#[doc = <span class="macro">include_str!</span>(<span class="string">"./augment_panic_hook/README.md"</span>)]
-</span><span class="kw">pub mod </span>augment_panic_hook;
+// mod _internal;
+// pub mod prelude;
 
-<span class="attr">#[cfg(feature = <span class="string">"auth-unstable"</span>)]
-#[cfg_attr(docsrs, doc(cfg(feature = <span class="string">"auth-unstable"</span>)))]
-</span><span class="doccomment">/// Lower-level(ish) utilities for writing an authentication system, in which the client password is never sent over the wire
-</span><span class="attr">#[doc = <span class="string">""</span>]
-#[doc = <span class="macro">include_str!</span>(<span class="string">"./auth/README.md"</span>)]
-</span><span class="kw">pub mod </span>auth;
+// #[cfg(feature = "aoc-unstable")]
+// #[cfg_attr(docsrs, doc(cfg(feature = "aoc-unstable")))]
+// /// Utilities specific for writing solutions for [Advent of Code](https://adventofcode.com)
+// #[doc = ""]
+// #[doc = include_str!("./aoc/README.md")]
+// pub mod aoc;
 
-<span class="attr">#[cfg(feature = <span class="string">"bitstream-unstable"</span>)]
-#[cfg_attr(docsrs, doc(cfg(feature = <span class="string">"bitstream-unstable"</span>)))]
-</span><span class="doccomment">/// Encoder and decoder for a stream of bits
-</span><span class="attr">#[doc = <span class="string">""</span>]
-#[doc = <span class="macro">include_str!</span>(<span class="string">"./bitstream/README.md"</span>)]
-</span><span class="kw">pub mod </span>bitstream;
+// #[cfg(feature = "augment-panic-hook")]
+// #[cfg_attr(docsrs, doc(cfg(feature = "augment-panic-hook")))]
+// /// Conveniently augment the panic hook (instead of replacing it), running some of your code before calling the existing one
+// #[doc = ""]
+// #[doc = include_str!("./augment_panic_hook/README.md")]
+// pub mod augment_panic_hook;
 
-<span class="attr">#[cfg(feature = <span class="string">"chainer-unstable"</span>)]
-#[cfg_attr(docsrs, doc(cfg(feature = <span class="string">"chainer-unstable"</span>)))]
-</span><span class="doccomment">/// Wrappers around common structs that provide chaining APIs (take ownership, do operation, then return ownership back with the new value)
-</span><span class="attr">#[doc = <span class="string">""</span>]
-#[doc = <span class="macro">include_str!</span>(<span class="string">"./chainer/README.md"</span>)]
-</span><span class="kw">pub mod </span>chainer;
+// #[cfg(feature = "auth-unstable")]
+// #[cfg_attr(docsrs, doc(cfg(feature = "auth-unstable")))]
+// /// Lower-level(ish) utilities for writing an authentication system, in which the client password is never sent over the wire
+// #[doc = ""]
+// #[doc = include_str!("./auth/README.md")]
+// pub mod auth;
 
-<span class="attr">#[cfg(feature = <span class="string">"cli-unstable"</span>)]
-#[cfg_attr(docsrs, doc(cfg(feature = <span class="string">"cli-unstable"</span>)))]
-</span><span class="doccomment">/// CLI arguments parser
-</span><span class="attr">#[doc = <span class="string">""</span>]
-#[doc = <span class="macro">include_str!</span>(<span class="string">"./cli/README.md"</span>)]
-</span><span class="kw">pub mod </span>cli;
+// #[cfg(feature = "bitstream-unstable")]
+// #[cfg_attr(docsrs, doc(cfg(feature = "bitstream-unstable")))]
+// /// Encoder and decoder for a stream of bits
+// #[doc = ""]
+// #[doc = include_str!("./bitstream/README.md")]
+// pub mod bitstream;
 
-<span class="attr">#[cfg(feature = <span class="string">"clock-timer"</span>)]
-#[cfg_attr(docsrs, doc(cfg(feature = <span class="string">"clock-timer"</span>)))]
-</span><span class="doccomment">/// An interval tracking clock, yielding ticks at specified intervals and doing so for a specified period of time
-</span><span class="attr">#[doc = <span class="string">""</span>]
-#[doc = <span class="macro">include_str!</span>(<span class="string">"./clock_timer/README.md"</span>)]
-</span><span class="kw">pub mod </span>clock_timer;
+// #[cfg(feature = "chainer-unstable")]
+// #[cfg_attr(docsrs, doc(cfg(feature = "chainer-unstable")))]
+// /// Wrappers around common structs that provide chaining APIs (take ownership, do operation, then return ownership back with the new value)
+// #[doc = ""]
+// #[doc = include_str!("./chainer/README.md")]
+// pub mod chainer;
 
-<span class="attr">#[cfg(feature = <span class="string">"debounce"</span>)]
-#[cfg_attr(docsrs, doc(cfg(feature = <span class="string">"debounce"</span>)))]
-</span><span class="doccomment">/// Delay calling a function until a specified period of time has passed since the last time it was called
-</span><span class="attr">#[doc = <span class="string">""</span>]
-#[doc = <span class="macro">include_str!</span>(<span class="string">"./debounce/README.md"</span>)]
-</span><span class="kw">pub mod </span>debounce;
+// #[cfg(feature = "cli-unstable")]
+// #[cfg_attr(docsrs, doc(cfg(feature = "cli-unstable")))]
+// /// CLI arguments parser
+// #[doc = ""]
+// #[doc = include_str!("./cli/README.md")]
+// pub mod cli;
 
-<span class="attr">#[cfg(feature = <span class="string">"defer-unstable"</span>)]
-#[cfg_attr(docsrs, doc(cfg(feature = <span class="string">"defer-unstable"</span>)))]
-</span><span class="doccomment">/// Defer running code until the end of the current scope or until something gets dropped
-</span><span class="attr">#[doc = <span class="string">""</span>]
-#[doc = <span class="macro">include_str!</span>(<span class="string">"./defer/README.md"</span>)]
-</span><span class="kw">pub mod </span>defer;
+// #[cfg(feature = "clock-timer")]
+// #[cfg_attr(docsrs, doc(cfg(feature = "clock-timer")))]
+// /// An interval tracking clock, yielding ticks at specified intervals and doing so for a specified period of time
+// #[doc = ""]
+// #[doc = include_str!("./clock_timer/README.md")]
+// pub mod clock_timer;
 
-<span class="attr">#[cfg(feature = <span class="string">"export-all-submodules"</span>)]
-#[cfg_attr(docsrs, doc(cfg(feature = <span class="string">"export-all-submodules"</span>)))]
-</span><span class="doccomment">/// A convenience macro for declaring many private modules, then reexporting everything within them using a glob use statement
-</span><span class="attr">#[doc = <span class="string">""</span>]
-#[doc = <span class="macro">include_str!</span>(<span class="string">"./export_all_submodules/README.md"</span>)]
-</span><span class="kw">pub mod </span>export_all_submodules;
+// #[cfg(feature = "debounce")]
+// #[cfg_attr(docsrs, doc(cfg(feature = "debounce")))]
+// /// Delay calling a function until a specified period of time has passed since the last time it was called
+// #[doc = ""]
+// #[doc = include_str!("./debounce/README.md")]
+// pub mod debounce;
 
-<span class="attr">#[cfg(feature = <span class="string">"h"</span>)]
-#[cfg_attr(docsrs, doc(cfg(feature = <span class="string">"h"</span>)))]
-</span><span class="doccomment">/// h
-</span><span class="attr">#[doc = <span class="string">""</span>]
-#[doc = <span class="macro">include_str!</span>(<span class="string">"./h/README.md"</span>)]
-</span><span class="kw">pub mod </span>h;
+// #[cfg(feature = "defer-unstable")]
+// #[cfg_attr(docsrs, doc(cfg(feature = "defer-unstable")))]
+// /// Defer running code until the end of the current scope or until something gets dropped
+// #[doc = ""]
+// #[doc = include_str!("./defer/README.md")]
+// pub mod defer;
 
-<span class="attr">#[cfg(feature = <span class="string">"hex"</span>)]
-#[cfg_attr(docsrs, doc(cfg(feature = <span class="string">"hex"</span>)))]
-</span><span class="doccomment">/// Fast hex encoder and decoder for both upper hex and lower hex
-</span><span class="attr">#[doc = <span class="string">""</span>]
-#[doc = <span class="macro">include_str!</span>(<span class="string">"./hex/README.md"</span>)]
-</span><span class="kw">pub mod </span>hex;
+// #[cfg(feature = "export-all-submodules")]
+// #[cfg_attr(docsrs, doc(cfg(feature = "export-all-submodules")))]
+// /// A convenience macro for declaring many private modules, then reexporting everything within them using a glob use statement
+// #[doc = ""]
+// #[doc = include_str!("./export_all_submodules/README.md")]
+// pub mod export_all_submodules;
 
-<span class="attr">#[cfg(feature = <span class="string">"id-unstable"</span>)]
-#[cfg_attr(docsrs, doc(cfg(feature = <span class="string">"id-unstable"</span>)))]
-</span><span class="doccomment">/// ID generators that guarantee uniqueness and ordering, and of various output sizes
-</span><span class="attr">#[doc = <span class="string">""</span>]
-#[doc = <span class="macro">include_str!</span>(<span class="string">"./id/README.md"</span>)]
-</span><span class="kw">pub mod </span>id;
+// #[cfg(feature = "h")]
+// #[cfg_attr(docsrs, doc(cfg(feature = "h")))]
+// /// h
+// #[doc = ""]
+// #[doc = include_str!("./h/README.md")]
+// pub mod h;
 
-<span class="attr">#[cfg(feature = <span class="string">"int-unstable"</span>)]
-#[cfg_attr(docsrs, doc(cfg(feature = <span class="string">"int-unstable"</span>)))]
-</span><span class="doccomment">/// Bigints (ex. u384) and uneven sized ints (ex. u15)
-</span><span class="attr">#[doc = <span class="string">""</span>]
-#[doc = <span class="macro">include_str!</span>(<span class="string">"./int/README.md"</span>)]
-</span><span class="kw">pub mod </span>int;
+// #[cfg(feature = "hex")]
+// #[cfg_attr(docsrs, doc(cfg(feature = "hex")))]
+// /// Fast hex encoder and decoder for both upper hex and lower hex
+// #[doc = ""]
+// #[doc = include_str!("./hex/README.md")]
+// pub mod hex;
 
-<span class="attr">#[cfg(feature = <span class="string">"iter-unstable"</span>)]
-#[cfg_attr(docsrs, doc(cfg(feature = <span class="string">"iter-unstable"</span>)))]
-</span><span class="doccomment">/// Iterator utilities
-</span><span class="attr">#[doc = <span class="string">""</span>]
-#[doc = <span class="macro">include_str!</span>(<span class="string">"./iter/README.md"</span>)]
-</span><span class="kw">pub mod </span>iter;
+// #[cfg(feature = "id-unstable")]
+// #[cfg_attr(docsrs, doc(cfg(feature = "id-unstable")))]
+// /// ID generators that guarantee uniqueness and ordering, and of various output sizes
+// #[doc = ""]
+// #[doc = include_str!("./id/README.md")]
+// pub mod id;
 
-<span class="attr">#[cfg(feature = <span class="string">"lazy-wrap"</span>)]
-#[cfg_attr(docsrs, doc(cfg(feature = <span class="string">"lazy-wrap"</span>)))]
-</span><span class="doccomment">/// Wrappers around a lazily initialised value, and its initialisation function, supporting usage in static variables
-</span><span class="attr">#[doc = <span class="string">""</span>]
-#[doc = <span class="macro">include_str!</span>(<span class="string">"./lazy_wrap/README.md"</span>)]
-</span><span class="kw">pub mod </span>lazy_wrap;
+// #[cfg(feature = "int-unstable")]
+// #[cfg_attr(docsrs, doc(cfg(feature = "int-unstable")))]
+// /// Bigints (ex. u384) and uneven sized ints (ex. u15)
+// #[doc = ""]
+// #[doc = include_str!("./int/README.md")]
+// pub mod int;
 
-<span class="attr">#[cfg(feature = <span class="string">"lsl-unstable"</span>)]
-#[cfg_attr(docsrs, doc(cfg(feature = <span class="string">"lsl-unstable"</span>)))]
-</span><span class="doccomment">/// Experimental lib to help with writing Second Life scripts in Rust... because yes, I got fed up with it very quickly and immediately missed Rust lol
-</span><span class="attr">#[doc = <span class="string">""</span>]
-#[doc = <span class="macro">include_str!</span>(<span class="string">"./lsl/README.md"</span>)]
-</span><span class="kw">pub mod </span>lsl;
+// #[cfg(feature = "iter-unstable")]
+// #[cfg_attr(docsrs, doc(cfg(feature = "iter-unstable")))]
+// /// Iterator utilities
+// #[doc = ""]
+// #[doc = include_str!("./iter/README.md")]
+// pub mod iter;
 
-<span class="attr">#[cfg(feature = <span class="string">"mcu-unstable"</span>)]
-#[cfg_attr(docsrs, doc(cfg(feature = <span class="string">"mcu-unstable"</span>)))]
-</span><span class="doccomment">/// [Material colour utilities](https://github.com/material-foundation/material-color-utilities)
-</span><span class="attr">#[doc = <span class="string">""</span>]
-#[doc = <span class="macro">include_str!</span>(<span class="string">"./mcu/README.md"</span>)]
-</span><span class="kw">pub mod </span>mcu;
+// #[cfg(feature = "lazy-wrap")]
+// #[cfg_attr(docsrs, doc(cfg(feature = "lazy-wrap")))]
+// /// Wrappers around a lazily initialised value, and its initialisation function, supporting usage in static variables
+// #[doc = ""]
+// #[doc = include_str!("./lazy_wrap/README.md")]
+// pub mod lazy_wrap;
 
-<span class="attr">#[cfg(feature = <span class="string">"memory-usage-unstable"</span>)]
-#[cfg_attr(docsrs, doc(cfg(feature = <span class="string">"memory-usage-unstable"</span>)))]
-</span><span class="doccomment">/// Calculate actual memory usage of values, including derive macro (not the same as `size_of::&lt;T&gt;()`)
-</span><span class="attr">#[doc = <span class="string">""</span>]
-#[doc = <span class="macro">include_str!</span>(<span class="string">"./memory_usage/README.md"</span>)]
-</span><span class="kw">pub mod </span>memory_usage;
+// #[cfg(feature = "lsl-unstable")]
+// #[cfg_attr(docsrs, doc(cfg(feature = "lsl-unstable")))]
+// /// Experimental lib to help with writing Second Life scripts in Rust... because yes, I got fed up with it very quickly and immediately missed Rust lol
+// #[doc = ""]
+// #[doc = include_str!("./lsl/README.md")]
+// pub mod lsl;
 
-<span class="attr">#[cfg(feature = <span class="string">"minesweeper-unstable"</span>)]
-#[cfg_attr(docsrs, doc(cfg(feature = <span class="string">"minesweeper-unstable"</span>)))]
-</span><span class="doccomment">/// Core logic components for minesweeper games of arbitrary size
-</span><span class="attr">#[doc = <span class="string">""</span>]
-#[doc = <span class="macro">include_str!</span>(<span class="string">"./minesweeper/README.md"</span>)]
-</span><span class="kw">pub mod </span>minesweeper;
+// #[cfg(feature = "mcu-unstable")]
+// #[cfg_attr(docsrs, doc(cfg(feature = "mcu-unstable")))]
+// /// [Material colour utilities](https://github.com/material-foundation/material-color-utilities)
+// #[doc = ""]
+// #[doc = include_str!("./mcu/README.md")]
+// pub mod mcu;
 
-<span class="attr">#[cfg(feature = <span class="string">"nominal"</span>)]
-#[cfg_attr(docsrs, doc(cfg(feature = <span class="string">"nominal"</span>)))]
-</span><span class="doccomment">/// Generic newtype wrappers, for increased type safety through Rust's nominal type system
-</span><span class="attr">#[doc = <span class="string">""</span>]
-#[doc = <span class="macro">include_str!</span>(<span class="string">"./nominal/README.md"</span>)]
-</span><span class="kw">pub mod </span>nominal;
+// #[cfg(feature = "memory-usage-unstable")]
+// #[cfg_attr(docsrs, doc(cfg(feature = "memory-usage-unstable")))]
+// /// Calculate actual memory usage of values, including derive macro (not the same as `size_of::&lt;T&gt;()`)
+// #[doc = ""]
+// #[doc = include_str!("./memory_usage/README.md")]
+// pub mod memory_usage;
 
-<span class="attr">#[cfg(feature = <span class="string">"num-traits-unstable"</span>)]
-#[cfg_attr(docsrs, doc(cfg(feature = <span class="string">"num-traits-unstable"</span>)))]
-</span><span class="doccomment">/// More traits for numbers and their various functionality, including things like [`MulWidening`]
-</span><span class="attr">#[doc = <span class="string">""</span>]
-#[doc = <span class="macro">include_str!</span>(<span class="string">"./num_traits/README.md"</span>)]
-</span><span class="kw">pub mod </span>num_traits;
+// #[cfg(feature = "minesweeper-unstable")]
+// #[cfg_attr(docsrs, doc(cfg(feature = "minesweeper-unstable")))]
+// /// Core logic components for minesweeper games of arbitrary size
+// #[doc = ""]
+// #[doc = include_str!("./minesweeper/README.md")]
+// pub mod minesweeper;
 
-<span class="attr">#[cfg(feature = <span class="string">"path-unstable"</span>)]
-#[cfg_attr(docsrs, doc(cfg(feature = <span class="string">"path-unstable"</span>)))]
-</span><span class="doccomment">/// UTF-8 only path manipulation utilities written from scratch
-</span><span class="attr">#[doc = <span class="string">""</span>]
-#[doc = <span class="macro">include_str!</span>(<span class="string">"./path/README.md"</span>)]
-</span><span class="kw">pub mod </span>path;
+// #[cfg(feature = "nominal")]
+// #[cfg_attr(docsrs, doc(cfg(feature = "nominal")))]
+// /// Generic newtype wrappers, for increased type safety through Rust's nominal type system
+// #[doc = ""]
+// #[doc = include_str!("./nominal/README.md")]
+// pub mod nominal;
 
-<span class="attr">#[cfg(feature = <span class="string">"rand"</span>)]
-#[cfg_attr(docsrs, doc(cfg(feature = <span class="string">"rand"</span>)))]
-</span><span class="doccomment">/// Random number generators and utilities
-</span><span class="attr">#[doc = <span class="string">""</span>]
-#[doc = <span class="macro">include_str!</span>(<span class="string">"./rand/README.md"</span>)]
-</span><span class="kw">pub mod </span>rand;
+// #[cfg(feature = "num-traits-unstable")]
+// #[cfg_attr(docsrs, doc(cfg(feature = "num-traits-unstable")))]
+// /// More traits for numbers and their various functionality, including things like [`MulWidening`]
+// #[doc = ""]
+// #[doc = include_str!("./num_traits/README.md")]
+// pub mod num_traits;
 
-<span class="attr">#[cfg(feature = <span class="string">"serialiser-binary-unstable"</span>)]
-#[cfg_attr(docsrs, doc(cfg(feature = <span class="string">"serialiser-binary-unstable"</span>)))]
-</span><span class="doccomment">/// Self describing and stable binary format/serialiser, aiming for small output size
-</span><span class="attr">#[doc = <span class="string">""</span>]
-#[doc = <span class="macro">include_str!</span>(<span class="string">"./serialiser_binary/README.md"</span>)]
-</span><span class="kw">pub mod </span>serialiser_binary;
+// #[cfg(feature = "path-unstable")]
+// #[cfg_attr(docsrs, doc(cfg(feature = "path-unstable")))]
+// /// UTF-8 only path manipulation utilities written from scratch
+// #[doc = ""]
+// #[doc = include_str!("./path/README.md")]
+// pub mod path;
 
-<span class="attr">#[cfg(feature = <span class="string">"serialiser-binary-2-unstable"</span>)]
-#[cfg_attr(docsrs, doc(cfg(feature = <span class="string">"serialiser-binary-2-unstable"</span>)))]
-</span><span class="doccomment">/// Self describing and stable binary format/serialiser, aiming for small output size (v2)
-</span><span class="attr">#[doc = <span class="string">""</span>]
-#[doc = <span class="macro">include_str!</span>(<span class="string">"./serialiser_binary_2/README.md"</span>)]
-</span><span class="kw">pub mod </span>serialiser_binary_2;
+// #[cfg(feature = "rand")]
+// #[cfg_attr(docsrs, doc(cfg(feature = "rand")))]
+// /// Random number generators and utilities
+// #[doc = ""]
+// #[doc = include_str!("./rand/README.md")]
+// pub mod rand;
 
-<span class="attr">#[cfg(feature = <span class="string">"serialiser-text-unstable"</span>)]
-#[cfg_attr(docsrs, doc(cfg(feature = <span class="string">"serialiser-text-unstable"</span>)))]
-</span><span class="doccomment">/// Self describing and stable text format/serialiser, aiming to be easy to read and write by hand
-</span><span class="attr">#[doc = <span class="string">""</span>]
-#[doc = <span class="macro">include_str!</span>(<span class="string">"./serialiser_text/README.md"</span>)]
-</span><span class="kw">pub mod </span>serialiser_text;
+// #[cfg(feature = "serialiser-binary-unstable")]
+// #[cfg_attr(docsrs, doc(cfg(feature = "serialiser-binary-unstable")))]
+// /// Self describing and stable binary format/serialiser, aiming for small output size
+// #[doc = ""]
+// #[doc = include_str!("./serialiser_binary/README.md")]
+// pub mod serialiser_binary;
 
-<span class="attr">#[cfg(feature = <span class="string">"string-pool-unstable"</span>)]
-#[cfg_attr(docsrs, doc(cfg(feature = <span class="string">"string-pool-unstable"</span>)))]
-</span><span class="doccomment">/// Global immutable string pool and String type (à la Java)
-</span><span class="attr">#[doc = <span class="string">""</span>]
-#[doc = <span class="macro">include_str!</span>(<span class="string">"./string_pool/README.md"</span>)]
-</span><span class="kw">pub mod </span>string_pool;
+// #[cfg(feature = "serialiser-binary-2-unstable")]
+// #[cfg_attr(docsrs, doc(cfg(feature = "serialiser-binary-2-unstable")))]
+// /// Self describing and stable binary format/serialiser, aiming for small output size (v2)
+// #[doc = ""]
+// #[doc = include_str!("./serialiser_binary_2/README.md")]
+// pub mod serialiser_binary_2;
 
-<span class="attr">#[cfg(feature = <span class="string">"sudoku-unstable"</span>)]
-#[cfg_attr(docsrs, doc(cfg(feature = <span class="string">"sudoku-unstable"</span>)))]
-</span><span class="doccomment">/// Sudoku related... stuff
-</span><span class="attr">#[doc = <span class="string">""</span>]
-#[doc = <span class="macro">include_str!</span>(<span class="string">"./sudoku/README.md"</span>)]
-</span><span class="kw">pub mod </span>sudoku;
+// #[cfg(feature = "serialiser-text-unstable")]
+// #[cfg_attr(docsrs, doc(cfg(feature = "serialiser-text-unstable")))]
+// /// Self describing and stable text format/serialiser, aiming to be easy to read and write by hand
+// #[doc = ""]
+// #[doc = include_str!("./serialiser_text/README.md")]
+// pub mod serialiser_text;
 
-<span class="attr">#[cfg(feature = <span class="string">"unicode-unstable"</span>)]
-#[cfg_attr(docsrs, doc(cfg(feature = <span class="string">"unicode-unstable"</span>)))]
-</span><span class="doccomment">/// Implementation of the [Unicode](https://home.unicode.org) standard, including UTF-8, UTF-16, and UTF-32 strings
-</span><span class="attr">#[doc = <span class="string">""</span>]
-#[doc = <span class="macro">include_str!</span>(<span class="string">"./unicode/README.md"</span>)]
-</span><span class="kw">pub mod </span>unicode;
+// #[cfg(feature = "string-pool-unstable")]
+// #[cfg_attr(docsrs, doc(cfg(feature = "string-pool-unstable")))]
+// /// Global immutable string pool and String type (à la Java)
+// #[doc = ""]
+// #[doc = include_str!("./string_pool/README.md")]
+// pub mod string_pool;
 
-<span class="attr">#[cfg(feature = <span class="string">"with-cloned"</span>)]
-#[cfg_attr(docsrs, doc(cfg(feature = <span class="string">"with-cloned"</span>)))]
-</span><span class="doccomment">/// Convenience macro for the clone-and-move pattern (yes, we're calling it that :p)
-</span><span class="attr">#[doc = <span class="string">""</span>]
-#[doc = <span class="macro">include_str!</span>(<span class="string">"./with_cloned/README.md"</span>)]
-</span><span class="kw">pub mod </span>with_cloned;
+// #[cfg(feature = "sudoku-unstable")]
+// #[cfg_attr(docsrs, doc(cfg(feature = "sudoku-unstable")))]
+// /// Sudoku related... stuff
+// #[doc = ""]
+// #[doc = include_str!("./sudoku/README.md")]
+// pub mod sudoku;
 
-<span class="attr">#[cfg(feature = <span class="string">"z85"</span>)]
-#[cfg_attr(docsrs, doc(cfg(feature = <span class="string">"z85"</span>)))]
-</span><span class="doccomment">/// Fast encoder and decoder for [ZeroMQ](https://zeromq.org)'s [Z85](https://rfc.zeromq.org/spec/32) format
-</span><span class="attr">#[doc = <span class="string">""</span>]
-#[doc = <span class="macro">include_str!</span>(<span class="string">"./z85/README.md"</span>)]
-</span><span class="kw">pub mod </span>z85;
+// #[cfg(feature = "unicode-unstable")]
+// #[cfg_attr(docsrs, doc(cfg(feature = "unicode-unstable")))]
+// /// Implementation of the [Unicode](https://home.unicode.org) standard, including UTF-8, UTF-16, and UTF-32 strings
+// #[doc = ""]
+// #[doc = include_str!("./unicode/README.md")]
+// pub mod unicode;
 
-<span class="comment">// ----- end autogenerated region (lib) -----
+// #[cfg(feature = "with-cloned")]
+// #[cfg_attr(docsrs, doc(cfg(feature = "with-cloned")))]
+// /// Convenience macro for the clone-and-move pattern (yes, we're calling it that :p)
+// #[doc = ""]
+// #[doc = include_str!("./with_cloned/README.md")]
+// pub mod with_cloned;
+
+// #[cfg(feature = "z85")]
+// #[cfg_attr(docsrs, doc(cfg(feature = "z85")))]
+// /// Fast encoder and decoder for [ZeroMQ](https://zeromq.org)'s [Z85](https://rfc.zeromq.org/spec/32) format
+// #[doc = ""]
+// #[doc = include_str!("./z85/README.md")]
+// pub mod z85;
 </span></code></pre></div></section></main></body></html>

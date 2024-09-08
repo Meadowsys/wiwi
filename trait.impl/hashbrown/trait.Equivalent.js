@@ -1,3 +1,0 @@
-(function() {var implementors = {
-"wiwi":[["impl&lt;'h&gt; Equivalent&lt;&lt;<a class=\"struct\" href=\"wiwi/string_pool/pool/struct.GlobalPool.html\" title=\"struct wiwi::string_pool::pool::GlobalPool\">GlobalPool</a> as <a class=\"trait\" href=\"wiwi/string_pool/trait.Pool.html\" title=\"trait wiwi::string_pool::Pool\">Pool</a>&gt;::<a class=\"associatedtype\" href=\"wiwi/string_pool/trait.Pool.html#associatedtype.Raw\" title=\"type wiwi::string_pool::Pool::Raw\">Raw</a>&gt; for <a class=\"struct\" href=\"wiwi/string_pool/pool/struct.SlicesWrap.html\" title=\"struct wiwi::string_pool::pool::SlicesWrap\">SlicesWrap</a>&lt;'h&gt;"]]
-};if (window.register_implementors) {window.register_implementors(implementors);} else {window.pending_implementors = implementors;}})()

@@ -1,3 +1,9 @@
-(function() {var implementors = {
-"wiwi":[["impl&lt;'h&gt; <a class=\"trait\" href=\"https://doc.rust-lang.org/nightly/core/iter/traits/collect/trait.IntoIterator.html\" title=\"trait core::iter::traits::collect::IntoIterator\">IntoIterator</a> for &amp;<a class=\"struct\" href=\"wiwi/string_pool/pool/struct.SlicesWrap.html\" title=\"struct wiwi::string_pool::pool::SlicesWrap\">SlicesWrap</a>&lt;'h&gt;"]]
-};if (window.register_implementors) {window.register_implementors(implementors);} else {window.pending_implementors = implementors;}})()
+(function() {
+    var implementors = Object.fromEntries([["wiwi",[]]]);
+    if (window.register_implementors) {
+        window.register_implementors(implementors);
+    } else {
+        window.pending_implementors = implementors;
+    }
+})()
+//{"start":57,"fragment_lengths":[11]}

@@ -1,3 +1,9 @@
-(function() {var implementors = {
-"wiwi":[["impl <a class=\"trait\" href=\"https://doc.rust-lang.org/nightly/core/hash/trait.Hash.html\" title=\"trait core::hash::Hash\">Hash</a> for <a class=\"struct\" href=\"wiwi/id/struct.GeneratedID64.html\" title=\"struct wiwi::id::GeneratedID64\">GeneratedID64</a>"],["impl&lt;'h&gt; <a class=\"trait\" href=\"https://doc.rust-lang.org/nightly/core/hash/trait.Hash.html\" title=\"trait core::hash::Hash\">Hash</a> for <a class=\"struct\" href=\"wiwi/string_pool/pool/struct.SlicesWrap.html\" title=\"struct wiwi::string_pool::pool::SlicesWrap\">SlicesWrap</a>&lt;'h&gt;"],["impl&lt;T: <a class=\"trait\" href=\"https://doc.rust-lang.org/nightly/core/hash/trait.Hash.html\" title=\"trait core::hash::Hash\">Hash</a>, M&gt; <a class=\"trait\" href=\"https://doc.rust-lang.org/nightly/core/hash/trait.Hash.html\" title=\"trait core::hash::Hash\">Hash</a> for <a class=\"struct\" href=\"wiwi/nominal/struct.Nominal.html\" title=\"struct wiwi::nominal::Nominal\">Nominal</a>&lt;T, M&gt;"]]
-};if (window.register_implementors) {window.register_implementors(implementors);} else {window.pending_implementors = implementors;}})()
+(function() {
+    var implementors = Object.fromEntries([["wiwi",[]]]);
+    if (window.register_implementors) {
+        window.register_implementors(implementors);
+    } else {
+        window.pending_implementors = implementors;
+    }
+})()
+//{"start":57,"fragment_lengths":[11]}

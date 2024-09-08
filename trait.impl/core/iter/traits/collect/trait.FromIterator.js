@@ -1,3 +1,9 @@
-(function() {var implementors = {
-"wiwi":[["impl <a class=\"trait\" href=\"https://doc.rust-lang.org/nightly/core/iter/traits/collect/trait.FromIterator.html\" title=\"trait core::iter::traits::collect::FromIterator\">FromIterator</a>&lt;<a class=\"struct\" href=\"wiwi/unicode/struct.Char.html\" title=\"struct wiwi::unicode::Char\">Char</a>&gt; for <a class=\"struct\" href=\"wiwi/unicode/struct.StringUtf16.html\" title=\"struct wiwi::unicode::StringUtf16\">StringUtf16</a>"],["impl <a class=\"trait\" href=\"https://doc.rust-lang.org/nightly/core/iter/traits/collect/trait.FromIterator.html\" title=\"trait core::iter::traits::collect::FromIterator\">FromIterator</a>&lt;<a class=\"struct\" href=\"wiwi/unicode/struct.Char.html\" title=\"struct wiwi::unicode::Char\">Char</a>&gt; for <a class=\"struct\" href=\"wiwi/unicode/struct.StringUtf32.html\" title=\"struct wiwi::unicode::StringUtf32\">StringUtf32</a>"],["impl <a class=\"trait\" href=\"https://doc.rust-lang.org/nightly/core/iter/traits/collect/trait.FromIterator.html\" title=\"trait core::iter::traits::collect::FromIterator\">FromIterator</a>&lt;<a class=\"struct\" href=\"wiwi/unicode/struct.Char.html\" title=\"struct wiwi::unicode::Char\">Char</a>&gt; for <a class=\"struct\" href=\"wiwi/unicode/struct.StringUtf8.html\" title=\"struct wiwi::unicode::StringUtf8\">StringUtf8</a>"]]
-};if (window.register_implementors) {window.register_implementors(implementors);} else {window.pending_implementors = implementors;}})()
+(function() {
+    var implementors = Object.fromEntries([["wiwi",[]]]);
+    if (window.register_implementors) {
+        window.register_implementors(implementors);
+    } else {
+        window.pending_implementors = implementors;
+    }
+})()
+//{"start":57,"fragment_lengths":[11]}

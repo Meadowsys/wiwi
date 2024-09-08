@@ -1,1 +1,0 @@
-window.SIDEBAR_ITEMS = {"fn":["decode_board_unchecked","encode_byte_array_checked","encode_byte_array_unchecked","encoded_all_ones","get_next_valid","is_valid_sudoku_board"],"struct":["Encoded"]};

@@ -1,3 +1,9 @@
-(function() {var implementors = {
-"wiwi":[["impl&lt;T, F&gt; <a class=\"trait\" href=\"https://doc.rust-lang.org/nightly/core/ops/drop/trait.Drop.html\" title=\"trait core::ops::drop::Drop\">Drop</a> for <a class=\"struct\" href=\"wiwi/lazy_wrap/struct.LazyWrap.html\" title=\"struct wiwi::lazy_wrap::LazyWrap\">LazyWrap</a>&lt;T, F&gt;"],["impl&lt;T, W, F&gt; <a class=\"trait\" href=\"https://doc.rust-lang.org/nightly/core/ops/drop/trait.Drop.html\" title=\"trait core::ops::drop::Drop\">Drop</a> for <a class=\"struct\" href=\"wiwi/defer/struct.Defer.html\" title=\"struct wiwi::defer::Defer\">Defer</a>&lt;T, W, F&gt;<div class=\"where\">where\n    W: When,\n    F: <a class=\"trait\" href=\"https://doc.rust-lang.org/nightly/core/ops/function/trait.FnOnce.html\" title=\"trait core::ops::function::FnOnce\">FnOnce</a>(T),</div>"]]
-};if (window.register_implementors) {window.register_implementors(implementors);} else {window.pending_implementors = implementors;}})()
+(function() {
+    var implementors = Object.fromEntries([["wiwi",[]]]);
+    if (window.register_implementors) {
+        window.register_implementors(implementors);
+    } else {
+        window.pending_implementors = implementors;
+    }
+})()
+//{"start":57,"fragment_lengths":[11]}
