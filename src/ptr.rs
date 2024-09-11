@@ -1,7 +1,7 @@
 use crate::rust_std::marker::Sized;
 
 #[inline(always)]
-pub fn coerce_ptr<T: ?Sized>(ptr: &T) -> *const T {
+pub const fn coerce_ptr<T: ?Sized>(ptr: &T) -> *const T {
 	ptr
 }
 
