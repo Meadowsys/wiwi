@@ -55,6 +55,8 @@ pub mod h;
 pub mod nom;
 pub mod num;
 pub mod ptr;
+#[cfg(feature = "unstable")]
+pub mod string;
 pub mod util;
 pub mod util_unsafe;
 
