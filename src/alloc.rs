@@ -1,11 +1,12 @@
-use crate::rust_std::debug_assert;
-use crate::rust_std::alloc::{ self, GlobalAlloc, Layout };
+use crate::rust_std::{ alloc, debug_assert };
 use crate::rust_std::clone::Clone;
 use crate::rust_std::cmp::{ Ord as _, Ordering };
 use crate::rust_std::marker::Copy;
 use crate::rust_std::mem::transmute;
 use crate::rust_std::option::{ Option, Option::Some, Option::None };
 use crate::rust_std::ptr::{ self, NonNull };
+
+pub use crate::rust_std::alloc::{ GlobalAlloc, Layout };
 
 /// # Safety
 ///
