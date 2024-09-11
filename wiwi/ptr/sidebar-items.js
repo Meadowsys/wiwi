@@ -1,0 +1,1 @@
+window.SIDEBAR_ITEMS = {"fn":["coerce_mut_ptr","coerce_ptr"]};

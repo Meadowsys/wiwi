@@ -28,12 +28,10 @@
 <a href="#28" id="28">28</a>
 <a href="#29" id="29">29</a>
 <a href="#30" id="30">30</a>
-<a href="#31" id="31">31</a>
-</pre></div><pre class="rust"><code><span class="kw">use </span><span class="kw">crate</span>::prelude::<span class="kw-2">*</span>;
-<span class="kw">use </span><span class="kw">super</span>::Base;
+</pre></div><pre class="rust"><code><span class="kw">use </span><span class="kw">super</span>::Base;
 
 <span class="doccomment">/// Multiplication
-</span><span class="kw">pub trait </span>Mul: Base + rust_std::ops::Mul&lt;<span class="self">Self</span>, Output = <span class="self">Self</span>&gt; {
+</span><span class="kw">pub trait </span>Mul: Base + <span class="kw">crate</span>::rust_std::ops::Mul&lt;<span class="self">Self</span>, Output = <span class="self">Self</span>&gt; {
 	<span class="doccomment">/// Performs plain multiplication
 	///
 	/// It does the same as what the `*` operator does

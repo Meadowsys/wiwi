@@ -51,6 +51,12 @@
 <a href="#51" id="51">51</a>
 <a href="#52" id="52">52</a>
 <a href="#53" id="53">53</a>
+<a href="#54" id="54">54</a>
+<a href="#55" id="55">55</a>
+<a href="#56" id="56">56</a>
+<a href="#57" id="57">57</a>
+<a href="#58" id="58">58</a>
+<a href="#59" id="59">59</a>
 </pre></div><pre class="rust"><code><span class="kw">use </span><span class="kw">super</span>::Base;
 
 <span class="kw">pub trait </span>CountBits: Base {
@@ -66,32 +72,38 @@
 	{ $(<span class="macro-nonterminal">$num</span>:ident)* } =&gt; {
 		$(
 			<span class="kw">impl </span>CountBits <span class="kw">for </span><span class="macro-nonterminal">$num </span>{
-				<span class="attr">#[inline]
+				<span class="attr">#[expect(clippy::as_conversions)]
+				#[inline]
 				</span><span class="kw">fn </span>count_zeros(<span class="self">self</span>) -&gt; <span class="macro-nonterminal">$num </span>{
 					<span class="macro-nonterminal">$num::count_zeros</span>(<span class="self">self</span>) <span class="kw">as _
 				</span>}
 
-				<span class="attr">#[inline]
+				<span class="attr">#[expect(clippy::as_conversions)]
+				#[inline]
 				</span><span class="kw">fn </span>count_ones(<span class="self">self</span>) -&gt; <span class="macro-nonterminal">$num </span>{
 					<span class="macro-nonterminal">$num::count_ones</span>(<span class="self">self</span>) <span class="kw">as _
 				</span>}
 
-				<span class="attr">#[inline]
+				<span class="attr">#[expect(clippy::as_conversions)]
+				#[inline]
 				</span><span class="kw">fn </span>leading_zeros(<span class="self">self</span>) -&gt; <span class="macro-nonterminal">$num </span>{
 					<span class="macro-nonterminal">$num::leading_zeros</span>(<span class="self">self</span>) <span class="kw">as _
 				</span>}
 
-				<span class="attr">#[inline]
+				<span class="attr">#[expect(clippy::as_conversions)]
+				#[inline]
 				</span><span class="kw">fn </span>leading_ones(<span class="self">self</span>) -&gt; <span class="macro-nonterminal">$num </span>{
 					<span class="macro-nonterminal">$num::leading_ones</span>(<span class="self">self</span>) <span class="kw">as _
 				</span>}
 
-				<span class="attr">#[inline]
+				<span class="attr">#[expect(clippy::as_conversions)]
+				#[inline]
 				</span><span class="kw">fn </span>trailing_zeros(<span class="self">self</span>) -&gt; <span class="macro-nonterminal">$num </span>{
 					<span class="macro-nonterminal">$num::trailing_zeros</span>(<span class="self">self</span>) <span class="kw">as _
 				</span>}
 
-				<span class="attr">#[inline]
+				<span class="attr">#[expect(clippy::as_conversions)]
+				#[inline]
 				</span><span class="kw">fn </span>trailing_ones(<span class="self">self</span>) -&gt; <span class="macro-nonterminal">$num </span>{
 					<span class="macro-nonterminal">$num::trailing_ones</span>(<span class="self">self</span>) <span class="kw">as _
 				</span>}

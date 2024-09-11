@@ -113,6 +113,7 @@
 <a href="#113" id="113">113</a>
 <a href="#114" id="114">114</a>
 <a href="#115" id="115">115</a>
+<a href="#116" id="116">116</a>
 </pre></div><pre class="rust"><code><span class="kw">use </span><span class="kw">super</span>::Base;
 
 <span class="macro">macro_rules!</span> decl_from_lossy {
@@ -164,7 +165,8 @@
 				</span><span class="doccomment">/// into
 				</span><span class="attr">#[doc = <span class="macro">concat!</span>(<span class="string">"`"</span>, <span class="macro">stringify!</span>(<span class="macro-nonterminal">$num</span>), <span class="string">"`,"</span>)]
 				</span><span class="doccomment">/// potentially lossily
-				</span><span class="attr">#[inline(always)]
+				</span><span class="attr">#[expect(clippy::as_conversions)]
+				#[inline(always)]
 				</span><span class="kw">fn </span><span class="macro-nonterminal">$fn_name</span>(val: <span class="macro-nonterminal">$from</span>) -&gt; <span class="macro-nonterminal">$num </span>{ val <span class="kw">as _ </span>}
 			}
 		)*

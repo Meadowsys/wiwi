@@ -1,1 +1,1 @@
-window.SIDEBAR_ITEMS = {"macro":["export_all_submodules","panic"],"mod":["_changelog","encoding","h","num","prelude","rust_alloc","rust_core","rust_std","util","util_unsafe"]};
+window.SIDEBAR_ITEMS = {"macro":["export_all_submodules","nom","nom_mod","panic"],"mod":["_changelog","collections","encoding","h","nom","num","prelude","ptr","rust_alloc","rust_core","rust_std","util","util_unsafe"]};

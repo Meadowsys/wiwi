@@ -97,12 +97,11 @@
 <a href="#97" id="97">97</a>
 <a href="#98" id="98">98</a>
 <a href="#99" id="99">99</a>
-<a href="#100" id="100">100</a>
 </pre></div><pre class="rust"><code><span class="doccomment">//! Internal decoding implementations
-
-</span><span class="kw">use </span><span class="kw">crate</span>::prelude::<span class="kw-2">*</span>;
+</span><span class="kw">use </span><span class="kw">crate</span>::num::<span class="kw-2">*</span>;
+<span class="kw">use </span><span class="kw">crate</span>::rust_std::option::{ <span class="prelude-ty">Option</span>, Option::Some, Option::None };
+<span class="kw">use </span><span class="kw">crate</span>::rust_std::result::{ <span class="prelude-ty">Result</span>, Result::Ok, Result::Err };
 <span class="kw">use </span><span class="kw">crate</span>::util_unsafe::UnsafeBufWriteGuard;
-<span class="kw">use </span><span class="kw">crate</span>::num::<span class="kw-2">*</span>;
 <span class="kw">use </span><span class="kw">super</span>::DecodeError;
 
 <span class="doccomment">/// Length of the table decoder (256)
@@ -174,7 +173,6 @@
 				};
 			}
 		}
-
 
 		<span class="comment">// SAFETY: a byte can only be between `0..256`, which fits
 		// within the lookup table

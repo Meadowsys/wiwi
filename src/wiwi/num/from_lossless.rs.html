@@ -161,6 +161,7 @@
 <a href="#161" id="161">161</a>
 <a href="#162" id="162">162</a>
 <a href="#163" id="163">163</a>
+<a href="#164" id="164">164</a>
 </pre></div><pre class="rust"><code><span class="kw">use </span><span class="kw">super</span>::Base;
 
 <span class="macro">macro_rules!</span> decl_from_lossless {
@@ -192,6 +193,7 @@
 				</span><span class="attr">#[doc = <span class="macro">concat!</span>(<span class="string">"`"</span>, <span class="macro">stringify!</span>(<span class="macro-nonterminal">$from</span>), <span class="string">"`"</span>)]
 				</span><span class="doccomment">/// into
 				</span><span class="attr">#[doc = <span class="macro">concat!</span>(<span class="string">"`"</span>, <span class="macro">stringify!</span>(<span class="macro-nonterminal">$to</span>), <span class="string">"`"</span>)]
+				#[expect(clippy::as_conversions)]
 				#[inline(always)]
 				</span><span class="kw">fn </span><span class="macro-nonterminal">$fn_name</span>(val: <span class="macro-nonterminal">$from</span>) -&gt; <span class="macro-nonterminal">$to </span>{ val <span class="kw">as _ </span>}
 			}

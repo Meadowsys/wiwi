@@ -21,12 +21,10 @@
 <a href="#21" id="21">21</a>
 <a href="#22" id="22">22</a>
 <a href="#23" id="23">23</a>
-<a href="#24" id="24">24</a>
-</pre></div><pre class="rust"><code><span class="kw">use </span><span class="kw">crate</span>::prelude::<span class="kw-2">*</span>;
-<span class="kw">use </span><span class="kw">super</span>::Base;
+</pre></div><pre class="rust"><code><span class="kw">use </span><span class="kw">super</span>::Base;
 
 <span class="doccomment">/// Modulo (the remainder operator)
-</span><span class="kw">pub trait </span>Rem: Base + rust_std::ops::Rem&lt;<span class="self">Self</span>, Output = <span class="self">Self</span>&gt; {
+</span><span class="kw">pub trait </span>Rem: Base + <span class="kw">crate</span>::rust_std::ops::Rem&lt;<span class="self">Self</span>, Output = <span class="self">Self</span>&gt; {
 	<span class="attr">#[inline]
 	</span><span class="kw">fn </span>rem_regular(<span class="self">self</span>, rhs: <span class="self">Self</span>) -&gt; <span class="self">Self </span>{
 		<span class="self">self </span>% rhs

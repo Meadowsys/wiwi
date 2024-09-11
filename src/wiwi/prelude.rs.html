@@ -117,12 +117,27 @@
 <a href="#117" id="117">117</a>
 <a href="#118" id="118">118</a>
 <a href="#119" id="119">119</a>
+<a href="#120" id="120">120</a>
+<a href="#121" id="121">121</a>
+<a href="#122" id="122">122</a>
+<a href="#123" id="123">123</a>
+<a href="#124" id="124">124</a>
+<a href="#125" id="125">125</a>
+<a href="#126" id="126">126</a>
+<a href="#127" id="127">127</a>
+<a href="#128" id="128">128</a>
+<a href="#129" id="129">129</a>
+<a href="#130" id="130">130</a>
 </pre></div><pre class="rust"><code><span class="doccomment">//! Prelude module, exporting commonly-used items
 
 </span><span class="kw">pub use crate</span>::{
 	rust_alloc,
 	rust_core,
 	rust_std
+};
+<span class="kw">pub use </span><span class="kw">crate</span>::ptr::{
+	coerce_ptr,
+	coerce_mut_ptr
 };
 
 <span class="kw">pub use </span>rust_std::{
@@ -153,6 +168,7 @@
 	Cow,
 	ToOwned
 };
+<span class="kw">pub use </span>rust_std::boxed::Box;
 <span class="kw">pub use </span>rust_std::clone::Clone;
 <span class="kw">pub use </span>rust_std::cmp::{
 	PartialEq,
@@ -169,6 +185,7 @@
 	AsRef,
 	identity
 };
+<span class="kw">pub use </span>rust_std::default::Default;
 <span class="kw">pub use </span>rust_std::fmt::{
 	Debug,
 	Display
@@ -176,6 +193,10 @@
 <span class="kw">pub use </span>rust_std::future::{
 	Future,
 	IntoFuture
+};
+<span class="kw">pub use </span>rust_std::hash::{
+	Hash,
+	Hasher
 };
 <span class="kw">pub use </span>rust_std::iter::{
 	Iterator,
@@ -186,6 +207,7 @@
 	Extend
 };
 <span class="kw">pub use </span>rust_std::marker::{
+	Copy,
 	Send,
 	Sync,
 	Sized,

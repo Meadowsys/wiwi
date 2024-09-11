@@ -1,0 +1,60 @@
+<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><meta name="generator" content="rustdoc"><meta name="description" content="Declare a new nominal type (alias), with the provided name, a name for the marker type struct, and the wrapped type"><title>nom in wiwi - Rust</title><script>if(window.location.protocol!=="file:")document.head.insertAdjacentHTML("beforeend","SourceSerif4-Regular-46f98efaafac5295.ttf.woff2,FiraSans-Regular-018c141bf0843ffd.woff2,FiraSans-Medium-8f9a781e4970d388.woff2,SourceCodePro-Regular-562dcc5011b6de7d.ttf.woff2,SourceCodePro-Semibold-d899c5a5c4aeb14a.ttf.woff2".split(",").map(f=>`<link rel="preload" as="font" type="font/woff2" crossorigin href="../static.files/${f}">`).join(""))</script><link rel="stylesheet" href="../static.files/normalize-76eba96aa4d2e634.css"><link rel="stylesheet" href="../static.files/rustdoc-fecee23daa4e8a6d.css"><meta name="rustdoc-vars" data-root-path="../" data-static-root-path="../static.files/" data-current-crate="wiwi" data-themes="meadow" data-resource-suffix="" data-rustdoc-version="1.83.0-nightly (d6c8169c1 2024-09-03)" data-channel="nightly" data-search-js="search-a99f1315e7cc5121.js" data-settings-js="settings-4313503d2e1961c2.js" ><script src="../static.files/storage-118b08c4c78b968e.js"></script><script defer src="sidebar-items.js"></script><script defer src="../static.files/main-921df33f47b8780c.js"></script><noscript><link rel="stylesheet" href="../static.files/noscript-3b12f09e550e0385.css"></noscript><link rel="alternate icon" type="image/png" href="../static.files/favicon-32x32-422f7d1d52889060.png"><link rel="icon" type="image/svg+xml" href="../static.files/favicon-2c020d218678b618.svg"></head><body class="rustdoc macro"><!--[if lte IE 11]><div class="warning">This old browser is unsupported and will most likely display funky things.</div><![endif]--><nav class="mobile-topbar"><button class="sidebar-menu-toggle" title="show sidebar"></button></nav><nav class="sidebar"><div class="sidebar-crate"><h2><a href="../wiwi/index.html">wiwi</a><span class="version">0.10.0</span></h2></div><div class="sidebar-elems"></div></nav><div class="sidebar-resizer"></div><main><div class="width-limiter"><rustdoc-search></rustdoc-search><section id="main-content" class="content"><div class="main-heading"><h1>Macro <a href="index.html">wiwi</a>::<wbr><a class="macro" href="#">nom</a><button id="copy-path" title="Copy item path to clipboard">Copy item path</button></h1><span class="out-of-band"><a class="src" href="../src/wiwi/nom.rs.html#106-111">source</a> · <button id="toggle-all-docs" title="collapse all docs">[<span>&#x2212;</span>]</button></span></div><pre class="rust item-decl"><span class="macro">macro_rules!</span> nom {
+    (<span class="macro-nonterminal">$vis</span>:vis <span class="macro-nonterminal">$name</span>:ident, marker: <span class="macro-nonterminal">$marker</span>:ident, wraps: $( <span class="kw-2">ref </span>&lt;$(<span class="macro-nonterminal">$lifetimes</span>:lifetime),+&gt; )<span class="question-mark">? </span><span class="macro-nonterminal">$ty</span>:ty) =&gt; { ... };
+}</pre><details class="toggle top-doc" open><summary class="hideme"><span>Expand description</span></summary><div class="docblock"><p>Declare a new nominal type (alias), with the provided name, a name for the
+marker type struct, and the wrapped type</p>
+<p>The returned type alias will be of a guaranteed unique type. This is done by
+creating a new ZST with the provided marker type struct name.</p>
+<p>The name of the new marker type struct is something we hope to eventually be
+able to generate automatically from the given newtype name. If there is a way,
+we don’t know how &gt;~&lt;</p>
+<h2 id="examples"><a class="doc-anchor" href="#examples">§</a>Examples</h2>
+<p>Basic usage:</p>
+
+<div class="example-wrap"><pre class="rust rust-example-rendered"><code><span class="comment">// type NewType = Nom&lt;String, NewTypeMarker&gt;;
+</span><span class="macro">nom!</span>(NewType, marker: NewTypeMarker, wraps: String);
+
+<span class="comment">// these two are identical
+</span><span class="kw">let </span>item: NewType = NewType::new(String::new());
+<span class="kw">let </span>item: Nom&lt;String, NewTypeMarker&gt; = Nom::new(String::new());
+
+<span class="comment">// and of course, it's a type alias
+</span><span class="kw">let </span>item: NewType = Nom::new(String::new());
+<span class="kw">let </span>item: Nom&lt;String, NewTypeMarker&gt; = NewType::new(String::new());</code></pre></div>
+<p>The macro does indeed create a unique newtype:</p>
+
+<div class="example-wrap compile_fail"><a href="#" class="tooltip" title="This example deliberately fails to compile">ⓘ</a><pre class="rust rust-example-rendered"><code><span class="macro">nom!</span>(AnotherNewType, marker: AnotherNewTypeMarker, wraps: String);
+
+<span class="kw">let </span>item: NewType = NewType::new(String::new());
+<span class="comment">// this won't compile
+</span><span class="kw">let </span>another_item: NewType = AnotherNewType::new(String::new());</code></pre></div>
+<p>Controlling visibility of the type alias / marker struct:</p>
+
+<div class="example-wrap"><pre class="rust rust-example-rendered"><code><span class="kw">mod </span>inner {
+   <span class="macro">nom!</span>(<span class="kw">pub </span>NewType, marker: NewTypeMarker, wraps: String);
+   <span class="comment">//   ↑
+</span>}
+
+<span class="kw">let </span>item = inner::NewType::new(String::new());</code></pre></div>
+<p>Private visibility is default (like the rest of Rust visibilities):</p>
+
+<div class="example-wrap compile_fail"><a href="#" class="tooltip" title="This example deliberately fails to compile">ⓘ</a><pre class="rust rust-example-rendered"><code><span class="kw">mod </span>inner {
+   <span class="macro">nom!</span>(NewType, marker: NewTypeMarker, wraps: String);
+   <span class="comment">//       ↑ no `pub`
+</span>}
+
+<span class="comment">// this won't compile
+</span><span class="kw">let </span>item = inner::NewType::new(String::new());</code></pre></div>
+<p>Other visibilities work too, of course:</p>
+
+<div class="example-wrap compile_fail"><a href="#" class="tooltip" title="This example deliberately fails to compile">ⓘ</a><pre class="rust rust-example-rendered"><code><span class="kw">mod </span>outer {
+   <span class="kw">mod </span>inner {
+      <span class="macro">nom!</span>(<span class="kw">pub</span>(<span class="kw">super</span>) NewType, marker: NewTypeMarker, wraps: String);
+   }
+
+   <span class="comment">// this is fine...
+   </span><span class="kw">let </span>item = inner::NewType::new(String::new());
+}
+
+<span class="comment">// but this won't compile
+</span><span class="kw">let </span>item = outer::inner::NewType::new(String::new());</code></pre></div>
+</div></details></section></div></main></body></html>

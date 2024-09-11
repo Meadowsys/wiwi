@@ -1,1 +1,1 @@
-window.SIDEBAR_ITEMS = {"macro":["export_all_submodules"]};
+window.SIDEBAR_ITEMS = {"fn":["augment_panic_hook"],"macro":["export_all_submodules"]};

@@ -154,6 +154,7 @@
 <a href="#154" id="154">154</a>
 <a href="#155" id="155">155</a>
 <a href="#156" id="156">156</a>
+<a href="#157" id="157">157</a>
 </pre></div><pre class="rust"><code><span class="kw">use </span><span class="kw">super</span>::Base;
 
 <span class="macro">macro_rules!</span> decl_into_lossless {
@@ -180,7 +181,8 @@
 		$(
 			$(<span class="attr">#[<span class="macro-nonterminal">$meta</span>]</span>)*
 			<span class="kw">impl </span><span class="macro-nonterminal">$trait_name </span><span class="kw">for </span><span class="macro-nonterminal">$from </span>{
-				<span class="attr">#[inline(always)]
+				<span class="attr">#[expect(clippy::as_conversions)]
+				#[inline(always)]
 				</span><span class="kw">fn </span><span class="macro-nonterminal">$fn_name</span>(<span class="self">self</span>) -&gt; <span class="macro-nonterminal">$into </span>{ <span class="self">self </span><span class="kw">as _ </span>}
 			}
 		)*
