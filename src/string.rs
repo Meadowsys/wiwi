@@ -1,11 +1,11 @@
 use crate::num::{ IntoU8Lossy, IntoUsizeLossless };
 use crate::ptr::coerce_ptr;
-use crate::rust_std::{ debug_assert, panic, slice, str };
+use crate::rust_std::{ debug_assert, panic, ptr, slice, str };
 use crate::rust_std::alloc::{ Layout, alloc, dealloc, realloc };
 use crate::rust_std::convert::From;
 use crate::rust_std::default::Default;
-use crate::rust_std::mem::{ ManuallyDrop, MaybeUninit, size_of };
-use crate::rust_std::ops::{ Deref, DerefMut };
+use crate::rust_std::mem::{ drop, ManuallyDrop, MaybeUninit, size_of };
+use crate::rust_std::ops::{ Deref, DerefMut, Drop };
 
 // the struct is 3 words in size (ptr, len, cap)
 // 24 bytes on 64bit, 12 on 32bit, 6 on 16bit
@@ -49,6 +49,43 @@ impl GermanString {
 		Self { heap: ManuallyDrop::new(unsafe { Heap::new(s) }) }
 	}
 
+	/// # Safety
+	///
+	/// `self` must be inline.
+	#[inline]
+	unsafe fn to_inline_unchecked(&self) -> &Inline {
+		// SAFETY: caller promises the string is stored inline
+		unsafe { &self.inline }
+	}
+
+	/// # Safety
+	///
+	/// `self` must be inline.
+	#[inline]
+	unsafe fn to_inline_unchecked_mut(&mut self) -> &mut Inline {
+		// SAFETY: caller promises the string is stored inline
+		unsafe { &mut self.inline }
+	}
+
+	/// # Safety
+	///
+	/// `self` must be on the heap.
+	#[inline]
+	unsafe fn to_heap_unchecked(&self) -> &Heap {
+		// SAFETY: caller promises the string is stored on the heap
+		unsafe { &self.heap }
+	}
+
+	/// # Safety
+	///
+	/// `self` must be on the heap.
+	#[inline]
+	unsafe fn to_heap_unchecked_mut(&mut self) -> &mut Heap {
+		// SAFETY: caller promises the string is stored on the heap
+		unsafe { &mut self.heap }
+	}
+
+
 	#[inline]
 	pub const fn is_inline(&self) -> bool {
 		// SAFETY: accessing field `inlined` is always safe,
@@ -63,6 +100,36 @@ impl GermanString {
 		let inline = unsafe { &*coerce_ptr(inline).cast::<Inline>() };
 
 		inline.len >> 7 == 1
+	}
+
+	#[inline]
+	pub fn capacity(&self) -> usize {
+		if self.is_inline() {
+			// SAFETY: just checked we're inline
+			let s = unsafe { self.to_inline_unchecked() };
+			s.capacity()
+		} else {
+			// SAFETY: just checked we're on the heap
+			let s = unsafe { self.to_heap_unchecked() };
+			s.capacity()
+		}
+	}
+	#[inline]
+	pub fn len(&self) -> usize {
+		if self.is_inline() {
+			// SAFETY: just checked we're inline
+			let s = unsafe { self.to_inline_unchecked() };
+			s.len()
+		} else {
+			// SAFETY: just checked we're on the heap
+			let s = unsafe { self.to_heap_unchecked() };
+			s.len()
+		}
+	}
+
+	#[inline]
+	pub fn is_empty(&self) -> bool {
+		self.len() == 0
 	}
 }
 
@@ -97,6 +164,20 @@ impl DerefMut for GermanString {
 		} else {
 			// SAFETY: just checked that we're on the heap
 			unsafe { &mut self.heap }
+		}
+	}
+}
+
+impl Drop for GermanString {
+	#[inline]
+	fn drop(&mut self) {
+		if !self.is_inline() {
+			// SAFETY: just checked that we're on the heap
+			let heap = unsafe { self.to_heap_unchecked_mut() };
+
+			// SAFETY: we pass in the reference read from self, and we do not
+			// drop heap anywhere else
+			unsafe { drop(ptr::read(heap)) }
 		}
 	}
 }
@@ -143,6 +224,16 @@ impl Inline {
 
 		Self { len, str }
 	}
+
+	#[inline]
+	fn capacity(&self) -> usize {
+		INLINE_MAX_LEN
+	}
+
+	#[inline]
+	fn len(&self) -> usize {
+		self.len.into_usize()
+	}
 }
 
 impl Deref for Inline {
@@ -155,6 +246,7 @@ impl Deref for Inline {
 
 		// SAFETY: we got ptr from `self`
 		let slice = unsafe { slice::from_raw_parts(ptr, len) };
+
 		// SAFETY: `self` can only hold valid UTF-8
 		unsafe { str::from_utf8_unchecked(slice) }
 	}
@@ -168,6 +260,7 @@ impl DerefMut for Inline {
 
 		// SAFETY: we got ptr from `self`
 		let slice = unsafe { slice::from_raw_parts_mut(ptr, len) };
+
 		// SAFETY: `self` can only hold valid UTF-8
 		unsafe { str::from_utf8_unchecked_mut(slice) }
 	}
@@ -210,6 +303,7 @@ impl Heap {
 		// SAFETY: align is 1 (power of two, and not zero), and caller promises
 		// `len` does not overflow `isize::MAX`
 		let layout = unsafe { Layout::from_size_align_unchecked(len, 1) };
+
 		// SAFETY: caller promises `len` is not zero
 		unsafe { alloc(layout) }
 	}
@@ -228,6 +322,16 @@ impl Heap {
 			ptr
 		}
 	}
+
+	#[inline]
+	fn capacity(&self) -> usize {
+		usize::from_be(self.cap_be)
+	}
+
+	#[inline]
+	fn len(&self) -> usize {
+		self.len
+	}
 }
 
 impl Deref for Heap {
@@ -240,6 +344,7 @@ impl Deref for Heap {
 
 		// SAFETY: we got ptr from `self`
 		let slice = unsafe { slice::from_raw_parts(ptr, len) };
+
 		// SAFETY: `self` can only hold valid UTF-8
 		unsafe { str::from_utf8_unchecked(slice) }
 	}
@@ -253,7 +358,22 @@ impl DerefMut for Heap {
 
 		// SAFETY: we got ptr from `self`
 		let slice = unsafe { slice::from_raw_parts_mut(ptr, len) };
+
 		// SAFETY: `self` can only hold valid UTF-8
 		unsafe { str::from_utf8_unchecked_mut(slice) }
+	}
+}
+
+impl Drop for Heap {
+	#[inline]
+	fn drop(&mut self) {
+		// SAFETY: align is 1 (power of two, and not zero), and we couldn't
+		// have allocated more than `isize::MAX` bytes
+		let layout = unsafe { Layout::from_size_align_unchecked(usize::from_be(self.cap_be), 1) };
+
+		// SAFETY: we have invariant that self must not be zero length, we
+		// allocated using `alloc`, and capacity and align 1 is what we
+		// used to allocate this
+		unsafe { dealloc(self.ptr.cast_mut(), layout) }
 	}
 }
