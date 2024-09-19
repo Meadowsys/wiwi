@@ -64,7 +64,6 @@ impl GermanString {
 
 		inline.len >> 7 == 1
 	}
-
 }
 
 impl Default for GermanString {
