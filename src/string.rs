@@ -10,7 +10,7 @@ use crate::rust_std::ops::{ Deref, DerefMut, Drop };
 // the struct is 3 words in size (ptr, len, cap)
 // 24 bytes on 64bit, 12 on 32bit, 6 on 16bit
 // so the len is that amount minus one
-const INLINE_MAX_LEN: usize = size_of::<usize>() - 1;
+const INLINE_MAX_LEN: usize = size_of::<Heap>() - 1;
 const INLINE_MARKER: u8 = 1 << 7;
 
 pub union GermanString {
@@ -232,7 +232,7 @@ impl Inline {
 
 	#[inline]
 	fn len(&self) -> usize {
-		self.len.into_usize()
+		(self.len & !INLINE_MARKER).into_usize()
 	}
 }
 
