@@ -51,7 +51,9 @@ impl GermanString {
 
 	/// # Safety
 	///
-	/// `self` must be inline.
+	/// Conservatively marked `unsafe`, `inline` variant has no initialisation
+	/// requirements as long as the first byte is initialised, which all
+	/// constructors of this struct guarantee.
 	#[inline]
 	unsafe fn to_inline_unchecked(&self) -> &Inline {
 		// SAFETY: caller promises the string is stored inline
