@@ -39,26 +39,27 @@ compile_error!("16-bit platforms are not supported yet (but please do file an is
 #[cfg(any(doc, docsrs, kiwingay))]
 #[doc = include_str!("../CHANGELOG.md")]
 pub mod _changelog {}
-pub mod prelude;
 
-pub mod rust_alloc;
-pub mod rust_core;
-pub mod rust_std;
+// pub mod prelude;
 
-#[cfg(feature = "unstable")]
-pub mod alloc;
-#[cfg(feature = "unstable")]
-pub mod cli;
-pub mod collections;
-pub mod encoding;
-pub mod h;
-pub mod nom;
-pub mod num;
-pub mod ptr;
-#[cfg(feature = "unstable")]
-pub mod string;
-pub mod util;
-pub mod util_unsafe;
+// pub mod rust_alloc;
+// pub mod rust_core;
+// pub mod rust_std;
+
+// #[cfg(feature = "unstable")]
+// pub mod alloc;
+// #[cfg(feature = "unstable")]
+// pub mod cli;
+// pub mod collections;
+// pub mod encoding;
+// pub mod h;
+// pub mod nom;
+// pub mod num;
+// pub mod ptr;
+// #[cfg(feature = "unstable")]
+// pub mod string;
+// pub mod util;
+// pub mod util_unsafe;
 
 // pub mod clone;
 // pub mod compare;
