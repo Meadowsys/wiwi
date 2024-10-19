@@ -46,42 +46,6 @@ pub mod prelude_std;
 pub mod prelude_wiwi;
 pub mod prelude_3rd_party;
 
-// pub mod rust_alloc;
-// pub mod rust_core;
-// pub mod rust_std;
-
-// #[cfg(feature = "unstable")]
-// pub mod alloc;
-// #[cfg(feature = "unstable")]
-// pub mod cli;
-// pub mod collections;
-// pub mod encoding;
-// pub mod h;
-// pub mod nom;
-// pub mod num;
-// pub mod ptr;
-// #[cfg(feature = "unstable")]
-// pub mod string;
-// pub mod util;
-// pub mod util_unsafe;
-
-// pub mod clone;
-// pub mod compare;
-// pub mod convert;
-// pub mod function;
-// // pub mod h;
-// pub mod iterator;
-// pub mod macros;
-// pub mod memory;
-// pub mod option;
-// pub mod phantom;
-// pub mod primitive;
-// pub mod pointer;
-// pub mod result;
-
-// mod _internal;
-// pub mod prelude;
-
 // #[cfg(feature = "aoc-unstable")]
 // #[cfg_attr(docsrs, doc(cfg(feature = "aoc-unstable")))]
 // /// Utilities specific for writing solutions for [Advent of Code](https://adventofcode.com)
