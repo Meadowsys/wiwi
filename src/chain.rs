@@ -128,10 +128,22 @@ macro_rules! decl_chain {
 		// impl Display
 		// impl Eq
 		// impl Ord
-		// impl PartialEq/PartialOrd chain <-> chain
+
 		// impl PartialEq/PartialOrd chain <-> inner
 		// impl PartialEq/PartialOrd inner <-> chain
+		// impl PartialEq/PartialOrd chain <-> chain
 	};
+
+	{
+		@impl_partial_cmp
+		[$($generics_decl:tt)*]
+
+		[$($left_ty:tt)+]
+		[$left_expr:expr]
+
+		[$($right_ty:tt)+]
+		[$right_expr:expr]
+	} => {};
 }
 use decl_chain;
 
