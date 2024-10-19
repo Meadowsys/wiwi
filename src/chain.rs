@@ -147,8 +147,43 @@ macro_rules! decl_chain {
 		{}
 
 		// impl Debug
+		impl$(<$($generics_decl)*>)? $crate::prelude_std::Debug for $chain$(<$($generics)*>)?
+		where
+			$($inner)+: $crate::prelude_std::Debug
+		{
+			fn fmt(&self, f: &mut $crate::prelude_std::fmt::Formatter<'_>) -> $crate::prelude_std::fmt::Result {
+				let mut dbg_struct = $crate::prelude_std::fmt::Formatter::debug_struct(f, stringify!($chain));
+				$crate::prelude_std::fmt::DebugStruct::field(
+					&mut dbg_struct,
+					"_",
+					<Self as $crate::chain::Chain>::as_inner(self)
+				);
+				$crate::prelude_std::fmt::DebugStruct::finish(&mut dbg_struct)
+			}
+		}
+
 		// impl Default
+		impl$(<$($generics_decl)*>)? $crate::prelude_std::Default for $chain$(<$($generics)*>)?
+		where
+			$($inner)+: $crate::prelude_std::Default
+		{
+			fn default() -> Self {
+				let inner = <<Self as $crate::chain::Chain>::Inner as Default>::default();
+				<Self as $crate::chain::Chain>::from_inner(inner)
+			}
+		}
+
 		// impl Display
+		impl$(<$($generics_decl)*>)? $crate::prelude_std::Display for $chain$(<$($generics)*>)?
+		where
+			$($inner)+: $crate::prelude_std::Display
+		{
+			fn fmt(&self, f: &mut $crate::prelude_std::fmt::Formatter<'_>) -> $crate::prelude_std::fmt::Result {
+				let inner = <Self as $crate::chain::Chain>::as_inner(self);
+				<<Self as $crate::chain::Chain>::Inner as Display>::fmt(inner, f)
+			}
+		}
+
 		// impl Eq
 		// impl Ord
 
