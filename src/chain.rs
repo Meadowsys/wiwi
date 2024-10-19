@@ -138,7 +138,65 @@ use decl_chain;
 macro_rules! chain_fn {
 	{
 		$(#[$meta:meta])*
-		unsafe move self
+		$fn_name:ident
+		$([$($generics:tt)*])?
+		($inner:ident $($args:tt)*)
+		$(where { $($where_clause:tt)* })?
+		=> $body:expr
+	} => {
+		$(#[$meta])*
+		#[inline]
+		pub fn $fn_name$(<$($generics)*>)?(mut self $($args)*) -> Self
+		$(where $($where_clause)*)?
+		{
+			let $inner = <Self as $crate::chain::Chain>::as_inner_mut(&mut self);
+			$crate::prelude_std::identity::<()>($body);
+			self
+		}
+	};
+
+	{
+		$(#[$meta:meta])*
+		self
+		$fn_name:ident
+		$([$($generics:tt)*])?
+		($self:ident $($args:tt)*)
+		$(where { $($where_clause:tt)* })?
+		=> $body:expr
+	} => {
+		$(#[$meta])*
+		#[inline]
+		pub fn $fn_name$(<$($generics)*>)?(mut $self $($args)*) -> Self
+		$(where $($where_clause)*)?
+		{
+			$crate::prelude_std::identity::<()>($body);
+			$self
+		}
+	};
+
+	{
+		$(#[$meta:meta])*
+		unsafe
+		$fn_name:ident
+		$([$($generics:tt)*])?
+		($inner:ident $($args:tt)*)
+		$(where { $($where_clause:tt)* })?
+		=> $body:expr
+	} => {
+		$(#[$meta])*
+		#[inline]
+		pub unsafe fn $fn_name$(<$($generics)*>)?(mut self $($args)*) -> Self
+		$(where $($where_clause)*)?
+		{
+			let $inner = <Self as $crate::chain::Chain>::as_inner_mut(&mut self);
+			$crate::prelude_std::identity::<()>($body);
+			self
+		}
+	};
+
+	{
+		$(#[$meta:meta])*
+		unsafe self
 		$fn_name:ident
 		$([$($generics:tt)*])?
 		($self:ident $($args:tt)*)
@@ -150,25 +208,26 @@ macro_rules! chain_fn {
 		pub unsafe fn $fn_name$(<$($generics)*>)?(mut $self $($args)*) -> Self
 		$(where $($where_clause)*)?
 		{
-			$body
+			$crate::prelude_std::identity::<()>($body);
+			$self
 		}
 	};
 
 	{
 		$(#[$meta:meta])*
-		unsafe move
+		move
 		$fn_name:ident
 		$([$($generics:tt)*])?
-		($nc:ident $($args:tt)*)
+		($inner:ident $($args:tt)*)
 		$(where { $($where_clause:tt)* })?
 		=> $body:expr
 	} => {
 		$(#[$meta])*
 		#[inline]
-		pub unsafe fn $fn_name$(<$($generics)*>)?(mut self $($args)*) -> Self
+		pub fn $fn_name$(<$($generics)*>)?($self $($args)*) -> Self
 		$(where $($where_clause)*)?
 		{
-			let mut $nc = <Self as $crate::chain::Chain>::into_inner(self);
+			let mut $inner = <Self as $crate::chain::Chain>::into_inner(self);
 			<Self as $crate::chain::Chain>::from_inner($body)
 		}
 	};
@@ -184,104 +243,65 @@ macro_rules! chain_fn {
 	} => {
 		$(#[$meta])*
 		#[inline]
-		pub fn $fn_name$(<$($generics)*>)?(mut $self $($args)*) -> Self
+		pub fn $fn_name$(<$($generics)*>)?($self $($args)*) -> Self
 		$(where $($where_clause)*)?
 		{
-			$body
+			$self
 		}
 	};
 
 	{
 		$(#[$meta:meta])*
-		move
+		unsafe move
 		$fn_name:ident
 		$([$($generics:tt)*])?
-		($nc:ident $($args:tt)*)
+		($inner:ident $($args:tt)*)
 		$(where { $($where_clause:tt)* })?
 		=> $body:expr
 	} => {
 		$(#[$meta])*
 		#[inline]
-		pub fn $fn_name$(<$($generics)*>)?(self $($args)*) -> Self
+		pub unsafe fn $fn_name$(<$($generics)*>)?($self $($args)*) -> Self
 		$(where $($where_clause)*)?
 		{
-			let mut $nc = <Self as $crate::chain::Chain>::into_inner(self);
+			let mut $inner = <Self as $crate::chain::Chain>::into_inner(self);
 			<Self as $crate::chain::Chain>::from_inner($body)
 		}
 	};
 
 	{
 		$(#[$meta:meta])*
-		unsafe self
+		unsafe move self
 		$fn_name:ident
 		$([$($generics:tt)*])?
 		($self:ident $($args:tt)*)
 		$(where { $($where_clause:tt)* })?
-		=> void $body:expr
+		=> $body:expr
 	} => {
 		$(#[$meta])*
 		#[inline]
-		pub unsafe fn $fn_name$(<$($generics)*>)?(mut $self $($args)*) -> Self
+		pub unsafe fn $fn_name$(<$($generics)*>)?($self $($args)*) -> Self
 		$(where $($where_clause)*)?
 		{
-			let _ = $body;
 			$self
 		}
 	};
 
 	{
 		$(#[$meta:meta])*
-		unsafe
+		void
 		$fn_name:ident
 		$([$($generics:tt)*])?
-		($nc:ident $($args:tt)*)
+		($inner:ident $($args:tt)*)
 		$(where { $($where_clause:tt)* })?
-		=> void $body:expr
-	} => {
-		$(#[$meta])*
-		#[inline]
-		pub unsafe fn $fn_name$(<$($generics)*>)?(mut self $($args)*) -> Self
-		$(where $($where_clause)*)?
-		{
-			let $nc = <Self as $crate::chain::Chain>::as_inner_mut(&mut self);
-			let _ = $body;
-			self
-		}
-	};
-
-	{
-		$(#[$meta:meta])*
-		self
-		$fn_name:ident
-		$([$($generics:tt)*])?
-		($self:ident $($args:tt)*)
-		$(where { $($where_clause:tt)* })?
-		=> void $body:expr
-	} => {
-		$(#[$meta])*
-		#[inline]
-		pub fn $fn_name$(<$($generics)*>)?(mut $self $($args)*) -> Self
-		$(where $($where_clause)*)?
-		{
-			let _ = $body;
-			$self
-		}
-	};
-
-	{
-		$(#[$meta:meta])*
-		$fn_name:ident
-		$([$($generics:tt)*])?
-		($nc:ident $($args:tt)*)
-		$(where { $($where_clause:tt)* })?
-		=> void $body:expr
+		=> $body:expr
 	} => {
 		$(#[$meta])*
 		#[inline]
 		pub fn $fn_name$(<$($generics)*>)?(mut self $($args)*) -> Self
 		$(where $($where_clause)*)?
 		{
-			let $nc = <Self as $crate::chain::Chain>::as_inner_mut(&mut self);
+			let $inner = <Self as $crate::chain::Chain>::as_inner_mut(&mut self);
 			let _ = $body;
 			self
 		}
@@ -289,46 +309,7 @@ macro_rules! chain_fn {
 
 	{
 		$(#[$meta:meta])*
-		unsafe self
-		$fn_name:ident
-		$([$($generics:tt)*])?
-		($self:ident $($args:tt)*)
-		$(where { $($where_clause:tt)* })?
-		=> $body:expr
-	} => {
-		$(#[$meta])*
-		#[inline]
-		pub unsafe fn $fn_name$(<$($generics)*>)?(mut $self $($args)*) -> Self
-		$(where $($where_clause)*)?
-		{
-			$crate::prelude_std::identity::<()>($body);
-			$self
-		}
-	};
-
-	{
-		$(#[$meta:meta])*
-		unsafe
-		$fn_name:ident
-		$([$($generics:tt)*])?
-		($nc:ident $($args:tt)*)
-		$(where { $($where_clause:tt)* })?
-		=> $body:expr
-	} => {
-		$(#[$meta])*
-		#[inline]
-		pub unsafe fn $fn_name$(<$($generics)*>)?(mut self $($args)*) -> Self
-		$(where $($where_clause)*)?
-		{
-			let $nc = <Self as $crate::chain::Chain>::as_inner_mut(&mut self);
-			$crate::prelude_std::identity::<()>($body);
-			self
-		}
-	};
-
-	{
-		$(#[$meta:meta])*
-		self
+		void self
 		$fn_name:ident
 		$([$($generics:tt)*])?
 		($self:ident $($args:tt)*)
@@ -340,27 +321,47 @@ macro_rules! chain_fn {
 		pub fn $fn_name$(<$($generics)*>)?(mut $self $($args)*) -> Self
 		$(where $($where_clause)*)?
 		{
-			$crate::prelude_std::identity::<()>($body);
+			let _ = $body
 			$self
 		}
 	};
 
 	{
 		$(#[$meta:meta])*
+		unsafe void
 		$fn_name:ident
 		$([$($generics:tt)*])?
-		($nc:ident $($args:tt)*)
+		($inner:ident $($args:tt)*)
 		$(where { $($where_clause:tt)* })?
 		=> $body:expr
 	} => {
 		$(#[$meta])*
 		#[inline]
-		pub fn $fn_name$(<$($generics)*>)?(mut self $($args)*) -> Self
+		pub unsafe fn $fn_name$(<$($generics)*>)?(mut self $($args)*) -> Self
 		$(where $($where_clause)*)?
 		{
-			let $nc = <Self as $crate::chain::Chain>::as_inner_mut(&mut self);
-			$crate::prelude_std::identity::<()>($body);
+			let $inner = <Self as $crate::chain::Chain>::as_inner_mut(&mut self);
+			let _ = $body;
 			self
+		}
+	};
+
+	{
+		$(#[$meta:meta])*
+		unsafe void self
+		$fn_name:ident
+		$([$($generics:tt)*])?
+		($self:ident $($args:tt)*)
+		$(where { $($where_clause:tt)* })?
+		=> $body:expr
+	} => {
+		$(#[$meta])*
+		#[inline]
+		pub unsafe fn $fn_name$(<$($generics)*>)?(mut $self $($args)*) -> Self
+		$(where $($where_clause)*)?
+		{
+			let _ = $body
+			$self
 		}
 	};
 }
