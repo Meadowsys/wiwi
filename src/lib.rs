@@ -46,6 +46,8 @@ pub mod prelude_std;
 pub mod prelude_wiwi;
 pub mod prelude_3rd_party;
 
+pub mod chain;
+
 // #[cfg(feature = "aoc-unstable")]
 // #[cfg_attr(docsrs, doc(cfg(feature = "aoc-unstable")))]
 // /// Utilities specific for writing solutions for [Advent of Code](https://adventofcode.com)
