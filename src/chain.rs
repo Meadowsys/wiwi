@@ -138,7 +138,12 @@ use decl_chain;
 macro_rules! chain_fn {
 	{
 		$(#[$meta:meta])*
-		unsafe move self $fn_name:ident$([$($generics:tt)*])?($self:ident $($args:tt)*) $(where { $($where_clause:tt)* })? => $body:expr
+		unsafe move self
+		$fn_name:ident
+		$([$($generics:tt)*])?
+		($self:ident $($args:tt)*)
+		$(where { $($where_clause:tt)* })?
+		=> $body:expr
 	} => {
 		$(#[$meta])*
 		#[inline]
@@ -151,7 +156,12 @@ macro_rules! chain_fn {
 
 	{
 		$(#[$meta:meta])*
-		unsafe move $fn_name:ident$([$($generics:tt)*])?($nc:ident $($args:tt)*) $(where { $($where_clause:tt)* })? => $body:expr
+		unsafe move
+		$fn_name:ident
+		$([$($generics:tt)*])?
+		($nc:ident $($args:tt)*)
+		$(where { $($where_clause:tt)* })?
+		=> $body:expr
 	} => {
 		$(#[$meta])*
 		#[inline]
@@ -165,7 +175,12 @@ macro_rules! chain_fn {
 
 	{
 		$(#[$meta:meta])*
-		move self $fn_name:ident$([$($generics:tt)*])?($self:ident $($args:tt)*) $(where { $($where_clause:tt)* })? => $body:expr
+		move self
+		$fn_name:ident
+		$([$($generics:tt)*])?
+		($self:ident $($args:tt)*)
+		$(where { $($where_clause:tt)* })?
+		=> $body:expr
 	} => {
 		$(#[$meta])*
 		#[inline]
@@ -178,7 +193,12 @@ macro_rules! chain_fn {
 
 	{
 		$(#[$meta:meta])*
-		move $fn_name:ident$([$($generics:tt)*])?($nc:ident $($args:tt)*) $(where { $($where_clause:tt)* })? => $body:expr
+		move
+		$fn_name:ident
+		$([$($generics:tt)*])?
+		($nc:ident $($args:tt)*)
+		$(where { $($where_clause:tt)* })?
+		=> $body:expr
 	} => {
 		$(#[$meta])*
 		#[inline]
@@ -192,7 +212,12 @@ macro_rules! chain_fn {
 
 	{
 		$(#[$meta:meta])*
-		unsafe self $fn_name:ident$([$($generics:tt)*])?($self:ident $($args:tt)*) $(where { $($where_clause:tt)* })? => void $body:expr
+		unsafe self
+		$fn_name:ident
+		$([$($generics:tt)*])?
+		($self:ident $($args:tt)*)
+		$(where { $($where_clause:tt)* })?
+		=> void $body:expr
 	} => {
 		$(#[$meta])*
 		#[inline]
@@ -206,7 +231,12 @@ macro_rules! chain_fn {
 
 	{
 		$(#[$meta:meta])*
-		unsafe $fn_name:ident$([$($generics:tt)*])?($nc:ident $($args:tt)*) $(where { $($where_clause:tt)* })? => void $body:expr
+		unsafe
+		$fn_name:ident
+		$([$($generics:tt)*])?
+		($nc:ident $($args:tt)*)
+		$(where { $($where_clause:tt)* })?
+		=> void $body:expr
 	} => {
 		$(#[$meta])*
 		#[inline]
@@ -221,7 +251,12 @@ macro_rules! chain_fn {
 
 	{
 		$(#[$meta:meta])*
-		self $fn_name:ident$([$($generics:tt)*])?($self:ident $($args:tt)*) $(where { $($where_clause:tt)* })? => void $body:expr
+		self
+		$fn_name:ident
+		$([$($generics:tt)*])?
+		($self:ident $($args:tt)*)
+		$(where { $($where_clause:tt)* })?
+		=> void $body:expr
 	} => {
 		$(#[$meta])*
 		#[inline]
@@ -235,7 +270,11 @@ macro_rules! chain_fn {
 
 	{
 		$(#[$meta:meta])*
-		$fn_name:ident$([$($generics:tt)*])?($nc:ident $($args:tt)*) $(where { $($where_clause:tt)* })? => void $body:expr
+		$fn_name:ident
+		$([$($generics:tt)*])?
+		($nc:ident $($args:tt)*)
+		$(where { $($where_clause:tt)* })?
+		=> void $body:expr
 	} => {
 		$(#[$meta])*
 		#[inline]
@@ -250,7 +289,12 @@ macro_rules! chain_fn {
 
 	{
 		$(#[$meta:meta])*
-		unsafe self $fn_name:ident$([$($generics:tt)*])?($self:ident $($args:tt)*) $(where { $($where_clause:tt)* })? => $body:expr
+		unsafe self
+		$fn_name:ident
+		$([$($generics:tt)*])?
+		($self:ident $($args:tt)*)
+		$(where { $($where_clause:tt)* })?
+		=> $body:expr
 	} => {
 		$(#[$meta])*
 		#[inline]
@@ -264,7 +308,12 @@ macro_rules! chain_fn {
 
 	{
 		$(#[$meta:meta])*
-		unsafe $fn_name:ident$([$($generics:tt)*])?($nc:ident $($args:tt)*) $(where { $($where_clause:tt)* })? => $body:expr
+		unsafe
+		$fn_name:ident
+		$([$($generics:tt)*])?
+		($nc:ident $($args:tt)*)
+		$(where { $($where_clause:tt)* })?
+		=> $body:expr
 	} => {
 		$(#[$meta])*
 		#[inline]
@@ -279,7 +328,12 @@ macro_rules! chain_fn {
 
 	{
 		$(#[$meta:meta])*
-		self $fn_name:ident$([$($generics:tt)*])?($self:ident $($args:tt)*) $(where { $($where_clause:tt)* })? => $body:expr
+		self
+		$fn_name:ident
+		$([$($generics:tt)*])?
+		($self:ident $($args:tt)*)
+		$(where { $($where_clause:tt)* })?
+		=> $body:expr
 	} => {
 		$(#[$meta])*
 		#[inline]
@@ -293,7 +347,11 @@ macro_rules! chain_fn {
 
 	{
 		$(#[$meta:meta])*
-		$fn_name:ident$([$($generics:tt)*])?($nc:ident $($args:tt)*) $(where { $($where_clause:tt)* })? => $body:expr
+		$fn_name:ident
+		$([$($generics:tt)*])?
+		($nc:ident $($args:tt)*)
+		$(where { $($where_clause:tt)* })?
+		=> $body:expr
 	} => {
 		$(#[$meta])*
 		#[inline]
