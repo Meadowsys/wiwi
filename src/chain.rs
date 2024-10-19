@@ -122,7 +122,30 @@ macro_rules! decl_chain {
 		}
 
 		// impl Clone
+		impl$(<$($generics_decl)*>)? $crate::prelude_std::Clone for $chain$(<$($generics)*>)?
+		where
+			$($inner)+: $crate::prelude_std::Clone
+		{
+			#[inline]
+			fn clone(&self) -> Self {
+				let inner = <Self as $crate::chain::Chain>::as_inner(self);
+				let inner = <<Self as $crate::chain::Chain>::Inner as $crate::prelude_std::Clone>::clone(inner);
+				<Self as $crate::chain::Chain>::from_inner(inner)
+			}
+
+			fn clone_from(&mut self, source: &Self) {
+				let inner_self = <Self as $crate::chain::Chain>::as_inner_mut(self);
+				let inner_source = <Self as $crate::chain::Chain>::as_inner(source);
+				<<Self as $crate::chain::Chain>::Inner as $crate::prelude_std::Clone>::clone_from(inner_self, inner_source)
+			}
+		}
+
 		// impl Copy
+		impl$(<$($generics_decl)*>)? $crate::prelude_std::Copy for $chain$(<$($generics)*>)?
+		where
+			$($inner)+: $crate::prelude_std::Copy
+		{}
+
 		// impl Debug
 		// impl Default
 		// impl Display
