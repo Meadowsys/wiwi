@@ -33,9 +33,9 @@ where
 	#[inline]
 	fn with_inner<F>(mut self, f: F) -> Self
 	where
-		F: FnOnce(&mut Self)
+		F: FnOnce(&mut Self::Inner)
 	{
-		f(&mut self);
+		f(self.as_inner_mut());
 		self
 	}
 }
