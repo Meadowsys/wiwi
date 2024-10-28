@@ -42,7 +42,7 @@ pub use std::any::{ Any, TypeId, type_name, type_name_of_val };
 pub use std::borrow::{ Borrow, BorrowMut, Cow, ToOwned };
 pub use std::boxed::Box;
 pub use std::clone::{ self, Clone };
-pub use std::cmp::{ self, Eq, Ord, PartialEq, PartialOrd };
+pub use std::cmp::{ self, Eq, Ord, PartialEq, PartialOrd, Ordering };
 pub use std::convert::{ AsMut, AsRef, From, Into, TryFrom, TryInto, Infallible, identity };
 pub use std::default::Default;
 pub use std::error::Error;

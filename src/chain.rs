@@ -71,13 +71,14 @@ macro_rules! decl_chain {
 		// the struct declaration
 		$(#[$meta])*
 		#[must_use = "a chain always takes ownership of itself, performs the operation, then returns itself again"]
+		#[repr(transparent)]
 		pub struct $chain$(<$($generics_decl)*>)? {
 			_inner: $($inner)+
 		}
 
 		// the private::Sealed impls
 		impl$(<$($generics_decl)*>)? $crate::chain::private::Sealed for $chain$(<$($generics)*>)? {}
-		impl$(<$($generics_decl)*>)? $crate::chain::private::Sealed for $($inner)* {}
+		impl$(<$($generics_decl)*>)? $crate::chain::private::Sealed for $($inner)+ {}
 
 		// impl Chain
 		impl$(<$($generics_decl)*>)? $crate::chain::Chain for $chain$(<$($generics)*>)? {
@@ -85,7 +86,7 @@ macro_rules! decl_chain {
 		}
 
 		// impl ChainInner
-		impl$(<$($generics_decl)*>)? $crate::chain::ChainInner for $($inner)* {
+		impl$(<$($generics_decl)*>)? $crate::chain::ChainInner for $($inner)+ {
 			type Chain = $chain$(<$($generics)*>)?;
 		}
 
@@ -188,20 +189,140 @@ macro_rules! decl_chain {
 		// impl Ord
 
 		// impl PartialEq/PartialOrd chain <-> inner
+		$crate::chain::decl_chain! {
+			@impl_partial_cmp
+			[$([$($generics_decl)*])?]
+			[$($inner)+]
+
+			[$chain$(<$($generics)*>)?]
+			[<$chain$(<$($generics)*>)? as $crate::chain::Chain>::as_inner]
+
+			[$($inner)+]
+			[$crate::prelude_std::identity]
+		}
+
 		// impl PartialEq/PartialOrd inner <-> chain
+		$crate::chain::decl_chain! {
+			@impl_partial_cmp
+			[$([$($generics_decl)*])?]
+			[$($inner)+]
+
+			[$($inner)+]
+			[$crate::prelude_std::identity]
+
+			[$chain$(<$($generics)*>)?]
+			[<$chain$(<$($generics)*>)? as $crate::chain::Chain>::as_inner]
+		}
+
 		// impl PartialEq/PartialOrd chain <-> chain
+		$crate::chain::decl_chain! {
+			@impl_partial_cmp
+			[$([$($generics_decl)*])?]
+			[$($inner)+]
+
+			[$chain$(<$($generics)*>)?]
+			[<$chain$(<$($generics)*>)? as $crate::chain::Chain>::as_inner]
+
+			[$chain$(<$($generics)*>)?]
+			[<$chain$(<$($generics)*>)? as $crate::chain::Chain>::as_inner]
+		}
 	};
 
 	{
 		@impl_partial_cmp
-		[$($generics_decl:tt)*]
+		[$([$($generics_decl:tt)*])?]
+		[$($inner:tt)+]
 
 		[$($left_ty:tt)+]
 		[$left_expr:expr]
 
 		[$($right_ty:tt)+]
 		[$right_expr:expr]
-	} => {};
+	} => {
+		impl$(<$($generics_decl)*>)? $crate::prelude_std::PartialEq<$($right_ty)+> for $($left_ty)+
+		where
+			$($inner)+: $crate::prelude_std::PartialEq<$($inner)+>
+		{
+			#[inline]
+			fn eq(&self, other: &$($right_ty)+) -> $crate::prelude_std::std::primitive::bool {
+				$crate::chain::decl_chain! {
+					@impl_partial_cmp_helper
+					[$($inner)+]
+					PartialEq::eq($left_expr(self), $right_expr(other))
+				}
+			}
+
+			// inner might have overridden ne for whatever reason,
+			// and we should use it if so
+			#[allow(clippy::partialeq_ne_impl)]
+			#[inline]
+			fn ne(&self, other: &$($right_ty)+) -> $crate::prelude_std::std::primitive::bool {
+				$crate::chain::decl_chain! {
+					@impl_partial_cmp_helper
+					[$($inner)+]
+					PartialEq::ne($left_expr(self), $right_expr(other))
+				}
+			}
+		}
+
+		impl$(<$($generics_decl)*>)? $crate::prelude_std::PartialOrd<$($right_ty)+> for $($left_ty)+
+		where
+			$($inner)+: $crate::prelude_std::PartialOrd<$($inner)+>
+		{
+			#[inline]
+			fn partial_cmp(&self, other: &$($right_ty)+) -> $crate::prelude_std::Option<$crate::prelude_std::Ordering> {
+				$crate::chain::decl_chain! {
+					@impl_partial_cmp_helper
+					[$($inner)+]
+					PartialOrd::partial_cmp($left_expr(self), $right_expr(other))
+				}
+			}
+
+			#[inline]
+			fn lt(&self, other: &$($right_ty)+) -> $crate::prelude_std::std::primitive::bool {
+				$crate::chain::decl_chain! {
+					@impl_partial_cmp_helper
+					[$($inner)+]
+					PartialOrd::lt($left_expr(self), $right_expr(other))
+				}
+			}
+
+			#[inline]
+			fn le(&self, other: &$($right_ty)+) -> $crate::prelude_std::std::primitive::bool {
+				$crate::chain::decl_chain! {
+					@impl_partial_cmp_helper
+					[$($inner)+]
+					PartialOrd::le($left_expr(self), $right_expr(other))
+				}
+			}
+
+			#[inline]
+			fn gt(&self, other: &$($right_ty)+) -> $crate::prelude_std::std::primitive::bool {
+				$crate::chain::decl_chain! {
+					@impl_partial_cmp_helper
+					[$($inner)+]
+					PartialOrd::gt($left_expr(self), $right_expr(other))
+				}
+			}
+
+			#[inline]
+			fn ge(&self, other: &$($right_ty)+) -> $crate::prelude_std::std::primitive::bool {
+				$crate::chain::decl_chain! {
+					@impl_partial_cmp_helper
+					[$($inner)+]
+					PartialOrd::ge($left_expr(self), $right_expr(other))
+				}
+			}
+		}
+	};
+
+	{
+		@impl_partial_cmp_helper
+		[$($inner:tt)+]
+		$trait:ident::$trait_fn:ident($($stuff:tt)*)
+	} => {
+		<$($inner)+ as $crate::prelude_std::$trait<$($inner)+>>::$trait_fn($($stuff)*)
+	};
 }
 use decl_chain;
 
