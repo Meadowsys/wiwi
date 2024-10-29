@@ -44,6 +44,7 @@ pub mod prelude_std;
 
 pub mod chain;
 pub mod num;
+pub mod string;
 
 // #[cfg(feature = "aoc-unstable")]
 // #[cfg_attr(docsrs, doc(cfg(feature = "aoc-unstable")))]

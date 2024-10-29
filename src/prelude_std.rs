@@ -36,6 +36,7 @@ pub use std::{
 
 	array,
 	env,
+	ptr,
 	str
 };
 
