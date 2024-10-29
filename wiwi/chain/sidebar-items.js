@@ -1,0 +1,1 @@
+window.SIDEBAR_ITEMS = {"macro":["vec_chain"],"struct":["VecChain"],"trait":["AsChainInner","Chain","ChainInner","OutputStorage"]};

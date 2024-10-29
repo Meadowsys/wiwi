@@ -269,37 +269,6 @@
 <a href="#269" id="269">269</a>
 <a href="#270" id="270">270</a>
 <a href="#271" id="271">271</a>
-<a href="#272" id="272">272</a>
-<a href="#273" id="273">273</a>
-<a href="#274" id="274">274</a>
-<a href="#275" id="275">275</a>
-<a href="#276" id="276">276</a>
-<a href="#277" id="277">277</a>
-<a href="#278" id="278">278</a>
-<a href="#279" id="279">279</a>
-<a href="#280" id="280">280</a>
-<a href="#281" id="281">281</a>
-<a href="#282" id="282">282</a>
-<a href="#283" id="283">283</a>
-<a href="#284" id="284">284</a>
-<a href="#285" id="285">285</a>
-<a href="#286" id="286">286</a>
-<a href="#287" id="287">287</a>
-<a href="#288" id="288">288</a>
-<a href="#289" id="289">289</a>
-<a href="#290" id="290">290</a>
-<a href="#291" id="291">291</a>
-<a href="#292" id="292">292</a>
-<a href="#293" id="293">293</a>
-<a href="#294" id="294">294</a>
-<a href="#295" id="295">295</a>
-<a href="#296" id="296">296</a>
-<a href="#297" id="297">297</a>
-<a href="#298" id="298">298</a>
-<a href="#299" id="299">299</a>
-<a href="#300" id="300">300</a>
-<a href="#301" id="301">301</a>
-<a href="#302" id="302">302</a>
 </pre></div><pre class="rust"><code><span class="attr">#![no_implicit_prelude]
 
 </span><span class="comment">// TODO: review these
@@ -341,45 +310,14 @@
 <span class="attr">#[cfg(any(doc, docsrs, kiwingay))]
 #[doc = <span class="macro">include_str!</span>(<span class="string">"../CHANGELOG.md"</span>)]
 </span><span class="kw">pub mod </span>_changelog {}
-<span class="kw">pub mod </span>prelude;
 
-<span class="kw">pub mod </span>rust_alloc;
-<span class="kw">pub mod </span>rust_core;
-<span class="kw">pub mod </span>rust_std;
+<span class="kw">pub mod </span>prelude_std;
 
-<span class="attr">#[cfg(feature = <span class="string">"unstable"</span>)]
-</span><span class="kw">pub mod </span>alloc;
-<span class="attr">#[cfg(feature = <span class="string">"unstable"</span>)]
-</span><span class="kw">pub mod </span>cli;
-<span class="kw">pub mod </span>collections;
-<span class="kw">pub mod </span>encoding;
-<span class="kw">pub mod </span>h;
-<span class="kw">pub mod </span>nom;
+<span class="kw">pub mod </span>chain;
 <span class="kw">pub mod </span>num;
-<span class="kw">pub mod </span>ptr;
-<span class="attr">#[cfg(feature = <span class="string">"unstable"</span>)]
-</span><span class="kw">pub mod </span>string;
-<span class="kw">pub mod </span>util;
-<span class="kw">pub mod </span>util_unsafe;
+<span class="kw">pub mod </span>string;
 
-<span class="comment">// pub mod clone;
-// pub mod compare;
-// pub mod convert;
-// pub mod function;
-// // pub mod h;
-// pub mod iterator;
-// pub mod macros;
-// pub mod memory;
-// pub mod option;
-// pub mod phantom;
-// pub mod primitive;
-// pub mod pointer;
-// pub mod result;
-
-// mod _internal;
-// pub mod prelude;
-
-// #[cfg(feature = "aoc-unstable")]
+<span class="comment">// #[cfg(feature = "aoc-unstable")]
 // #[cfg_attr(docsrs, doc(cfg(feature = "aoc-unstable")))]
 // /// Utilities specific for writing solutions for [Advent of Code](https://adventofcode.com)
 // #[doc = ""]
