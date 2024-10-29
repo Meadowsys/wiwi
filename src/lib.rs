@@ -42,7 +42,7 @@ pub mod _changelog {}
 
 pub mod prelude;
 pub mod prelude_crates;
-pub mod prelude_std_min;
+pub mod prelude_std;
 pub mod prelude_wiwi;
 
 pub mod chain;

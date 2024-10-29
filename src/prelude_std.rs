@@ -1,6 +1,6 @@
 //! Prelude exporting types from the Rust standard library (`std`)
 
-pub extern crate alloc;
+pub extern crate alloc as alloc_crate;
 pub extern crate core;
 pub extern crate std;
 
@@ -39,6 +39,7 @@ pub use std::{
 	str
 };
 
+pub use std::alloc::{ self as alloc_mod, alloc, alloc_zeroed, dealloc, realloc };
 pub use std::any::{ Any, TypeId, type_name, type_name_of_val };
 pub use std::borrow::{ Borrow, BorrowMut, Cow, ToOwned };
 pub use std::boxed::Box;
