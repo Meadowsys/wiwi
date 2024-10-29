@@ -43,6 +43,7 @@ pub mod _changelog {}
 pub mod prelude_std;
 
 pub mod chain;
+pub mod num;
 
 // #[cfg(feature = "aoc-unstable")]
 // #[cfg_attr(docsrs, doc(cfg(feature = "aoc-unstable")))]
