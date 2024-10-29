@@ -32,6 +32,7 @@ pub use std::{
 	concat,
 	dbg,
 	stringify,
+	vec,
 
 	array,
 	env,
@@ -73,4 +74,4 @@ pub use std::ops::{ self, Drop, Fn, FnMut, FnOnce };
 pub use std::option::{ self, Option, Option::Some, Option::None };
 pub use std::result::{ self, Result, Result::Ok, Result::Err };
 pub use std::string::{ self, String, ToString };
-pub use std::vec::{ self, Vec };
+pub use std::vec::Vec;
