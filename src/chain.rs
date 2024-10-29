@@ -1,7 +1,7 @@
 use crate::prelude_std::*;
 
 mod vec;
-pub use vec::VecChain;
+pub use vec::{ vec_chain, VecChain };
 
 pub trait Chain
 where
