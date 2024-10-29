@@ -53,6 +53,8 @@ pub use std::iter::{ self, Iterator, FromIterator, IntoIterator, DoubleEndedIter
 pub use std::marker::{ self, Copy, Send, Sync, Sized, Unpin, PhantomData, PhantomPinned };
 pub use std::mem::{
 	self,
+	ManuallyDrop,
+	MaybeUninit,
 	align_of,
 	align_of_val,
 	size_of,

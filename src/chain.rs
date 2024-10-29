@@ -58,6 +58,59 @@ where
 	}
 }
 
+/// Trait implemented on chains and their inner types, allowing you to get a reference
+/// to the inner type regardless of if the chain or the inner type is passed
+pub trait AsChainInner<I>: Sized + private::Sealed {
+	fn as_inner(&self) -> &I;
+	fn as_inner_mut(&mut self) -> &mut I;
+}
+
+/// Trait for output locations that can be passed to a chainer
+///
+/// # Safety
+///
+/// Consumers of this trait must call [`store`] before they return again,
+/// implementors must make sure that `self` is written to when called, so users
+/// can rely on the fact that the output location was written to. For example,
+/// users can pass a reference to [`MaybeUninit`] and rely on the fact that it
+/// got initialised, and safely call [`assume_init`](MaybeUninit::assume_init).
+///
+/// [`store`]: OutputStorage::store
+pub unsafe trait OutputStorage<T>: Sized + private::OutputStorageSealed<T> {
+	/// # Safety
+	///
+	/// This can and should only be called once, and you must call it before returning,
+	/// so users can rely on the fact that something got stored in `self`
+	unsafe fn store(self, item: T);
+}
+
+impl<T> private::OutputStorageSealed<T> for &mut T {}
+// SAFETY: we always write once to `self`
+unsafe impl<T> OutputStorage<T> for &mut T {
+	#[inline]
+	unsafe fn store(self, item: T) {
+		*self = item;
+	}
+}
+
+impl<T> private::OutputStorageSealed<T> for &mut MaybeUninit<T> {}
+// SAFETY: we always write once to `self`
+unsafe impl<T> OutputStorage<T> for &mut MaybeUninit<T> {
+	#[inline]
+	unsafe fn store(self, item: T) {
+		self.write(item);
+	}
+}
+
+impl<T> private::OutputStorageSealed<T> for &mut Option<T> {}
+// SAFETY: we always write once to `self`
+unsafe impl<T> OutputStorage<T> for &mut Option<T> {
+	#[inline]
+	unsafe fn store(self, item: T) {
+		*self = Some(item);
+	}
+}
+
 macro_rules! decl_chain {
 	{
 		$(#[$meta:meta])*
@@ -88,6 +141,30 @@ macro_rules! decl_chain {
 		// impl ChainInner
 		impl$(<$($generics_decl)*>)? $crate::chain::ChainInner for $($inner)+ {
 			type Chain = $chain$(<$($generics)*>)?;
+		}
+
+		impl$(<$($generics_decl)*>)? $crate::chain::AsChainInner<$($inner)+> for $chain$(<$($generics)*>)? {
+			#[inline]
+			fn as_inner(&self) -> &$($inner)+ {
+				&self._inner
+			}
+
+			#[inline]
+			fn as_inner_mut(&mut self) -> &mut $($inner)+ {
+				&mut self._inner
+			}
+		}
+
+		impl$(<$($generics_decl)*>)? $crate::chain::AsChainInner<$($inner)+> for $($inner)+ {
+			#[inline]
+			fn as_inner(&self) -> &$($inner)+ {
+				self
+			}
+
+			#[inline]
+			fn as_inner_mut(&mut self) -> &mut $($inner)+ {
+				self
+			}
 		}
 
 		// impl From<Inner> for Chain
@@ -562,4 +639,6 @@ use chain_fn;
 mod private {
 	/// notouchie
 	pub trait Sealed {}
+	/// notouchie
+	pub trait OutputStorageSealed<T> {}
 }
