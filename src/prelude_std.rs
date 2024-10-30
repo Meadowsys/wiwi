@@ -44,6 +44,7 @@ pub use std::alloc::{ self as alloc_mod, alloc, alloc_zeroed, dealloc, realloc }
 pub use std::any::{ Any, TypeId, type_name, type_name_of_val };
 pub use std::borrow::{ Borrow, BorrowMut, Cow, ToOwned };
 pub use std::boxed::Box;
+pub use std::cell::{ self, UnsafeCell };
 pub use std::clone::{ self, Clone };
 pub use std::cmp::{ self, Eq, Ord, PartialEq, PartialOrd, Ordering };
 pub use std::convert::{ AsMut, AsRef, From, Into, TryFrom, TryInto, Infallible, identity };
@@ -72,8 +73,9 @@ pub use std::mem::{
 	take,
 	zeroed
 };
-pub use std::ops::{ self, Drop, Fn, FnMut, FnOnce };
+pub use std::ops::{ self, Deref, DerefMut, Drop, Fn, FnMut, FnOnce };
 pub use std::option::{ self, Option, Option::Some, Option::None };
+pub use std::panic::{ UnwindSafe, RefUnwindSafe };
 pub use std::result::{ self, Result, Result::Ok, Result::Err };
 pub use std::string::{ self, String, ToString };
 pub use std::vec::Vec;

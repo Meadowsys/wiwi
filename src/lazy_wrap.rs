@@ -1,10 +1,7 @@
+extern crate parking_lot;
+
+use crate::prelude_std::*;
 use parking_lot::{ Once, OnceState };
-use std::cell::UnsafeCell;
-use std::fmt::{ self, Debug, Display };
-use std::mem::ManuallyDrop;
-use std::ops::{ Deref, DerefMut };
-use std::panic::{ RefUnwindSafe, UnwindSafe };
-use std::ptr;
 
 /// Inner data union
 ///
