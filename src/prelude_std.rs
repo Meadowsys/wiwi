@@ -40,21 +40,70 @@ pub use std::{
 	str
 };
 
-pub use std::alloc::{ self as alloc_mod, alloc, alloc_zeroed, dealloc, realloc };
-pub use std::any::{ Any, TypeId, type_name, type_name_of_val };
-pub use std::borrow::{ Borrow, BorrowMut, Cow, ToOwned };
+pub use std::alloc::{
+	self as alloc_mod,
+	alloc,
+	alloc_zeroed,
+	dealloc,
+	realloc
+};
+pub use std::any::{
+	Any,
+	TypeId,
+	type_name,
+	type_name_of_val
+};
+pub use std::borrow::{
+	Borrow,
+	BorrowMut,
+	Cow,
+	ToOwned
+};
 pub use std::boxed::Box;
 pub use std::cell::{ self, UnsafeCell };
 pub use std::clone::{ self, Clone };
-pub use std::cmp::{ self, Eq, Ord, PartialEq, PartialOrd, Ordering };
-pub use std::convert::{ AsMut, AsRef, From, Into, TryFrom, TryInto, Infallible, identity };
+pub use std::cmp::{
+	self,
+	Eq,
+	Ord,
+	PartialEq,
+	PartialOrd,
+	Ordering
+};
+pub use std::convert::{
+	AsMut,
+	AsRef,
+	From,
+	Into,
+	TryFrom,
+	TryInto,
+	Infallible,
+	identity
+};
 pub use std::default::Default;
 pub use std::error::Error;
 pub use std::fmt::{ self, Debug, Display };
 pub use std::future::{ self, Future, IntoFuture };
 pub use std::hash::{ self, Hash, Hasher };
-pub use std::iter::{ self, Iterator, FromIterator, IntoIterator, DoubleEndedIterator, ExactSizeIterator, Extend };
-pub use std::marker::{ self, Copy, Send, Sync, Sized, Unpin, PhantomData, PhantomPinned };
+pub use std::iter::{
+	self,
+	Iterator,
+	FromIterator,
+	IntoIterator,
+	DoubleEndedIterator,
+	ExactSizeIterator,
+	Extend
+};
+pub use std::marker::{
+	self,
+	Copy,
+	Send,
+	Sync,
+	Sized,
+	Unpin,
+	PhantomData,
+	PhantomPinned
+};
 pub use std::mem::{
 	self,
 	ManuallyDrop,
@@ -73,7 +122,15 @@ pub use std::mem::{
 	take,
 	zeroed
 };
-pub use std::ops::{ self, Deref, DerefMut, Drop, Fn, FnMut, FnOnce };
+pub use std::ops::{
+	self,
+	Deref,
+	DerefMut,
+	Drop,
+	Fn,
+	FnMut,
+	FnOnce
+};
 pub use std::option::{ self, Option, Option::Some, Option::None };
 pub use std::panic::{ UnwindSafe, RefUnwindSafe };
 pub use std::result::{ self, Result, Result::Ok, Result::Err };
