@@ -25,12 +25,9 @@ impl StringInlineable {
 		});
 		Self { inline }
 	}
+}
 
-	#[inline]
-	pub fn is_empty(&self) -> bool {
-		self.len() == 0
-	}
-
+impl StringInlineable {
 	#[inline]
 	pub fn len(&self) -> usize {
 		self.do_thing(|s| s.len(), |s| s.len())
@@ -41,6 +38,13 @@ impl StringInlineable {
 		self.do_thing(|s| s.capacity(), |s| s.capacity())
 	}
 
+	#[inline]
+	pub fn is_empty(&self) -> bool {
+		self.len() == 0
+	}
+}
+
+impl StringInlineable {
 	#[inline(always)]
 	fn is_inline(&self) -> bool {
 		// SAFETY: all memory-valid instancees of `StringHeap` satisfy memory
