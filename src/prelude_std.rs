@@ -37,6 +37,7 @@ pub use std::{
 	array,
 	env,
 	ptr,
+	slice,
 	str
 };
 
