@@ -36,6 +36,7 @@ pub use std::{
 
 	array,
 	env,
+	hint,
 	ptr,
 	slice,
 	str
@@ -68,8 +69,7 @@ pub use std::cmp::{
 	Eq,
 	Ord,
 	PartialEq,
-	PartialOrd,
-	Ordering
+	PartialOrd
 };
 pub use std::convert::{
 	AsMut,
@@ -135,5 +135,26 @@ pub use std::ops::{
 pub use std::option::{ self, Option, Option::Some, Option::None };
 pub use std::panic::{ UnwindSafe, RefUnwindSafe };
 pub use std::result::{ self, Result, Result::Ok, Result::Err };
+pub use std::rc::{ Rc, Weak as RcWeak };
 pub use std::string::{ self, String, ToString };
+pub use std::sync::{ Arc, Weak as ArcWeak };
+pub use std::sync::atomic::{
+	self,
+	AtomicBool,
+	AtomicI8,
+	AtomicI16,
+	AtomicI32,
+	AtomicI64,
+	// AtomicI128,
+	AtomicIsize,
+	AtomicU8,
+	AtomicU16,
+	AtomicU32,
+	AtomicU64,
+	// AtomicU128,
+	AtomicUsize,
+	AtomicPtr,
+	compiler_fence,
+	fence
+};
 pub use std::vec::Vec;

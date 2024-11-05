@@ -347,7 +347,7 @@ macro_rules! decl_chain {
 			$($inner)+: $crate::prelude_std::PartialOrd<$($inner)+>
 		{
 			#[inline]
-			fn partial_cmp(&self, other: &$($right_ty)+) -> $crate::prelude_std::Option<$crate::prelude_std::Ordering> {
+			fn partial_cmp(&self, other: &$($right_ty)+) -> $crate::prelude_std::Option<$crate::prelude_std::cmp::Ordering> {
 				$crate::chain::decl_chain! {
 					@impl_partial_cmp_helper
 					[$($inner)+]
