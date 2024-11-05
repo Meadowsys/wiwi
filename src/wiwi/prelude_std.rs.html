@@ -77,6 +77,66 @@
 <a href="#77" id="77">77</a>
 <a href="#78" id="78">78</a>
 <a href="#79" id="79">79</a>
+<a href="#80" id="80">80</a>
+<a href="#81" id="81">81</a>
+<a href="#82" id="82">82</a>
+<a href="#83" id="83">83</a>
+<a href="#84" id="84">84</a>
+<a href="#85" id="85">85</a>
+<a href="#86" id="86">86</a>
+<a href="#87" id="87">87</a>
+<a href="#88" id="88">88</a>
+<a href="#89" id="89">89</a>
+<a href="#90" id="90">90</a>
+<a href="#91" id="91">91</a>
+<a href="#92" id="92">92</a>
+<a href="#93" id="93">93</a>
+<a href="#94" id="94">94</a>
+<a href="#95" id="95">95</a>
+<a href="#96" id="96">96</a>
+<a href="#97" id="97">97</a>
+<a href="#98" id="98">98</a>
+<a href="#99" id="99">99</a>
+<a href="#100" id="100">100</a>
+<a href="#101" id="101">101</a>
+<a href="#102" id="102">102</a>
+<a href="#103" id="103">103</a>
+<a href="#104" id="104">104</a>
+<a href="#105" id="105">105</a>
+<a href="#106" id="106">106</a>
+<a href="#107" id="107">107</a>
+<a href="#108" id="108">108</a>
+<a href="#109" id="109">109</a>
+<a href="#110" id="110">110</a>
+<a href="#111" id="111">111</a>
+<a href="#112" id="112">112</a>
+<a href="#113" id="113">113</a>
+<a href="#114" id="114">114</a>
+<a href="#115" id="115">115</a>
+<a href="#116" id="116">116</a>
+<a href="#117" id="117">117</a>
+<a href="#118" id="118">118</a>
+<a href="#119" id="119">119</a>
+<a href="#120" id="120">120</a>
+<a href="#121" id="121">121</a>
+<a href="#122" id="122">122</a>
+<a href="#123" id="123">123</a>
+<a href="#124" id="124">124</a>
+<a href="#125" id="125">125</a>
+<a href="#126" id="126">126</a>
+<a href="#127" id="127">127</a>
+<a href="#128" id="128">128</a>
+<a href="#129" id="129">129</a>
+<a href="#130" id="130">130</a>
+<a href="#131" id="131">131</a>
+<a href="#132" id="132">132</a>
+<a href="#133" id="133">133</a>
+<a href="#134" id="134">134</a>
+<a href="#135" id="135">135</a>
+<a href="#136" id="136">136</a>
+<a href="#137" id="137">137</a>
+<a href="#138" id="138">138</a>
+<a href="#139" id="139">139</a>
 </pre></div><pre class="rust"><code><span class="doccomment">//! Prelude exporting types from the Rust standard library (`std`)
 
 </span><span class="kw">pub extern crate </span>alloc <span class="kw">as </span>alloc_crate;
@@ -116,23 +176,74 @@
 	array,
 	env,
 	ptr,
+	slice,
 	str
 };
 
-<span class="kw">pub use </span>std::alloc::{ <span class="self">self </span><span class="kw">as </span>alloc_mod, alloc, alloc_zeroed, dealloc, realloc };
-<span class="kw">pub use </span>std::any::{ Any, TypeId, type_name, type_name_of_val };
-<span class="kw">pub use </span>std::borrow::{ Borrow, BorrowMut, Cow, ToOwned };
+<span class="kw">pub use </span>std::alloc::{
+	<span class="self">self </span><span class="kw">as </span>alloc_mod,
+	alloc,
+	alloc_zeroed,
+	dealloc,
+	realloc
+};
+<span class="kw">pub use </span>std::any::{
+	Any,
+	TypeId,
+	type_name,
+	type_name_of_val
+};
+<span class="kw">pub use </span>std::borrow::{
+	Borrow,
+	BorrowMut,
+	Cow,
+	ToOwned
+};
 <span class="kw">pub use </span>std::boxed::Box;
+<span class="kw">pub use </span>std::cell::{ <span class="self">self</span>, UnsafeCell };
 <span class="kw">pub use </span>std::clone::{ <span class="self">self</span>, Clone };
-<span class="kw">pub use </span>std::cmp::{ <span class="self">self</span>, Eq, Ord, PartialEq, PartialOrd, Ordering };
-<span class="kw">pub use </span>std::convert::{ AsMut, AsRef, From, Into, TryFrom, TryInto, Infallible, identity };
+<span class="kw">pub use </span>std::cmp::{
+	<span class="self">self</span>,
+	Eq,
+	Ord,
+	PartialEq,
+	PartialOrd,
+	Ordering
+};
+<span class="kw">pub use </span>std::convert::{
+	AsMut,
+	AsRef,
+	From,
+	Into,
+	TryFrom,
+	TryInto,
+	Infallible,
+	identity
+};
 <span class="kw">pub use </span>std::default::Default;
 <span class="kw">pub use </span>std::error::Error;
 <span class="kw">pub use </span>std::fmt::{ <span class="self">self</span>, Debug, Display };
 <span class="kw">pub use </span>std::future::{ <span class="self">self</span>, Future, IntoFuture };
 <span class="kw">pub use </span>std::hash::{ <span class="self">self</span>, Hash, Hasher };
-<span class="kw">pub use </span>std::iter::{ <span class="self">self</span>, Iterator, FromIterator, IntoIterator, DoubleEndedIterator, ExactSizeIterator, Extend };
-<span class="kw">pub use </span>std::marker::{ <span class="self">self</span>, Copy, Send, Sync, Sized, Unpin, PhantomData, PhantomPinned };
+<span class="kw">pub use </span>std::iter::{
+	<span class="self">self</span>,
+	Iterator,
+	FromIterator,
+	IntoIterator,
+	DoubleEndedIterator,
+	ExactSizeIterator,
+	Extend
+};
+<span class="kw">pub use </span>std::marker::{
+	<span class="self">self</span>,
+	Copy,
+	Send,
+	Sync,
+	Sized,
+	Unpin,
+	PhantomData,
+	PhantomPinned
+};
 <span class="kw">pub use </span>std::mem::{
 	<span class="self">self</span>,
 	ManuallyDrop,
@@ -151,8 +262,17 @@
 	take,
 	zeroed
 };
-<span class="kw">pub use </span>std::ops::{ <span class="self">self</span>, Drop, Fn, FnMut, FnOnce };
+<span class="kw">pub use </span>std::ops::{
+	<span class="self">self</span>,
+	Deref,
+	DerefMut,
+	Drop,
+	Fn,
+	FnMut,
+	FnOnce
+};
 <span class="kw">pub use </span>std::option::{ <span class="self">self</span>, <span class="prelude-ty">Option</span>, Option::Some, Option::None };
+<span class="kw">pub use </span>std::panic::{ UnwindSafe, RefUnwindSafe };
 <span class="kw">pub use </span>std::result::{ <span class="self">self</span>, <span class="prelude-ty">Result</span>, Result::Ok, Result::Err };
 <span class="kw">pub use </span>std::string::{ <span class="self">self</span>, String, ToString };
 <span class="kw">pub use </span>std::vec::Vec;
