@@ -46,6 +46,7 @@ pub mod chain;
 pub mod lazy_wrap;
 pub mod num;
 pub mod string;
+pub mod vh;
 
 // #[cfg(feature = "aoc-unstable")]
 // #[cfg_attr(docsrs, doc(cfg(feature = "aoc-unstable")))]
