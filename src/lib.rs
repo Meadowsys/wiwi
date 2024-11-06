@@ -45,6 +45,7 @@ pub mod prelude_std;
 pub mod chain;
 pub mod lazy_wrap;
 pub mod num;
+pub mod rc;
 pub mod string;
 pub mod vh;
 
