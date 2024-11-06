@@ -1,1 +1,1 @@
-window.SIDEBAR_ITEMS = {"struct":["RcSlice","RcSliceWeak","RcStr","RcStrWeak"]};
+window.SIDEBAR_ITEMS = {};

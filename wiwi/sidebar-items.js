@@ -1,1 +1,1 @@
-window.SIDEBAR_ITEMS = {"macro":["vec_chain"],"mod":["_changelog","chain","lazy_wrap","num","prelude_std","string","vh"]};
+window.SIDEBAR_ITEMS = {"macro":["vec_chain"],"mod":["_changelog","chain","lazy_wrap","num","prelude_std","rc","string","vh"]};
