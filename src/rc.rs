@@ -5,9 +5,6 @@ use crate::prelude_std::*;
 use self::alloc_mod::Layout;
 use self::counter_access::{ CounterAccess, Thread, Atomic };
 
-#[expect(clippy::as_conversions)]
-const MAX_REFS: usize = isize::MAX as _;
-
 /// Assert at compile time that `usize` alignment satisfies (is larger than or
 /// equal to) `AtomicUsize` align
 const _: () = assert!(
@@ -17,10 +14,12 @@ const _: () = assert!(
 
 /// Reference counting thin pointer, that can hold one sized
 /// value (struct) and one (dynamically sized) slice
+#[repr(transparent)]
 pub struct Rc<T, U, A: CounterAccess = Thread> {
 	ptr: ptr::NonNull<RcInner<T, U, A>>
 }
 
+#[repr(transparent)]
 pub struct RcWeak<T, U, A: CounterAccess = Thread> {
 	ptr: ptr::NonNull<RcInner<T, U, A>>
 }
@@ -38,6 +37,11 @@ impl<T, A: CounterAccess> Rc<T, (), A> {
 
 		Self { ptr }
 	}
+
+	#[inline]
+	pub fn from_array_into_data<const N: usize>(array: [T; N]) -> Rc<[T; N], (), A> {
+		Rc::new(array)
+	}
 }
 
 impl<U, A: CounterAccess> Rc<(), U, A> {
@@ -46,10 +50,46 @@ impl<U, A: CounterAccess> Rc<(), U, A> {
 	where
 		U: Copy
 	{
+		Rc::from_value_and_slice_copy((), slice)
+	}
+
+	#[inline]
+	pub fn from_slice_clone(slice: &[U]) -> Self
+	where
+		U: Clone
+	{
+		Rc::from_value_and_slice_clone((), slice)
+	}
+
+	#[inline]
+	pub fn from_array_into_slice<const N: usize>(array: [U; N]) -> Self {
+		let array = ManuallyDrop::new(array);
+
+		// SAFETY: we put the array in `ManuallyDrop` to avoid double drop
+		unsafe { Self::from_value_and_slice_copy_unchecked((), &*array) }
+	}
+}
+
+impl<T, U, A: CounterAccess> Rc<T, U, A> {
+	#[inline]
+	pub fn from_value_and_slice_copy(value: T, slice: &[U]) -> Self
+	where
+		U: Copy
+	{
+		// SAFETY: we have `U: Copy` bound
+		unsafe { Self::from_value_and_slice_copy_unchecked(value, slice) }
+	}
+
+	/// # Safety
+	///
+	/// You must make sure that `U: Copy` is satisfied, or the old slice is
+	/// prevented from being dropped to avoid double drop.
+	#[inline]
+	unsafe fn from_value_and_slice_copy_unchecked(value: T, slice: &[U]) -> Self {
 		let ptr = RcInner::alloc(slice.len());
 
 		// SAFETY: just allocated
-		unsafe { Self::init_strong_weak_len_value(ptr, slice.len(), ()) }
+		unsafe { Self::init_strong_weak_len_value(ptr, slice.len(), value) }
 
 		// SAFETY: just allocated, and with `slice.len()` as arg so
 		// slice_ptr is valid for `slice.len()` writes
@@ -65,14 +105,14 @@ impl<U, A: CounterAccess> Rc<(), U, A> {
 	}
 
 	#[inline]
-	pub fn from_slice_clone(slice: &[U]) -> Self
+	pub fn from_value_and_slice_clone(value: T, slice: &[U]) -> Self
 	where
 		U: Clone
 	{
 		let ptr = RcInner::alloc(slice.len());
 
 		// SAFETY: just allocated
-		unsafe { Self::init_strong_weak_len_value(ptr, slice.len(), ()) }
+		unsafe { Self::init_strong_weak_len_value(ptr, slice.len(), value) }
 
 		let slice_ptr = RcInner::slice_ptr(ptr).as_ptr();
 		slice.iter().enumerate().for_each(|(i, value)| {
@@ -86,32 +126,7 @@ impl<U, A: CounterAccess> Rc<(), U, A> {
 
 		Self { ptr }
 	}
-}
 
-impl<T, U, A: CounterAccess> Rc<T, U, A> {
-	#[inline]
-	pub fn downgrade(this: &Self) -> RcWeak<T, U, A> {
-		// SAFETY: ptr obtained from `this.ptr`
-		let prev_value = unsafe { A::increment_relaxed(RcInner::weak_ptr(this.ptr)) };
-		assert!(prev_value < MAX_REFS, "RC count overflowed");
-
-		RcWeak { ptr: this.ptr }
-	}
-
-	#[inline]
-	pub fn strong_count(&self) -> usize {
-		// SAFETY: ptr obtained from `self.ptr`
-		unsafe { A::simple_get(RcInner::strong_ptr(self.ptr)) }
-	}
-
-	#[inline]
-	pub fn weak_count(&self) -> usize {
-		// SAFETY: ptr obtained from `self.ptr`
-		unsafe { A::simple_get(RcInner::weak_ptr(self.ptr)) }
-	}
-}
-
-impl<T, U, A: CounterAccess> Rc<T, U, A> {
 	/// # Safety
 	///
 	/// `ptr` must be just allocated, and allocated with `len` as allocation argument.
@@ -131,12 +146,37 @@ impl<T, U, A: CounterAccess> Rc<T, U, A> {
 	}
 }
 
-impl<T, U, A: CounterAccess> RcWeak<T, U, A> {
-	pub fn upgrade(&self) -> Option<Rc<T, U, A>> {
+impl<T, U, A: CounterAccess> Rc<T, U, A> {
+	#[inline]
+	pub fn downgrade(this: &Self) -> RcWeak<T, U, A> {
 		// SAFETY: ptr obtained from `this.ptr`
-		let can_upgrade = unsafe { A::try_increment_for_upgrade(RcInner::strong_ptr(self.ptr)) };
+		let prev_value = unsafe { A::increment_relaxed(RcInner::weak_ptr(this.ptr)) };
 
-		can_upgrade.then(|| Rc { ptr: self.ptr })
+		RcWeak { ptr: this.ptr }
+	}
+
+	#[inline]
+	pub fn value(&self) -> &T {
+		// SAFETY: ptr taken from `self.ptr`
+		unsafe { RcInner::value(self.ptr) }
+	}
+
+	#[inline]
+	pub fn slice(&self) -> &[U] {
+		// SAFETY: ptr taken from `self.ptr`
+		unsafe { RcInner::slice(self.ptr) }
+	}
+
+	#[inline]
+	pub fn strong_count(&self) -> usize {
+		// SAFETY: ptr obtained from `self.ptr`
+		unsafe { A::simple_get(RcInner::strong_ptr(self.ptr)) }
+	}
+
+	#[inline]
+	pub fn weak_count(&self) -> usize {
+		// SAFETY: ptr obtained from `self.ptr`
+		unsafe { A::simple_get(RcInner::weak_ptr(self.ptr)) }
 	}
 }
 
@@ -156,6 +196,16 @@ impl<T, U, A: CounterAccess> Drop for Rc<T, U, A> {
 		// SAFETY: we are last strong reference, drop the value but keep the
 		// allocation for the weak pointers.
 		unsafe { RcInner::drop_contents(self.ptr) }
+	}
+}
+
+impl<T, U, A: CounterAccess> RcWeak<T, U, A> {
+	#[inline]
+	pub fn upgrade(&self) -> Option<Rc<T, U, A>> {
+		// SAFETY: ptr obtained from `this.ptr`
+		let can_upgrade = unsafe { A::try_increment_for_upgrade(RcInner::strong_ptr(self.ptr)) };
+
+		can_upgrade.then(|| Rc { ptr: self.ptr })
 	}
 }
 
@@ -326,26 +376,6 @@ impl<T, U, A: CounterAccess> RcInner<T, U, A> {
 		unsafe { ptr::NonNull::new_unchecked(ptr) }
 	}
 
-	// /// # Safety
-	// ///
-	// /// `ptr` must point to a valid allocation of this type, and the field `strong`
-	// /// must be initialised.
-	// #[inline]
-	// unsafe fn strong(ptr: ptr::NonNull<Self>) -> usize {
-	// 	// SAFETY: caller promises ptr is valid, and `strong` field is initialised
-	// 	unsafe { *Self::strong_ptr(ptr).as_ptr() }
-	// }
-
-	// /// # Safety
-	// ///
-	// /// `ptr` must point to a valid allocation of this type, and the field `weak`
-	// /// must be initialised.
-	// #[inline]
-	// unsafe fn weak(ptr: ptr::NonNull<Self>) -> usize {
-	// 	// SAFETY: caller promises ptr is valid, and `weak` field is initialised
-	// 	unsafe { *Self::weak_ptr(ptr).as_ptr() }
-	// }
-
 	/// # Safety
 	///
 	/// `ptr` must point to a valid allocation of this type, and the field `len`
@@ -379,6 +409,33 @@ impl<T, U, A: CounterAccess> RcInner<T, U, A> {
 
 		// SAFETY: caller promises ptr is valid, and `slice` is initialised
 		unsafe { slice::from_raw_parts(slice_ptr, len) }
+	}
+}
+
+#[repr(transparent)]
+pub struct RcStr<A: CounterAccess = Thread> {
+	inner: Rc<(), u8, A>
+}
+
+#[repr(transparent)]
+pub struct RcStrWeak<A: CounterAccess = Thread> {
+	inner: RcWeak<(), u8, A>
+}
+
+impl<A: CounterAccess> Deref for RcStr<A> {
+	type Target = str;
+
+	#[inline]
+	fn deref(&self) -> &str {
+		// SAFETY: invariant of `RcStr`
+		unsafe { str::from_utf8_unchecked(self.inner.slice()) }
+	}
+}
+
+impl<A: CounterAccess> From<&str> for RcStr<A> {
+	#[inline]
+	fn from(s: &str) -> Self {
+		Self { inner: Rc::from_slice_copy(s.as_bytes()) }
 	}
 }
 
