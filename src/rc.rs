@@ -21,6 +21,13 @@ pub struct Rc<T, U, A: CounterAccess = Thread> {
 	ptr: ptr::NonNull<RcInner<T, U, A>>
 }
 
+pub struct RcWeak<T, U, A: CounterAccess = Thread> {
+	ptr: ptr::NonNull<RcInner<T, U, A>>
+}
+
+pub type Arc<T, U> = Rc<T, U, Atomic>;
+pub type ArcWeak<T, U> = RcWeak<T, U, Atomic>;
+
 impl<T, A: CounterAccess> Rc<T, (), A> {
 	#[inline]
 	pub fn new(value: T) -> Self {
@@ -82,6 +89,29 @@ impl<U, A: CounterAccess> Rc<(), U, A> {
 }
 
 impl<T, U, A: CounterAccess> Rc<T, U, A> {
+	#[inline]
+	pub fn downgrade(this: &Self) -> RcWeak<T, U, A> {
+		// SAFETY: ptr obtained from `this.ptr`
+		let prev_value = unsafe { A::increment_relaxed(RcInner::weak_ptr(this.ptr)) };
+		assert!(prev_value < MAX_REFS, "RC count overflowed");
+
+		RcWeak { ptr: this.ptr }
+	}
+
+	#[inline]
+	pub fn strong_count(&self) -> usize {
+		// SAFETY: ptr obtained from `self.ptr`
+		unsafe { A::simple_get(RcInner::strong_ptr(self.ptr)) }
+	}
+
+	#[inline]
+	pub fn weak_count(&self) -> usize {
+		// SAFETY: ptr obtained from `self.ptr`
+		unsafe { A::simple_get(RcInner::weak_ptr(self.ptr)) }
+	}
+}
+
+impl<T, U, A: CounterAccess> Rc<T, U, A> {
 	/// # Safety
 	///
 	/// `ptr` must be just allocated, and allocated with `len` as allocation argument.
@@ -98,6 +128,49 @@ impl<T, U, A: CounterAccess> Rc<T, U, A> {
 
 		// SAFETY: caller promises pointer was just allocated
 		unsafe { RcInner::value_ptr(ptr).write(value) }
+	}
+}
+
+impl<T, U, A: CounterAccess> RcWeak<T, U, A> {
+	pub fn upgrade(&self) -> Option<Rc<T, U, A>> {
+		// SAFETY: ptr obtained from `this.ptr`
+		let can_upgrade = unsafe { A::try_increment_for_upgrade(RcInner::strong_ptr(self.ptr)) };
+
+		can_upgrade.then(|| Rc { ptr: self.ptr })
+	}
+}
+
+impl<T, U, A: CounterAccess> Drop for Rc<T, U, A> {
+	#[inline]
+	fn drop(&mut self) {
+		// SAFETY: ptr obtained from `self.ptr`
+		let prev_value = unsafe { A::decrement_release(RcInner::strong_ptr(self.ptr)) };
+		if prev_value != 1 { return }
+
+		atomic::fence(atomic::Ordering::Acquire);
+
+		// Let this drop to take care of the "fake" weak pointer held
+		// by the strong pointers
+		let _weak = RcWeak { ptr: self.ptr };
+
+		// SAFETY: we are last strong reference, drop the value but keep the
+		// allocation for the weak pointers.
+		unsafe { RcInner::drop_contents(self.ptr) }
+	}
+}
+
+impl<T, U, A: CounterAccess> Drop for RcWeak<T, U, A> {
+	#[inline]
+	fn drop(&mut self) {
+		// SAFETY: ptr obtained from `self.ptr`
+		let prev_value = unsafe { A::decrement_release(RcInner::weak_ptr(self.ptr)) };
+		if prev_value != 1 { return }
+
+		atomic::fence(atomic::Ordering::Acquire);
+
+		// SAFETY: we are last weak pointer and no more strong pointers exist,
+		// time to deallocate (contents were dropped by last strong pointer)
+		unsafe { RcInner::dealloc(self.ptr) }
 	}
 }
 
@@ -323,6 +396,23 @@ mod counter_access {
 		/// The pointer must be freshly allocated, which also implies we have
 		/// exclusive access, so the store does not have to be atomic (if applicable).
 		unsafe fn initial_store(ptr: ptr::NonNull<usize>);
+
+		/// Simple get operation for eg. `rc.strong_count()` calls
+		unsafe fn simple_get(ptr: ptr::NonNull<usize>) -> usize;
+
+		/// Decrements the count in `ptr` with `Release` ordering
+		/// and returns the _previous_ value
+		unsafe fn decrement_release(ptr: ptr::NonNull<usize>) -> usize;
+
+		/// Increments the count in `ptr` with `Relaxed` ordering
+		/// and returns the _previous_ value
+		unsafe fn increment_relaxed(ptr: ptr::NonNull<usize>) -> usize;
+
+		/// Try to increment the count in `ptr`, returning true if the old count
+		/// is greater than 0
+		///
+		/// Used in [`upgrade`](RcWeak::upgrade).
+		unsafe fn try_increment_for_upgrade(ptr: ptr::NonNull<usize>) -> bool;
 	}
 
 	/// Non-atomic (single thread) access to reference counts
@@ -332,8 +422,50 @@ mod counter_access {
 	unsafe impl CounterAccess for Thread {
 		#[inline]
 		unsafe fn initial_store(ptr: ptr::NonNull<usize>) {
-			// SAFETY: caller promises value is valid to write to.
+			// SAFETY: caller promises ptr is valid for writes
 			unsafe { ptr.write(1) }
+		}
+
+		#[inline]
+		unsafe fn simple_get(ptr: ptr::NonNull<usize>) -> usize {
+			// SAFETY: caller promises ptr is valid for reads and writes
+			unsafe { *ptr.as_ptr() }
+		}
+
+		#[inline]
+		unsafe fn decrement_release(ptr: ptr::NonNull<usize>) -> usize {
+			// SAFETY: caller promises ptr is valid for reads and writes
+			let prev = unsafe { ptr.read() };
+
+			// SAFETY: see above
+			unsafe { ptr.write(prev - 1) }
+
+			prev
+		}
+
+		#[inline]
+		unsafe fn increment_relaxed(ptr: ptr::NonNull<usize>) -> usize {
+			// SAFETY: caller promises ptr is valid for reads and writes
+			let prev = unsafe { ptr.read() };
+
+			// SAFETY: see above
+			unsafe { ptr.write(prev + 1) }
+
+			prev
+		}
+
+		#[inline]
+		unsafe fn try_increment_for_upgrade(ptr: ptr::NonNull<usize>) -> bool {
+			// SAFETY: caller promises ptr is valid for reads and writes
+			let prev = unsafe { ptr.read() };
+			let can_upgrade = prev > 0;
+
+			if can_upgrade {
+				// SAFETY: see above
+				unsafe { ptr.write(prev + 1) }
+			}
+
+			can_upgrade
 		}
 	}
 
@@ -348,6 +480,42 @@ mod counter_access {
 			// Additionally, this is the only reference to this value right now,
 			// we don't need to do an atomic store
 			unsafe { ptr.write(1) }
+		}
+
+		#[inline]
+		unsafe fn simple_get(ptr: ptr::NonNull<usize>) -> usize {
+			// SAFETY: caller promises ptr is valid for reads and writes
+			let atomic = unsafe { AtomicUsize::from_ptr(ptr.as_ptr()) };
+
+			atomic.load(atomic::Ordering::Relaxed)
+		}
+
+		#[inline]
+		unsafe fn decrement_release(ptr: ptr::NonNull<usize>) -> usize {
+			// SAFETY: caller promises ptr is valid for reads and writes
+			let atomic = unsafe { AtomicUsize::from_ptr(ptr.as_ptr()) };
+			atomic.fetch_sub(1, atomic::Ordering::Release)
+		}
+
+		#[inline]
+		unsafe fn increment_relaxed(ptr: ptr::NonNull<usize>) -> usize {
+			// SAFETY: caller promises ptr is valid for reads and writes
+			let atomic = unsafe { AtomicUsize::from_ptr(ptr.as_ptr()) };
+			// relaxed is fine because we already have a reference, so we
+			// won't race to drop/dealloc
+			atomic.fetch_add(1, atomic::Ordering::Relaxed)
+		}
+
+		#[inline]
+		unsafe fn try_increment_for_upgrade(ptr: ptr::NonNull<usize>) -> bool {
+			// SAFETY: caller promises ptr is valid for reads and writes
+			let atomic = unsafe { AtomicUsize::from_ptr(ptr.as_ptr()) };
+
+			atomic.fetch_update(
+				atomic::Ordering::Acquire,
+				atomic::Ordering::Relaxed,
+				|old| (old > 0).then(|| old + 1)
+			).is_ok()
 		}
 	}
 }
