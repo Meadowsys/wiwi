@@ -174,6 +174,12 @@ impl<T, U, A: CounterAccess> Drop for RcWeak<T, U, A> {
 	}
 }
 
+// SAFETY: we are `Send` if all the data and the counter access method is `Send`
+unsafe impl<T: Send, U: Send, A: Send + CounterAccess> Send for Rc<T, U, A> {}
+
+// SAFETY: we are `Sync` if all the data and the counter access method is `Sync`
+unsafe impl<T: Sync, U: Sync, A: Sync + CounterAccess> Sync for RcWeak<T, U, A> {}
+
 #[repr(C)]
 struct RcInner<T, U, A: CounterAccess> {
 	_marker: PhantomData<A>,
@@ -418,6 +424,11 @@ mod counter_access {
 	/// Non-atomic (single thread) access to reference counts
 	pub struct Thread;
 
+	/// Atomic (thread-safe) access to reference counts
+	pub struct Atomic {
+		_thread_unsafe: PhantomData<*const ()>
+	}
+
 	/// SAFETY: we provide valid single thread access (regular increment/decrement)
 	unsafe impl CounterAccess for Thread {
 		#[inline]
@@ -468,9 +479,6 @@ mod counter_access {
 			can_upgrade
 		}
 	}
-
-	/// Atomic (thread-safe) access to reference counts
-	pub struct Atomic;
 
 	/// SAFETY: we provide valid atomic access
 	unsafe impl CounterAccess for Atomic {
