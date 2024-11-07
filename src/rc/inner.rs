@@ -389,19 +389,19 @@ unsafe fn counter_uninit<'h, C: Counter, V, S>(instance: RcInner<C, V, S>) -> &'
 	unsafe { &mut *ptr.cast() }
 }
 
-/// # Safety
-///
-/// - The provided `instance` must not have been deallocated
-/// - The provided `instance` must have field `counter` already initialised
-/// - `instance` must outlive `'h` (the lifetime of the returned reference)
-#[inline]
-unsafe fn counter_ref<'h, C: Counter, V, S>(instance: RcInner<C, V, S>) -> &'h C {
-	// SAFETY: caller promises to uphold the requirements
-	let ptr = unsafe { counter_ptr(instance).as_ptr() };
-
-	// SAFETY: ptr is valid
-	unsafe { &*ptr }
-}
+// /// # Safety
+// ///
+// /// - The provided `instance` must not have been deallocated
+// /// - The provided `instance` must have field `counter` already initialised
+// /// - `instance` must outlive `'h` (the lifetime of the returned reference)
+// #[inline]
+// unsafe fn counter_ref<'h, C: Counter, V, S>(instance: RcInner<C, V, S>) -> &'h C {
+// 	// SAFETY: caller promises to uphold the requirements
+// 	let ptr = unsafe { counter_ptr(instance).as_ptr() };
+//
+// 	// SAFETY: ptr is valid
+// 	unsafe { &*ptr }
+// }
 
 /// # Safety
 ///

@@ -1,6 +1,3 @@
-// todo remove this lol
-#![allow(dead_code, unused_imports, unused_variables)]
-
 use crate::prelude_std::*;
 
 pub use self::inner::{ Counter, ThreadCounter, AtomicCounter };
