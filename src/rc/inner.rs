@@ -8,17 +8,25 @@ pub(super) struct RcInner<C: Counter, V, S> {
 
 #[repr(C)]
 struct RcInnerLayout<C: Counter, V, S> {
+	/// The reference counter (handles counting both strong and weak references)
 	counter: C,
+
+	/// The length of the slice stored in the unsized portion
 	slice_len: usize,
+
+	/// The value (the sized portion)
 	value: V,
 
-	// force alignment of (at least) S's alignment, while also not
-	// requiring there be at least 1 S element
+	/// A "header" of the unsized slice portion I guess?
+	///
+	/// This forces this struct to have an alignment of (at least) S's alignment,
+	/// while also not requiring that there be at least 1 S element in this struct
+	/// itself, and the slice will follow right after this field.
 	slice: [S; 0]
 }
 
 #[inline]
-fn new_from_value<C: Counter, V>(value: V) -> RcInner<C, V, ()> {
+pub fn new_from_value<C: Counter, V>(value: V) -> RcInner<C, V, ()> {
 	let instance = alloc_instance(0);
 
 	// SAFETY:
@@ -31,6 +39,64 @@ fn new_from_value<C: Counter, V>(value: V) -> RcInner<C, V, ()> {
 	// no need to initialise slice, as it has length 0
 
 	instance
+}
+
+#[inline]
+pub fn new_from_slice_clone<C: Counter, S: Clone>(slice: &[S]) -> RcInner<C, (), S> {
+	let instance = alloc_instance::<_, _, S>(slice.len());
+
+	// no need to initialise value, as it is ZST (unit type)
+
+	// SAFETY: instance just allocated in statement above
+	let ptr = unsafe { slice_thin_ptr(instance).as_ptr() };
+
+	slice.iter().enumerate().for_each(|(i, value)| {
+		// SAFETY: `ptr` is writeable for `slice.len()` elements
+		let ptr = unsafe { ptr.add(i) };
+
+		// SAFETY: see above
+		unsafe { ptr.write(value.clone()) }
+	});
+
+	instance
+}
+
+#[inline]
+pub fn new_from_value_and_slice_clone<C: Counter, V, S: Clone>(value: V, slice: &[S]) -> RcInner<C, V, S> {
+	let instance = alloc_instance::<_, _, S>(slice.len());
+
+	// SAFETY:
+	// - instance just allocated in statement above
+	// - because just allocated, we must have exclusive reference to `instance`
+	// - reference is used just for this single `write` statement and
+	//   dropped immediately after
+	unsafe { value_uninit(instance).write(value); }
+
+	// SAFETY: instance just allocated in statement above
+	let ptr = unsafe { slice_thin_ptr(instance).as_ptr() };
+
+	slice.iter().enumerate().for_each(|(i, value)| {
+		// SAFETY: `ptr` is writeable for `slice.len()` elements
+		let ptr = unsafe { ptr.add(i) };
+
+		// SAFETY: see above
+		unsafe { ptr.write(value.clone()) }
+	});
+
+	instance
+}
+
+
+#[inline]
+pub fn new_from_slice_copy<C: Counter, S: Copy>(slice: &[S]) -> RcInner<C, (), S> {
+	// SAFETY: `S: Copy enforced by trait bound`
+	unsafe { new_from_slice_copy_unchecked(slice) }
+}
+
+#[inline]
+pub fn new_from_value_and_slice_copy<C: Counter, V, S: Copy>(value: V, slice: &[S]) -> RcInner<C, V, S> {
+	// SAFETY: `S: Copy enforced by trait bound`
+	unsafe { new_from_value_and_slice_copy_unchecked(value, slice) }
 }
 
 /// # Safety
@@ -91,52 +157,7 @@ unsafe fn new_from_value_and_slice_copy_unchecked<C: Counter, V, S>(value: V, sl
 }
 
 #[inline]
-fn new_from_slice_clone<C: Counter, S: Clone>(slice: &[S]) -> RcInner<C, (), S> {
-	let instance = alloc_instance::<_, _, S>(slice.len());
-
-	// no need to initialise value, as it is ZST (unit type)
-
-	// SAFETY: instance just allocated in statement above
-	let ptr = unsafe { slice_thin_ptr(instance).as_ptr() };
-
-	slice.iter().enumerate().for_each(|(i, value)| {
-		// SAFETY: `ptr` is writeable for `slice.len()` elements
-		let ptr = unsafe { ptr.add(i) };
-
-		// SAFETY: see above
-		unsafe { ptr.write(value.clone()) }
-	});
-
-	instance
-}
-
-#[inline]
-fn new_from_value_and_slice_clone<C: Counter, V, S: Clone>(value: V, slice: &[S]) -> RcInner<C, V, S> {
-	let instance = alloc_instance::<_, _, S>(slice.len());
-
-	// SAFETY:
-	// - instance just allocated in statement above
-	// - because just allocated, we must have exclusive reference to `instance`
-	// - reference is used just for this single `write` statement and
-	//   dropped immediately after
-	unsafe { value_uninit(instance).write(value); }
-
-	// SAFETY: instance just allocated in statement above
-	let ptr = unsafe { slice_thin_ptr(instance).as_ptr() };
-
-	slice.iter().enumerate().for_each(|(i, value)| {
-		// SAFETY: `ptr` is writeable for `slice.len()` elements
-		let ptr = unsafe { ptr.add(i) };
-
-		// SAFETY: see above
-		unsafe { ptr.write(value.clone()) }
-	});
-
-	instance
-}
-
-#[inline]
-fn new_from_array_into_slice<C: Counter, S, const N: usize>(array: [S; N]) -> RcInner<C, (), S> {
+pub fn new_from_array_into_slice<C: Counter, S, const N: usize>(array: [S; N]) -> RcInner<C, (), S> {
 	let array = ManuallyDrop::new(array);
 
 	// SAFETY: we put the array into `ManuallyDrop`
@@ -144,7 +165,7 @@ fn new_from_array_into_slice<C: Counter, S, const N: usize>(array: [S; N]) -> Rc
 }
 
 #[inline]
-fn new_from_value_and_array_into_slice<C: Counter, V, S, const N: usize>(value: V, array: [S; N]) -> RcInner<C, V, S> {
+pub fn new_from_value_and_array_into_slice<C: Counter, V, S, const N: usize>(value: V, array: [S; N]) -> RcInner<C, V, S> {
 	let array = ManuallyDrop::new(array);
 
 	// SAFETY: we put the array into `ManuallyDrop`
@@ -192,7 +213,7 @@ fn alloc_instance<C: Counter, V, S>(slice_len: usize) -> RcInner<C, V, S> {
 /// This instance must be fully initialised, and this must be the first time
 /// this function is called on this particular `instance`.
 #[inline]
-unsafe fn drop_instance<C: Counter, V, S>(instance: RcInner<C, V, S>) {
+pub unsafe fn drop_instance<C: Counter, V, S>(instance: RcInner<C, V, S>) {
 	// SAFETY: caller promises `instance` is fully initialised
 	let slice_ref = unsafe { slice_ref(instance) };
 
@@ -220,7 +241,7 @@ unsafe fn drop_instance<C: Counter, V, S>(instance: RcInner<C, V, S>) {
 /// that is equivalent to leaking the value and slice fields, and is almost
 /// certainly incorrect.
 #[inline]
-unsafe fn dealloc_instance<C: Counter, V, S>(instance: RcInner<C, V, S>) {
+pub unsafe fn dealloc_instance<C: Counter, V, S>(instance: RcInner<C, V, S>) {
 	// SAFETY: caller promises `counter` is initialised
 	let counter_ptr = unsafe { counter_ptr(instance).as_ptr() };
 
@@ -250,54 +271,95 @@ fn calc_layout<C: Counter, V, S>(slice_len: usize) -> alloc_mod::Layout {
 ///
 /// - The provided `instance` must not have been deallocated
 #[inline]
-fn strong_count<C: Counter, V, S>(instance: RcInner<C, V, S>) -> usize {
+pub unsafe fn strong_count<C: Counter, V, S>(instance: RcInner<C, V, S>) -> usize {
 	// SAFETY: caller promises `instance` is not deallocated
-	C::strong_count(unsafe { counter_ptr(instance) })
+	let ptr = unsafe { counter_ptr(instance) };
+
+	// SAFETY: see above
+	unsafe { C::strong_count(ptr) }
 }
 
 /// # Safety
 ///
 /// - The provided `instance` must not have been deallocated
 #[inline]
-fn weak_count<C: Counter, V, S>(instance: RcInner<C, V, S>) -> usize {
+pub unsafe fn weak_count<C: Counter, V, S>(instance: RcInner<C, V, S>) -> usize {
 	// SAFETY: caller promises `instance` is not deallocated
-	C::weak_count(unsafe { counter_ptr(instance) }) - 1
+	let ptr = unsafe { counter_ptr(instance) };
+
+	// SAFETY: see above
+	unsafe { C::weak_count(ptr) }
 }
 
 /// # Safety
 ///
 /// - The provided `instance` must not have been deallocated
 #[inline]
-fn inc_strong_for_clone<C: Counter, V, S>(instance: RcInner<C, V, S>) {
+pub unsafe fn weak_count_from_weak_ref<C: Counter, V, S>(instance: RcInner<C, V, S>) -> usize {
 	// SAFETY: caller promises `instance` is not deallocated
-	C::inc_strong_for_clone(unsafe { counter_ptr(instance) })
+	let ptr = unsafe { counter_ptr(instance) };
+
+	// SAFETY: see above
+	unsafe { C::weak_count_from_weak_ref(ptr) }
 }
 
 /// # Safety
 ///
 /// - The provided `instance` must not have been deallocated
 #[inline]
-fn dec_strong_for_drop<C: Counter, V, S>(instance: RcInner<C, V, S>) -> bool {
+pub unsafe fn inc_strong_for_clone<C: Counter, V, S>(instance: RcInner<C, V, S>) {
 	// SAFETY: caller promises `instance` is not deallocated
-	C::dec_strong_for_drop(unsafe { counter_ptr(instance) })
+	let ptr = unsafe { counter_ptr(instance) };
+
+	// SAFETY: see above
+	unsafe { C::inc_strong_for_clone(ptr) }
 }
 
 /// # Safety
 ///
 /// - The provided `instance` must not have been deallocated
 #[inline]
-fn inc_weak_for_clone<C: Counter, V, S>(instance: RcInner<C, V, S>) {
+pub unsafe fn dec_strong_for_drop<C: Counter, V, S>(instance: RcInner<C, V, S>) -> bool {
 	// SAFETY: caller promises `instance` is not deallocated
-	C::inc_weak_for_clone(unsafe { counter_ptr(instance) })
+	let ptr = unsafe { counter_ptr(instance) };
+
+	// SAFETY: see above
+	unsafe { C::dec_strong_for_drop(ptr) }
 }
 
 /// # Safety
 ///
 /// - The provided `instance` must not have been deallocated
 #[inline]
-fn dec_weak_for_drop<C: Counter, V, S>(instance: RcInner<C, V, S>) -> bool {
+pub unsafe fn inc_weak_for_clone<C: Counter, V, S>(instance: RcInner<C, V, S>) {
 	// SAFETY: caller promises `instance` is not deallocated
-	C::dec_weak_for_drop(unsafe { counter_ptr(instance) })
+	let ptr = unsafe { counter_ptr(instance) };
+
+	// SAFETY: see above
+	unsafe { C::inc_weak_for_clone(ptr) }
+}
+
+/// # Safety
+///
+/// - The provided `instance` must not have been deallocated
+#[inline]
+pub unsafe fn dec_weak_for_drop<C: Counter, V, S>(instance: RcInner<C, V, S>) -> bool {
+	// SAFETY: caller promises `instance` is not deallocated
+	let ptr = unsafe { counter_ptr(instance) };
+
+	// SAFETY: see above
+	unsafe { C::dec_weak_for_drop(ptr) }
+}
+/// # Safety
+///
+/// - The provided `instance` must not have been deallocated
+#[inline]
+pub unsafe fn inc_strong_for_upgrade<C: Counter, V, S>(instance: RcInner<C, V, S>) -> bool {
+	// SAFETY: caller promises `instance` is not deallocated
+	let ptr = unsafe { counter_ptr(instance) };
+
+	// SAFETY: see above
+	unsafe { C::inc_strong_for_upgrade(ptr) }
 }
 
 /// # Safety
@@ -412,7 +474,7 @@ unsafe fn value_uninit<'h, C: Counter, V, S>(instance: RcInner<C, V, S>) -> &'h 
 /// - The provided `instance` must have field `value` already initialised
 /// - `instance` must outlive `'h` (the lifetime of the returned reference)
 #[inline]
-unsafe fn value_ref<'h, C: Counter, V, S>(instance: RcInner<C, V, S>) -> &'h V {
+pub unsafe fn value_ref<'h, C: Counter, V, S>(instance: RcInner<C, V, S>) -> &'h V {
 	// SAFETY: caller promises to uphold the requirements
 	let ptr = unsafe { value_ptr(instance).as_ptr() };
 
@@ -440,7 +502,7 @@ unsafe fn slice_thin_ptr<C: Counter, V, S>(instance: RcInner<C, V, S>) -> ptr::N
 /// - The provided `instance` must have `slice_len` elements in `slice` already initialised
 /// - `instance` must outlive `'h` (the lifetime of the returned reference)
 #[inline]
-unsafe fn slice_ref<'h, C: Counter, V, S>(instance: RcInner<C, V, S>) -> &'h [S] {
+pub unsafe fn slice_ref<'h, C: Counter, V, S>(instance: RcInner<C, V, S>) -> &'h [S] {
 	// SAFETY: caller promises to uphold the requirements
 	let ptr = unsafe { slice_thin_ptr(instance).as_ptr() };
 
@@ -460,7 +522,20 @@ impl<C: Counter, V, S> Clone for RcInner<C, V, S> {
 
 impl<C: Counter, V, S> Copy for RcInner<C, V, S> {}
 
-pub trait Counter: Sized {
+/// Trait for structs that can count references
+///
+/// `wiwi` includes two implementations: one for single threaded access (akin
+/// to `std`'s [`Rc`]), and the other for atomic multithreaded access (akin to
+/// `std`'s [`Arc`]).
+///
+/// # Safety
+///
+/// You must implement this trait correctly, as values returned from functions
+/// are directly used to control the allocation/deallocation of memory and
+/// dropping of values.. In particular, returning an incorrectly low value for
+/// both strong and weak counts can lead to premature value dropping and/or
+/// deallocation, which is a memory safety issue.
+pub unsafe trait Counter: Sized {
 	/// Create a new couter with strong and weak count both set to 1
 	fn new() -> Self;
 
@@ -468,19 +543,25 @@ pub trait Counter: Sized {
 	///
 	/// The pointer provided in `this` must be initialised and valid for
 	/// reads and writes (ie. the result of calling [`new`](Counter::new) is valid).
-	fn strong_count(this: ptr::NonNull<Self>) -> usize;
+	unsafe fn strong_count(this: ptr::NonNull<Self>) -> usize;
 
 	/// # Safety
 	///
 	/// The pointer provided in `this` must be initialised and valid for
 	/// reads and writes (ie. the result of calling [`new`](Counter::new) is valid).
-	fn weak_count(this: ptr::NonNull<Self>) -> usize;
+	unsafe fn weak_count(this: ptr::NonNull<Self>) -> usize;
 
 	/// # Safety
 	///
 	/// The pointer provided in `this` must be initialised and valid for
 	/// reads and writes (ie. the result of calling [`new`](Counter::new) is valid).
-	fn inc_strong_for_clone(this: ptr::NonNull<Self>);
+	unsafe fn weak_count_from_weak_ref(this: ptr::NonNull<Self>) -> usize;
+
+	/// # Safety
+	///
+	/// The pointer provided in `this` must be initialised and valid for
+	/// reads and writes (ie. the result of calling [`new`](Counter::new) is valid).
+	unsafe fn inc_strong_for_clone(this: ptr::NonNull<Self>);
 
 	/// Decrements the strong count during a drop, returning whether or not
 	/// [`drop_instance`] needs to be called on the instance
@@ -489,13 +570,13 @@ pub trait Counter: Sized {
 	///
 	/// The pointer provided in `this` must be initialised and valid for
 	/// reads and writes (ie. the result of calling [`new`](Counter::new) is valid).
-	fn dec_strong_for_drop(this: ptr::NonNull<Self>) -> bool;
+	unsafe fn dec_strong_for_drop(this: ptr::NonNull<Self>) -> bool;
 
 	/// # Safety
 	///
 	/// The pointer provided in `this` must be initialised and valid for
 	/// reads and writes (ie. the result of calling [`new`](Counter::new) is valid).
-	fn inc_weak_for_clone(this: ptr::NonNull<Self>);
+	unsafe fn inc_weak_for_clone(this: ptr::NonNull<Self>);
 
 	/// Decrements the weak count during a drop, returning whether or not
 	/// [`dealloc_instance`] needs to be called on the instance
@@ -504,7 +585,16 @@ pub trait Counter: Sized {
 	///
 	/// The pointer provided in `this` must be initialised and valid for
 	/// reads and writes (ie. the result of calling [`new`](Counter::new) is valid).
-	fn dec_weak_for_drop(this: ptr::NonNull<Self>) -> bool;
+	unsafe fn dec_weak_for_drop(this: ptr::NonNull<Self>) -> bool;
+
+	/// Increment the strong count if it is possible to upgrade a weak pointer
+	/// to strong, and return true, otherwise return false and do nothing
+	///
+	/// # Safety
+	///
+	/// The pointer provided in `this` must be initialised and valid for
+	/// reads and writes (ie. the result of calling [`new`](Counter::new) is valid).
+	unsafe fn inc_strong_for_upgrade(this: ptr::NonNull<Self>) -> bool;
 }
 
 pub struct ThreadCounter {
@@ -513,7 +603,8 @@ pub struct ThreadCounter {
 	_not_thread_safe: PhantomData<*const ()>
 }
 
-impl Counter for ThreadCounter {
+// SAFETY: we implement everything correctly
+unsafe impl Counter for ThreadCounter {
 	#[inline]
 	fn new() -> Self {
 		Self {
@@ -524,31 +615,37 @@ impl Counter for ThreadCounter {
 	}
 
 	#[inline]
-	fn strong_count(this: ptr::NonNull<ThreadCounter>) -> usize {
+	unsafe fn strong_count(this: ptr::NonNull<ThreadCounter>) -> usize {
 		// SAFETY: `this` is valid per caller contract
 		unsafe { (*this.as_ptr()).strong }
 	}
 
 	#[inline]
-	fn weak_count(this: ptr::NonNull<ThreadCounter>) -> usize {
+	unsafe fn weak_count(this: ptr::NonNull<ThreadCounter>) -> usize {
 		// SAFETY: `this` is valid per caller contract
 		unsafe { (*this.as_ptr()).weak }
 	}
 
 	#[inline]
-	fn inc_strong_for_clone(this: ptr::NonNull<ThreadCounter>) {
+	unsafe fn weak_count_from_weak_ref(this: ptr::NonNull<Self>) -> usize {
+		// SAFETY: `this` is valid per caller contract
+		unsafe { Self::weak_count(this) }
+	}
+
+	#[inline]
+	unsafe fn inc_strong_for_clone(this: ptr::NonNull<ThreadCounter>) {
 		// SAFETY: `this` is valid per caller contract
 		let ptr = unsafe { &raw mut (*this.as_ptr()).strong };
 
 		// SAFETY: same as above
 		let old = unsafe { *ptr };
 
-		// SAFETY: same as above, the ptr projection is valid
+		// SAFETY: same as above, so this ptr projection is valid
 		unsafe { ptr.write(old + 1) }
 	}
 
 	#[inline]
-	fn dec_strong_for_drop(this: ptr::NonNull<ThreadCounter>) -> bool {
+	unsafe fn dec_strong_for_drop(this: ptr::NonNull<ThreadCounter>) -> bool {
 		// SAFETY: `this` is valid per caller contract
 		let ptr = unsafe { &raw mut (*this.as_ptr()).strong };
 
@@ -562,19 +659,19 @@ impl Counter for ThreadCounter {
 	}
 
 	#[inline]
-	fn inc_weak_for_clone(this: ptr::NonNull<ThreadCounter>) {
+	unsafe fn inc_weak_for_clone(this: ptr::NonNull<ThreadCounter>) {
 		// SAFETY: `this` is valid per caller contract
 		let ptr = unsafe { &raw mut (*this.as_ptr()).weak };
 
 		// SAFETY: same as above
 		let old = unsafe { *ptr };
 
-		// SAFETY: same as above, the ptr projection is valid
+		// SAFETY: same as above, so this ptr projection is valid
 		unsafe { ptr.write(old + 1) }
 	}
 
 	#[inline]
-	fn dec_weak_for_drop(this: ptr::NonNull<ThreadCounter>) -> bool {
+	unsafe fn dec_weak_for_drop(this: ptr::NonNull<ThreadCounter>) -> bool {
 		// SAFETY: `this` is valid per caller contract
 		let ptr = unsafe { &raw mut (*this.as_ptr()).weak };
 
@@ -585,6 +682,24 @@ impl Counter for ThreadCounter {
 		unsafe { ptr.write(old - 1) }
 
 		old == 1
+	}
+
+	#[inline]
+	unsafe fn inc_strong_for_upgrade(this: ptr::NonNull<Self>) -> bool {
+		// SAFETY: `this` is valid per caller contract
+		let ptr = unsafe { &raw mut (*this.as_ptr()).strong };
+
+		// SAFETY: same as above
+		let old = unsafe { *ptr };
+
+		let should_upgrade = old > 0;
+
+		if should_upgrade {
+			// SAFETY: same as above, so this ptr projection is valid
+			unsafe { ptr.write(old + 1) }
+		}
+
+		should_upgrade
 	}
 }
 
@@ -593,7 +708,8 @@ pub struct AtomicCounter {
 	weak: AtomicUsize
 }
 
-impl Counter for AtomicCounter {
+// SAFETY: we implement everything correctly
+unsafe impl Counter for AtomicCounter {
 	#[inline]
 	fn new() -> Self {
 		Self {
@@ -603,28 +719,34 @@ impl Counter for AtomicCounter {
 	}
 
 	#[inline]
-	fn strong_count(this: ptr::NonNull<Self>) -> usize {
+	unsafe fn strong_count(this: ptr::NonNull<Self>) -> usize {
 		// SAFETY: `this` is valid per caller contract
 		unsafe { (*this.as_ptr()).strong.load(Relaxed) }
 	}
 
 	#[inline]
-	fn weak_count(this: ptr::NonNull<Self>) -> usize {
+	unsafe fn weak_count(this: ptr::NonNull<Self>) -> usize {
 		// SAFETY: `this` is valid per caller contract
 		unsafe { (*this.as_ptr()).weak.load(Relaxed) }
 	}
 
 	#[inline]
-	fn inc_strong_for_clone(this: ptr::NonNull<Self>) {
+	unsafe fn weak_count_from_weak_ref(this: ptr::NonNull<Self>) -> usize {
+		// SAFETY: `this` is valid per caller contract
+		unsafe { (*this.as_ptr()).weak.load(Acquire) }
+	}
+
+	#[inline]
+	unsafe fn inc_strong_for_clone(this: ptr::NonNull<Self>) {
 		// SAFETY: `this` is valid per caller contract
 		unsafe { (*this.as_ptr()).strong.fetch_add(1, Relaxed); }
 	}
 
 	#[inline]
-	fn dec_strong_for_drop(this: ptr::NonNull<Self>) -> bool {
+	unsafe fn dec_strong_for_drop(this: ptr::NonNull<Self>) -> bool {
 		// SAFETY: `this` is valid per caller contract
-		let old_count = unsafe { (*this.as_ptr()).strong.fetch_sub(1, Release) };
-		if old_count != 1 { return false }
+		let old = unsafe { (*this.as_ptr()).strong.fetch_sub(1, Release) };
+		if old != 1 { return false }
 
 		atomic::fence(Acquire);
 
@@ -632,19 +754,34 @@ impl Counter for AtomicCounter {
 	}
 
 	#[inline]
-	fn inc_weak_for_clone(this: ptr::NonNull<Self>) {
+	unsafe fn inc_weak_for_clone(this: ptr::NonNull<Self>) {
 		// SAFETY: `this` is valid per caller contract
 		unsafe { (*this.as_ptr()).weak.fetch_add(1, Relaxed); }
 	}
 
 	#[inline]
-	fn dec_weak_for_drop(this: ptr::NonNull<Self>) -> bool {
+	unsafe fn dec_weak_for_drop(this: ptr::NonNull<Self>) -> bool {
 		// SAFETY: `this` is valid per caller contract
-		let old_count = unsafe { (*this.as_ptr()).weak.fetch_sub(1, Release) };
-		if old_count != 1 { return false }
+		let old = unsafe { (*this.as_ptr()).weak.fetch_sub(1, Release) };
+		if old != 1 { return false }
 
 		atomic::fence(Acquire);
 
 		true
+	}
+
+	#[inline]
+	unsafe fn inc_strong_for_upgrade(this: ptr::NonNull<Self>) -> bool {
+		// SAFETY: `this` is valid per caller contract
+		unsafe {
+			(*this.as_ptr())
+				.strong
+				.fetch_update(
+					Acquire,
+					Relaxed,
+					|old| (old > 0).then(|| old + 1)
+				)
+				.is_ok()
+		}
 	}
 }
