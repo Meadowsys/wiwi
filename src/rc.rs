@@ -1,6 +1,8 @@
 // todo remove this lol
 #![allow(dead_code, unused_imports, unused_variables)]
 
+mod inner;
+
 use crate::prelude_std::*;
 use self::alloc_mod::Layout;
 use self::counter_access::{ CounterAccess, Thread, Atomic };
