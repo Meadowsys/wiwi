@@ -244,27 +244,44 @@ unsafe impl<C: Sync + Counter, V: Sync, S: Sync> Sync for Rc<C, V, S> {}
 unsafe impl<C: Sync + Counter, V: Sync, S: Sync> Sync for RcWeak<C, V, S> {}
 
 #[repr(transparent)]
-pub struct RcStr<C: Counter> {
-	inner: Rc<C, (), u8>
+pub struct RcStr<C: Counter, M = ()> {
+	inner: Rc<C, M, u8>
 }
 
 #[repr(transparent)]
-pub struct RcStrWeak<C: Counter> {
-	inner: RcWeak<C, (), u8>
+pub struct RcStrWeak<C: Counter, M = ()> {
+	inner: RcWeak<C, M, u8>
 }
 
-pub type RcStrThread = RcStr<ThreadCounter>;
-pub type RcStrThreadWeak = RcStrWeak<ThreadCounter>;
-pub type RcStrAtomic = RcStr<AtomicCounter>;
-pub type RcStrAtomicWeak = RcStrWeak<AtomicCounter>;
+/// Single threaded reference counting thin pointer to a [`str`],
+/// optionally carrying arbitrary additional metadata
+pub type RcStrThread<M = ()> = RcStr<ThreadCounter, M>;
+
+/// Weak pointer to a single threaded reference counted thin pointer [`RcStrThread`]
+pub type RcStrThreadWeak<M = ()> = RcStrWeak<ThreadCounter, M>;
+
+/// Atomically counted reference counting thin pointer to a [`str`],
+/// optionally carrying arbitrary additional metadata
+pub type RcStrAtomic<M = ()> = RcStr<AtomicCounter, M>;
+
+/// Weak pointer to an atomically counted reference counted thin pointer [`RcStrAtomic`]
+pub type RcStrAtomicWeak<M = ()> = RcStrWeak<AtomicCounter, M>;
 
 impl<C: Counter> RcStr<C> {
+	#[inline]
 	pub fn new(s: &str) -> Self {
 		Self { inner: Rc::from_slice_copy(s.as_bytes()) }
 	}
 }
 
-impl<C: Counter> Deref for RcStr<C> {
+impl<C: Counter, M> RcStr<C, M> {
+	#[inline]
+	pub fn with_metadata(s: &str, metadata: M) -> Self {
+		Self { inner: Rc::from_value_and_slice_copy(metadata, s.as_bytes()) }
+	}
+}
+
+impl<C: Counter, M> Deref for RcStr<C, M> {
 	type Target = str;
 
 	#[inline]
