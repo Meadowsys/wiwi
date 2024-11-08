@@ -1,21 +1,26 @@
 #![no_implicit_prelude]
 
 // TODO: review these
-#![warn(
-	// missing_docs,
-	// clippy::missing_docs_in_private_items,
-	// clippy::missing_safety_doc,
-	clippy::multiple_unsafe_ops_per_block,
-	clippy::undocumented_unsafe_blocks
-)]
+// #![warn(
+// 	// missing_docs,
+// 	// clippy::missing_docs_in_private_items
+// )]
 #![deny(
 	unconditional_recursion,
 	unexpected_cfgs,
 	unfulfilled_lint_expectations,
 	unsafe_op_in_unsafe_fn,
+	unused_unsafe,
+	clippy::allow_attributes,
+	clippy::allow_attributes_without_reason,
 	clippy::as_conversions,
 	clippy::empty_docs,
+	clippy::inline_always,
+	clippy::missing_inline_in_public_items,
+	clippy::missing_safety_doc,
 	clippy::mixed_attributes_style,
+	clippy::multiple_unsafe_ops_per_block,
+	clippy::undocumented_unsafe_blocks,
 	clippy::unnecessary_safety_comment
 )]
 

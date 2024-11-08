@@ -217,7 +217,10 @@ pub unsafe fn drop_instance<C: Counter, V, S>(instance: RcInner<C, V, S>) {
 	// SAFETY: caller promises `instance` is fully initialised
 	let slice_ref = unsafe { slice_ref(instance) };
 
-	#[expect(clippy::as_conversions)]
+	#[expect(
+		clippy::as_conversions,
+		reason = "slice ptr cast without casting methods available (yet?)"
+	)]
 	let slice_ptr = slice_ref as *const [S] as *mut [S];
 
 	// SAFETY: see above

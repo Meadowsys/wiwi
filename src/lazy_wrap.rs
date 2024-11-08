@@ -263,6 +263,7 @@ where
 	T: Debug,
 	F: FnOnce() -> T
 {
+	#[inline]
 	fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
 		if Self::is_initialised(self) {
 			f.debug_struct("LazyWrap")

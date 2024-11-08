@@ -1,5 +1,3 @@
-use crate::prelude_std::*;
-
 macro_rules! decl_from {
 	{
 		lossless
@@ -39,7 +37,10 @@ macro_rules! decl_from {
 		$(
 			impl $trait_name for $into {
 				$(#[$into_meta])*
-				#[expect(clippy::as_conversions)]
+				#[expect(
+					clippy::as_conversions,
+					reason = "implementation detail of a more restrictive api"
+				)]
 				#[inline(always)]
 				fn $fn_name(val: $from) -> $into { val as $into }
 			}
@@ -86,7 +87,10 @@ macro_rules! decl_into {
 		$(
 			impl $trait_name for $from {
 				$(#[$from_meta])*
-				#[expect(clippy::as_conversions)]
+				#[expect(
+					clippy::as_conversions,
+					reason = "implementation detail of a more restrictive api"
+				)]
 				#[inline(always)]
 				fn $fn_name(self) -> $into { self as $into }
 			}

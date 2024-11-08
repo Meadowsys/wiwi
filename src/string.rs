@@ -53,7 +53,7 @@ impl StringInlineable {
 }
 
 impl StringInlineable {
-	#[inline(always)]
+	#[inline]
 	fn is_inline(&self) -> bool {
 		// SAFETY: all memory-valid instancees of `StringHeap` satisfy memory
 		// invariants of `StringInline`, so union field access `self.inline` is fine
@@ -62,7 +62,7 @@ impl StringInlineable {
 		len & CAP_MARKER_U8 == 0
 	}
 
-	#[inline(always)]
+	#[inline]
 	fn do_thing<'h, T, FInline, FHeap>(&'h self, f_inline: FInline, f_heap: FHeap) -> T
 	where
 		FInline: FnOnce(&'h StringInline) -> T,
@@ -76,7 +76,7 @@ impl StringInlineable {
 		}
 	}
 
-	#[inline(always)]
+	#[inline]
 	fn do_thing_mut<'h, T, FInline, FHeap>(&'h mut self, f_inline: FInline, f_heap: FHeap) -> T
 	where
 		FInline: FnOnce(&'h mut StringInline) -> T,
@@ -185,11 +185,11 @@ impl StringInline {
 		MAX_INLINE_LEN
 	}
 
-	// TODO: replace as with .into_usize() when that's a thing
-	#[expect(clippy::as_conversions)]
 	#[inline]
 	fn as_str(&self) -> &str {
 		let ptr = self.rest.as_ptr().cast::<u8>();
+		// TODO: replace as with .into_usize() when that's a thing
+		#[expect(clippy::as_conversions, reason = "cast u8 to usize (more restrictive api not yet written)")]
 		let len = self.len as usize;
 
 		// SAFETY: relying on invariant that `self.rest` must have
@@ -199,11 +199,11 @@ impl StringInline {
 		unsafe { str::from_utf8_unchecked(slice) }
 	}
 
-	// TODO: replace as with .into_usize() when that's a thing
-	#[expect(clippy::as_conversions)]
 	#[inline]
 	fn as_str_mut(&mut self) -> &mut str {
 		let ptr = self.rest.as_ptr().cast::<u8>();
+		// TODO: replace as with .into_usize() when that's a thing
+		#[expect(clippy::as_conversions, reason = "cast u8 to usize (more restrictive api not yet written)")]
 		let len = self.len as usize;
 
 		// SAFETY: relying on invariant that `self.rest` must have

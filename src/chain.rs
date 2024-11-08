@@ -211,6 +211,7 @@ macro_rules! decl_chain {
 				<Self as $crate::chain::Chain>::from_inner(inner)
 			}
 
+			#[inline]
 			fn clone_from(&mut self, source: &Self) {
 				let inner_self = <Self as $crate::chain::Chain>::as_inner_mut(self);
 				let inner_source = <Self as $crate::chain::Chain>::as_inner(source);
@@ -229,6 +230,7 @@ macro_rules! decl_chain {
 		where
 			$($inner)+: $crate::prelude_std::Debug
 		{
+			#[inline]
 			fn fmt(&self, f: &mut $crate::prelude_std::fmt::Formatter<'_>) -> $crate::prelude_std::fmt::Result {
 				let mut dbg_struct = $crate::prelude_std::fmt::Formatter::debug_struct(f, stringify!($chain));
 				$crate::prelude_std::fmt::DebugStruct::field(
@@ -245,6 +247,7 @@ macro_rules! decl_chain {
 		where
 			$($inner)+: $crate::prelude_std::Default
 		{
+			#[inline]
 			fn default() -> Self {
 				let inner = <<Self as $crate::chain::Chain>::Inner as Default>::default();
 				<Self as $crate::chain::Chain>::from_inner(inner)
@@ -256,6 +259,7 @@ macro_rules! decl_chain {
 		where
 			$($inner)+: $crate::prelude_std::Display
 		{
+			#[inline]
 			fn fmt(&self, f: &mut $crate::prelude_std::fmt::Formatter<'_>) -> $crate::prelude_std::fmt::Result {
 				let inner = <Self as $crate::chain::Chain>::as_inner(self);
 				<<Self as $crate::chain::Chain>::Inner as Display>::fmt(inner, f)
@@ -329,9 +333,10 @@ macro_rules! decl_chain {
 				}
 			}
 
-			// inner might have overridden ne for whatever reason,
-			// and we should use it if so
-			#[allow(clippy::partialeq_ne_impl)]
+			#[expect(
+				clippy::partialeq_ne_impl,
+				reason = "inner might have overridden ne for whatever reason, and we should use it if so"
+			)]
 			#[inline]
 			fn ne(&self, other: &$($right_ty)+) -> $crate::prelude_std::std::primitive::bool {
 				$crate::chain::decl_chain! {

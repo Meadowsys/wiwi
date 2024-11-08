@@ -80,7 +80,7 @@ impl ModifierValue {
 	/// # Safety
 	///
 	/// `value` must be within the range `MIN..=MAX`
-	#[expect(clippy::as_conversions)]
+	#[expect(clippy::as_conversions, reason = "casting bool to int")]
 	#[inline]
 	pub unsafe fn new_unchecked(value: i32, is_legendary: bool) -> Self {
 		Self { raw: value | ((is_legendary as i32) << 31) }

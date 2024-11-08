@@ -191,7 +191,10 @@ impl<C: Counter, V, S> RcWeak<C, V, S> {
 		// SAFETY: same as above
 		let strong = unsafe { inner::strong_count(self.inner) };
 
-		#[expect(clippy::as_conversions)]
+		#[expect(
+			clippy::as_conversions,
+			reason = "casting bool to int"
+		)]
 		let result = weak - (strong > 0) as usize;
 
 		result
