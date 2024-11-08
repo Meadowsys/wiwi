@@ -23,7 +23,8 @@
 	clippy::mixed_attributes_style,
 	clippy::multiple_unsafe_ops_per_block,
 	clippy::undocumented_unsafe_blocks,
-	clippy::unnecessary_safety_comment
+	clippy::unnecessary_safety_comment,
+	reason = "uwu"
 )]
 
 #![cfg_attr(docsrs, feature(doc_cfg))]
