@@ -533,7 +533,7 @@ impl<C: Counter, V, S> Copy for RcInner<C, V, S> {}
 ///
 /// You must implement this trait correctly, as values returned from functions
 /// are directly used to control the allocation/deallocation of memory and
-/// dropping of values.. In particular, returning an incorrectly low value for
+/// dropping of values. In particular, returning an incorrectly low value for
 /// both strong and weak counts can lead to premature value dropping and/or
 /// deallocation, which is a memory safety issue.
 pub unsafe trait Counter: Sized {
