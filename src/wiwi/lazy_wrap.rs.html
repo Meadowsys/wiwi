@@ -332,7 +332,8 @@
 <a href="#331" id="331">331</a>
 <a href="#332" id="332">332</a>
 <a href="#333" id="333">333</a>
-<a href="#334" id="334">334</a></pre></div><pre class="rust"><code><span class="kw">extern crate </span>parking_lot;
+<a href="#334" id="334">334</a>
+<a href="#335" id="335">335</a></pre></div><pre class="rust"><code><span class="kw">extern crate </span>parking_lot;
 
 <span class="kw">use </span><span class="kw">crate</span>::prelude_std::<span class="kw-2">*</span>;
 <span class="kw">use </span>parking_lot::{ Once, OnceState };
@@ -597,7 +598,8 @@
 	</span>T: Debug,
 	F: FnOnce() -&gt; T
 {
-	<span class="kw">fn </span>fmt(<span class="kw-2">&amp;</span><span class="self">self</span>, f: <span class="kw-2">&amp;mut </span>fmt::Formatter&lt;<span class="lifetime">'_</span>&gt;) -&gt; fmt::Result {
+	<span class="attr">#[inline]
+	</span><span class="kw">fn </span>fmt(<span class="kw-2">&amp;</span><span class="self">self</span>, f: <span class="kw-2">&amp;mut </span>fmt::Formatter&lt;<span class="lifetime">'_</span>&gt;) -&gt; fmt::Result {
 		<span class="kw">if </span><span class="self">Self</span>::is_initialised(<span class="self">self</span>) {
 			f.debug_struct(<span class="string">"LazyWrap"</span>)
 				.field(<span class="string">"initialised"</span>, <span class="kw-2">&amp;</span><span class="bool-val">true</span>)

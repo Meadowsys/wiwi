@@ -272,24 +272,34 @@
 <a href="#271" id="271">271</a>
 <a href="#272" id="272">272</a>
 <a href="#273" id="273">273</a>
-<a href="#274" id="274">274</a></pre></div><pre class="rust"><code><span class="attr">#![no_implicit_prelude]
+<a href="#274" id="274">274</a>
+<a href="#275" id="275">275</a>
+<a href="#276" id="276">276</a>
+<a href="#277" id="277">277</a>
+<a href="#278" id="278">278</a>
+<a href="#279" id="279">279</a></pre></div><pre class="rust"><code><span class="attr">#![no_implicit_prelude]
 
 </span><span class="comment">// TODO: review these
-</span><span class="attr">#![warn(
-	<span class="comment">// missing_docs,
-	// clippy::missing_docs_in_private_items,
-	// clippy::missing_safety_doc,
-	</span>clippy::multiple_unsafe_ops_per_block,
-	clippy::undocumented_unsafe_blocks
-)]
-#![deny(
+// #![warn(
+// 	// missing_docs,
+// 	// clippy::missing_docs_in_private_items
+// )]
+</span><span class="attr">#![deny(
 	unconditional_recursion,
 	unexpected_cfgs,
 	unfulfilled_lint_expectations,
 	unsafe_op_in_unsafe_fn,
+	unused_unsafe,
+	clippy::allow_attributes,
+	clippy::allow_attributes_without_reason,
 	clippy::as_conversions,
 	clippy::empty_docs,
+	clippy::inline_always,
+	clippy::missing_inline_in_public_items,
+	clippy::missing_safety_doc,
 	clippy::mixed_attributes_style,
+	clippy::multiple_unsafe_ops_per_block,
+	clippy::undocumented_unsafe_blocks,
 	clippy::unnecessary_safety_comment
 )]
 

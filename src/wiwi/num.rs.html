@@ -215,9 +215,11 @@
 <a href="#214" id="214">214</a>
 <a href="#215" id="215">215</a>
 <a href="#216" id="216">216</a>
-<a href="#217" id="217">217</a></pre></div><pre class="rust"><code><span class="kw">use </span><span class="kw">crate</span>::prelude_std::<span class="kw-2">*</span>;
-
-<span class="macro">macro_rules!</span> decl_from {
+<a href="#217" id="217">217</a>
+<a href="#218" id="218">218</a>
+<a href="#219" id="219">219</a>
+<a href="#220" id="220">220</a>
+<a href="#221" id="221">221</a></pre></div><pre class="rust"><code><span class="macro">macro_rules!</span> decl_from {
 	{
 		lossless
 		$(<span class="macro-nonterminal">$stuff</span>:tt)+
@@ -256,7 +258,10 @@
 		$(
 			<span class="kw">impl </span><span class="macro-nonterminal">$trait_name </span><span class="kw">for </span><span class="macro-nonterminal">$into </span>{
 				$(<span class="attr">#[<span class="macro-nonterminal">$into_meta</span>]</span>)*
-				<span class="attr">#[expect(clippy::as_conversions)]
+				<span class="attr">#[expect(
+					clippy::as_conversions,
+					reason = <span class="string">"implementation detail of a more restrictive api"
+				</span>)]
 				#[inline(always)]
 				</span><span class="kw">fn </span><span class="macro-nonterminal">$fn_name</span>(val: <span class="macro-nonterminal">$from</span>) -&gt; <span class="macro-nonterminal">$into </span>{ val <span class="kw">as </span><span class="macro-nonterminal">$into </span>}
 			}
@@ -303,7 +308,10 @@
 		$(
 			<span class="kw">impl </span><span class="macro-nonterminal">$trait_name </span><span class="kw">for </span><span class="macro-nonterminal">$from </span>{
 				$(<span class="attr">#[<span class="macro-nonterminal">$from_meta</span>]</span>)*
-				<span class="attr">#[expect(clippy::as_conversions)]
+				<span class="attr">#[expect(
+					clippy::as_conversions,
+					reason = <span class="string">"implementation detail of a more restrictive api"
+				</span>)]
 				#[inline(always)]
 				</span><span class="kw">fn </span><span class="macro-nonterminal">$fn_name</span>(<span class="self">self</span>) -&gt; <span class="macro-nonterminal">$into </span>{ <span class="self">self </span><span class="kw">as </span><span class="macro-nonterminal">$into </span>}
 			}

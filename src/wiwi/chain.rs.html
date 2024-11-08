@@ -642,7 +642,12 @@
 <a href="#641" id="641">641</a>
 <a href="#642" id="642">642</a>
 <a href="#643" id="643">643</a>
-<a href="#644" id="644">644</a></pre></div><pre class="rust"><code><span class="kw">use </span><span class="kw">crate</span>::prelude_std::<span class="kw-2">*</span>;
+<a href="#644" id="644">644</a>
+<a href="#645" id="645">645</a>
+<a href="#646" id="646">646</a>
+<a href="#647" id="647">647</a>
+<a href="#648" id="648">648</a>
+<a href="#649" id="649">649</a></pre></div><pre class="rust"><code><span class="kw">use </span><span class="kw">crate</span>::prelude_std::<span class="kw-2">*</span>;
 
 <span class="kw">mod </span>vec;
 <span class="kw">pub use </span>vec::{ vec_chain, VecChain };
@@ -855,7 +860,8 @@
 				&lt;<span class="self">Self </span><span class="kw">as </span><span class="macro-nonterminal">$crate::chain::Chain</span>&gt;::from_inner(inner)
 			}
 
-			<span class="kw">fn </span>clone_from(<span class="kw-2">&amp;mut </span><span class="self">self</span>, source: <span class="kw-2">&amp;</span><span class="self">Self</span>) {
+			<span class="attr">#[inline]
+			</span><span class="kw">fn </span>clone_from(<span class="kw-2">&amp;mut </span><span class="self">self</span>, source: <span class="kw-2">&amp;</span><span class="self">Self</span>) {
 				<span class="kw">let </span>inner_self = &lt;<span class="self">Self </span><span class="kw">as </span><span class="macro-nonterminal">$crate::chain::Chain</span>&gt;::as_inner_mut(<span class="self">self</span>);
 				<span class="kw">let </span>inner_source = &lt;<span class="self">Self </span><span class="kw">as </span><span class="macro-nonterminal">$crate::chain::Chain</span>&gt;::as_inner(source);
 				&lt;&lt;<span class="self">Self </span><span class="kw">as </span><span class="macro-nonterminal">$crate::chain::Chain</span>&gt;::Inner <span class="kw">as </span><span class="macro-nonterminal">$crate::prelude_std::Clone</span>&gt;::clone_from(inner_self, inner_source)
@@ -873,7 +879,8 @@
 		</span><span class="kw">where
 			</span>$(<span class="macro-nonterminal">$inner</span>)+: <span class="macro-nonterminal">$crate::prelude_std::Debug
 		</span>{
-			<span class="kw">fn </span>fmt(<span class="kw-2">&amp;</span><span class="self">self</span>, f: <span class="kw-2">&amp;mut </span><span class="macro-nonterminal">$crate::prelude_std::fmt::Formatter</span>&lt;<span class="lifetime">'_</span>&gt;) -&gt; <span class="macro-nonterminal">$crate::prelude_std::fmt::Result </span>{
+			<span class="attr">#[inline]
+			</span><span class="kw">fn </span>fmt(<span class="kw-2">&amp;</span><span class="self">self</span>, f: <span class="kw-2">&amp;mut </span><span class="macro-nonterminal">$crate::prelude_std::fmt::Formatter</span>&lt;<span class="lifetime">'_</span>&gt;) -&gt; <span class="macro-nonterminal">$crate::prelude_std::fmt::Result </span>{
 				<span class="kw">let </span><span class="kw-2">mut </span>dbg_struct = <span class="macro-nonterminal">$crate::prelude_std::fmt::Formatter::debug_struct</span>(f, <span class="macro">stringify!</span>(<span class="macro-nonterminal">$chain</span>));
 				<span class="macro-nonterminal">$crate::prelude_std::fmt::DebugStruct::field</span>(
 					<span class="kw-2">&amp;mut </span>dbg_struct,
@@ -889,7 +896,8 @@
 		</span><span class="kw">where
 			</span>$(<span class="macro-nonterminal">$inner</span>)+: <span class="macro-nonterminal">$crate::prelude_std::Default
 		</span>{
-			<span class="kw">fn </span>default() -&gt; <span class="self">Self </span>{
+			<span class="attr">#[inline]
+			</span><span class="kw">fn </span>default() -&gt; <span class="self">Self </span>{
 				<span class="kw">let </span>inner = &lt;&lt;<span class="self">Self </span><span class="kw">as </span><span class="macro-nonterminal">$crate::chain::Chain</span>&gt;::Inner <span class="kw">as </span>Default&gt;::default();
 				&lt;<span class="self">Self </span><span class="kw">as </span><span class="macro-nonterminal">$crate::chain::Chain</span>&gt;::from_inner(inner)
 			}
@@ -900,7 +908,8 @@
 		</span><span class="kw">where
 			</span>$(<span class="macro-nonterminal">$inner</span>)+: <span class="macro-nonterminal">$crate::prelude_std::Display
 		</span>{
-			<span class="kw">fn </span>fmt(<span class="kw-2">&amp;</span><span class="self">self</span>, f: <span class="kw-2">&amp;mut </span><span class="macro-nonterminal">$crate::prelude_std::fmt::Formatter</span>&lt;<span class="lifetime">'_</span>&gt;) -&gt; <span class="macro-nonterminal">$crate::prelude_std::fmt::Result </span>{
+			<span class="attr">#[inline]
+			</span><span class="kw">fn </span>fmt(<span class="kw-2">&amp;</span><span class="self">self</span>, f: <span class="kw-2">&amp;mut </span><span class="macro-nonterminal">$crate::prelude_std::fmt::Formatter</span>&lt;<span class="lifetime">'_</span>&gt;) -&gt; <span class="macro-nonterminal">$crate::prelude_std::fmt::Result </span>{
 				<span class="kw">let </span>inner = &lt;<span class="self">Self </span><span class="kw">as </span><span class="macro-nonterminal">$crate::chain::Chain</span>&gt;::as_inner(<span class="self">self</span>);
 				&lt;&lt;<span class="self">Self </span><span class="kw">as </span><span class="macro-nonterminal">$crate::chain::Chain</span>&gt;::Inner <span class="kw">as </span>Display&gt;::fmt(inner, f)
 			}
@@ -973,9 +982,10 @@
 				}
 			}
 
-			<span class="comment">// inner might have overridden ne for whatever reason,
-			// and we should use it if so
-			</span><span class="attr">#[allow(clippy::partialeq_ne_impl)]
+			<span class="attr">#[expect(
+				clippy::partialeq_ne_impl,
+				reason = <span class="string">"inner might have overridden ne for whatever reason, and we should use it if so"
+			</span>)]
 			#[inline]
 			</span><span class="kw">fn </span>ne(<span class="kw-2">&amp;</span><span class="self">self</span>, other: <span class="kw-2">&amp;</span>$(<span class="macro-nonterminal">$right_ty</span>)+) -&gt; <span class="macro-nonterminal">$crate::prelude_std::std::primitive::bool </span>{
 				<span class="macro-nonterminal">$</span><span class="macro">crate::chain::decl_chain!</span> {

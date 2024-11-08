@@ -365,7 +365,7 @@
 }
 
 <span class="kw">impl </span>StringInlineable {
-	<span class="attr">#[inline(always)]
+	<span class="attr">#[inline]
 	</span><span class="kw">fn </span>is_inline(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; bool {
 		<span class="comment">// SAFETY: all memory-valid instancees of `StringHeap` satisfy memory
 		// invariants of `StringInline`, so union field access `self.inline` is fine
@@ -374,7 +374,7 @@
 		len &amp; CAP_MARKER_U8 == <span class="number">0
 	</span>}
 
-	<span class="attr">#[inline(always)]
+	<span class="attr">#[inline]
 	</span><span class="kw">fn </span>do_thing&lt;<span class="lifetime">'h</span>, T, FInline, FHeap&gt;(<span class="kw-2">&amp;</span><span class="lifetime">'h </span><span class="self">self</span>, f_inline: FInline, f_heap: FHeap) -&gt; T
 	<span class="kw">where
 		</span>FInline: FnOnce(<span class="kw-2">&amp;</span><span class="lifetime">'h </span>StringInline) -&gt; T,
@@ -388,7 +388,7 @@
 		}
 	}
 
-	<span class="attr">#[inline(always)]
+	<span class="attr">#[inline]
 	</span><span class="kw">fn </span>do_thing_mut&lt;<span class="lifetime">'h</span>, T, FInline, FHeap&gt;(<span class="kw-2">&amp;</span><span class="lifetime">'h </span><span class="kw-2">mut </span><span class="self">self</span>, f_inline: FInline, f_heap: FHeap) -&gt; T
 	<span class="kw">where
 		</span>FInline: FnOnce(<span class="kw-2">&amp;</span><span class="lifetime">'h </span><span class="kw-2">mut </span>StringInline) -&gt; T,
@@ -497,12 +497,12 @@
 		MAX_INLINE_LEN
 	}
 
-	<span class="comment">// TODO: replace as with .into_usize() when that's a thing
-	</span><span class="attr">#[expect(clippy::as_conversions)]
-	#[inline]
+	<span class="attr">#[inline]
 	</span><span class="kw">fn </span>as_str(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; <span class="kw-2">&amp;</span>str {
 		<span class="kw">let </span>ptr = <span class="self">self</span>.rest.as_ptr().cast::&lt;u8&gt;();
-		<span class="kw">let </span>len = <span class="self">self</span>.len <span class="kw">as </span>usize;
+		<span class="comment">// TODO: replace as with .into_usize() when that's a thing
+		</span><span class="attr">#[expect(clippy::as_conversions, reason = <span class="string">"cast u8 to usize (more restrictive api not yet written)"</span>)]
+		</span><span class="kw">let </span>len = <span class="self">self</span>.len <span class="kw">as </span>usize;
 
 		<span class="comment">// SAFETY: relying on invariant that `self.rest` must have
 		// at least `self.len` elements initialised
@@ -511,12 +511,12 @@
 		</span><span class="kw">unsafe </span>{ str::from_utf8_unchecked(slice) }
 	}
 
-	<span class="comment">// TODO: replace as with .into_usize() when that's a thing
-	</span><span class="attr">#[expect(clippy::as_conversions)]
-	#[inline]
+	<span class="attr">#[inline]
 	</span><span class="kw">fn </span>as_str_mut(<span class="kw-2">&amp;mut </span><span class="self">self</span>) -&gt; <span class="kw-2">&amp;mut </span>str {
 		<span class="kw">let </span>ptr = <span class="self">self</span>.rest.as_ptr().cast::&lt;u8&gt;();
-		<span class="kw">let </span>len = <span class="self">self</span>.len <span class="kw">as </span>usize;
+		<span class="comment">// TODO: replace as with .into_usize() when that's a thing
+		</span><span class="attr">#[expect(clippy::as_conversions, reason = <span class="string">"cast u8 to usize (more restrictive api not yet written)"</span>)]
+		</span><span class="kw">let </span>len = <span class="self">self</span>.len <span class="kw">as </span>usize;
 
 		<span class="comment">// SAFETY: relying on invariant that `self.rest` must have
 		// at least `self.len` elements initialised
