@@ -16,6 +16,8 @@
 	clippy::as_conversions,
 	clippy::empty_docs,
 	clippy::inline_always,
+	clippy::items_after_statements,
+	clippy::items_after_test_module,
 	clippy::missing_inline_in_public_items,
 	clippy::missing_safety_doc,
 	clippy::mixed_attributes_style,
