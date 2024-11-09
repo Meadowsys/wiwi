@@ -2,7 +2,7 @@ use crate::prelude_std::*;
 use self::atomic::Ordering::*;
 
 #[repr(transparent)]
-pub(super) struct RcInner<C: Counter, V, S> {
+pub struct RcInner<C: Counter, V, S> {
 	ptr: ptr::NonNull<RcLayout<C, V, S>>
 }
 
@@ -27,38 +27,30 @@ struct RcLayout<C: Counter, V, S> {
 
 #[inline]
 pub fn new_from_value<C: Counter, V>(value: V) -> RcInner<C, V, ()> {
-	let instance = alloc_instance(0);
+	new_from_value_and_slice_copy(value, &[])
+}
 
-	// SAFETY:
-	// - instance just allocated in statement above
-	// - because just allocated, we must have exclusive reference to `instance`
-	// - reference is used just for this single `write` statement and
-	//   dropped immediately after
-	unsafe { value_uninit(instance).write(value); }
-
-	// no need to initialise slice, as it has length 0
-
-	instance
+#[inline]
+pub fn new_from_array_into_slice<C: Counter, S, const N: usize>(array: [S; N]) -> RcInner<C, (), S> {
+	new_from_value_and_array_into_slice((), array)
 }
 
 #[inline]
 pub fn new_from_slice_clone<C: Counter, S: Clone>(slice: &[S]) -> RcInner<C, (), S> {
-	let instance = alloc_instance::<_, _, S>(slice.len());
+	new_from_value_and_slice_clone((), slice)
+}
 
-	// no need to initialise value, as it is ZST (unit type)
+#[inline]
+pub fn new_from_slice_copy<C: Counter, S: Copy>(slice: &[S]) -> RcInner<C, (), S> {
+	new_from_value_and_slice_copy((), slice)
+}
 
-	// SAFETY: instance just allocated in statement above
-	let ptr = unsafe { slice_thin_ptr(instance).as_ptr() };
+#[inline]
+pub fn new_from_value_and_array_into_slice<C: Counter, V, S, const N: usize>(value: V, array: [S; N]) -> RcInner<C, V, S> {
+	let array = ManuallyDrop::new(array);
 
-	slice.iter().enumerate().for_each(|(i, value)| {
-		// SAFETY: `ptr` is writeable for `slice.len()` elements
-		let ptr = unsafe { ptr.add(i) };
-
-		// SAFETY: see above
-		unsafe { ptr.write(value.clone()) }
-	});
-
-	instance
+	// SAFETY: we put the array into `ManuallyDrop`
+	unsafe { new_from_value_and_slice_copy_unchecked(value, &*array) }
 }
 
 #[inline]
@@ -86,43 +78,10 @@ pub fn new_from_value_and_slice_clone<C: Counter, V, S: Clone>(value: V, slice: 
 	instance
 }
 
-
-#[inline]
-pub fn new_from_slice_copy<C: Counter, S: Copy>(slice: &[S]) -> RcInner<C, (), S> {
-	// SAFETY: `S: Copy enforced by trait bound`
-	unsafe { new_from_slice_copy_unchecked(slice) }
-}
-
 #[inline]
 pub fn new_from_value_and_slice_copy<C: Counter, V, S: Copy>(value: V, slice: &[S]) -> RcInner<C, V, S> {
 	// SAFETY: `S: Copy enforced by trait bound`
 	unsafe { new_from_value_and_slice_copy_unchecked(value, slice) }
-}
-
-/// # Safety
-///
-/// The provided slice should either contain elements that implement [`Copy`],
-/// or the input slice should be prevented from dropping to avoid double
-/// dropping elements.
-#[inline]
-unsafe fn new_from_slice_copy_unchecked<C: Counter, S>(slice: &[S]) -> RcInner<C, (), S> {
-	let instance = alloc_instance(slice.len());
-
-	// no need to initialise value, as it is ZST (unit type)
-
-	// SAFETY: instance just allocated in statement above
-	let ptr = unsafe { slice_thin_ptr(instance).as_ptr() };
-
-	// SAFETY: `ptr` is writeable for `slice.len()` elements
-	unsafe {
-		ptr::copy_nonoverlapping(
-			slice.as_ptr(),
-			ptr,
-			slice.len()
-		)
-	}
-
-	instance
 }
 
 /// # Safety
@@ -154,22 +113,6 @@ unsafe fn new_from_value_and_slice_copy_unchecked<C: Counter, V, S>(value: V, sl
 	}
 
 	instance
-}
-
-#[inline]
-pub fn new_from_array_into_slice<C: Counter, S, const N: usize>(array: [S; N]) -> RcInner<C, (), S> {
-	let array = ManuallyDrop::new(array);
-
-	// SAFETY: we put the array into `ManuallyDrop`
-	unsafe { new_from_slice_copy_unchecked(&*array) }
-}
-
-#[inline]
-pub fn new_from_value_and_array_into_slice<C: Counter, V, S, const N: usize>(value: V, array: [S; N]) -> RcInner<C, V, S> {
-	let array = ManuallyDrop::new(array);
-
-	// SAFETY: we put the array into `ManuallyDrop`
-	unsafe { new_from_value_and_slice_copy_unchecked(value, &*array) }
 }
 
 /// Initialise a new instance with the provided length
