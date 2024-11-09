@@ -3,11 +3,11 @@ use self::atomic::Ordering::*;
 
 #[repr(transparent)]
 pub(super) struct RcInner<C: Counter, V, S> {
-	ptr: ptr::NonNull<RcInnerLayout<C, V, S>>
+	ptr: ptr::NonNull<RcLayout<C, V, S>>
 }
 
 #[repr(C)]
-struct RcInnerLayout<C: Counter, V, S> {
+struct RcLayout<C: Counter, V, S> {
 	/// The reference counter (handles counting both strong and weak references)
 	counter: C,
 
@@ -264,7 +264,7 @@ pub unsafe fn dealloc_instance<C: Counter, V, S>(instance: RcInner<C, V, S>) {
 /// value type, slice type, and slice length
 #[inline]
 fn calc_layout<C: Counter, V, S>(slice_len: usize) -> alloc_mod::Layout {
-	alloc_mod::Layout::new::<RcInner<C, V, S>>()
+	alloc_mod::Layout::new::<RcLayout<C, V, S>>()
 		.extend(alloc_mod::Layout::array::<S>(slice_len).unwrap())
 		.unwrap()
 		.0
