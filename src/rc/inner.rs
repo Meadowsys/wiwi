@@ -530,7 +530,7 @@ unsafe impl Counter for AtomicCounter {
 
 	#[inline]
 	fn dec_weak_for_drop(&self) -> bool {
-		let old = self.strong.fetch_sub(1, Release);
+		let old = self.weak.fetch_sub(1, Release);
 		if old != 1 { return false }
 
 		atomic::fence(Acquire);
