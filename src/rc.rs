@@ -112,36 +112,36 @@ impl<C: Counter, V, S> Rc<C, V, S> {
 	/// Gets an immurable reference to the value stored in the `value` field
 	#[inline]
 	pub fn as_value_ref(&self) -> &V {
-		// SAFETY: ptr is valid
+		// SAFETY: `self.inner` is a valid instance
 		unsafe { inner::value_ref(self.inner) }
 	}
 
 	/// Gets an immurable reference to the slice stored in the `slice` field
 	#[inline]
 	pub fn as_slice_ref(&self) -> &[S] {
-		// SAFETY: ptr is valid
+		// SAFETY: `self.inner` is a valid instance
 		unsafe { inner::slice_ref(self.inner) }
 	}
 
 	/// Gets the strong pointer count
 	#[inline]
 	pub fn strong_count(&self) -> usize {
-		// SAFETY: ptr is valid
-		unsafe { inner::strong_count(self.inner) }
+		// SAFETY: `self.inner` is a valid instance
+		unsafe { inner::counter_ref(self.inner).strong_count() }
 	}
 
 	/// Gets the weak pointer count
 	#[inline]
 	pub fn weak_count(&self) -> usize {
-		// SAFETY: ptr is valid
-		unsafe { inner::weak_count(self.inner) - 1 }
+		// SAFETY: `self.inner` is a valid instance
+		unsafe { inner::counter_ref(self.inner).weak_count() - 1 }
 	}
 
 	/// "Downgrades" this pointer, returning a weak pointer [`RcWeak`] to the data
 	#[inline]
 	pub fn downgrade(&self) -> RcWeak<C, V, S> {
-		// SAFETY: ptr is valid
-		unsafe { inner::inc_weak_for_clone(self.inner) }
+		// SAFETY: `self.inner` is a valid instance
+		unsafe { inner::counter_ref(self.inner).inc_weak_for_new_ref() }
 
 		RcWeak { inner: self.inner }
 	}
@@ -152,8 +152,9 @@ impl<C: Counter, V, S> Clone for Rc<C, V, S> {
 	/// incrementing the strong count
 	#[inline]
 	fn clone(&self) -> Self {
-		// SAFETY: ptr is valid
-		unsafe { inner::inc_strong_for_clone(self.inner) }
+		// SAFETY: `self.inner` is a valid instance
+		unsafe { inner::counter_ref(self.inner).inc_strong_for_new_ref() }
+
 		Self { inner: self.inner }
 	}
 }
@@ -161,15 +162,16 @@ impl<C: Counter, V, S> Clone for Rc<C, V, S> {
 impl<C: Counter, V, S> Drop for Rc<C, V, S> {
 	#[inline]
 	fn drop(&mut self) {
-		// SAFETY: ptr is valid
-		let should_drop = unsafe { inner::dec_strong_for_drop(self.inner) };
+		// SAFETY: `self.inner` is a valid instance
+		let should_drop = unsafe { inner::counter_ref(self.inner).dec_strong_for_drop() };
 
 		if !should_drop { return }
 
 		// take care of the "fake" weak ptr collectively held by strong ptrs
+		// this will drop after we call `drop_instance` below
 		let _weak = RcWeak { inner: self.inner };
 
-		// SAFETY: we checked we should drop, and early exit if we shouldn't
+		// SAFETY: we checked we should drop, and early exited if we shouldn't
 		unsafe { inner::drop_instance(self.inner) }
 	}
 }
@@ -178,18 +180,18 @@ impl<C: Counter, V, S> RcWeak<C, V, S> {
 	/// Gets the strong pointer count
 	#[inline]
 	pub fn strong_count(&self) -> usize {
-		// SAFETY: ptr is valid
-		unsafe { inner::strong_count(self.inner) }
+		// SAFETY: `self.inner` is a valid instance
+		unsafe { inner::counter_ref(self.inner).strong_count() }
 	}
 
 	/// Gets the weak pointer count
 	#[inline]
 	pub fn weak_count(&self) -> usize {
-		// SAFETY: ptr is valid
-		let weak = unsafe { inner::weak_count_from_weak_ref(self.inner) };
+		// SAFETY: `self.inner` is a valid instance
+		let weak = unsafe { inner::counter_ref(self.inner).weak_count() };
 
 		// SAFETY: same as above
-		let strong = unsafe { inner::strong_count(self.inner) };
+		let strong = unsafe { inner::counter_ref(self.inner).strong_count() };
 
 		#[expect(
 			clippy::as_conversions,
@@ -204,8 +206,8 @@ impl<C: Counter, V, S> RcWeak<C, V, S> {
 	/// if there are still other strong pointers to it
 	#[inline]
 	pub fn upgrade(&self) -> Option<Rc<C, V, S>> {
-		// SAFETY: ptr is valid
-		let should_upgrade = unsafe { inner::inc_strong_for_upgrade(self.inner) };
+		// SAFETY: `self.inner` is a valid instance
+		let should_upgrade = unsafe { inner::counter_ref(self.inner).try_inc_strong_for_upgrade() };
 
 		should_upgrade.then(|| Rc { inner: self.inner })
 	}
@@ -216,8 +218,8 @@ impl<C: Counter, V, S> Clone for RcWeak<C, V, S> {
 	/// incrementing the weak count
 	#[inline]
 	fn clone(&self) -> Self {
-		// SAFETY: ptr is valid
-		unsafe { inner::inc_weak_for_clone(self.inner) }
+		// SAFETY: `self.inner` is a valid instance
+		unsafe { inner::counter_ref(self.inner).inc_weak_for_new_ref() }
 
 		Self { inner: self.inner }
 	}
@@ -226,8 +228,8 @@ impl<C: Counter, V, S> Clone for RcWeak<C, V, S> {
 impl<C: Counter, V, S> Drop for RcWeak<C, V, S> {
 	#[inline]
 	fn drop(&mut self) {
-		// SAFETY: ptr is valid
-		let should_dealloc = unsafe { inner::dec_weak_for_drop(self.inner) };
+		// SAFETY: `self.inner` is a valid instance
+		let should_dealloc = unsafe { inner::counter_ref(self.inner).dec_weak_for_drop() };
 
 		if !should_dealloc { return }
 
