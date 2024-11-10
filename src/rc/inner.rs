@@ -401,16 +401,16 @@ pub unsafe trait Counter: Sized {
 	fn inc_strong_for_new_ref(&self);
 
 	/// Decrements the strong count for dropping a reference, returning `true`
-	/// if there are no more strong pointers left (and [`drop_instance`] should
-	/// be run on the instance)
+	/// if there are no more strong pointers left (and the value and items in
+	/// the slice should be dropped)
 	fn dec_strong_for_drop(&self) -> bool;
 
 	/// Increments the weak count for creation of a new weak reference
 	fn inc_weak_for_new_ref(&self);
 
 	/// Decrements the weak count for dropping a reference, returning `true`
-	/// if there are no more weak pointers left (and [`dealloc_instance`] should
-	/// be run on the instance)
+	/// if there are no more weak pointers left (and the allocation should be
+	/// deallocated)
 	fn dec_weak_for_drop(&self) -> bool;
 
 	/// Increment the strong count if it is possible to upgrade a weak pointer
