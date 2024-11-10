@@ -147,8 +147,9 @@ impl<T> VecChain<T> {
 	}
 
 	chain_fn! {
-		binary_search_by[O: OutputStorage<Result<usize, usize>>, F](inner, f: F, out: &mut Result<usize, usize>) where {
-			F: FnMut(&T) -> cmp::Ordering
+		binary_search_by[O, F](inner, f: F, out: &mut Result<usize, usize>) where {
+			F: FnMut(&T) -> cmp::Ordering,
+			O: OutputStorage<Result<usize, usize>>
 		} => {
 			// SAFETY: we always write once to `out`
 			unsafe { out.store(inner.binary_search_by(f)) }
@@ -158,8 +159,8 @@ impl<T> VecChain<T> {
 	chain_fn! {
 		binary_search_by_key[B, O, F](inner, b: &B, f: F, out: O) where {
 			B: Ord,
-			O: OutputStorage<Result<usize, usize>>,
-			F: FnMut(&T) -> B
+			F: FnMut(&T) -> B,
+			O: OutputStorage<Result<usize, usize>>
 		} => {
 			// SAFETY: we always write once to `out`
 			unsafe { out.store(inner.binary_search_by_key(b, f)) }
