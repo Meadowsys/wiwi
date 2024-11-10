@@ -5,10 +5,9 @@ pub use vec::{ vec_chain, VecChain };
 
 pub trait Chain
 where
-	Self: Sized + private::Sealed + Into<Self::Inner> + AsRef<Self::Inner> + AsMut<Self::Inner>,
-	Self::Inner: Sized + ChainInner<Chain = Self>
+	Self: Sized + private::Sealed + Into<Self::Inner> + AsRef<Self::Inner> + AsMut<Self::Inner>
 {
-	type Inner;
+	type Inner: ChainInner<Chain = Self>;
 
 	#[inline]
 	fn into_inner(self) -> Self::Inner {
@@ -42,10 +41,9 @@ where
 
 pub trait ChainInner
 where
-	Self: Sized + private::Sealed + Into<Self::Chain>,
-	Self::Chain: Sized + Chain<Inner = Self>
+	Self: Sized + private::Sealed + Into<Self::Chain>
 {
-	type Chain;
+	type Chain: Chain<Inner = Self>;
 
 	#[inline]
 	fn into_chain(self) -> Self::Chain {
@@ -59,7 +57,7 @@ where
 }
 
 /// Trait implemented on chains and their inner types, allowing you to get a reference
-/// to the inner type regardless of if the chain or the inner type is passed
+/// to the inner type regardless of if the chain or the inner type is passed in
 pub trait AsChainInner<I>: Sized + private::Sealed {
 	fn as_inner(&self) -> &I;
 	fn as_inner_mut(&mut self) -> &mut I;
