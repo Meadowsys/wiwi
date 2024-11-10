@@ -138,9 +138,32 @@ impl<T> VecChain<T> {
 	}
 
 	chain_fn! {
-		binary_search(inner, x: &T, out: &mut Result<usize, usize>) where {
+		binary_search[O: OutputStorage<Result<usize, usize>>](inner, x: &T, out: O) where {
 			T: Ord
-		} => *out = inner.binary_search(x)
+		} => {
+			// SAFETY: we always write once to `out`
+			unsafe { out.store(inner.binary_search(x)) }
+		}
+	}
+
+	chain_fn! {
+		binary_search_by[O: OutputStorage<Result<usize, usize>>, F](inner, f: F, out: &mut Result<usize, usize>) where {
+			F: FnMut(&T) -> cmp::Ordering
+		} => {
+			// SAFETY: we always write once to `out`
+			unsafe { out.store(inner.binary_search_by(f)) }
+		}
+	}
+
+	chain_fn! {
+		binary_search_by_key[B, O, F](inner, b: &B, f: F, out: O) where {
+			B: Ord,
+			O: OutputStorage<Result<usize, usize>>,
+			F: FnMut(&T) -> B
+		} => {
+			// SAFETY: we always write once to `out`
+			unsafe { out.store(inner.binary_search_by_key(b, f)) }
+		}
 	}
 
 	chain_fn! {
@@ -158,6 +181,12 @@ impl<T> VecChain<T> {
 		clone_from_slice(inner, src: &[T]) where {
 			T: Clone
 		} => inner.clone_from_slice(src)
+	}
+
+	chain_fn! {
+		copy_from_slice(inner, src: &[T]) where {
+			T: Copy
+		} => inner.copy_from_slice(src)
 	}
 
 	chain_fn! {
@@ -195,6 +224,18 @@ impl<T> VecChain<T> {
 			// SAFETY: we always write once to `out`
 			unsafe { out.store(inner.ends_with(needle)) }
 		}
+	}
+
+	chain_fn! {
+		fill(inner, value: T) where {
+			T: Clone
+		} => inner.fill(value)
+	}
+
+	chain_fn! {
+		fill_with[F](inner, f: F) where {
+			F: FnMut() -> T
+		} => inner.fill_with(f)
 	}
 
 	chain_fn! {
@@ -509,7 +550,6 @@ Blanket Implementations
 Any
 Borrow<T>
 BorrowMut<T>
-CloneToUninit
 From<T>
 Into<U>
 ToOwned
