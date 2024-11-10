@@ -617,12 +617,12 @@
 	<span class="comment">// SAFETY: instance just allocated in statement above
 	</span><span class="kw">let </span>ptr = <span class="kw">unsafe </span>{ slice_thin_ptr(instance).as_ptr() };
 
-	slice.iter().enumerate().for_each(|(i, value)| {
+	slice.iter().enumerate().for_each(|(i, s)| {
 		<span class="comment">// SAFETY: `ptr` is writeable for `slice.len()` elements
 		</span><span class="kw">let </span>ptr = <span class="kw">unsafe </span>{ ptr.add(i) };
 
 		<span class="comment">// SAFETY: see above
-		</span><span class="kw">unsafe </span>{ ptr.write(value.clone()) }
+		</span><span class="kw">unsafe </span>{ ptr.write(s.clone()) }
 	});
 
 	instance
@@ -630,7 +630,7 @@
 
 <span class="attr">#[inline]
 </span><span class="kw">pub fn </span>new_from_value_and_slice_copy&lt;C: Counter, V, S: Copy&gt;(value: V, slice: <span class="kw-2">&amp;</span>[S]) -&gt; RcInner&lt;C, V, S&gt; {
-	<span class="comment">// SAFETY: `S: Copy enforced by trait bound`
+	<span class="comment">// SAFETY: `S: Copy` enforced by trait bound
 	</span><span class="kw">unsafe </span>{ new_from_value_and_slice_copy_unchecked(value, slice) }
 }
 
@@ -779,7 +779,7 @@
 ///
 /// - The provided `instance` must not have been deallocated
 /// - `instance` must outlive `'h` (the lifetime of the returned reference)
-/// - The returned reference must be the only mut reference into counter (exclusive borrow)
+/// - The returned reference must be the only mut reference into `counter` (exclusive borrow)
 </span><span class="attr">#[inline]
 </span><span class="kw">unsafe fn </span>counter_uninit&lt;<span class="lifetime">'h</span>, C: Counter, V, S&gt;(instance: RcInner&lt;C, V, S&gt;) -&gt; <span class="kw-2">&amp;</span><span class="lifetime">'h </span><span class="kw-2">mut </span>MaybeUninit&lt;C&gt; {
 	<span class="comment">// SAFETY: caller promises to uphold the requirements
@@ -819,7 +819,7 @@
 ///
 /// - The provided `instance` must not have been deallocated
 /// - `instance` must outlive `'h` (the lifetime of the returned reference)
-/// - The returned reference must be the only mut reference into counter (exclusive borrow)
+/// - The returned reference must be the only mut reference into `slice_len` (exclusive borrow)
 </span><span class="attr">#[inline]
 </span><span class="kw">unsafe fn </span>slice_len_uninit&lt;<span class="lifetime">'h</span>, C: Counter, V, S&gt;(instance: RcInner&lt;C, V, S&gt;) -&gt; <span class="kw-2">&amp;</span><span class="lifetime">'h </span><span class="kw-2">mut </span>MaybeUninit&lt;usize&gt; {
 	<span class="comment">// SAFETY: caller promises to uphold the requirements
@@ -859,7 +859,7 @@
 ///
 /// - The provided `instance` must not have been dropped or deallocated
 /// - `instance` must outlive `'h` (the lifetime of the returned reference)
-/// - The returned reference must be the only mut reference into counter (exclusive borrow)
+/// - The returned reference must be the only mut reference into `value` (exclusive borrow)
 </span><span class="attr">#[inline]
 </span><span class="kw">unsafe fn </span>value_uninit&lt;<span class="lifetime">'h</span>, C: Counter, V, S&gt;(instance: RcInner&lt;C, V, S&gt;) -&gt; <span class="kw-2">&amp;</span><span class="lifetime">'h </span><span class="kw-2">mut </span>MaybeUninit&lt;V&gt; {
 	<span class="comment">// SAFETY: caller promises to uphold the requirements
@@ -951,16 +951,16 @@
 	</span><span class="kw">fn </span>inc_strong_for_new_ref(<span class="kw-2">&amp;</span><span class="self">self</span>);
 
 	<span class="doccomment">/// Decrements the strong count for dropping a reference, returning `true`
-	/// if there are no more strong pointers left (and [`drop_instance`] should
-	/// be run on the instance)
+	/// if there are no more strong pointers left (and the value and items in
+	/// the slice should be dropped)
 	</span><span class="kw">fn </span>dec_strong_for_drop(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; bool;
 
 	<span class="doccomment">/// Increments the weak count for creation of a new weak reference
 	</span><span class="kw">fn </span>inc_weak_for_new_ref(<span class="kw-2">&amp;</span><span class="self">self</span>);
 
 	<span class="doccomment">/// Decrements the weak count for dropping a reference, returning `true`
-	/// if there are no more weak pointers left (and [`dealloc_instance`] should
-	/// be run on the instance)
+	/// if there are no more weak pointers left (and the allocation should be
+	/// deallocated)
 	</span><span class="kw">fn </span>dec_weak_for_drop(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; bool;
 
 	<span class="doccomment">/// Increment the strong count if it is possible to upgrade a weak pointer
@@ -1093,7 +1093,7 @@
 			.fetch_update(
 				Acquire,
 				Relaxed,
-				|old| (old &gt; <span class="number">0</span>).then(|| old + <span class="number">1</span>)
+				|old| (old &gt; <span class="number">0</span>).then(<span class="kw">move </span>|| old + <span class="number">1</span>)
 			)
 			.is_ok()
 	}

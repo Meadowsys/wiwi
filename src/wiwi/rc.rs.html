@@ -255,8 +255,7 @@
 <a href="#254" id="254">254</a>
 <a href="#255" id="255">255</a>
 <a href="#256" id="256">256</a>
-<a href="#257" id="257">257</a>
-<a href="#258" id="258">258</a></pre></div><pre class="rust"><code><span class="kw">use </span><span class="kw">crate</span>::prelude_std::<span class="kw-2">*</span>;
+<a href="#257" id="257">257</a></pre></div><pre class="rust"><code><span class="kw">use </span><span class="kw">crate</span>::prelude_std::<span class="kw-2">*</span>;
 
 <span class="kw">pub use </span><span class="self">self</span>::inner::{ Counter, ThreadCounter, AtomicCounter };
 <span class="kw">pub use </span><span class="self">self</span>::str::{
@@ -434,12 +433,11 @@
 
 		<span class="kw">if </span>!should_drop { <span class="kw">return </span>}
 
-		<span class="comment">// take care of the "fake" weak ptr collectively held by strong ptrs
-		// this will drop after we call `drop_instance` below
-		</span><span class="kw">let </span>_weak = RcWeak { inner: <span class="self">self</span>.inner };
-
 		<span class="comment">// SAFETY: we checked we should drop, and early exited if we shouldn't
 		</span><span class="kw">unsafe </span>{ inner::drop_instance(<span class="self">self</span>.inner) }
+
+		<span class="comment">// take care of the "fake" weak ptr collectively held by strong ptrs
+		</span>drop(RcWeak { inner: <span class="self">self</span>.inner });
 	}
 }
 
@@ -506,12 +504,12 @@
 }
 
 <span class="comment">// SAFETY: we are `Send` if the counter/value/slice are all `Send`
-</span><span class="kw">unsafe impl</span>&lt;C: Send + Counter, V: Send, S: Send&gt; Send <span class="kw">for </span>Rc&lt;C, V, S&gt; {}
+</span><span class="kw">unsafe impl</span>&lt;C: Counter + Send, V: Send, S: Send&gt; Send <span class="kw">for </span>Rc&lt;C, V, S&gt; {}
 <span class="comment">// SAFETY: same as above
-</span><span class="kw">unsafe impl</span>&lt;C: Send + Counter, V: Send, S: Send&gt; Send <span class="kw">for </span>RcWeak&lt;C, V, S&gt; {}
+</span><span class="kw">unsafe impl</span>&lt;C: Counter + Send, V: Send, S: Send&gt; Send <span class="kw">for </span>RcWeak&lt;C, V, S&gt; {}
 
 <span class="comment">// SAFETY: we are `Sync` if the counter/value/slice are all `Sync`
-</span><span class="kw">unsafe impl</span>&lt;C: Sync + Counter, V: Sync, S: Sync&gt; Sync <span class="kw">for </span>Rc&lt;C, V, S&gt; {}
+</span><span class="kw">unsafe impl</span>&lt;C: Counter + Sync, V: Sync, S: Sync&gt; Sync <span class="kw">for </span>Rc&lt;C, V, S&gt; {}
 <span class="comment">// SAFETY: same as above
-</span><span class="kw">unsafe impl</span>&lt;C: Sync + Counter, V: Sync, S: Sync&gt; Sync <span class="kw">for </span>RcWeak&lt;C, V, S&gt; {}
+</span><span class="kw">unsafe impl</span>&lt;C: Counter + Sync, V: Sync, S: Sync&gt; Sync <span class="kw">for </span>RcWeak&lt;C, V, S&gt; {}
 </code></pre></div></section></main></body></html>

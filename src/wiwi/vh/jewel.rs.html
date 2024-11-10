@@ -158,10 +158,10 @@
 
 <span class="kw">impl </span>ModifierValue {
 	<span class="doccomment">/// Maximum storable modifier value
-	</span><span class="kw">const </span>MAX: i32 = i32::MAX &gt;&gt; <span class="number">1</span>;
+	</span><span class="kw">pub const </span>MAX: i32 = i32::MAX &gt;&gt; <span class="number">1</span>;
 
 	<span class="doccomment">/// Minimum storable modifier value (negative)
-	</span><span class="kw">const </span>MIN: i32 = i32::MIN &gt;&gt; <span class="number">1</span>;
+	</span><span class="kw">pub const </span>MIN: i32 = i32::MIN &gt;&gt; <span class="number">1</span>;
 
 	<span class="attr">#[inline]
 	</span><span class="kw">pub fn </span>new(value: i32, is_legendary: bool) -&gt; <span class="self">Self </span>{
