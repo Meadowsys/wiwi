@@ -298,7 +298,7 @@ impl<'h, const N: usize> ChunkedSlice<'h, N> {
 	///
 	/// This does _not_ indicate anywhere how many were padding bytes vs actual
 	/// data. In the few places that this utility struct is used, the remainder
-	/// has been calculated already, so the returned value goes unused.
+	/// has been calculated already.
 	///
 	/// # Safety
 	///

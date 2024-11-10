@@ -58,10 +58,10 @@ pub struct ModifierValue {
 
 impl ModifierValue {
 	/// Maximum storable modifier value
-	const MAX: i32 = i32::MAX >> 1;
+	pub const MAX: i32 = i32::MAX >> 1;
 
 	/// Minimum storable modifier value (negative)
-	const MIN: i32 = i32::MIN >> 1;
+	pub const MIN: i32 = i32::MIN >> 1;
 
 	#[inline]
 	pub fn new(value: i32, is_legendary: bool) -> Self {

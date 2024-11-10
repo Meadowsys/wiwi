@@ -67,12 +67,12 @@ pub fn new_from_value_and_slice_clone<C: Counter, V, S: Clone>(value: V, slice: 
 	// SAFETY: instance just allocated in statement above
 	let ptr = unsafe { slice_thin_ptr(instance).as_ptr() };
 
-	slice.iter().enumerate().for_each(|(i, value)| {
+	slice.iter().enumerate().for_each(|(i, s)| {
 		// SAFETY: `ptr` is writeable for `slice.len()` elements
 		let ptr = unsafe { ptr.add(i) };
 
 		// SAFETY: see above
-		unsafe { ptr.write(value.clone()) }
+		unsafe { ptr.write(s.clone()) }
 	});
 
 	instance
@@ -80,7 +80,7 @@ pub fn new_from_value_and_slice_clone<C: Counter, V, S: Clone>(value: V, slice: 
 
 #[inline]
 pub fn new_from_value_and_slice_copy<C: Counter, V, S: Copy>(value: V, slice: &[S]) -> RcInner<C, V, S> {
-	// SAFETY: `S: Copy enforced by trait bound`
+	// SAFETY: `S: Copy` enforced by trait bound
 	unsafe { new_from_value_and_slice_copy_unchecked(value, slice) }
 }
 
@@ -229,7 +229,7 @@ unsafe fn counter_ptr<C: Counter, V, S>(instance: RcInner<C, V, S>) -> ptr::NonN
 ///
 /// - The provided `instance` must not have been deallocated
 /// - `instance` must outlive `'h` (the lifetime of the returned reference)
-/// - The returned reference must be the only mut reference into counter (exclusive borrow)
+/// - The returned reference must be the only mut reference into `counter` (exclusive borrow)
 #[inline]
 unsafe fn counter_uninit<'h, C: Counter, V, S>(instance: RcInner<C, V, S>) -> &'h mut MaybeUninit<C> {
 	// SAFETY: caller promises to uphold the requirements
@@ -269,7 +269,7 @@ unsafe fn slice_len_ptr<C: Counter, V, S>(instance: RcInner<C, V, S>) -> ptr::No
 ///
 /// - The provided `instance` must not have been deallocated
 /// - `instance` must outlive `'h` (the lifetime of the returned reference)
-/// - The returned reference must be the only mut reference into counter (exclusive borrow)
+/// - The returned reference must be the only mut reference into `slice_len` (exclusive borrow)
 #[inline]
 unsafe fn slice_len_uninit<'h, C: Counter, V, S>(instance: RcInner<C, V, S>) -> &'h mut MaybeUninit<usize> {
 	// SAFETY: caller promises to uphold the requirements
@@ -309,7 +309,7 @@ unsafe fn value_ptr<C: Counter, V, S>(instance: RcInner<C, V, S>) -> ptr::NonNul
 ///
 /// - The provided `instance` must not have been dropped or deallocated
 /// - `instance` must outlive `'h` (the lifetime of the returned reference)
-/// - The returned reference must be the only mut reference into counter (exclusive borrow)
+/// - The returned reference must be the only mut reference into `value` (exclusive borrow)
 #[inline]
 unsafe fn value_uninit<'h, C: Counter, V, S>(instance: RcInner<C, V, S>) -> &'h mut MaybeUninit<V> {
 	// SAFETY: caller promises to uphold the requirements
