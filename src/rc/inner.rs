@@ -543,7 +543,7 @@ unsafe impl Counter for AtomicCounter {
 			.fetch_update(
 				Acquire,
 				Relaxed,
-				|old| (old > 0).then(|| old + 1)
+				|old| (old > 0).then(move || old + 1)
 			)
 			.is_ok()
 	}
