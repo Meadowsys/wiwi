@@ -176,12 +176,11 @@ impl<C: Counter, V, S> Drop for Rc<C, V, S> {
 
 		if !should_drop { return }
 
-		// take care of the "fake" weak ptr collectively held by strong ptrs
-		// this will drop after we call `drop_instance` below
-		let _weak = RcWeak { inner: self.inner };
-
 		// SAFETY: we checked we should drop, and early exited if we shouldn't
 		unsafe { inner::drop_instance(self.inner) }
+
+		// take care of the "fake" weak ptr collectively held by strong ptrs
+		drop(RcWeak { inner: self.inner });
 	}
 }
 
