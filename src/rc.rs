@@ -248,11 +248,11 @@ impl<C: Counter, V, S> Drop for RcWeak<C, V, S> {
 }
 
 // SAFETY: we are `Send` if the counter/value/slice are all `Send`
-unsafe impl<C: Send + Counter, V: Send, S: Send> Send for Rc<C, V, S> {}
+unsafe impl<C: Counter + Send, V: Send, S: Send> Send for Rc<C, V, S> {}
 // SAFETY: same as above
-unsafe impl<C: Send + Counter, V: Send, S: Send> Send for RcWeak<C, V, S> {}
+unsafe impl<C: Counter + Send, V: Send, S: Send> Send for RcWeak<C, V, S> {}
 
 // SAFETY: we are `Sync` if the counter/value/slice are all `Sync`
-unsafe impl<C: Sync + Counter, V: Sync, S: Sync> Sync for Rc<C, V, S> {}
+unsafe impl<C: Counter + Sync, V: Sync, S: Sync> Sync for Rc<C, V, S> {}
 // SAFETY: same as above
-unsafe impl<C: Sync + Counter, V: Sync, S: Sync> Sync for RcWeak<C, V, S> {}
+unsafe impl<C: Counter + Sync, V: Sync, S: Sync> Sync for RcWeak<C, V, S> {}
