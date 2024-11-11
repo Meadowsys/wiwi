@@ -1,13 +1,24 @@
 macro_rules! from {
 	{
+		$losslessness:literal
+
 		$(#[$trait_meta:meta])*
 		trait $trait_name:ident
 
 		$(#[$fn_meta:meta])*
 		fn $fn_name:ident($type_name:ident)
 	} => {
+		#[doc = concat!(
+			"Trait for number types that can be converted from [`",
+			stringify!($type_name),
+			"`], ",
+			$losslessness
+		)]
+		#[doc = ""]
 		$(#[$trait_meta])*
 		pub trait $trait_name: private::Sealed {
+			#[doc = concat!("Convert from a [`", stringify!($type_name), "`] value")]
+			#[doc = ""]
 			$(#[$fn_meta])*
 			fn $fn_name(value: $type_name) -> Self;
 		}
@@ -36,14 +47,25 @@ macro_rules! from {
 
 macro_rules! into {
 	{
+		$losslessness:literal
+
 		$(#[$trait_meta:meta])*
 		trait $trait_name:ident
 
 		$(#[$fn_meta:meta])*
 		fn $fn_name:ident() -> $type_name:ident
 	} => {
+		#[doc = concat!(
+			"Trait for number types that can be converted into [`",
+			stringify!($type_name),
+			"`], ",
+			$losslessness
+		)]
+		#[doc = ""]
 		$(#[$trait_meta])*
 		pub trait $trait_name: private::Sealed {
+			#[doc = concat!("Convert into a [`", stringify!($type_name), "`] value")]
+			#[doc = ""]
 			$(#[$fn_meta])*
 			fn $fn_name(self) -> $type_name;
 		}
@@ -70,67 +92,67 @@ macro_rules! into {
 	};
 }
 
-from! { trait FromU8 fn from_u8(u8) }
-from! { trait FromU16 fn from_u16(u16) }
-from! { trait FromU32 fn from_u32(u32) }
-from! { trait FromU64 fn from_u64(u64) }
-from! { trait FromU128 fn from_u128(u128) }
-from! { trait FromUsize fn from_usize(usize) }
-from! { trait FromI8 fn from_i8(i8) }
-from! { trait FromI16 fn from_i16(i16) }
-from! { trait FromI32 fn from_i32(i32) }
-from! { trait FromI64 fn from_i64(i64) }
-from! { trait FromI128 fn from_i128(i128) }
-from! { trait FromIsize fn from_isize(isize) }
-from! { trait FromF32 fn from_f32(f32) }
-from! { trait FromF64 fn from_f64(f64) }
-from! { trait FromBool fn from_bool(bool) }
+from! { "losslessly" trait FromU8 fn from_u8(u8) }
+from! { "losslessly" trait FromU16 fn from_u16(u16) }
+from! { "losslessly" trait FromU32 fn from_u32(u32) }
+from! { "losslessly" trait FromU64 fn from_u64(u64) }
+from! { "losslessly" trait FromU128 fn from_u128(u128) }
+from! { "losslessly" trait FromUsize fn from_usize(usize) }
+from! { "losslessly" trait FromI8 fn from_i8(i8) }
+from! { "losslessly" trait FromI16 fn from_i16(i16) }
+from! { "losslessly" trait FromI32 fn from_i32(i32) }
+from! { "losslessly" trait FromI64 fn from_i64(i64) }
+from! { "losslessly" trait FromI128 fn from_i128(i128) }
+from! { "losslessly" trait FromIsize fn from_isize(isize) }
+from! { "losslessly" trait FromF32 fn from_f32(f32) }
+from! { "losslessly" trait FromF64 fn from_f64(f64) }
+from! { "losslessly" trait FromBool fn from_bool(bool) }
 
-from! { trait FromU8Lossy fn from_u8_lossy(u8) }
-from! { trait FromU16Lossy fn from_u16_lossy(u16) }
-from! { trait FromU32Lossy fn from_u32_lossy(u32) }
-from! { trait FromU64Lossy fn from_u64_lossy(u64) }
-from! { trait FromU128Lossy fn from_u128_lossy(u128) }
-from! { trait FromUsizeLossy fn from_usize_lossy(usize) }
-from! { trait FromI8Lossy fn from_i8_lossy(i8) }
-from! { trait FromI16Lossy fn from_i16_lossy(i16) }
-from! { trait FromI32Lossy fn from_i32_lossy(i32) }
-from! { trait FromI64Lossy fn from_i64_lossy(i64) }
-from! { trait FromI128Lossy fn from_i128_lossy(i128) }
-from! { trait FromIsizeLossy fn from_isize_lossy(isize) }
-from! { trait FromF32Lossy fn from_f32_lossy(f32) }
-from! { trait FromF64Lossy fn from_f64_lossy(f64) }
-from! { trait FromBoolLossy fn from_bool_lossy(bool) }
+from! { "potentially lossily" trait FromU8Lossy fn from_u8_lossy(u8) }
+from! { "potentially lossily" trait FromU16Lossy fn from_u16_lossy(u16) }
+from! { "potentially lossily" trait FromU32Lossy fn from_u32_lossy(u32) }
+from! { "potentially lossily" trait FromU64Lossy fn from_u64_lossy(u64) }
+from! { "potentially lossily" trait FromU128Lossy fn from_u128_lossy(u128) }
+from! { "potentially lossily" trait FromUsizeLossy fn from_usize_lossy(usize) }
+from! { "potentially lossily" trait FromI8Lossy fn from_i8_lossy(i8) }
+from! { "potentially lossily" trait FromI16Lossy fn from_i16_lossy(i16) }
+from! { "potentially lossily" trait FromI32Lossy fn from_i32_lossy(i32) }
+from! { "potentially lossily" trait FromI64Lossy fn from_i64_lossy(i64) }
+from! { "potentially lossily" trait FromI128Lossy fn from_i128_lossy(i128) }
+from! { "potentially lossily" trait FromIsizeLossy fn from_isize_lossy(isize) }
+from! { "potentially lossily" trait FromF32Lossy fn from_f32_lossy(f32) }
+from! { "potentially lossily" trait FromF64Lossy fn from_f64_lossy(f64) }
+from! { "potentially lossily" trait FromBoolLossy fn from_bool_lossy(bool) }
 
-into! { trait IntoU8 fn into_u8() -> u8 }
-into! { trait IntoU16 fn into_u16() -> u16 }
-into! { trait IntoU32 fn into_u32() -> u32 }
-into! { trait IntoU64 fn into_u64() -> u64 }
-into! { trait IntoU128 fn into_u128() -> u128 }
-into! { trait IntoUsize fn into_usize() -> usize }
-into! { trait IntoI8 fn into_i8() -> i8 }
-into! { trait IntoI16 fn into_i16() -> i16 }
-into! { trait IntoI32 fn into_i32() -> i32 }
-into! { trait IntoI64 fn into_i64() -> i64 }
-into! { trait IntoI128 fn into_i128() -> i128 }
-into! { trait IntoIsize fn into_isize() -> isize }
-into! { trait IntoF32 fn into_f32() -> f32 }
-into! { trait IntoF64 fn into_f64() -> f64 }
+into! { "losslessly" trait IntoU8 fn into_u8() -> u8 }
+into! { "losslessly" trait IntoU16 fn into_u16() -> u16 }
+into! { "losslessly" trait IntoU32 fn into_u32() -> u32 }
+into! { "losslessly" trait IntoU64 fn into_u64() -> u64 }
+into! { "losslessly" trait IntoU128 fn into_u128() -> u128 }
+into! { "losslessly" trait IntoUsize fn into_usize() -> usize }
+into! { "losslessly" trait IntoI8 fn into_i8() -> i8 }
+into! { "losslessly" trait IntoI16 fn into_i16() -> i16 }
+into! { "losslessly" trait IntoI32 fn into_i32() -> i32 }
+into! { "losslessly" trait IntoI64 fn into_i64() -> i64 }
+into! { "losslessly" trait IntoI128 fn into_i128() -> i128 }
+into! { "losslessly" trait IntoIsize fn into_isize() -> isize }
+into! { "losslessly" trait IntoF32 fn into_f32() -> f32 }
+into! { "losslessly" trait IntoF64 fn into_f64() -> f64 }
 
-into! { trait IntoU8Lossy fn into_u8_lossy() -> u8 }
-into! { trait IntoU16Lossy fn into_u16_lossy() -> u16 }
-into! { trait IntoU32Lossy fn into_u32_lossy() -> u32 }
-into! { trait IntoU64Lossy fn into_u64_lossy() -> u64 }
-into! { trait IntoU128Lossy fn into_u128_lossy() -> u128 }
-into! { trait IntoUsizeLossy fn into_usize_lossy() -> usize }
-into! { trait IntoI8Lossy fn into_i8_lossy() -> i8 }
-into! { trait IntoI16Lossy fn into_i16_lossy() -> i16 }
-into! { trait IntoI32Lossy fn into_i32_lossy() -> i32 }
-into! { trait IntoI64Lossy fn into_i64_lossy() -> i64 }
-into! { trait IntoI128Lossy fn into_i128_lossy() -> i128 }
-into! { trait IntoIsizeLossy fn into_isize_lossy() -> isize }
-into! { trait IntoF32Lossy fn into_f32_lossy() -> f32 }
-into! { trait IntoF64Lossy fn into_f64_lossy() -> f64 }
+into! { "potentially lossily" trait IntoU8Lossy fn into_u8_lossy() -> u8 }
+into! { "potentially lossily" trait IntoU16Lossy fn into_u16_lossy() -> u16 }
+into! { "potentially lossily" trait IntoU32Lossy fn into_u32_lossy() -> u32 }
+into! { "potentially lossily" trait IntoU64Lossy fn into_u64_lossy() -> u64 }
+into! { "potentially lossily" trait IntoU128Lossy fn into_u128_lossy() -> u128 }
+into! { "potentially lossily" trait IntoUsizeLossy fn into_usize_lossy() -> usize }
+into! { "potentially lossily" trait IntoI8Lossy fn into_i8_lossy() -> i8 }
+into! { "potentially lossily" trait IntoI16Lossy fn into_i16_lossy() -> i16 }
+into! { "potentially lossily" trait IntoI32Lossy fn into_i32_lossy() -> i32 }
+into! { "potentially lossily" trait IntoI64Lossy fn into_i64_lossy() -> i64 }
+into! { "potentially lossily" trait IntoI128Lossy fn into_i128_lossy() -> i128 }
+into! { "potentially lossily" trait IntoIsizeLossy fn into_isize_lossy() -> isize }
+into! { "potentially lossily" trait IntoF32Lossy fn into_f32_lossy() -> f32 }
+into! { "potentially lossily" trait IntoF64Lossy fn into_f64_lossy() -> f64 }
 
 from! {
 	impl FromU8::from_u8(u8)
