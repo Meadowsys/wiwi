@@ -888,7 +888,7 @@ macro_rules! op_trait {
 			const _: () = {
 				$(#[$meta])*
 				#[inline(always)]
-				fn __impl_detail($lhs: $($lhs_ty)+, $rhs: $($rhs_ty)+) -> $($output)+ {
+				fn inner($lhs: $($lhs_ty)+, $rhs: $($rhs_ty)+) -> $($output)+ {
 					$($stuff)+
 				}
 
@@ -898,7 +898,7 @@ macro_rules! op_trait {
 
 					#[inline(always)]
 					fn $fn_name(self, rhs: $($rhs_ty)+) -> $($output)+ {
-						__impl_detail(self, rhs)
+						inner(self, rhs)
 					}
 				}
 
@@ -912,7 +912,7 @@ macro_rules! op_trait {
 				// 	$(#[$fn_meta])*
 				// 	#[inline(always)]
 				// 	fn $fn_name(self, rhs: $($rhs_ty)+) -> $($output)+ {
-				// 		__impl_detail(*self, rhs)
+				// 		inner(*self, rhs)
 				// 	}
 				// }
 				//
@@ -923,7 +923,7 @@ macro_rules! op_trait {
 				// 	$(#[$fn_meta])*
 				// 	#[inline(always)]
 				// 	fn $fn_name(self, rhs: &$($rhs_ty)+) -> $($output)+ {
-				// 		__impl_detail(self, *rhs)
+				// 		inner(self, *rhs)
 				// 	}
 				// }
 				//
@@ -934,7 +934,7 @@ macro_rules! op_trait {
 				// 	$(#[$fn_meta])*
 				// 	#[inline(always)]
 				// 	fn $fn_name(self, rhs: &$($rhs_ty)+) -> $($output)+ {
-				// 		__impl_detail(*self, *rhs)
+				// 		inner(*self, *rhs)
 				// 	}
 				// }
 			};
