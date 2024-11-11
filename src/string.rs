@@ -1,6 +1,6 @@
 use crate::prelude_std::*;
 
-use crate::num::{ FromU8 as _, IntoU8Lossy as _ };
+use crate::num::*;
 
 const STRING_SIZE_BYTES: usize = size_of::<usize>() * 3;
 const MAX_INLINE_LEN: usize = STRING_SIZE_BYTES - 1;
@@ -188,9 +188,7 @@ impl StringInline {
 	#[inline]
 	fn as_str(&self) -> &str {
 		let ptr = self.rest.as_ptr().cast::<u8>();
-		// TODO: replace as with .into_usize() when that's a thing
-		#[expect(clippy::as_conversions, reason = "cast u8 to usize (more restrictive api not yet written)")]
-		let len = self.len as usize;
+		let len = self.len.into_usize();
 
 		// SAFETY: relying on invariant that `self.rest` must have
 		// at least `self.len` elements initialised
@@ -202,9 +200,7 @@ impl StringInline {
 	#[inline]
 	fn as_str_mut(&mut self) -> &mut str {
 		let ptr = self.rest.as_ptr().cast::<u8>();
-		// TODO: replace as with .into_usize() when that's a thing
-		#[expect(clippy::as_conversions, reason = "cast u8 to usize (more restrictive api not yet written)")]
-		let len = self.len as usize;
+		let len = self.len.into_usize();
 
 		// SAFETY: relying on invariant that `self.rest` must have
 		// at least `self.len` elements initialised
