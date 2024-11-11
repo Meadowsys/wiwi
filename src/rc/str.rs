@@ -68,7 +68,7 @@ impl<C: Counter, M> Deref for RcStr<C, M> {
 
 	#[inline]
 	fn deref(&self) -> &str {
-		// SAFETY: `RcStr` has variant of containing valid utf-8
+		// SAFETY: `RcStr` has invariant of containing valid utf-8
 		unsafe { str::from_utf8_unchecked(self.inner.as_slice_ref()) }
 	}
 }
