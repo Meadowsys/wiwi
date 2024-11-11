@@ -881,25 +881,23 @@ macro_rules! op_trait {
 		impl $trait_name:ident::$fn_name:ident()
 		$(
 			$(#[$meta:meta])*
-			($lhs:ident: $($lhs_ty:tt)+) >< ($rhs:ident: $($rhs_ty:tt)+) -> ($($output:tt)+)
-			$(#[$fn_meta:meta])*
-			{ $($stuff:tt)+ }
+			($lhs:ident: $($lhs_ty:tt)+) >< ($rhs:ident: $($rhs_ty:tt)+) -> ($($output:tt)+) { $($stuff:tt)+ }
 		)*
 	} => {
 		$(
 			const _: () = {
 				$(#[$meta])*
+				#[inline(always)]
+				fn __impl_detail($lhs: $($lhs_ty)+, $rhs: $($rhs_ty)+) -> $($output)+ {
+					$($stuff)+
+				}
+
+				$(#[$meta])*
 				impl $trait_name<$($rhs_ty)+> for $($lhs_ty)* {
 					type Output = $($output)+;
 
-					$(#[$fn_meta])*
 					#[inline(always)]
 					fn $fn_name(self, rhs: $($rhs_ty)+) -> $($output)+ {
-						#[inline(always)]
-						fn __impl_detail($lhs: $($lhs_ty)+, $rhs: $($rhs_ty)+) -> $($output)+ {
-							$($stuff)+
-						}
-
 						__impl_detail(self, rhs)
 					}
 				}
