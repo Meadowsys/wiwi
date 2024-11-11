@@ -306,13 +306,9 @@
 <a href="#305" id="305">305</a>
 <a href="#306" id="306">306</a>
 <a href="#307" id="307">307</a>
-<a href="#308" id="308">308</a>
-<a href="#309" id="309">309</a>
-<a href="#310" id="310">310</a>
-<a href="#311" id="311">311</a>
-<a href="#312" id="312">312</a></pre></div><pre class="rust"><code><span class="kw">use </span><span class="kw">crate</span>::prelude_std::<span class="kw-2">*</span>;
+<a href="#308" id="308">308</a></pre></div><pre class="rust"><code><span class="kw">use </span><span class="kw">crate</span>::prelude_std::<span class="kw-2">*</span>;
 
-<span class="kw">use </span><span class="kw">crate</span>::num::{ FromU8 <span class="kw">as _</span>, IntoU8Lossy <span class="kw">as _ </span>};
+<span class="kw">use </span><span class="kw">crate</span>::num::<span class="kw-2">*</span>;
 
 <span class="kw">const </span>STRING_SIZE_BYTES: usize = size_of::&lt;usize&gt;() * <span class="number">3</span>;
 <span class="kw">const </span>MAX_INLINE_LEN: usize = STRING_SIZE_BYTES - <span class="number">1</span>;
@@ -500,9 +496,7 @@
 	<span class="attr">#[inline]
 	</span><span class="kw">fn </span>as_str(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; <span class="kw-2">&amp;</span>str {
 		<span class="kw">let </span>ptr = <span class="self">self</span>.rest.as_ptr().cast::&lt;u8&gt;();
-		<span class="comment">// TODO: replace as with .into_usize() when that's a thing
-		</span><span class="attr">#[expect(clippy::as_conversions, reason = <span class="string">"cast u8 to usize (more restrictive api not yet written)"</span>)]
-		</span><span class="kw">let </span>len = <span class="self">self</span>.len <span class="kw">as </span>usize;
+		<span class="kw">let </span>len = <span class="self">self</span>.len.into_usize();
 
 		<span class="comment">// SAFETY: relying on invariant that `self.rest` must have
 		// at least `self.len` elements initialised
@@ -514,9 +508,7 @@
 	<span class="attr">#[inline]
 	</span><span class="kw">fn </span>as_str_mut(<span class="kw-2">&amp;mut </span><span class="self">self</span>) -&gt; <span class="kw-2">&amp;mut </span>str {
 		<span class="kw">let </span>ptr = <span class="self">self</span>.rest.as_ptr().cast::&lt;u8&gt;();
-		<span class="comment">// TODO: replace as with .into_usize() when that's a thing
-		</span><span class="attr">#[expect(clippy::as_conversions, reason = <span class="string">"cast u8 to usize (more restrictive api not yet written)"</span>)]
-		</span><span class="kw">let </span>len = <span class="self">self</span>.len <span class="kw">as </span>usize;
+		<span class="kw">let </span>len = <span class="self">self</span>.len.into_usize();
 
 		<span class="comment">// SAFETY: relying on invariant that `self.rest` must have
 		// at least `self.len` elements initialised
