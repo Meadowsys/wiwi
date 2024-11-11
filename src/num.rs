@@ -433,6 +433,42 @@ from! {
 	f32 f64
 }
 
+from! {
+	impl FromBoolLossy::from_bool_lossy(bool)
+	u8 u16 u32 u64 u128 usize
+	i8 i16 i32 i64 i128 isize
+}
+
+impl FromBoolLossy for f32 {
+	#[expect(
+		clippy::as_conversions,
+		reason = "implementation detail of a more restrictive API"
+	)]
+	#[expect(
+		clippy::inline_always,
+		reason = "simple cast op"
+	)]
+	#[inline(always)]
+	// there is possibility for (micro)optimisation here...
+	// figure out which intermediate int type is best to cast to
+	fn from_bool_lossy(value: bool) -> f32 { value as u32 as _ }
+}
+
+impl FromBoolLossy for f64 {
+	#[expect(
+		clippy::as_conversions,
+		reason = "implementation detail of a more restrictive API"
+	)]
+	#[expect(
+		clippy::inline_always,
+		reason = "simple cast op"
+	)]
+	#[inline(always)]
+	// there is possibility for (micro)optimisation here...
+	// figure out which intermediate int type is best to cast to
+	fn from_bool_lossy(value: bool) -> f64 { value as u64 as _ }
+}
+
 into! {
 	impl IntoU8::into_u8() -> u8
 	u8
