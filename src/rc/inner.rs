@@ -1,4 +1,5 @@
 use crate::prelude_std::*;
+use self::alloc_mod::Layout;
 use self::atomic::Ordering::*;
 
 #[repr(transparent)]
@@ -6,6 +7,8 @@ pub struct RcInner<C: Counter, V, S> {
 	ptr: ptr::NonNull<RcLayout<C, V, S>>
 }
 
+// if fields in this struct need to change,
+// make sure to change `calc_layout` accordingly
 #[repr(C)]
 struct RcLayout<C: Counter, V, S> {
 	/// The reference counter (handles counting both strong and weak references)
@@ -205,12 +208,45 @@ pub unsafe fn dealloc_instance<C: Counter, V, S>(instance: RcInner<C, V, S>) {
 
 /// Calculate the layout to allocate a new instance with the specified counter,
 /// value type, slice type, and slice length
+// TODO: make this fn `const` when `feature(const_alloc_layout)` is stable
 #[inline]
-fn calc_layout<C: Counter, V, S>(slice_len: usize) -> alloc_mod::Layout {
-	alloc_mod::Layout::new::<RcLayout<C, V, S>>()
-		.extend(alloc_mod::Layout::array::<S>(slice_len).unwrap())
-		.unwrap()
-		.0
+fn calc_layout<C: Counter, V, S>(slice_len: usize) -> Layout {
+	fn inner<C: Counter, V, S>(slice_len: usize) -> Option<Layout> {
+		// if the size of `V` is not an even multiple of the align of the rest of the
+		// struct (max of `usize` and `C`), and align of `S` is less than or equal to
+		// align of `V`, the `slice` field will be at the end of `V` and there will be
+		// some padding after it. I don't think this causes UB, but it will allocate
+		// and use more memory than is necessary in these edge cases. So, we calculate
+		// it manually (we can do this because `repr(C)`), to attach the real layout
+		// of the slice where `slice` would have been, and place some additional checks
+		// in debug to assert it would have been the same as just using `Layout::new`.
+
+		let mut layout = Layout::new::<()>();
+
+		macro_rules! extend_layout {
+			($field_name:ident, $layout:expr) => {
+				let new = layout
+					.extend($layout)
+					.ok()?;
+
+				debug_assert_eq!(
+					mem::offset_of!(RcLayout<C, V, S>, $field_name),
+					new.1
+				);
+
+				layout = new.0;
+			}
+		}
+
+		extend_layout!(counter, Layout::new::<C>());
+		extend_layout!(slice_len, Layout::new::<usize>());
+		extend_layout!(value, Layout::new::<V>());
+		extend_layout!(slice, Layout::array::<S>(slice_len).ok()?);
+
+		Some(layout)
+	}
+
+	inner::<C, V, S>(slice_len).expect("rc layout calculation failed")
 }
 
 /// # Safety
