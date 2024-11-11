@@ -1,3 +1,5 @@
+use crate::prelude_std::*;
+
 macro_rules! from {
 	{
 		$losslessness:literal
@@ -784,87 +786,577 @@ impl IntoF64Lossy for bool {
 	fn into_f64_lossy(self) -> f64 { self as u64 as _ }
 }
 
-pub trait Add<R = Self>: private::Sealed {
-	type Output;
+macro_rules! op_trait {
+	{
+		$(#[$trait_meta:meta])*
+		trait $trait_name:ident
+		$(#[$fn_meta:meta])*
+		fn $fn_name:ident()
+	} => {
+		$(#[$trait_meta])*
+		pub trait $trait_name<R: private::Sealed>: private::Sealed {
+			type Output;
+
+			$(#[$fn_meta])*
+			fn $fn_name(self, rhs: R) -> Self::Output;
+		}
+	};
+
+	{
+		$(#[$trait_meta:meta])*
+		trait(checked) $trait_name:ident
+		$(#[$fn_meta:meta])*
+		fn $fn_name:ident()
+	} => {
+		$(#[$trait_meta])*
+		pub trait $trait_name<R: private::Sealed>: private::Sealed {
+			type Output;
+
+			$(#[$fn_meta])*
+			fn $fn_name(self, rhs: R) -> Option<Self::Output>;
+		}
+	};
+
+	{
+		$(#[$trait_meta:meta])*
+		trait(overflowing) $trait_name:ident
+		$(#[$fn_meta:meta])*
+		fn $fn_name:ident()
+	} => {
+		$(#[$trait_meta])*
+		pub trait $trait_name<R: private::Sealed>: private::Sealed {
+			type Output;
+
+			$(#[$fn_meta])*
+			fn $fn_name(self, rhs: R) -> (Self::Output, bool);
+		}
+	};
+
+	{
+		$(#[$trait_meta:meta])*
+		trait(saturating) $trait_name:ident
+		$(#[$fn_meta:meta])*
+		fn $fn_name:ident()
+	} => {
+		$(#[$trait_meta])*
+		pub trait $trait_name<R: private::Sealed>: private::Sealed {
+			type Output;
+
+			$(#[$fn_meta])*
+			fn $fn_name(self, rhs: R) -> Self::Output;
+		}
+	};
+
+	{
+		$(#[$trait_meta:meta])*
+		trait(unchecked) $trait_name:ident
+		$(#[$fn_meta:meta])*
+		fn $fn_name:ident()
+	} => {
+		$(#[$trait_meta])*
+		pub trait $trait_name<R: private::Sealed>: private::Sealed {
+			type Output;
+
+			$(#[$fn_meta])*
+			unsafe fn $fn_name(self, rhs: R) -> Self::Output;
+		}
+	};
+
+	{
+		$(#[$trait_meta:meta])*
+		trait(wrapping) $trait_name:ident
+		$(#[$fn_meta:meta])*
+		fn $fn_name:ident()
+	} => {
+		$(#[$trait_meta])*
+		pub trait $trait_name<R: private::Sealed>: private::Sealed {
+			type Output;
+
+			$(#[$fn_meta])*
+			fn $fn_name(self, rhs: R) -> Self::Output;
+		}
+	};
+
+	{
+		impl $trait_name:ident::$fn_name:ident()
+		$(
+			$(#[$meta:meta])*
+			($lhs:ident: $($lhs_ty:tt)+) >< ($rhs:ident: $($rhs_ty:tt)+) -> ($($output:tt)+)
+			$(#[$fn_meta:meta])*
+			{ $($stuff:tt)+ }
+		)*
+	} => {
+		$(
+			const _: () = {
+				$(#[$meta])*
+				impl $trait_name<$($rhs_ty)+> for $($lhs_ty)* {
+					type Output = $($output)+;
+
+					$(#[$fn_meta])*
+					#[inline(always)]
+					fn $fn_name(self, rhs: $($rhs_ty)+) -> $($output)+ {
+						#[inline(always)]
+						fn __impl_detail($lhs: $($lhs_ty)+, $rhs: $($rhs_ty)+) -> $($output)+ {
+							$($stuff)+
+						}
+
+						__impl_detail(self, rhs)
+					}
+				}
+
+				// commenting this out for now
+				// is this too much? XD
+
+				// $(#[$meta])*
+				// impl $trait_name<$($rhs_ty)+> for &$($lhs_ty)* {
+				// 	type Output = $($output)+;
+				//
+				// 	$(#[$fn_meta])*
+				// 	#[inline(always)]
+				// 	fn $fn_name(self, rhs: $($rhs_ty)+) -> $($output)+ {
+				// 		__impl_detail(*self, rhs)
+				// 	}
+				// }
+				//
+				// $(#[$meta])*
+				// impl $trait_name<&$($rhs_ty)+> for $($lhs_ty)* {
+				// 	type Output = $($output)+;
+				//
+				// 	$(#[$fn_meta])*
+				// 	#[inline(always)]
+				// 	fn $fn_name(self, rhs: &$($rhs_ty)+) -> $($output)+ {
+				// 		__impl_detail(self, *rhs)
+				// 	}
+				// }
+				//
+				// $(#[$meta])*
+				// impl $trait_name<&$($rhs_ty)+> for &$($lhs_ty)* {
+				// 	type Output = $($output)+;
+				//
+				// 	$(#[$fn_meta])*
+				// 	#[inline(always)]
+				// 	fn $fn_name(self, rhs: &$($rhs_ty)+) -> $($output)+ {
+				// 		__impl_detail(*self, *rhs)
+				// 	}
+				// }
+			};
+		)*
+	};
 }
 
-pub trait AddChecked<R = Self>: private::Sealed {
-	type Output;
-}
+op_trait! { trait Add fn add() }
+op_trait! { trait Sub fn sub() }
+op_trait! { trait Mul fn mul() }
+op_trait! { trait Div fn div() }
+op_trait! { trait Neg fn neg() }
 
-pub trait AddUnchecked<R = Self>: private::Sealed {
-	type Output;
-}
+op_trait! { trait(checked) AddChecked fn add_checked() }
+op_trait! { trait(checked) SubChecked fn sub_checked() }
+op_trait! { trait(checked) MulChecked fn mul_checked() }
+op_trait! { trait(checked) DivChecked fn div_checked() }
+op_trait! { trait(checked) NegChecked fn neg_checked() }
 
-pub trait AddOverflowing<R = Self>: private::Sealed {
-	type Output;
-}
+op_trait! { trait(overflowing) AddOverflowing fn add_overflowing() }
+op_trait! { trait(overflowing) SubOverflowing fn sub_overflowing() }
+op_trait! { trait(overflowing) MulOverflowing fn mul_overflowing() }
+op_trait! { trait(overflowing) DivOverflowing fn div_overflowing() }
+op_trait! { trait(overflowing) NegOverflowing fn neg_overflowing() }
 
-pub trait Sub<R = Self>: private::Sealed {
-	type Output;
-}
+op_trait! { trait(saturating) AddSaturating fn add_saturating() }
+op_trait! { trait(saturating) SubSaturating fn sub_saturating() }
+op_trait! { trait(saturating) MulSaturating fn mul_saturating() }
+op_trait! { trait(saturating) DivSaturating fn div_saturating() }
+op_trait! { trait(saturating) NegSaturating fn neg_saturating() }
 
-pub trait SubChecked<R = Self>: private::Sealed {
-	type Output;
-}
+// todo strict op?
+// todo unbounded shifts?
 
-pub trait SubUnchecked<R = Self>: private::Sealed {
-	type Output;
-}
+op_trait! { trait(unchecked) AddUnchecked #[expect(clippy::missing_safety_doc, reason = "todo")] fn add_unchecked() }
+op_trait! { trait(unchecked) SubUnchecked #[expect(clippy::missing_safety_doc, reason = "todo")] fn sub_unchecked() }
+op_trait! { trait(unchecked) MulUnchecked #[expect(clippy::missing_safety_doc, reason = "todo")] fn mul_unchecked() }
+op_trait! { trait(unchecked) DivUnchecked #[expect(clippy::missing_safety_doc, reason = "todo")] fn div_unchecked() }
+op_trait! { trait(unchecked) NegUnchecked #[expect(clippy::missing_safety_doc, reason = "todo")] fn neg_unchecked() }
 
-pub trait SubOverflowing<R = Self>: private::Sealed {
-	type Output;
-}
+op_trait! { trait(wrapping) AddWrapping fn add_wrapping() }
+op_trait! { trait(wrapping) SubWrapping fn sub_wrapping() }
+op_trait! { trait(wrapping) MulWrapping fn mul_wrapping() }
+op_trait! { trait(wrapping) DivWrapping fn div_wrapping() }
+op_trait! { trait(wrapping) NegWrapping fn neg_wrapping() }
 
-pub trait Mul<R = Self>: private::Sealed {
-	type Output;
-}
+op_trait! {
+	impl Add::add()
 
-pub trait MulChecked<R = Self>: private::Sealed {
-	type Output;
-}
+	(lhs: u8) >< (rhs: u8) -> (u8) { lhs + rhs }
+	(lhs: u8) >< (rhs: u16) -> (u16) { lhs.into_u16() + rhs }
+	(lhs: u8) >< (rhs: u32) -> (u32) { lhs.into_u32() + rhs }
+	(lhs: u8) >< (rhs: u64) -> (u64) { lhs.into_u64() + rhs }
+	(lhs: u8) >< (rhs: u128) -> (u128) { lhs.into_u128() + rhs }
+	(lhs: u8) >< (rhs: usize) -> (usize) { lhs.into_usize() + rhs }
+	(lhs: u8) >< (rhs: i8) -> (i8) { lhs.into_i8_lossy() + rhs }
+	(lhs: u8) >< (rhs: i16) -> (i16) { lhs.into_i16() + rhs }
+	(lhs: u8) >< (rhs: i32) -> (i32) { lhs.into_i32() + rhs }
+	(lhs: u8) >< (rhs: i64) -> (i64) { lhs.into_i64() + rhs }
+	(lhs: u8) >< (rhs: i128) -> (i128) { lhs.into_i128() + rhs }
+	(lhs: u8) >< (rhs: isize) -> (isize) { lhs.into_isize() + rhs }
+	(lhs: u8) >< (rhs: f32) -> (f32) { lhs.into_f32() + rhs }
+	(lhs: u8) >< (rhs: f64) -> (f64) { lhs.into_f64() + rhs }
 
-pub trait MulUnchecked<R = Self>: private::Sealed {
-	type Output;
-}
+	(lhs: u16) >< (rhs: u8) -> (u16) { lhs + rhs.into_u16() }
+	(lhs: u16) >< (rhs: u16) -> (u16) { lhs + rhs }
+	(lhs: u16) >< (rhs: u32) -> (u32) { lhs.into_u32() + rhs }
+	(lhs: u16) >< (rhs: u64) -> (u64) { lhs.into_u64() + rhs }
+	(lhs: u16) >< (rhs: u128) -> (u128) { lhs.into_u128() + rhs }
+	(lhs: u16) >< (rhs: usize) -> (usize) { lhs.into_usize() + rhs }
+	(lhs: u16) >< (rhs: i8) -> (i16) { lhs.into_i16_lossy() + rhs.into_i16() }
+	(lhs: u16) >< (rhs: i16) -> (i16) { lhs.into_i16_lossy() + rhs }
+	(lhs: u16) >< (rhs: i32) -> (i32) { lhs.into_i32() + rhs }
+	(lhs: u16) >< (rhs: i64) -> (i64) { lhs.into_i64() + rhs }
+	(lhs: u16) >< (rhs: i128) -> (i128) { lhs.into_i128() + rhs }
+	#[cfg(target_pointer_width = "16")]
+	(lhs: u16) >< (rhs: isize) -> (isize) { lhs.into_isize_lossy() + rhs }
+	#[cfg(any(
+		target_pointer_width = "32",
+		target_pointer_width = "64"
+	))]
+	(lhs: u16) >< (rhs: isize) -> (isize) { lhs.into_isize() + rhs }
+	(lhs: u16) >< (rhs: f32) -> (f32) { lhs.into_f32() + rhs }
+	(lhs: u16) >< (rhs: f64) -> (f64) { lhs.into_f64() + rhs }
 
-pub trait MulOverflowing<R = Self>: private::Sealed {
-	type Output;
-}
+	(lhs: u32) >< (rhs: u8) -> (u32) { lhs + rhs.into_u32() }
+	(lhs: u32) >< (rhs: u16) -> (u32) { lhs + rhs.into_u32() }
+	(lhs: u32) >< (rhs: u32) -> (u32) { lhs + rhs }
+	(lhs: u32) >< (rhs: u64) -> (u64) { lhs.into_u64() + rhs }
+	(lhs: u32) >< (rhs: u128) -> (u128) { lhs.into_u128() + rhs }
+	#[cfg(target_pointer_width = "16")]
+	(lhs: u32) >< (rhs: usize) -> (u32) { lhs + rhs.into_u32() }
+	#[cfg(any(
+		target_pointer_width = "32",
+		target_pointer_width = "64"
+	))]
+	(lhs: u32) >< (rhs: usize) -> (usize) { lhs.into_usize() + rhs }
+	(lhs: u32) >< (rhs: i8) -> (i32) { lhs.into_i32_lossy() + rhs.into_i32() }
+	(lhs: u32) >< (rhs: i16) -> (i32) { lhs.into_i32_lossy() + rhs.into_i32() }
+	(lhs: u32) >< (rhs: i32) -> (i32) { lhs.into_i32_lossy() + rhs }
+	(lhs: u32) >< (rhs: i64) -> (i64) { lhs.into_i64() + rhs }
+	(lhs: u32) >< (rhs: i128) -> (i128) { lhs.into_i128() + rhs }
+	#[cfg(target_pointer_width = "16")]
+	(lhs: u32) >< (rhs: isize) -> (i32) { lhs.into_i32_lossy() + rhs.into_i32() }
+	#[cfg(target_pointer_width = "32")]
+	(lhs: u32) >< (rhs: isize) -> (isize) { lhs.into_isize_lossy() + rhs }
+	#[cfg(target_pointer_width = "64")]
+	(lhs: u32) >< (rhs: isize) -> (isize) { lhs.into_isize() + rhs }
+	(lhs: u32) >< (rhs: f32) -> (f32) { lhs.into_f32_lossy() + rhs }
+	(lhs: u32) >< (rhs: f64) -> (f64) { lhs.into_f64() + rhs }
 
-pub trait Div<R = Self>: private::Sealed {
-	type Output;
-}
+	(lhs: u64) >< (rhs: u8) -> (u64) { lhs + rhs.into_u64() }
+	(lhs: u64) >< (rhs: u16) -> (u64) { lhs + rhs.into_u64() }
+	(lhs: u64) >< (rhs: u32) -> (u64) { lhs + rhs.into_u64() }
+	(lhs: u64) >< (rhs: u64) -> (u64) { lhs + rhs }
+	(lhs: u64) >< (rhs: u128) -> (u128) { lhs.into_u128() + rhs }
+	(lhs: u64) >< (rhs: usize) -> (u64) { lhs + rhs.into_u64() }
+	(lhs: u64) >< (rhs: i8) -> (i64) { lhs.into_i64_lossy() + rhs.into_i64() }
+	(lhs: u64) >< (rhs: i16) -> (i64) { lhs.into_i64_lossy() + rhs.into_i64() }
+	(lhs: u64) >< (rhs: i32) -> (i64) { lhs.into_i64_lossy() + rhs.into_i64() }
+	(lhs: u64) >< (rhs: i64) -> (i64) { lhs.into_i64_lossy() + rhs }
+	(lhs: u64) >< (rhs: i128) -> (i128) { lhs.into_i128() + rhs }
+	(lhs: u64) >< (rhs: isize) -> (i64) { lhs.into_i64_lossy() + rhs.into_i64() }
+	(lhs: u64) >< (rhs: f32) -> (f64) { lhs.into_f64_lossy() + rhs.into_f64() }
+	(lhs: u64) >< (rhs: f64) -> (f64) { lhs.into_f64_lossy() + rhs }
 
-pub trait DivChecked<R = Self>: private::Sealed {
-	type Output;
-}
+	(lhs: u128) >< (rhs: u8) -> (u128) { lhs + rhs.into_u128() }
+	(lhs: u128) >< (rhs: u16) -> (u128) { lhs + rhs.into_u128() }
+	(lhs: u128) >< (rhs: u32) -> (u128) { lhs + rhs.into_u128() }
+	(lhs: u128) >< (rhs: u64) -> (u128) { lhs + rhs.into_u128() }
+	(lhs: u128) >< (rhs: u128) -> (u128) { lhs + rhs }
+	(lhs: u128) >< (rhs: usize) -> (u128) { lhs + rhs.into_u128() }
+	(lhs: u128) >< (rhs: i8) -> (i128) { lhs.into_i128_lossy() + rhs.into_i128() }
+	(lhs: u128) >< (rhs: i16) -> (i128) { lhs.into_i128_lossy() + rhs.into_i128() }
+	(lhs: u128) >< (rhs: i32) -> (i128) { lhs.into_i128_lossy() + rhs.into_i128() }
+	(lhs: u128) >< (rhs: i64) -> (i128) { lhs.into_i128_lossy() + rhs.into_i128() }
+	(lhs: u128) >< (rhs: i128) -> (i128) { lhs.into_i128_lossy() + rhs }
+	(lhs: u128) >< (rhs: isize) -> (i128) { lhs.into_i128_lossy() + rhs.into_i128() }
+	(lhs: u128) >< (rhs: f32) -> (f64) { lhs.into_f64_lossy() + rhs.into_f64() }
+	(lhs: u128) >< (rhs: f64) -> (f64) { lhs.into_f64_lossy() + rhs }
 
-pub trait DivUnchecked<R = Self>: private::Sealed {
-	type Output;
-}
+	(lhs: usize) >< (rhs: u8) -> (usize) { lhs + rhs.into_usize() }
+	(lhs: usize) >< (rhs: u16) -> (usize) { lhs + rhs.into_usize() }
+	#[cfg(target_pointer_width = "16")]
+	(lhs: usize) >< (rhs: u32) -> (u32) { lhs.into_u32() + rhs }
+	#[cfg(any(
+		target_pointer_width = "32",
+		target_pointer_width = "64"
+	))]
+	(lhs: usize) >< (rhs: u32) -> (usize) { lhs + rhs.into_usize() }
+	#[cfg(any(
+		target_pointer_width = "16",
+		target_pointer_width = "32"
+	))]
+	(lhs: usize) >< (rhs: u64) -> (u64) { lhs.into_u64() + rhs }
+	#[cfg(target_pointer_width = "64")]
+	(lhs: usize) >< (rhs: u64) -> (usize) { lhs + rhs.into_usize() }
+	(lhs: usize) >< (rhs: u128) -> (u128) { lhs.into_u128() + rhs }
+	(lhs: usize) >< (rhs: usize) -> (usize) { lhs + rhs }
+	(lhs: usize) >< (rhs: i8) -> (isize) { lhs.into_isize_lossy() + rhs.into_isize() }
+	(lhs: usize) >< (rhs: i16) -> (isize) { lhs.into_isize_lossy() + rhs.into_isize() }
+	#[cfg(target_pointer_width = "16")]
+	(lhs: usize) >< (rhs: i32) -> (i32) { lhs.into_i32() + rhs }
+	#[cfg(any(
+		target_pointer_width = "32",
+		target_pointer_width = "64"
+	))]
+	(lhs: usize) >< (rhs: i32) -> (isize) { lhs.into_isize_lossy() + rhs.into_isize() }
+	#[cfg(any(
+		target_pointer_width = "16",
+		target_pointer_width = "32"
+	))]
+	(lhs: usize) >< (rhs: i64) -> (i64) { lhs.into_i64() + rhs }
+	#[cfg(target_pointer_width = "64")]
+	(lhs: usize) >< (rhs: i64) -> (isize) { lhs.into_isize_lossy() + rhs.into_isize() }
+	(lhs: usize) >< (rhs: i128) -> (i128) { lhs.into_i128() + rhs }
+	(lhs: usize) >< (rhs: isize) -> (isize) { lhs.into_isize_lossy() + rhs }
+	#[cfg(target_pointer_width = "16")]
+	(lhs: usize) >< (rhs: f32) -> (f32) { lhs.into_f32() + rhs }
+	#[cfg(target_pointer_width = "32")]
+	(lhs: usize) >< (rhs: f32) -> (f32) { lhs.into_f32_lossy() + rhs }
+	#[cfg(target_pointer_width = "64")]
+	(lhs: usize) >< (rhs: f32) -> (f64) { lhs.into_f64_lossy() + rhs.into_f64() }
+	#[cfg(any(
+		target_pointer_width = "16",
+		target_pointer_width = "32"
+	))]
+	(lhs: usize) >< (rhs: f64) -> (f64) { lhs.into_f64() + rhs }
+	#[cfg(target_pointer_width = "64")]
+	(lhs: usize) >< (rhs: f64) -> (f64) { lhs.into_f64_lossy() + rhs }
 
-pub trait DivOverflowing<R = Self>: private::Sealed {
-	type Output;
+	(lhs: i8) >< (rhs: u8) -> (i8) { lhs + rhs.into_i8_lossy() }
+	(lhs: i8) >< (rhs: u16) -> (i16) { lhs.into_i16() + rhs.into_i16_lossy() }
+	(lhs: i8) >< (rhs: u32) -> (i32) { lhs.into_i32() + rhs.into_i32_lossy() }
+	(lhs: i8) >< (rhs: u64) -> (i64) { lhs.into_i64() + rhs.into_i64_lossy() }
+	(lhs: i8) >< (rhs: u128) -> (i128) { lhs.into_i128() + rhs.into_i128_lossy() }
+	(lhs: i8) >< (rhs: usize) -> (isize) { lhs.into_isize() + rhs.into_isize_lossy() }
+	(lhs: i8) >< (rhs: i8) -> (i8) { lhs + rhs }
+	(lhs: i8) >< (rhs: i16) -> (i16) { lhs.into_i16() + rhs }
+	(lhs: i8) >< (rhs: i32) -> (i32) { lhs.into_i32() + rhs }
+	(lhs: i8) >< (rhs: i64) -> (i64) { lhs.into_i64() + rhs }
+	(lhs: i8) >< (rhs: i128) -> (i128) { lhs.into_i128() + rhs }
+	(lhs: i8) >< (rhs: isize) -> (isize) { lhs.into_isize() + rhs }
+	(lhs: i8) >< (rhs: f32) -> (f32) { lhs.into_f32() + rhs }
+	(lhs: i8) >< (rhs: f64) -> (f64) { lhs.into_f64() + rhs }
+
+	(lhs: i16) >< (rhs: u8) -> (i16) { lhs + rhs.into_i16() }
+	(lhs: i16) >< (rhs: u16) -> (i16) { lhs + rhs.into_i16_lossy() }
+	(lhs: i16) >< (rhs: u32) -> (i32) { lhs.into_i32() + rhs.into_i32_lossy() }
+	(lhs: i16) >< (rhs: u64) -> (i64) { lhs.into_i64() + rhs.into_i64_lossy() }
+	(lhs: i16) >< (rhs: u128) -> (i128) { lhs.into_i128() + rhs.into_i128_lossy() }
+	(lhs: i16) >< (rhs: usize) -> (isize) { lhs.into_isize() + rhs.into_isize_lossy() }
+	(lhs: i16) >< (rhs: i8) -> (i16) { lhs + rhs.into_i16() }
+	(lhs: i16) >< (rhs: i16) -> (i16) { lhs + rhs }
+	(lhs: i16) >< (rhs: i32) -> (i32) { lhs.into_i32() + rhs }
+	(lhs: i16) >< (rhs: i64) -> (i64) { lhs.into_i64() + rhs }
+	(lhs: i16) >< (rhs: i128) -> (i128) { lhs.into_i128() + rhs }
+	(lhs: i16) >< (rhs: isize) -> (isize) { lhs.into_isize() + rhs }
+	(lhs: i16) >< (rhs: f32) -> (f32) { lhs.into_f32() + rhs }
+	(lhs: i16) >< (rhs: f64) -> (f64) { lhs.into_f64() + rhs }
+
+	(lhs: i32) >< (rhs: u8) -> (i32) { lhs + rhs.into_i32() }
+	(lhs: i32) >< (rhs: u16) -> (i32) { lhs + rhs.into_i32() }
+	(lhs: i32) >< (rhs: u32) -> (i32) { lhs + rhs.into_i32_lossy() }
+	(lhs: i32) >< (rhs: u64) -> (i64) { lhs.into_i64() + rhs.into_i64_lossy() }
+	(lhs: i32) >< (rhs: u128) -> (i128) { lhs.into_i128() + rhs.into_i128_lossy() }
+	#[cfg(target_pointer_width = "16")]
+	(lhs: i32) >< (rhs: usize) -> (i32) { lhs + rhs.into_i32() }
+	#[cfg(any(
+		target_pointer_width = "32",
+		target_pointer_width = "64"
+	))]
+	(lhs: i32) >< (rhs: usize) -> (isize) { lhs.into_isize() + rhs.into_isize_lossy() }
+	(lhs: i32) >< (rhs: i8) -> (i32) { lhs + rhs.into_i32() }
+	(lhs: i32) >< (rhs: i16) -> (i32) { lhs + rhs.into_i32() }
+	(lhs: i32) >< (rhs: i32) -> (i32) { lhs + rhs }
+	(lhs: i32) >< (rhs: i64) -> (i64) { lhs.into_i64() + rhs }
+	(lhs: i32) >< (rhs: i128) -> (i128) { lhs.into_i128() + rhs }
+	#[cfg(target_pointer_width = "16")]
+	(lhs: i32) >< (rhs: isize) -> (i32) { lhs + rhs.into_i32() }
+	#[cfg(any(
+		target_pointer_width = "32",
+		target_pointer_width = "64"
+	))]
+	(lhs: i32) >< (rhs: isize) -> (isize) { lhs.into_isize() + rhs }
+	(lhs: i32) >< (rhs: f32) -> (f32) { lhs.into_f32_lossy() + rhs }
+	(lhs: i32) >< (rhs: f64) -> (f64) { lhs.into_f64() + rhs }
+
+	(lhs: i64) >< (rhs: u8) -> (i64) { lhs + rhs.into_i64() }
+	(lhs: i64) >< (rhs: u16) -> (i64) { lhs + rhs.into_i64() }
+	(lhs: i64) >< (rhs: u32) -> (i64) { lhs + rhs.into_i64() }
+	(lhs: i64) >< (rhs: u64) -> (i64) { lhs + rhs.into_i64_lossy() }
+	(lhs: i64) >< (rhs: u128) -> (i128) { lhs.into_i128() + rhs.into_i128_lossy() }
+	#[cfg(any(
+		target_pointer_width = "16",
+		target_pointer_width = "32"
+	))]
+	(lhs: i64) >< (rhs: usize) -> (i64) { lhs + rhs.into_i64() }
+	#[cfg(target_pointer_width = "64")]
+	(lhs: i64) >< (rhs: usize) -> (isize) { lhs.into_isize() + rhs.into_isize_lossy()}
+	(lhs: i64) >< (rhs: i8) -> (i64) { lhs + rhs.into_i64() }
+	(lhs: i64) >< (rhs: i16) -> (i64) { lhs + rhs.into_i64() }
+	(lhs: i64) >< (rhs: i32) -> (i64) { lhs + rhs.into_i64() }
+	(lhs: i64) >< (rhs: i64) -> (i64) { lhs + rhs }
+	(lhs: i64) >< (rhs: i128) -> (i128) { lhs.into_i128() + rhs }
+	#[cfg(any(
+		target_pointer_width = "16",
+		target_pointer_width = "32"
+	))]
+	(lhs: i64) >< (rhs: isize) -> (i64) { lhs + rhs.into_i64() }
+	#[cfg(target_pointer_width = "64")]
+	(lhs: i64) >< (rhs: isize) -> (isize) { lhs.into_isize() + rhs }
+	(lhs: i64) >< (rhs: f32) -> (f64) { lhs.into_f64_lossy() + rhs.into_f64() }
+	(lhs: i64) >< (rhs: f64) -> (f64) { lhs.into_f64_lossy() + rhs }
+
+	(lhs: i128) >< (rhs: u8) -> (i128) { lhs + rhs.into_i128() }
+	(lhs: i128) >< (rhs: u16) -> (i128) { lhs + rhs.into_i128() }
+	(lhs: i128) >< (rhs: u32) -> (i128) { lhs + rhs.into_i128() }
+	(lhs: i128) >< (rhs: u64) -> (i128) { lhs + rhs.into_i128() }
+	(lhs: i128) >< (rhs: u128) -> (i128) { lhs + rhs.into_i128_lossy() }
+	(lhs: i128) >< (rhs: usize) -> (i128) { lhs + rhs.into_i128() }
+	(lhs: i128) >< (rhs: i8) -> (i128) { lhs + rhs.into_i128() }
+	(lhs: i128) >< (rhs: i16) -> (i128) { lhs + rhs.into_i128() }
+	(lhs: i128) >< (rhs: i32) -> (i128) { lhs + rhs.into_i128() }
+	(lhs: i128) >< (rhs: i64) -> (i128) { lhs + rhs.into_i128() }
+	(lhs: i128) >< (rhs: i128) -> (i128) { lhs + rhs }
+	(lhs: i128) >< (rhs: isize) -> (i128) { lhs + rhs.into_i128() }
+	(lhs: i128) >< (rhs: f32) -> (f64) { lhs.into_f64_lossy() + rhs.into_f64() }
+	(lhs: i128) >< (rhs: f64) -> (f64) { lhs.into_f64_lossy() + rhs }
+
+	(lhs: isize) >< (rhs: u8) -> (isize) { lhs + rhs.into_isize() }
+	#[cfg(target_pointer_width = "16")]
+	(lhs: isize) >< (rhs: u16) -> (isize) { lhs + rhs.into_isize_lossy() }
+	#[cfg(any(
+		target_pointer_width = "32",
+		target_pointer_width = "64"
+	))]
+	(lhs: isize) >< (rhs: u16) -> (isize) { lhs + rhs.into_isize() }
+	#[cfg(target_pointer_width = "16")]
+	(lhs: isize) >< (rhs: u32) -> (i32) { lhs.into_i32() + rhs.into_i32_lossy() }
+	#[cfg(target_pointer_width = "32")]
+	(lhs: isize) >< (rhs: u32) -> (isize) { lhs + rhs.into_isize_lossy() }
+	#[cfg(target_pointer_width = "64")]
+	(lhs: isize) >< (rhs: u32) -> (isize) { lhs + rhs.into_isize() }
+	#[cfg(any(
+		target_pointer_width = "16",
+		target_pointer_width = "32"
+	))]
+	(lhs: isize) >< (rhs: u64) -> (i64) { lhs.into_isize() + rhs.into_i64_lossy() }
+	#[cfg(target_pointer_width = "64")]
+	(lhs: isize) >< (rhs: u64) -> (isize) { lhs + rhs.into_isize_lossy() }
+	(lhs: isize) >< (rhs: u128) -> (i128) { lhs.into_i128() + rhs.into_i128_lossy() }
+	(lhs: isize) >< (rhs: usize) -> (isize) { lhs + rhs.into_isize_lossy() }
+	(lhs: isize) >< (rhs: i8) -> (isize) { lhs + rhs.into_isize() }
+	(lhs: isize) >< (rhs: i16) -> (isize) { lhs + rhs.into_isize() }
+	#[cfg(target_pointer_width = "16")]
+	(lhs: isize) >< (rhs: i32) -> (i32) { lhs.into_i32() + rhs }
+	#[cfg(any(
+		target_pointer_width = "32",
+		target_pointer_width = "64"
+	))]
+	(lhs: isize) >< (rhs: i32) -> (isize) { lhs + rhs.into_isize() }
+	#[cfg(any(
+		target_pointer_width = "16",
+		target_pointer_width = "32"
+	))]
+	(lhs: isize) >< (rhs: i64) -> (i64) { lhs.into_i64() + rhs }
+	#[cfg(target_pointer_width = "64")]
+	(lhs: isize) >< (rhs: i64) -> (isize) { lhs + rhs.into_isize() }
+	(lhs: isize) >< (rhs: i128) -> (i128) { lhs.into_i128() + rhs }
+	(lhs: isize) >< (rhs: isize) -> (isize) { lhs + rhs }
+	#[cfg(target_pointer_width = "16")]
+	(lhs: isize) >< (rhs: f32) -> (f32) { lhs.into_f32() + rhs }
+	#[cfg(target_pointer_width = "32")]
+	(lhs: isize) >< (rhs: f32) -> (f32) { lhs.into_f32_lossy() + rhs }
+	#[cfg(target_pointer_width = "64")]
+	(lhs: isize) >< (rhs: f32) -> (f64) { lhs.into_f64_lossy() + rhs.into_f64() }
+	#[cfg(any(
+		target_pointer_width = "16",
+		target_pointer_width = "32"
+	))]
+	(lhs: isize) >< (rhs: f64) -> (f64) { lhs.into_f64() + rhs }
+	#[cfg(target_pointer_width = "64")]
+	(lhs: isize) >< (rhs: f64) -> (f64) { lhs.into_f64_lossy() + rhs }
+
+	(lhs: f32) >< (rhs: u8) -> (f32) { lhs + rhs.into_f32() }
+	(lhs: f32) >< (rhs: u16) -> (f32) { lhs + rhs.into_f32() }
+	(lhs: f32) >< (rhs: u32) -> (f32) { lhs + rhs.into_f32_lossy() }
+	(lhs: f32) >< (rhs: u64) -> (f64) { lhs.into_f64() + rhs.into_f64_lossy() }
+	(lhs: f32) >< (rhs: u128) -> (f64) { lhs.into_f64() + rhs.into_f64_lossy() }
+	#[cfg(target_pointer_width = "16")]
+	(lhs: f32) >< (rhs: usize) -> (f32) { lhs + rhs.into_f32() }
+	#[cfg(target_pointer_width = "32")]
+	(lhs: f32) >< (rhs: usize) -> (f32) { lhs + rhs.into_f32_lossy() }
+	#[cfg(target_pointer_width = "64")]
+	(lhs: f32) >< (rhs: usize) -> (f64) { lhs.into_f64() + rhs.into_f64_lossy() }
+	(lhs: f32) >< (rhs: i8) -> (f32) { lhs + rhs.into_f32() }
+	(lhs: f32) >< (rhs: i16) -> (f32) { lhs + rhs.into_f32() }
+	(lhs: f32) >< (rhs: i32) -> (f32) { lhs + rhs.into_f32_lossy() }
+	(lhs: f32) >< (rhs: i64) -> (f64) { lhs.into_f64() + rhs.into_f64_lossy() }
+	(lhs: f32) >< (rhs: i128) -> (f64) { lhs.into_f64() + rhs.into_f64_lossy() }
+	#[cfg(target_pointer_width = "16")]
+	(lhs: f32) >< (rhs: isize) -> (f32) { lhs + rhs.into_f32() }
+	#[cfg(target_pointer_width = "32")]
+	(lhs: f32) >< (rhs: isize) -> (f32) { lhs + rhs.into_f32_lossy() }
+	#[cfg(target_pointer_width = "64")]
+	(lhs: f32) >< (rhs: isize) -> (f64) { lhs.into_f64() + rhs.into_f64_lossy() }
+	(lhs: f32) >< (rhs: f32) -> (f32) { lhs + rhs }
+	(lhs: f32) >< (rhs: f64) -> (f64) { lhs.into_f64() + rhs }
+
+	(lhs: f64) >< (rhs: u8) -> (f64) { lhs + rhs.into_f64() }
+	(lhs: f64) >< (rhs: u16) -> (f64) { lhs + rhs.into_f64() }
+	(lhs: f64) >< (rhs: u32) -> (f64) { lhs + rhs.into_f64() }
+	(lhs: f64) >< (rhs: u64) -> (f64) { lhs + rhs.into_f64_lossy() }
+	(lhs: f64) >< (rhs: u128) -> (f64) { lhs + rhs.into_f64_lossy() }
+	#[cfg(any(
+		target_pointer_width = "16",
+		target_pointer_width = "32"
+	))]
+	(lhs: f64) >< (rhs: usize) -> (f64) { lhs + rhs.into_f64() }
+	#[cfg(target_pointer_width = "64")]
+	(lhs: f64) >< (rhs: usize) -> (f64) { lhs + rhs.into_f64_lossy() }
+	(lhs: f64) >< (rhs: i8) -> (f64) { lhs + rhs.into_f64() }
+	(lhs: f64) >< (rhs: i16) -> (f64) { lhs + rhs.into_f64() }
+	(lhs: f64) >< (rhs: i32) -> (f64) { lhs + rhs.into_f64() }
+	(lhs: f64) >< (rhs: i64) -> (f64) { lhs + rhs.into_f64_lossy() }
+	(lhs: f64) >< (rhs: i128) -> (f64) { lhs + rhs.into_f64_lossy() }
+	#[cfg(any(
+		target_pointer_width = "16",
+		target_pointer_width = "32"
+	))]
+	(lhs: f64) >< (rhs: isize) -> (f64) { lhs + rhs.into_f64() }
+	#[cfg(target_pointer_width = "64")]
+	(lhs: f64) >< (rhs: isize) -> (f64) { lhs + rhs.into_f64_lossy() }
+	(lhs: f64) >< (rhs: f32) -> (f64) { lhs + rhs.into_f64() }
+	(lhs: f64) >< (rhs: f64) -> (f64) { lhs + rhs }
 }
 
 /// notouchie
 mod private {
+	use super::*;
+
 	/// notouchie
-	pub trait Sealed {}
-}
+	pub trait Sealed: Sized {}
 
-macro_rules! impl_sealed {
-	{ $($type:ident)* } => {
-		$(
-			impl private::Sealed for $type {}
-		)*
+	macro_rules! impl_sealed {
+		{ $($type:ident)* } => {
+			$(
+				impl Sealed for $type {}
+			)*
+		}
 	}
-}
 
-impl_sealed! {
-	u8 u16 u32 u64 u128 usize
-	i8 i16 i32 i64 i128 isize
-	f32 f64
-	bool
+	impl_sealed! {
+		u8 u16 u32 u64 u128 usize
+		i8 i16 i32 i64 i128 isize
+		f32 f64
+		bool
+	}
+
+	impl<T: Sealed> Sealed for &T {}
+	impl<T: Sealed> Sealed for &mut T {}
 }
