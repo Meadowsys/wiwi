@@ -1,6 +1,6 @@
 //! Internal encoding implementations
 
-use crate::util_unsafe::UnsafeBufWriteGuard;
+use super::UnsafeBufWriteGuard;
 
 /// Length of encoding table (not actually used in encoding/decoding data)
 pub const TABLE_ENCODER_LEN: usize = 16;

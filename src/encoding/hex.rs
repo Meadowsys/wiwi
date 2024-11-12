@@ -1,11 +1,7 @@
-extern crate std;
 extern crate thiserror;
 
-use crate::rust_std::{ debug_assert, str };
-use crate::rust_std::result::{ Result, Result::Ok, Result::Err };
-use crate::rust_std::string::String;
-use crate::rust_std::vec::Vec;
-use crate::util_unsafe::UnsafeBufWriteGuard;
+use crate::prelude_std::*;
+use super::UnsafeBufWriteGuard;
 
 mod encode;
 mod decode;
@@ -55,6 +51,7 @@ fn _encode<const UPPER: bool>(bytes: &[u8]) -> String {
 
 /// Decodes a slice of hex bytes into a byte vector. This function handles and
 /// supports both uppercase and lowercase characters.
+#[inline]
 pub fn decode_hex(bytes: &[u8]) -> Result<Vec<u8>, DecodeError> {
 	let len = bytes.len();
 
@@ -93,7 +90,7 @@ mod tests {
 	extern crate hex;
 	extern crate rand;
 
-	use crate::rust_std::{ assert_eq, vec };
+	use crate::prelude_std::*;
 	use super::*;
 	use rand::{ Rng, thread_rng };
 

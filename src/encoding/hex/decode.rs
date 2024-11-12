@@ -1,9 +1,7 @@
 //! Internal decoding implementations
 use crate::num::*;
-use crate::rust_std::option::{ Option, Option::Some, Option::None };
-use crate::rust_std::result::{ Result, Result::Ok, Result::Err };
-use crate::util_unsafe::UnsafeBufWriteGuard;
-use super::DecodeError;
+use crate::prelude_std::*;
+use super::{ DecodeError, UnsafeBufWriteGuard };
 
 /// Length of the table decoder (256)
 const TABLE_DECODER_LEN: usize = 256;

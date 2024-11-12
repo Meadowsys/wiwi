@@ -1,14 +1,8 @@
 extern crate thiserror;
 
-use crate::rust_std::debug_assert;
-use crate::rust_std::ops::FnOnce;
-use crate::rust_std::result::{ Result, Result::Ok, Result::Err };
-use crate::rust_std::string::String;
-use crate::rust_std::vec::Vec;
-use crate::util_unsafe::{ ChunkedSlice, UnsafeBufWriteGuard };
+use crate::prelude_std::*;
 use crate::num::*;
-// TODO: `thiserror` wants `std`
-use crate::rust_std::{ self as std, slice, str };
+use super::{ ChunkedSlice, UnsafeBufWriteGuard };
 
 /// Length of the encoding table (ie. number of different characters)
 pub const TABLE_ENCODER_LEN: usize = 85;
@@ -65,6 +59,7 @@ pub const BINARY_FRAME_LEN: usize = 4;
 pub const STRING_FRAME_LEN: usize = 5;
 
 /// Encodes a slice of bytes into a Z85 string, adding padding if necessary
+#[inline]
 pub fn encode_z85(bytes: &[u8]) -> String {
 	// we *don't* fast path out on zero bytes, because in like, 99%
 	// of situations, the input is not 0 length, lol
@@ -145,6 +140,7 @@ pub fn encode_z85(bytes: &[u8]) -> String {
 }
 
 /// Decodes a slice of a Z85 string back into the source bytes
+#[inline]
 pub fn decode_z85(mut bytes: &[u8]) -> Result<Vec<u8>, DecodeError> {
 	if bytes.len() < STRING_FRAME_LEN {
 		return if bytes.is_empty() {
@@ -531,7 +527,7 @@ mod tests {
 	extern crate rand;
 	extern crate z85;
 
-	use crate::rust_std::{ assert_eq, vec };
+	use crate::prelude_std::*;
 	use super::*;
 	use rand::{ Rng, thread_rng };
 

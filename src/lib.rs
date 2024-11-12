@@ -51,6 +51,7 @@ pub mod _changelog {}
 pub mod prelude_std;
 
 pub mod chain;
+pub mod encoding;
 pub mod lazy_wrap;
 pub mod num;
 pub mod rc;

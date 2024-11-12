@@ -1,9 +1,24 @@
-use crate::rust_std::{ debug_assert, ptr, slice };
-use crate::rust_std::ops::FnOnce;
-use crate::rust_std::vec::Vec;
+use crate::prelude_std::*;
 
-// TODO: I don't think this file structure is finalised,
-// maybe move each struct to its own file, or all in same file? I dunno
+pub mod hex;
+pub mod z85;
+
+pub trait StrExt {
+	fn encode_z85(self) -> String;
+	fn encode_hex(self) -> String;
+}
+
+impl StrExt for &str {
+	#[inline]
+	fn encode_z85(self) -> String {
+		z85::encode_z85(self.as_bytes())
+	}
+
+	#[inline]
+	fn encode_hex(self) -> String {
+		hex::encode_hex(self.as_bytes())
+	}
+}
 
 /// Helper for unsafe buffer operations, when the _exact_ total capacity needed
 /// is known ahead of time and requested up front
@@ -27,7 +42,7 @@ use crate::rust_std::vec::Vec;
 ///
 /// Creating one of these structs is not unsafe, but you can't
 /// really do much with it in safe only code :p
-pub struct UnsafeBufWriteGuard {
+struct UnsafeBufWriteGuard {
 	/// The [`Vec`] that's being written to
 	///
 	/// Note: if `self` is prematurely dropped, this vec will be dropped by it's
@@ -180,6 +195,7 @@ impl UnsafeBufWriteGuard {
 	/// has many `as_ptr` and `as_mut_ptr` APIs that aren't `unsafe`, but still,
 	/// this function is conservatively marked unsafe. Even though it probably
 	/// doesn't need to be.
+	#[expect(dead_code, reason = "bweh")]
 	#[inline]
 	pub unsafe fn as_mut_ptr(&mut self) -> *mut u8 {
 		self.ptr
@@ -199,6 +215,7 @@ impl UnsafeBufWriteGuard {
 	/// Calling this function without writing to the amount of memory you say you
 	/// did will leave uninitialised memory "holes", which will cause undefined
 	/// behaviour when you unwrap the vec.
+	#[expect(dead_code, reason = "bweh")]
 	#[inline]
 	pub unsafe fn add_byte_count(&mut self, n: usize) {
 		#[cfg(debug_assertions)] {
@@ -243,7 +260,7 @@ impl UnsafeBufWriteGuard {
 /// Contains debug assertions to assert preconditions.
 // I cannot remember if I rely on this being repr(transparent) anywhere
 #[repr(transparent)]
-pub struct ChunkedSlice<'h, const N: usize> {
+struct ChunkedSlice<'h, const N: usize> {
 	/// The slice to pull bytes from
 	bytes: &'h [u8]
 }
