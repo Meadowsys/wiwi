@@ -250,12 +250,8 @@
 <a href="#249" id="249">249</a>
 <a href="#250" id="250">250</a>
 <a href="#251" id="251">251</a>
-<a href="#252" id="252">252</a>
-<a href="#253" id="253">253</a>
-<a href="#254" id="254">254</a>
-<a href="#255" id="255">255</a>
-<a href="#256" id="256">256</a>
-<a href="#257" id="257">257</a></pre></div><pre class="rust"><code><span class="kw">use </span><span class="kw">crate</span>::prelude_std::<span class="kw-2">*</span>;
+<a href="#252" id="252">252</a></pre></div><pre class="rust"><code><span class="kw">use </span><span class="kw">crate</span>::prelude_std::<span class="kw-2">*</span>;
+<span class="kw">use </span><span class="kw">crate</span>::num::<span class="kw-2">*</span>;
 
 <span class="kw">pub use </span><span class="self">self</span>::inner::{ Counter, ThreadCounter, AtomicCounter };
 <span class="kw">pub use </span><span class="self">self</span>::str::{
@@ -458,13 +454,7 @@
 		<span class="comment">// SAFETY: same as above
 		</span><span class="kw">let </span>strong = <span class="kw">unsafe </span>{ inner::counter_ref(<span class="self">self</span>.inner).strong_count() };
 
-		<span class="attr">#[expect(
-			clippy::as_conversions,
-			reason = <span class="string">"casting bool to int"
-		</span>)]
-		</span><span class="kw">let </span>result = weak - (strong &gt; <span class="number">0</span>) <span class="kw">as </span>usize;
-
-		result
+		weak - (strong &gt; <span class="number">0</span>).into_usize()
 	}
 
 	<span class="doccomment">/// "Upgrades" this pointer, returning a strong pointer [`Rc`] to the data

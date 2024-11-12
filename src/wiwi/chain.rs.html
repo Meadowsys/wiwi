@@ -645,10 +645,12 @@
 <a href="#644" id="644">644</a>
 <a href="#645" id="645">645</a>
 <a href="#646" id="646">646</a>
-<a href="#647" id="647">647</a></pre></div><pre class="rust"><code><span class="kw">use </span><span class="kw">crate</span>::prelude_std::<span class="kw-2">*</span>;
+<a href="#647" id="647">647</a>
+<a href="#648" id="648">648</a></pre></div><pre class="rust"><code><span class="kw">use </span><span class="kw">crate</span>::prelude_std::<span class="kw-2">*</span>;
+
+<span class="kw">pub use </span>vec::{ vec_chain, VecChain };
 
 <span class="kw">mod </span>vec;
-<span class="kw">pub use </span>vec::{ vec_chain, VecChain };
 
 <span class="kw">pub trait </span>Chain
 <span class="kw">where
