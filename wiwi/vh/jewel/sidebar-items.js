@@ -1,1 +1,1 @@
-window.SIDEBAR_ITEMS = {"mod":["store"],"struct":["ModifierValue"],"trait":["Name"]};
+window.SIDEBAR_ITEMS = {};

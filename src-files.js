@@ -1,3 +1,3 @@
-var srcIndex = new Map(JSON.parse('[["wiwi",["",[["chain",[],["vec.rs"]],["encoding",[["hex",[],["decode.rs","encode.rs"]]],["hex.rs","z85.rs"]],["rc",[],["inner.rs","str.rs"]],["vh",[["jewel",[],["store.rs"]]],["jewel.rs"]]],["chain.rs","encoding.rs","lazy_wrap.rs","lib.rs","nominal.rs","num.rs","prelude_std.rs","rc.rs","string.rs","vh.rs"]]],["wiwiwiwiwi",["",[],["lib.rs"]]]]'));
+var srcIndex = new Map(JSON.parse('[["wiwi",["",[["chain",[],["vec.rs"]],["encoding",[["hex",[],["decode.rs","encode.rs"]]],["hex.rs","z85.rs"]],["rc",[],["inner.rs","str.rs"]],["vh",[],["jewel.rs"]]],["chain.rs","encoding.rs","lazy_wrap.rs","lib.rs","nominal.rs","num.rs","prelude_std.rs","rc.rs","string.rs","vh.rs"]]],["wiwiwiwiwi",["",[],["lib.rs"]]]]'));
 createSrcSidebar();
-//{"start":36,"fragment_lengths":[309,34]}
+//{"start":36,"fragment_lengths":[284,34]}
