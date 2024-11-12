@@ -1,4 +1,5 @@
 use crate::prelude_std::*;
+use self::private::Sealed;
 
 macro_rules! from {
 	{
@@ -18,7 +19,7 @@ macro_rules! from {
 		)]
 		#[doc = ""]
 		$(#[$trait_meta])*
-		pub trait $trait_name: private::Sealed {
+		pub trait $trait_name: Sealed {
 			#[doc = concat!("Convert from a [`", stringify!($type_name), "`] value")]
 			#[doc = ""]
 			$(#[$fn_meta])*
@@ -65,7 +66,7 @@ macro_rules! into {
 		)]
 		#[doc = ""]
 		$(#[$trait_meta])*
-		pub trait $trait_name: private::Sealed {
+		pub trait $trait_name: Sealed {
 			#[doc = concat!("Convert into a [`", stringify!($type_name), "`] value")]
 			#[doc = ""]
 			$(#[$fn_meta])*
@@ -786,6 +787,7 @@ impl IntoF64Lossy for bool {
 	fn into_f64_lossy(self) -> f64 { self as u64 as _ }
 }
 
+/*
 macro_rules! op_trait {
 	{
 		$(#[$trait_meta:meta])*
@@ -798,7 +800,7 @@ macro_rules! op_trait {
 		)?
 	} => {
 		$(#[$trait_meta])*
-		pub trait $trait_name<R: private::Sealed>: private::Sealed {
+		pub trait $trait_name<R: Sealed>: Sealed {
 			$($(#[$output_meta])*)?
 			type Output;
 
@@ -818,7 +820,7 @@ macro_rules! op_trait {
 		)?
 	} => {
 		$(#[$trait_meta])*
-		pub trait $trait_name<R: private::Sealed>: private::Sealed {
+		pub trait $trait_name<R: Sealed>: Sealed {
 			$($(#[$output_meta])*)?
 			type Output;
 
@@ -838,7 +840,7 @@ macro_rules! op_trait {
 		)?
 	} => {
 		$(#[$trait_meta])*
-		pub trait $trait_name<R: private::Sealed>: private::Sealed {
+		pub trait $trait_name<R: Sealed>: Sealed {
 			$($(#[$output_meta])*)?
 			type Output;
 
@@ -858,7 +860,7 @@ macro_rules! op_trait {
 		)?
 	} => {
 		$(#[$trait_meta])*
-		pub trait $trait_name<R: private::Sealed>: private::Sealed {
+		pub trait $trait_name<R: Sealed>: Sealed {
 			$($(#[$output_meta])*)?
 			type Output;
 
@@ -878,7 +880,7 @@ macro_rules! op_trait {
 		)?
 	} => {
 		$(#[$trait_meta])*
-		pub trait $trait_name<R: private::Sealed>: private::Sealed {
+		pub trait $trait_name<R: Sealed>: Sealed {
 			$($(#[$output_meta])*)?
 			type Output;
 
@@ -898,7 +900,7 @@ macro_rules! op_trait {
 		)?
 	} => {
 		$(#[$trait_meta])*
-		pub trait $trait_name<R: private::Sealed>: private::Sealed {
+		pub trait $trait_name<R: Sealed>: Sealed {
 			$($(#[$output_meta])*)?
 			type Output;
 
@@ -912,10 +914,11 @@ macro_rules! op_trait {
 		$(
 			$lhs:ident: $lhs_ty:ident {
 				$(
+					#[$cfg_rhs:meta]
 					$rhs:ident: $rhs_ty:ident {
 						$(
 							$(#[$cfg:meta])*
-							$op:ident -> $output_ty:ident { $($body:tt)+ }
+							$op:ident() -> $output_ty:ident { $($body:tt)* }
 						)*
 					}
 				)*
@@ -928,19 +931,54 @@ macro_rules! op_trait {
 					op_trait! {
 						impl(helper) $op
 						$(#[$cfg])*
-						$lhs: $lhs_ty, $rhs: $rhs_ty -> $output_ty { $($body)+ }
+						#[$cfg_rhs]
+						$lhs: $lhs_ty, $rhs: $rhs_ty -> $output_ty { $($body)* }
 					}
 				)*
 			)*
 		)*
 	};
 
-	{ impl(helper) add $($stuff:tt)+ } => { op_trait! { impl(normal) Add::add $($stuff)+ } };
+	{ impl(helper) add $($stuff:tt)* } => { op_trait! { impl(normal) Add::add $($stuff)* } };
+	{ impl(helper) sub $($stuff:tt)* } => { op_trait! { impl(normal) Sub::sub $($stuff)* } };
+	{ impl(helper) mul $($stuff:tt)* } => { op_trait! { impl(normal) Mul::mul $($stuff)* } };
+	{ impl(helper) div $($stuff:tt)* } => { op_trait! { impl(normal) Div::div $($stuff)* } };
+	{ impl(helper) neg $($stuff:tt)* } => { op_trait! { impl(normal) Neg::neg $($stuff)* } };
+
+	{ impl(helper) add_checked $($stuff:tt)* } => { op_trait! { impl(checked) AddChecked::add_checked $($stuff)* } };
+	{ impl(helper) sub_checked $($stuff:tt)* } => { op_trait! { impl(checked) SubChecked::sub_checked $($stuff)* } };
+	{ impl(helper) mul_checked $($stuff:tt)* } => { op_trait! { impl(checked) MulChecked::mul_checked $($stuff)* } };
+	{ impl(helper) div_checked $($stuff:tt)* } => { op_trait! { impl(checked) DivChecked::div_checked $($stuff)* } };
+	{ impl(helper) neg_checked $($stuff:tt)* } => { op_trait! { impl(checked) NegChecked::neg_checked $($stuff)* } };
+
+	{ impl(helper) add_overflowing $($stuff:tt)* } => { op_trait! { impl(overflowing) AddOverflowing::add_overflowing $($stuff)* } };
+	{ impl(helper) sub_overflowing $($stuff:tt)* } => { op_trait! { impl(overflowing) SubOverflowing::sub_overflowing $($stuff)* } };
+	{ impl(helper) mul_overflowing $($stuff:tt)* } => { op_trait! { impl(overflowing) MulOverflowing::mul_overflowing $($stuff)* } };
+	{ impl(helper) div_overflowing $($stuff:tt)* } => { op_trait! { impl(overflowing) DivOverflowing::div_overflowing $($stuff)* } };
+	{ impl(helper) neg_overflowing $($stuff:tt)* } => { op_trait! { impl(overflowing) NegOverflowing::neg_overflowing $($stuff)* } };
+
+	{ impl(helper) add_saturating $($stuff:tt)* } => { op_trait! { impl(saturating) AddSaturating::add_saturating $($stuff)* } };
+	{ impl(helper) sub_saturating $($stuff:tt)* } => { op_trait! { impl(saturating) SubSaturating::sub_saturating $($stuff)* } };
+	{ impl(helper) mul_saturating $($stuff:tt)* } => { op_trait! { impl(saturating) MulSaturating::mul_saturating $($stuff)* } };
+	{ impl(helper) div_saturating $($stuff:tt)* } => { op_trait! { impl(saturating) DivSaturating::div_saturating $($stuff)* } };
+	{ impl(helper) neg_saturating $($stuff:tt)* } => { op_trait! { impl(saturating) NegSaturating::neg_saturating $($stuff)* } };
+
+	{ impl(helper) add_unchecked $($stuff:tt)* } => { op_trait! { impl(unchecked) AddUnchecked::add_unchecked $($stuff)* } };
+	{ impl(helper) sub_unchecked $($stuff:tt)* } => { op_trait! { impl(unchecked) SubUnchecked::sub_unchecked $($stuff)* } };
+	{ impl(helper) mul_unchecked $($stuff:tt)* } => { op_trait! { impl(unchecked) MulUnchecked::mul_unchecked $($stuff)* } };
+	{ impl(helper) div_unchecked $($stuff:tt)* } => { op_trait! { impl(unchecked) DivUnchecked::div_unchecked $($stuff)* } };
+	{ impl(helper) neg_unchecked $($stuff:tt)* } => { op_trait! { impl(unchecked) NegUnchecked::neg_unchecked $($stuff)* } };
+
+	{ impl(helper) add_wrapping $($stuff:tt)* } => { op_trait! { impl(wrapping) AddWrapping::add_wrapping $($stuff)* } };
+	{ impl(helper) sub_wrapping $($stuff:tt)* } => { op_trait! { impl(wrapping) SubWrapping::sub_wrapping $($stuff)* } };
+	{ impl(helper) mul_wrapping $($stuff:tt)* } => { op_trait! { impl(wrapping) MulWrapping::mul_wrapping $($stuff)* } };
+	{ impl(helper) div_wrapping $($stuff:tt)* } => { op_trait! { impl(wrapping) DivWrapping::div_wrapping $($stuff)* } };
+	{ impl(helper) neg_wrapping $($stuff:tt)* } => { op_trait! { impl(wrapping) NegWrapping::neg_wrapping $($stuff)* } };
 
 	{
 		impl(normal) $trait_name:ident::$fn_name:ident
 		$(#[$cfg:meta])*
-		$lhs:ident: $lhs_ty:ident, $rhs:ident: $rhs_ty:ident -> $output_ty:ident { $($body:tt)+ }
+		$lhs:ident: $lhs_ty:ident, $rhs:ident: $rhs_ty:ident -> $output_ty:ident { $($body:tt)* }
 	} => {
 		$(#[$cfg])*
 		impl $trait_name<$rhs_ty> for $lhs_ty {
@@ -950,7 +988,113 @@ macro_rules! op_trait {
 			fn $fn_name(self, rhs: $rhs_ty) -> $output_ty {
 				#[inline(always)]
 				fn inner($lhs: $lhs_ty, $rhs: $rhs_ty) -> $output_ty {
-					$($body)+
+					$($body)*
+				}
+
+				inner(self, rhs)
+			}
+		}
+	};
+
+	{
+		impl(checked) $trait_name:ident::$fn_name:ident
+		$(#[$cfg:meta])*
+		$lhs:ident: $lhs_ty:ident, $rhs:ident: $rhs_ty:ident -> $output_ty:ident { $($body:tt)* }
+	} => {
+		$(#[$cfg])*
+		impl $trait_name<$rhs_ty> for $lhs_ty {
+			type Output = $output_ty;
+
+			#[inline(always)]
+			fn $fn_name(self, rhs: $rhs_ty) -> Option<$output_ty> {
+				#[inline(always)]
+				fn inner($lhs: $lhs_ty, $rhs: $rhs_ty) -> Option<$output_ty> {
+					$($body)*
+				}
+
+				inner(self, rhs)
+			}
+		}
+	};
+
+	{
+		impl(overflowing) $trait_name:ident::$fn_name:ident
+		$(#[$cfg:meta])*
+		$lhs:ident: $lhs_ty:ident, $rhs:ident: $rhs_ty:ident -> $output_ty:ident { $($body:tt)* }
+	} => {
+		$(#[$cfg])*
+		impl $trait_name<$rhs_ty> for $lhs_ty {
+			type Output = $output_ty;
+
+			#[inline(always)]
+			fn $fn_name(self, rhs: $rhs_ty) -> ($output_ty, bool) {
+				#[inline(always)]
+				fn inner($lhs: $lhs_ty, $rhs: $rhs_ty) -> ($output_ty, bool) {
+					$($body)*
+				}
+
+				inner(self, rhs)
+			}
+		}
+	};
+
+	{
+		impl(saturating) $trait_name:ident::$fn_name:ident
+		$(#[$cfg:meta])*
+		$lhs:ident: $lhs_ty:ident, $rhs:ident: $rhs_ty:ident -> $output_ty:ident { $($body:tt)* }
+	} => {
+		$(#[$cfg])*
+		impl $trait_name<$rhs_ty> for $lhs_ty {
+			type Output = $output_ty;
+
+			#[inline(always)]
+			fn $fn_name(self, rhs: $rhs_ty) -> $output_ty {
+				#[inline(always)]
+				fn inner($lhs: $lhs_ty, $rhs: $rhs_ty) -> $output_ty {
+					$($body)*
+				}
+
+				inner(self, rhs)
+			}
+		}
+	};
+
+	{
+		impl(unchecked) $trait_name:ident::$fn_name:ident
+		$(#[$cfg:meta])*
+		$lhs:ident: $lhs_ty:ident, $rhs:ident: $rhs_ty:ident -> $output_ty:ident { $($body:tt)* }
+	} => {
+		$(#[$cfg])*
+		impl $trait_name<$rhs_ty> for $lhs_ty {
+			type Output = $output_ty;
+
+			#[inline(always)]
+			unsafe fn $fn_name(self, rhs: $rhs_ty) -> $output_ty {
+				#[inline(always)]
+				unsafe fn inner($lhs: $lhs_ty, $rhs: $rhs_ty) -> $output_ty {
+					$($body)*
+				}
+
+				// SAFETY: invariants upheld by caller
+				unsafe { inner(self, rhs) }
+			}
+		}
+	};
+
+	{
+		impl(wrapping) $trait_name:ident::$fn_name:ident
+		$(#[$cfg:meta])*
+		$lhs:ident: $lhs_ty:ident, $rhs:ident: $rhs_ty:ident -> $output_ty:ident { $($body:tt)* }
+	} => {
+		$(#[$cfg])*
+		impl $trait_name<$rhs_ty> for $lhs_ty {
+			type Output = $output_ty;
+
+			#[inline(always)]
+			fn $fn_name(self, rhs: $rhs_ty) -> $output_ty {
+				#[inline(always)]
+				fn inner($lhs: $lhs_ty, $rhs: $rhs_ty) -> $output_ty {
+					$($body)*
 				}
 
 				inner(self, rhs)
@@ -959,876 +1103,1746 @@ macro_rules! op_trait {
 	};
 }
 
-op_trait! { trait Add fn add() }
-op_trait! { trait Sub fn sub() }
-op_trait! { trait Mul fn mul() }
-op_trait! { trait Div fn div() }
-op_trait! { trait Neg fn neg() }
+// op_trait! { trait Add fn add() }
+// op_trait! { trait Sub fn sub() }
+// op_trait! { trait Mul fn mul() }
+// op_trait! { trait Div fn div() }
+// op_trait! { trait Neg fn neg() }
 
-op_trait! { trait(checked) AddChecked fn add_checked() }
-op_trait! { trait(checked) SubChecked fn sub_checked() }
-op_trait! { trait(checked) MulChecked fn mul_checked() }
-op_trait! { trait(checked) DivChecked fn div_checked() }
-op_trait! { trait(checked) NegChecked fn neg_checked() }
+// op_trait! { trait(checked) AddChecked fn add_checked() }
+// op_trait! { trait(checked) SubChecked fn sub_checked() }
+// op_trait! { trait(checked) MulChecked fn mul_checked() }
+// op_trait! { trait(checked) DivChecked fn div_checked() }
+// op_trait! { trait(checked) NegChecked fn neg_checked() }
 
-op_trait! { trait(overflowing) AddOverflowing fn add_overflowing() }
-op_trait! { trait(overflowing) SubOverflowing fn sub_overflowing() }
-op_trait! { trait(overflowing) MulOverflowing fn mul_overflowing() }
-op_trait! { trait(overflowing) DivOverflowing fn div_overflowing() }
-op_trait! { trait(overflowing) NegOverflowing fn neg_overflowing() }
+// op_trait! { trait(overflowing) AddOverflowing fn add_overflowing() }
+// op_trait! { trait(overflowing) SubOverflowing fn sub_overflowing() }
+// op_trait! { trait(overflowing) MulOverflowing fn mul_overflowing() }
+// op_trait! { trait(overflowing) DivOverflowing fn div_overflowing() }
+// op_trait! { trait(overflowing) NegOverflowing fn neg_overflowing() }
 
-op_trait! { trait(saturating) AddSaturating fn add_saturating() }
-op_trait! { trait(saturating) SubSaturating fn sub_saturating() }
-op_trait! { trait(saturating) MulSaturating fn mul_saturating() }
-op_trait! { trait(saturating) DivSaturating fn div_saturating() }
-op_trait! { trait(saturating) NegSaturating fn neg_saturating() }
+// op_trait! { trait(saturating) AddSaturating fn add_saturating() }
+// op_trait! { trait(saturating) SubSaturating fn sub_saturating() }
+// op_trait! { trait(saturating) MulSaturating fn mul_saturating() }
+// op_trait! { trait(saturating) DivSaturating fn div_saturating() }
+// op_trait! { trait(saturating) NegSaturating fn neg_saturating() }
 
-// todo strict op?
-// todo unbounded shifts?
+// // todo strict op?
+// // todo unbounded shifts?
 
-op_trait! { trait(unchecked) AddUnchecked #[expect(clippy::missing_safety_doc, reason = "todo")] fn add_unchecked() }
-op_trait! { trait(unchecked) SubUnchecked #[expect(clippy::missing_safety_doc, reason = "todo")] fn sub_unchecked() }
-op_trait! { trait(unchecked) MulUnchecked #[expect(clippy::missing_safety_doc, reason = "todo")] fn mul_unchecked() }
-op_trait! { trait(unchecked) DivUnchecked #[expect(clippy::missing_safety_doc, reason = "todo")] fn div_unchecked() }
-op_trait! { trait(unchecked) NegUnchecked #[expect(clippy::missing_safety_doc, reason = "todo")] fn neg_unchecked() }
+// op_trait! { trait(unchecked) AddUnchecked #[expect(clippy::missing_safety_doc, reason = "todo")] fn add_unchecked() }
+// op_trait! { trait(unchecked) SubUnchecked #[expect(clippy::missing_safety_doc, reason = "todo")] fn sub_unchecked() }
+// op_trait! { trait(unchecked) MulUnchecked #[expect(clippy::missing_safety_doc, reason = "todo")] fn mul_unchecked() }
+// op_trait! { trait(unchecked) DivUnchecked #[expect(clippy::missing_safety_doc, reason = "todo")] fn div_unchecked() }
+// op_trait! { trait(unchecked) NegUnchecked #[expect(clippy::missing_safety_doc, reason = "todo")] fn neg_unchecked() }
 
-op_trait! { trait(wrapping) AddWrapping fn add_wrapping() }
-op_trait! { trait(wrapping) SubWrapping fn sub_wrapping() }
-op_trait! { trait(wrapping) MulWrapping fn mul_wrapping() }
-op_trait! { trait(wrapping) DivWrapping fn div_wrapping() }
-op_trait! { trait(wrapping) NegWrapping fn neg_wrapping() }
+// op_trait! { trait(wrapping) AddWrapping fn add_wrapping() }
+// op_trait! { trait(wrapping) SubWrapping fn sub_wrapping() }
+// op_trait! { trait(wrapping) MulWrapping fn mul_wrapping() }
+// op_trait! { trait(wrapping) DivWrapping fn div_wrapping() }
+// op_trait! { trait(wrapping) NegWrapping fn neg_wrapping() }
 
+// no unchecked div?
 op_trait! {
 	impl
 
 	lhs: u8 {
+		#[cfg(any(
+			target_pointer_width = "16",
+			target_pointer_width = "32",
+			target_pointer_width = "64"
+		))]
 		rhs: u8 {
-			add -> u8 { lhs + rhs }
+			add() -> u8 { lhs + rhs }
+			sub() -> u8 { lhs - rhs }
+			mul() -> u8 { lhs * rhs }
+			div() -> u8 { lhs / rhs }
+
+			add_checked() -> u8 { lhs.checked_add(rhs) }
+			sub_checked() -> u8 { lhs.checked_sub(rhs) }
+			mul_checked() -> u8 { lhs.checked_mul(rhs) }
+			div_checked() -> u8 { lhs.checked_div(rhs) }
+
+			add_overflowing() -> u8 { lhs.overflowing_add(rhs) }
+			sub_overflowing() -> u8 { lhs.overflowing_sub(rhs) }
+			mul_overflowing() -> u8 { lhs.overflowing_mul(rhs) }
+			div_overflowing() -> u8 { lhs.overflowing_div(rhs) }
+
+			add_saturating() -> u8 { lhs.saturating_add(rhs) }
+			sub_saturating() -> u8 { lhs.saturating_sub(rhs) }
+			mul_saturating() -> u8 { lhs.saturating_mul(rhs) }
+			div_saturating() -> u8 { lhs.saturating_div(rhs) }
+
+			// SAFETY: invariants upheld by caller
+			add_unchecked() -> u8 { unsafe { lhs.unchecked_add(rhs) } }
+			// SAFETY: invariants upheld by caller
+			sub_unchecked() -> u8 { unsafe { lhs.unchecked_sub(rhs) } }
+			// SAFETY: invariants upheld by caller
+			mul_unchecked() -> u8 { unsafe { lhs.unchecked_mul(rhs) } }
+			div_unchecked() -> u8 { lhs / rhs }
+
+			add_wrapping() -> u8 { lhs.wrapping_add(rhs) }
+			sub_wrapping() -> u8 { lhs.wrapping_sub(rhs) }
+			mul_wrapping() -> u8 { lhs.wrapping_mul(rhs) }
+			div_wrapping() -> u8 { lhs.wrapping_div(rhs) }
 		}
+
+		#[cfg(any(
+			target_pointer_width = "16",
+			target_pointer_width = "32",
+			target_pointer_width = "64"
+		))]
 		rhs: u16 {
-			add -> u16 { lhs.into_u16() + rhs }
+			add() -> u16 { lhs.into_u16() + rhs }
+			sub() -> u16 { lhs.into_u16() - rhs }
+			mul() -> u16 { lhs.into_u16() * rhs }
+			div() -> u16 { lhs.into_u16() / rhs }
+
+			add_checked() -> u16 { lhs.into_u16().checked_add(rhs) }
+			sub_checked() -> u16 { lhs.into_u16().checked_sub(rhs) }
+			mul_checked() -> u16 { lhs.into_u16().checked_mul(rhs) }
+			div_checked() -> u16 { lhs.into_u16().checked_div(rhs) }
 		}
+
+		#[cfg(any(
+			target_pointer_width = "16",
+			target_pointer_width = "32",
+			target_pointer_width = "64"
+		))]
 		rhs: u32 {
-			add -> u32 { lhs.into_u32() + rhs }
+			add() -> u32 { lhs.into_u32() + rhs }
+			sub() -> u32 { lhs.into_u32() - rhs }
+			mul() -> u32 { lhs.into_u32() * rhs }
+			div() -> u32 { lhs.into_u32() / rhs }
+
+			add_checked() -> u32 { lhs.into_u32().checked_add(rhs) }
+			sub_checked() -> u32 { lhs.into_u32().checked_sub(rhs) }
+			mul_checked() -> u32 { lhs.into_u32().checked_mul(rhs) }
+			div_checked() -> u32 { lhs.into_u32().checked_div(rhs) }
 		}
+
+		#[cfg(any(
+			target_pointer_width = "16",
+			target_pointer_width = "32",
+			target_pointer_width = "64"
+		))]
 		rhs: u64 {
-			add -> u64 { lhs.into_u64() + rhs }
+			add() -> u64 { lhs.into_u64() + rhs }
+			sub() -> u64 { lhs.into_u64() - rhs }
+			mul() -> u64 { lhs.into_u64() * rhs }
+			div() -> u64 { lhs.into_u64() / rhs }
+
+			add_checked() -> u64 { lhs.into_u64().checked_add(rhs) }
+			sub_checked() -> u64 { lhs.into_u64().checked_sub(rhs) }
+			mul_checked() -> u64 { lhs.into_u64().checked_mul(rhs) }
+			div_checked() -> u64 { lhs.into_u64().checked_div(rhs) }
 		}
+
+		#[cfg(any(
+			target_pointer_width = "16",
+			target_pointer_width = "32",
+			target_pointer_width = "64"
+		))]
 		rhs: u128 {
-			add -> u128 { lhs.into_u128() + rhs }
+			add() -> u128 { lhs.into_u128() + rhs }
+			sub() -> u128 { lhs.into_u128() - rhs }
+			mul() -> u128 { lhs.into_u128() * rhs }
+			div() -> u128 { lhs.into_u128() / rhs }
+
+			add_checked() -> u128 { lhs.into_u128().checked_add(rhs) }
+			sub_checked() -> u128 { lhs.into_u128().checked_sub(rhs) }
+			mul_checked() -> u128 { lhs.into_u128().checked_mul(rhs) }
+			div_checked() -> u128 { lhs.into_u128().checked_div(rhs) }
 		}
+
+		#[cfg(any(
+			target_pointer_width = "16",
+			target_pointer_width = "32",
+			target_pointer_width = "64"
+		))]
 		rhs: usize {
-			add -> usize { lhs.into_usize() + rhs }
 		}
+
+		#[cfg(any(
+			target_pointer_width = "16",
+			target_pointer_width = "32",
+			target_pointer_width = "64"
+		))]
 		rhs: i8 {
-			add -> i8 { lhs.into_i8_lossy() + rhs }
 		}
+
+		#[cfg(any(
+			target_pointer_width = "16",
+			target_pointer_width = "32",
+			target_pointer_width = "64"
+		))]
 		rhs: i16 {
-			add -> i16 { lhs.into_i16() + rhs }
 		}
+
+		#[cfg(any(
+			target_pointer_width = "16",
+			target_pointer_width = "32",
+			target_pointer_width = "64"
+		))]
 		rhs: i32 {
-			add -> i32 { lhs.into_i32() + rhs }
 		}
+
+		#[cfg(any(
+			target_pointer_width = "16",
+			target_pointer_width = "32",
+			target_pointer_width = "64"
+		))]
 		rhs: i64 {
-			add -> i64 { lhs.into_i64() + rhs }
 		}
+
+		#[cfg(any(
+			target_pointer_width = "16",
+			target_pointer_width = "32",
+			target_pointer_width = "64"
+		))]
 		rhs: i128 {
-			add -> i128 { lhs.into_i128() + rhs }
 		}
+
+		#[cfg(any(
+			target_pointer_width = "16",
+			target_pointer_width = "32",
+			target_pointer_width = "64"
+		))]
 		rhs: isize {
-			add -> isize { lhs.into_isize() + rhs }
 		}
+
+		#[cfg(any(
+			target_pointer_width = "16",
+			target_pointer_width = "32",
+			target_pointer_width = "64"
+		))]
 		rhs: f32 {
-			add -> f32 { lhs.into_f32() + rhs }
 		}
+
+		#[cfg(any(
+			target_pointer_width = "16",
+			target_pointer_width = "32",
+			target_pointer_width = "64"
+		))]
 		rhs: f64 {
-			add -> f64 { lhs.into_f64() + rhs }
 		}
 	}
 
 	lhs: u16 {
+		#[cfg(any(
+			target_pointer_width = "16",
+			target_pointer_width = "32",
+			target_pointer_width = "64"
+		))]
 		rhs: u8 {
-			add -> u16 { lhs + rhs.into_u16() }
 		}
+
+		#[cfg(any(
+			target_pointer_width = "16",
+			target_pointer_width = "32",
+			target_pointer_width = "64"
+		))]
 		rhs: u16 {
-			add -> u16 { lhs + rhs }
 		}
+
+		#[cfg(any(
+			target_pointer_width = "16",
+			target_pointer_width = "32",
+			target_pointer_width = "64"
+		))]
 		rhs: u32 {
-			add -> u32 { lhs.into_u32() + rhs }
 		}
+
+		#[cfg(any(
+			target_pointer_width = "16",
+			target_pointer_width = "32",
+			target_pointer_width = "64"
+		))]
 		rhs: u64 {
-			add -> u64 { lhs.into_u64() + rhs }
 		}
+
+		#[cfg(any(
+			target_pointer_width = "16",
+			target_pointer_width = "32",
+			target_pointer_width = "64"
+		))]
 		rhs: u128 {
-			add -> u128 { lhs.into_u128() + rhs }
 		}
+
+		#[cfg(any(
+			target_pointer_width = "16",
+			target_pointer_width = "32",
+			target_pointer_width = "64"
+		))]
 		rhs: usize {
-			add -> usize { lhs.into_usize() + rhs }
 		}
+
+		#[cfg(any(
+			target_pointer_width = "16",
+			target_pointer_width = "32",
+			target_pointer_width = "64"
+		))]
 		rhs: i8 {
-			add -> i16 { lhs.into_i16_lossy() + rhs.into_i16() }
 		}
+
+		#[cfg(any(
+			target_pointer_width = "16",
+			target_pointer_width = "32",
+			target_pointer_width = "64"
+		))]
 		rhs: i16 {
-			add -> i16 { lhs.into_i16_lossy() + rhs }
 		}
+
+		#[cfg(any(
+			target_pointer_width = "16",
+			target_pointer_width = "32",
+			target_pointer_width = "64"
+		))]
 		rhs: i32 {
-			add -> i32 { lhs.into_i32() + rhs }
 		}
+
+		#[cfg(any(
+			target_pointer_width = "16",
+			target_pointer_width = "32",
+			target_pointer_width = "64"
+		))]
 		rhs: i64 {
-			add -> i64 { lhs.into_i64() + rhs }
 		}
+
+		#[cfg(any(
+			target_pointer_width = "16",
+			target_pointer_width = "32",
+			target_pointer_width = "64"
+		))]
 		rhs: i128 {
-			add -> i128 { lhs.into_i128() + rhs }
 		}
+
+		#[cfg(any(
+			target_pointer_width = "16",
+			target_pointer_width = "32",
+			target_pointer_width = "64"
+		))]
 		rhs: isize {
-			#[cfg(target_pointer_width = "16")]
-			add -> isize { lhs.into_isize_lossy() + rhs }
 		}
-		rhs: isize {
-			#[cfg(any(
-				target_pointer_width = "32",
-				target_pointer_width = "64"
-			))]
-			add -> isize { lhs.into_isize() + rhs }
-		}
+
+		#[cfg(any(
+			target_pointer_width = "16",
+			target_pointer_width = "32",
+			target_pointer_width = "64"
+		))]
 		rhs: f32 {
-			add -> f32 { lhs.into_f32() + rhs }
 		}
+
+		#[cfg(any(
+			target_pointer_width = "16",
+			target_pointer_width = "32",
+			target_pointer_width = "64"
+		))]
 		rhs: f64 {
-			add -> f64 { lhs.into_f64() + rhs }
 		}
 	}
 
 	lhs: u32 {
+		#[cfg(any(
+			target_pointer_width = "16",
+			target_pointer_width = "32",
+			target_pointer_width = "64"
+		))]
 		rhs: u8 {
-			add -> u32 { lhs + rhs.into_u32() }
 		}
+
+		#[cfg(any(
+			target_pointer_width = "16",
+			target_pointer_width = "32",
+			target_pointer_width = "64"
+		))]
 		rhs: u16 {
-			add -> u32 { lhs + rhs.into_u32() }
 		}
+
+		#[cfg(any(
+			target_pointer_width = "16",
+			target_pointer_width = "32",
+			target_pointer_width = "64"
+		))]
 		rhs: u32 {
-			add -> u32 { lhs + rhs }
 		}
+
+		#[cfg(any(
+			target_pointer_width = "16",
+			target_pointer_width = "32",
+			target_pointer_width = "64"
+		))]
 		rhs: u64 {
-			add -> u64 { lhs.into_u64() + rhs }
 		}
+
+		#[cfg(any(
+			target_pointer_width = "16",
+			target_pointer_width = "32",
+			target_pointer_width = "64"
+		))]
 		rhs: u128 {
-			add -> u128 { lhs.into_u128() + rhs }
 		}
+
+		#[cfg(any(
+			target_pointer_width = "16",
+			target_pointer_width = "32",
+			target_pointer_width = "64"
+		))]
 		rhs: usize {
-			#[cfg(target_pointer_width = "16")]
-			add -> u32 { lhs + rhs.into_u32() }
 		}
-		rhs: usize {
-			#[cfg(any(
-				target_pointer_width = "32",
-				target_pointer_width = "64"
-			))]
-			add -> usize { lhs.into_usize() + rhs }
-		}
+
+		#[cfg(any(
+			target_pointer_width = "16",
+			target_pointer_width = "32",
+			target_pointer_width = "64"
+		))]
 		rhs: i8 {
-			add -> i32 { lhs.into_i32_lossy() + rhs.into_i32() }
 		}
+
+		#[cfg(any(
+			target_pointer_width = "16",
+			target_pointer_width = "32",
+			target_pointer_width = "64"
+		))]
 		rhs: i16 {
-			add -> i32 { lhs.into_i32_lossy() + rhs.into_i32() }
 		}
+
+		#[cfg(any(
+			target_pointer_width = "16",
+			target_pointer_width = "32",
+			target_pointer_width = "64"
+		))]
 		rhs: i32 {
-			add -> i32 { lhs.into_i32_lossy() + rhs }
 		}
+
+		#[cfg(any(
+			target_pointer_width = "16",
+			target_pointer_width = "32",
+			target_pointer_width = "64"
+		))]
 		rhs: i64 {
-			add -> i64 { lhs.into_i64() + rhs }
 		}
+
+		#[cfg(any(
+			target_pointer_width = "16",
+			target_pointer_width = "32",
+			target_pointer_width = "64"
+		))]
 		rhs: i128 {
-			add -> i128 { lhs.into_i128() + rhs }
 		}
+
+		#[cfg(any(
+			target_pointer_width = "16",
+			target_pointer_width = "32",
+			target_pointer_width = "64"
+		))]
 		rhs: isize {
-			#[cfg(target_pointer_width = "16")]
-			add -> i32 { lhs.into_i32_lossy() + rhs.into_i32() }
 		}
-		rhs: isize {
-			#[cfg(target_pointer_width = "32")]
-			add -> isize { lhs.into_isize_lossy() + rhs }
-		}
-		rhs: isize {
-			#[cfg(target_pointer_width = "64")]
-			add -> isize { lhs.into_isize() + rhs }
-		}
+
+		#[cfg(any(
+			target_pointer_width = "16",
+			target_pointer_width = "32",
+			target_pointer_width = "64"
+		))]
 		rhs: f32 {
-			add -> f32 { lhs.into_f32_lossy() + rhs }
 		}
+
+		#[cfg(any(
+			target_pointer_width = "16",
+			target_pointer_width = "32",
+			target_pointer_width = "64"
+		))]
 		rhs: f64 {
-			add -> f64 { lhs.into_f64() + rhs }
 		}
 	}
 
 	lhs: u64 {
+		#[cfg(any(
+			target_pointer_width = "16",
+			target_pointer_width = "32",
+			target_pointer_width = "64"
+		))]
 		rhs: u8 {
-			add -> u64 { lhs + rhs.into_u64() }
 		}
+
+		#[cfg(any(
+			target_pointer_width = "16",
+			target_pointer_width = "32",
+			target_pointer_width = "64"
+		))]
 		rhs: u16 {
-			add -> u64 { lhs + rhs.into_u64() }
 		}
+
+		#[cfg(any(
+			target_pointer_width = "16",
+			target_pointer_width = "32",
+			target_pointer_width = "64"
+		))]
 		rhs: u32 {
-			add -> u64 { lhs + rhs.into_u64() }
 		}
+
+		#[cfg(any(
+			target_pointer_width = "16",
+			target_pointer_width = "32",
+			target_pointer_width = "64"
+		))]
 		rhs: u64 {
-			add -> u64 { lhs + rhs }
 		}
+
+		#[cfg(any(
+			target_pointer_width = "16",
+			target_pointer_width = "32",
+			target_pointer_width = "64"
+		))]
 		rhs: u128 {
-			add -> u128 { lhs.into_u128() + rhs }
 		}
+
+		#[cfg(any(
+			target_pointer_width = "16",
+			target_pointer_width = "32",
+			target_pointer_width = "64"
+		))]
 		rhs: usize {
-			add -> u64 { lhs + rhs.into_u64() }
 		}
+
+		#[cfg(any(
+			target_pointer_width = "16",
+			target_pointer_width = "32",
+			target_pointer_width = "64"
+		))]
 		rhs: i8 {
-			add -> i64 { lhs.into_i64_lossy() + rhs.into_i64() }
 		}
+
+		#[cfg(any(
+			target_pointer_width = "16",
+			target_pointer_width = "32",
+			target_pointer_width = "64"
+		))]
 		rhs: i16 {
-			add -> i64 { lhs.into_i64_lossy() + rhs.into_i64() }
 		}
+
+		#[cfg(any(
+			target_pointer_width = "16",
+			target_pointer_width = "32",
+			target_pointer_width = "64"
+		))]
 		rhs: i32 {
-			add -> i64 { lhs.into_i64_lossy() + rhs.into_i64() }
 		}
+
+		#[cfg(any(
+			target_pointer_width = "16",
+			target_pointer_width = "32",
+			target_pointer_width = "64"
+		))]
 		rhs: i64 {
-			add -> i64 { lhs.into_i64_lossy() + rhs }
 		}
+
+		#[cfg(any(
+			target_pointer_width = "16",
+			target_pointer_width = "32",
+			target_pointer_width = "64"
+		))]
 		rhs: i128 {
-			add -> i128 { lhs.into_i128() + rhs }
 		}
+
+		#[cfg(any(
+			target_pointer_width = "16",
+			target_pointer_width = "32",
+			target_pointer_width = "64"
+		))]
 		rhs: isize {
-			add -> i64 { lhs.into_i64_lossy() + rhs.into_i64() }
 		}
+
+		#[cfg(any(
+			target_pointer_width = "16",
+			target_pointer_width = "32",
+			target_pointer_width = "64"
+		))]
 		rhs: f32 {
-			add -> f64 { lhs.into_f64_lossy() + rhs.into_f64() }
 		}
+
+		#[cfg(any(
+			target_pointer_width = "16",
+			target_pointer_width = "32",
+			target_pointer_width = "64"
+		))]
 		rhs: f64 {
-			add -> f64 { lhs.into_f64_lossy() + rhs }
 		}
 	}
 
 	lhs: u128 {
+		#[cfg(any(
+			target_pointer_width = "16",
+			target_pointer_width = "32",
+			target_pointer_width = "64"
+		))]
 		rhs: u8 {
-			add -> u128 { lhs + rhs.into_u128() }
 		}
+
+		#[cfg(any(
+			target_pointer_width = "16",
+			target_pointer_width = "32",
+			target_pointer_width = "64"
+		))]
 		rhs: u16 {
-			add -> u128 { lhs + rhs.into_u128() }
 		}
+
+		#[cfg(any(
+			target_pointer_width = "16",
+			target_pointer_width = "32",
+			target_pointer_width = "64"
+		))]
 		rhs: u32 {
-			add -> u128 { lhs + rhs.into_u128() }
 		}
+
+		#[cfg(any(
+			target_pointer_width = "16",
+			target_pointer_width = "32",
+			target_pointer_width = "64"
+		))]
 		rhs: u64 {
-			add -> u128 { lhs + rhs.into_u128() }
 		}
+
+		#[cfg(any(
+			target_pointer_width = "16",
+			target_pointer_width = "32",
+			target_pointer_width = "64"
+		))]
 		rhs: u128 {
-			add -> u128 { lhs + rhs }
 		}
+
+		#[cfg(any(
+			target_pointer_width = "16",
+			target_pointer_width = "32",
+			target_pointer_width = "64"
+		))]
 		rhs: usize {
-			add -> u128 { lhs + rhs.into_u128() }
 		}
+
+		#[cfg(any(
+			target_pointer_width = "16",
+			target_pointer_width = "32",
+			target_pointer_width = "64"
+		))]
 		rhs: i8 {
-			add -> i128 { lhs.into_i128_lossy() + rhs.into_i128() }
 		}
+
+		#[cfg(any(
+			target_pointer_width = "16",
+			target_pointer_width = "32",
+			target_pointer_width = "64"
+		))]
 		rhs: i16 {
-			add -> i128 { lhs.into_i128_lossy() + rhs.into_i128() }
 		}
+
+		#[cfg(any(
+			target_pointer_width = "16",
+			target_pointer_width = "32",
+			target_pointer_width = "64"
+		))]
 		rhs: i32 {
-			add -> i128 { lhs.into_i128_lossy() + rhs.into_i128() }
 		}
+
+		#[cfg(any(
+			target_pointer_width = "16",
+			target_pointer_width = "32",
+			target_pointer_width = "64"
+		))]
 		rhs: i64 {
-			add -> i128 { lhs.into_i128_lossy() + rhs.into_i128() }
 		}
+
+		#[cfg(any(
+			target_pointer_width = "16",
+			target_pointer_width = "32",
+			target_pointer_width = "64"
+		))]
 		rhs: i128 {
-			add -> i128 { lhs.into_i128_lossy() + rhs }
 		}
+
+		#[cfg(any(
+			target_pointer_width = "16",
+			target_pointer_width = "32",
+			target_pointer_width = "64"
+		))]
 		rhs: isize {
-			add -> i128 { lhs.into_i128_lossy() + rhs.into_i128() }
 		}
+
+		#[cfg(any(
+			target_pointer_width = "16",
+			target_pointer_width = "32",
+			target_pointer_width = "64"
+		))]
 		rhs: f32 {
-			add -> f64 { lhs.into_f64_lossy() + rhs.into_f64() }
 		}
+
+		#[cfg(any(
+			target_pointer_width = "16",
+			target_pointer_width = "32",
+			target_pointer_width = "64"
+		))]
 		rhs: f64 {
-			add -> f64 { lhs.into_f64_lossy() + rhs }
 		}
 	}
 
 	lhs: usize {
+		#[cfg(any(
+			target_pointer_width = "16",
+			target_pointer_width = "32",
+			target_pointer_width = "64"
+		))]
 		rhs: u8 {
-			add -> usize { lhs + rhs.into_usize() }
 		}
+
+		#[cfg(any(
+			target_pointer_width = "16",
+			target_pointer_width = "32",
+			target_pointer_width = "64"
+		))]
 		rhs: u16 {
-			add -> usize { lhs + rhs.into_usize() }
 		}
+
+		#[cfg(any(
+			target_pointer_width = "16",
+			target_pointer_width = "32",
+			target_pointer_width = "64"
+		))]
 		rhs: u32 {
-			#[cfg(target_pointer_width = "16")]
-			add -> u32 { lhs.into_u32() + rhs }
 		}
-		rhs: u32 {
-			#[cfg(any(
-				target_pointer_width = "32",
-				target_pointer_width = "64"
-			))]
-			add -> usize { lhs + rhs.into_usize() }
-		}
+
+		#[cfg(any(
+			target_pointer_width = "16",
+			target_pointer_width = "32",
+			target_pointer_width = "64"
+		))]
 		rhs: u64 {
-			#[cfg(any(
-				target_pointer_width = "16",
-				target_pointer_width = "32"
-			))]
-			add -> u64 { lhs.into_u64() + rhs }
 		}
-		rhs: u64 {
-			#[cfg(target_pointer_width = "64")]
-			add -> usize { lhs + rhs.into_usize() }
-		}
+
+		#[cfg(any(
+			target_pointer_width = "16",
+			target_pointer_width = "32",
+			target_pointer_width = "64"
+		))]
 		rhs: u128 {
-			add -> u128 { lhs.into_u128() + rhs }
 		}
+
+		#[cfg(any(
+			target_pointer_width = "16",
+			target_pointer_width = "32",
+			target_pointer_width = "64"
+		))]
 		rhs: usize {
-			add -> usize { lhs + rhs }
 		}
+
+		#[cfg(any(
+			target_pointer_width = "16",
+			target_pointer_width = "32",
+			target_pointer_width = "64"
+		))]
 		rhs: i8 {
-			add -> isize { lhs.into_isize_lossy() + rhs.into_isize() }
 		}
+
+		#[cfg(any(
+			target_pointer_width = "16",
+			target_pointer_width = "32",
+			target_pointer_width = "64"
+		))]
 		rhs: i16 {
-			add -> isize { lhs.into_isize_lossy() + rhs.into_isize() }
 		}
+
+		#[cfg(any(
+			target_pointer_width = "16",
+			target_pointer_width = "32",
+			target_pointer_width = "64"
+		))]
 		rhs: i32 {
-			#[cfg(target_pointer_width = "16")]
-			add -> i32 { lhs.into_i32() + rhs }
 		}
-		rhs: i32 {
-			#[cfg(any(
-				target_pointer_width = "32",
-				target_pointer_width = "64"
-			))]
-			add -> isize { lhs.into_isize_lossy() + rhs.into_isize() }
-		}
+
+		#[cfg(any(
+			target_pointer_width = "16",
+			target_pointer_width = "32",
+			target_pointer_width = "64"
+		))]
 		rhs: i64 {
-			#[cfg(any(
-				target_pointer_width = "16",
-				target_pointer_width = "32"
-			))]
-			add -> i64 { lhs.into_i64() + rhs }
 		}
-		rhs: i64 {
-			#[cfg(target_pointer_width = "64")]
-			add -> isize { lhs.into_isize_lossy() + rhs.into_isize() }
-		}
+
+		#[cfg(any(
+			target_pointer_width = "16",
+			target_pointer_width = "32",
+			target_pointer_width = "64"
+		))]
 		rhs: i128 {
-			add -> i128 { lhs.into_i128() + rhs }
 		}
+
+		#[cfg(any(
+			target_pointer_width = "16",
+			target_pointer_width = "32",
+			target_pointer_width = "64"
+		))]
 		rhs: isize {
-			add -> isize { lhs.into_isize_lossy() + rhs }
 		}
+
+		#[cfg(any(
+			target_pointer_width = "16",
+			target_pointer_width = "32",
+			target_pointer_width = "64"
+		))]
 		rhs: f32 {
-			#[cfg(target_pointer_width = "16")]
-			add -> f32 { lhs.into_f32() + rhs }
 		}
-		rhs: f32 {
-			#[cfg(target_pointer_width = "32")]
-			add -> f32 { lhs.into_f32_lossy() + rhs }
-		}
-		rhs: f32 {
-			#[cfg(target_pointer_width = "64")]
-			add -> f64 { lhs.into_f64_lossy() + rhs.into_f64() }
-		}
+
+		#[cfg(any(
+			target_pointer_width = "16",
+			target_pointer_width = "32",
+			target_pointer_width = "64"
+		))]
 		rhs: f64 {
-			#[cfg(any(
-				target_pointer_width = "16",
-				target_pointer_width = "32"
-			))]
-			add -> f64 { lhs.into_f64() + rhs }
-		}
-		rhs: f64 {
-			#[cfg(target_pointer_width = "64")]
-			add -> f64 { lhs.into_f64_lossy() + rhs }
 		}
 	}
 
 	lhs: i8 {
+		#[cfg(any(
+			target_pointer_width = "16",
+			target_pointer_width = "32",
+			target_pointer_width = "64"
+		))]
 		rhs: u8 {
-			add -> i8 { lhs + rhs.into_i8_lossy() }
 		}
+
+		#[cfg(any(
+			target_pointer_width = "16",
+			target_pointer_width = "32",
+			target_pointer_width = "64"
+		))]
 		rhs: u16 {
-			add -> i16 { lhs.into_i16() + rhs.into_i16_lossy() }
 		}
+
+		#[cfg(any(
+			target_pointer_width = "16",
+			target_pointer_width = "32",
+			target_pointer_width = "64"
+		))]
 		rhs: u32 {
-			add -> i32 { lhs.into_i32() + rhs.into_i32_lossy() }
 		}
+
+		#[cfg(any(
+			target_pointer_width = "16",
+			target_pointer_width = "32",
+			target_pointer_width = "64"
+		))]
 		rhs: u64 {
-			add -> i64 { lhs.into_i64() + rhs.into_i64_lossy() }
 		}
+
+		#[cfg(any(
+			target_pointer_width = "16",
+			target_pointer_width = "32",
+			target_pointer_width = "64"
+		))]
 		rhs: u128 {
-			add -> i128 { lhs.into_i128() + rhs.into_i128_lossy() }
 		}
+
+		#[cfg(any(
+			target_pointer_width = "16",
+			target_pointer_width = "32",
+			target_pointer_width = "64"
+		))]
 		rhs: usize {
-			add -> isize { lhs.into_isize() + rhs.into_isize_lossy() }
 		}
+
+		#[cfg(any(
+			target_pointer_width = "16",
+			target_pointer_width = "32",
+			target_pointer_width = "64"
+		))]
 		rhs: i8 {
-			add -> i8 { lhs + rhs }
+			add() -> i8 { lhs + rhs }
+			sub() -> i8 { lhs - rhs }
+			mul() -> i8 { lhs * rhs }
+			div() -> i8 { lhs / rhs }
+
+			add_checked() -> i8 { lhs.checked_add(rhs) }
+			sub_checked() -> i8 { lhs.checked_sub(rhs) }
+			mul_checked() -> i8 { lhs.checked_mul(rhs) }
+			div_checked() -> i8 { lhs.checked_div(rhs) }
+
+			add_overflowing() -> i8 { lhs.overflowing_add(rhs) }
+			sub_overflowing() -> i8 { lhs.overflowing_sub(rhs) }
+			mul_overflowing() -> i8 { lhs.overflowing_mul(rhs) }
+			div_overflowing() -> i8 { lhs.overflowing_div(rhs) }
+
+			add_saturating() -> i8 { lhs.saturating_add(rhs) }
+			sub_saturating() -> i8 { lhs.saturating_sub(rhs) }
+			mul_saturating() -> i8 { lhs.saturating_mul(rhs) }
+			div_saturating() -> i8 { lhs.saturating_div(rhs) }
+
+			// SAFETY: invariants upheld by caller
+			add_unchecked() -> i8 { unsafe { lhs.unchecked_add(rhs) } }
+			// SAFETY: invariants upheld by caller
+			sub_unchecked() -> i8 { unsafe { lhs.unchecked_sub(rhs) } }
+			// SAFETY: invariants upheld by caller
+			mul_unchecked() -> i8 { unsafe { lhs.unchecked_mul(rhs) } }
+			div_unchecked() -> i8 { lhs / rhs }
+
+			add_wrapping() -> i8 { lhs.wrapping_add(rhs) }
+			sub_wrapping() -> i8 { lhs.wrapping_sub(rhs) }
+			mul_wrapping() -> i8 { lhs.wrapping_mul(rhs) }
+			div_wrapping() -> i8 { lhs.wrapping_div(rhs) }
 		}
+
+		#[cfg(any(
+			target_pointer_width = "16",
+			target_pointer_width = "32",
+			target_pointer_width = "64"
+		))]
 		rhs: i16 {
-			add -> i16 { lhs.into_i16() + rhs }
 		}
+
+		#[cfg(any(
+			target_pointer_width = "16",
+			target_pointer_width = "32",
+			target_pointer_width = "64"
+		))]
 		rhs: i32 {
-			add -> i32 { lhs.into_i32() + rhs }
 		}
+
+		#[cfg(any(
+			target_pointer_width = "16",
+			target_pointer_width = "32",
+			target_pointer_width = "64"
+		))]
 		rhs: i64 {
-			add -> i64 { lhs.into_i64() + rhs }
 		}
+
+		#[cfg(any(
+			target_pointer_width = "16",
+			target_pointer_width = "32",
+			target_pointer_width = "64"
+		))]
 		rhs: i128 {
-			add -> i128 { lhs.into_i128() + rhs }
 		}
+
+		#[cfg(any(
+			target_pointer_width = "16",
+			target_pointer_width = "32",
+			target_pointer_width = "64"
+		))]
 		rhs: isize {
-			add -> isize { lhs.into_isize() + rhs }
 		}
+
+		#[cfg(any(
+			target_pointer_width = "16",
+			target_pointer_width = "32",
+			target_pointer_width = "64"
+		))]
 		rhs: f32 {
-			add -> f32 { lhs.into_f32() + rhs }
 		}
+
+		#[cfg(any(
+			target_pointer_width = "16",
+			target_pointer_width = "32",
+			target_pointer_width = "64"
+		))]
 		rhs: f64 {
-			add -> f64 { lhs.into_f64() + rhs }
 		}
 	}
 
 	lhs: i16 {
+		#[cfg(any(
+			target_pointer_width = "16",
+			target_pointer_width = "32",
+			target_pointer_width = "64"
+		))]
 		rhs: u8 {
-			add -> i16 { lhs + rhs.into_i16() }
 		}
+
+		#[cfg(any(
+			target_pointer_width = "16",
+			target_pointer_width = "32",
+			target_pointer_width = "64"
+		))]
 		rhs: u16 {
-			add -> i16 { lhs + rhs.into_i16_lossy() }
 		}
+
+		#[cfg(any(
+			target_pointer_width = "16",
+			target_pointer_width = "32",
+			target_pointer_width = "64"
+		))]
 		rhs: u32 {
-			add -> i32 { lhs.into_i32() + rhs.into_i32_lossy() }
 		}
+
+		#[cfg(any(
+			target_pointer_width = "16",
+			target_pointer_width = "32",
+			target_pointer_width = "64"
+		))]
 		rhs: u64 {
-			add -> i64 { lhs.into_i64() + rhs.into_i64_lossy() }
 		}
+
+		#[cfg(any(
+			target_pointer_width = "16",
+			target_pointer_width = "32",
+			target_pointer_width = "64"
+		))]
 		rhs: u128 {
-			add -> i128 { lhs.into_i128() + rhs.into_i128_lossy() }
 		}
+
+		#[cfg(any(
+			target_pointer_width = "16",
+			target_pointer_width = "32",
+			target_pointer_width = "64"
+		))]
 		rhs: usize {
-			add -> isize { lhs.into_isize() + rhs.into_isize_lossy() }
 		}
+
+		#[cfg(any(
+			target_pointer_width = "16",
+			target_pointer_width = "32",
+			target_pointer_width = "64"
+		))]
 		rhs: i8 {
-			add -> i16 { lhs + rhs.into_i16() }
 		}
+
+		#[cfg(any(
+			target_pointer_width = "16",
+			target_pointer_width = "32",
+			target_pointer_width = "64"
+		))]
 		rhs: i16 {
-			add -> i16 { lhs + rhs }
 		}
+
+		#[cfg(any(
+			target_pointer_width = "16",
+			target_pointer_width = "32",
+			target_pointer_width = "64"
+		))]
 		rhs: i32 {
-			add -> i32 { lhs.into_i32() + rhs }
 		}
+
+		#[cfg(any(
+			target_pointer_width = "16",
+			target_pointer_width = "32",
+			target_pointer_width = "64"
+		))]
 		rhs: i64 {
-			add -> i64 { lhs.into_i64() + rhs }
 		}
+
+		#[cfg(any(
+			target_pointer_width = "16",
+			target_pointer_width = "32",
+			target_pointer_width = "64"
+		))]
 		rhs: i128 {
-			add -> i128 { lhs.into_i128() + rhs }
 		}
+
+		#[cfg(any(
+			target_pointer_width = "16",
+			target_pointer_width = "32",
+			target_pointer_width = "64"
+		))]
 		rhs: isize {
-			add -> isize { lhs.into_isize() + rhs }
 		}
+
+		#[cfg(any(
+			target_pointer_width = "16",
+			target_pointer_width = "32",
+			target_pointer_width = "64"
+		))]
 		rhs: f32 {
-			add -> f32 { lhs.into_f32() + rhs }
 		}
+
+		#[cfg(any(
+			target_pointer_width = "16",
+			target_pointer_width = "32",
+			target_pointer_width = "64"
+		))]
 		rhs: f64 {
-			add -> f64 { lhs.into_f64() + rhs }
 		}
 	}
 
 	lhs: i32 {
+		#[cfg(any(
+			target_pointer_width = "16",
+			target_pointer_width = "32",
+			target_pointer_width = "64"
+		))]
 		rhs: u8 {
-			add -> i32 { lhs + rhs.into_i32() }
 		}
+
+		#[cfg(any(
+			target_pointer_width = "16",
+			target_pointer_width = "32",
+			target_pointer_width = "64"
+		))]
 		rhs: u16 {
-			add -> i32 { lhs + rhs.into_i32() }
 		}
+
+		#[cfg(any(
+			target_pointer_width = "16",
+			target_pointer_width = "32",
+			target_pointer_width = "64"
+		))]
 		rhs: u32 {
-			add -> i32 { lhs + rhs.into_i32_lossy() }
 		}
+
+		#[cfg(any(
+			target_pointer_width = "16",
+			target_pointer_width = "32",
+			target_pointer_width = "64"
+		))]
 		rhs: u64 {
-			add -> i64 { lhs.into_i64() + rhs.into_i64_lossy() }
 		}
+
+		#[cfg(any(
+			target_pointer_width = "16",
+			target_pointer_width = "32",
+			target_pointer_width = "64"
+		))]
 		rhs: u128 {
-			add -> i128 { lhs.into_i128() + rhs.into_i128_lossy() }
 		}
+
+		#[cfg(any(
+			target_pointer_width = "16",
+			target_pointer_width = "32",
+			target_pointer_width = "64"
+		))]
 		rhs: usize {
-			#[cfg(target_pointer_width = "16")]
-			add -> i32 { lhs + rhs.into_i32() }
 		}
-		rhs: usize {
-			#[cfg(any(
-				target_pointer_width = "32",
-				target_pointer_width = "64"
-			))]
-			add -> isize { lhs.into_isize() + rhs.into_isize_lossy() }
-		}
+
+		#[cfg(any(
+			target_pointer_width = "16",
+			target_pointer_width = "32",
+			target_pointer_width = "64"
+		))]
 		rhs: i8 {
-			add -> i32 { lhs + rhs.into_i32() }
 		}
+
+		#[cfg(any(
+			target_pointer_width = "16",
+			target_pointer_width = "32",
+			target_pointer_width = "64"
+		))]
 		rhs: i16 {
-			add -> i32 { lhs + rhs.into_i32() }
 		}
+
+		#[cfg(any(
+			target_pointer_width = "16",
+			target_pointer_width = "32",
+			target_pointer_width = "64"
+		))]
 		rhs: i32 {
-			add -> i32 { lhs + rhs }
 		}
+
+		#[cfg(any(
+			target_pointer_width = "16",
+			target_pointer_width = "32",
+			target_pointer_width = "64"
+		))]
 		rhs: i64 {
-			add -> i64 { lhs.into_i64() + rhs }
 		}
+
+		#[cfg(any(
+			target_pointer_width = "16",
+			target_pointer_width = "32",
+			target_pointer_width = "64"
+		))]
 		rhs: i128 {
-			add -> i128 { lhs.into_i128() + rhs }
 		}
+
+		#[cfg(any(
+			target_pointer_width = "16",
+			target_pointer_width = "32",
+			target_pointer_width = "64"
+		))]
 		rhs: isize {
-			#[cfg(target_pointer_width = "16")]
-			add -> i32 { lhs + rhs.into_i32() }
 		}
-		rhs: isize {
-			#[cfg(any(
-				target_pointer_width = "32",
-				target_pointer_width = "64"
-			))]
-			add -> isize { lhs.into_isize() + rhs }
-		}
+
+		#[cfg(any(
+			target_pointer_width = "16",
+			target_pointer_width = "32",
+			target_pointer_width = "64"
+		))]
 		rhs: f32 {
-			add -> f32 { lhs.into_f32_lossy() + rhs }
 		}
+
+		#[cfg(any(
+			target_pointer_width = "16",
+			target_pointer_width = "32",
+			target_pointer_width = "64"
+		))]
 		rhs: f64 {
-			add -> f64 { lhs.into_f64() + rhs }
 		}
 	}
 
 	lhs: i64 {
+		#[cfg(any(
+			target_pointer_width = "16",
+			target_pointer_width = "32",
+			target_pointer_width = "64"
+		))]
 		rhs: u8 {
-			add -> i64 { lhs + rhs.into_i64() }
 		}
+
+		#[cfg(any(
+			target_pointer_width = "16",
+			target_pointer_width = "32",
+			target_pointer_width = "64"
+		))]
 		rhs: u16 {
-			add -> i64 { lhs + rhs.into_i64() }
 		}
+
+		#[cfg(any(
+			target_pointer_width = "16",
+			target_pointer_width = "32",
+			target_pointer_width = "64"
+		))]
 		rhs: u32 {
-			add -> i64 { lhs + rhs.into_i64() }
 		}
+
+		#[cfg(any(
+			target_pointer_width = "16",
+			target_pointer_width = "32",
+			target_pointer_width = "64"
+		))]
 		rhs: u64 {
-			add -> i64 { lhs + rhs.into_i64_lossy() }
 		}
+
+		#[cfg(any(
+			target_pointer_width = "16",
+			target_pointer_width = "32",
+			target_pointer_width = "64"
+		))]
 		rhs: u128 {
-			add -> i128 { lhs.into_i128() + rhs.into_i128_lossy() }
 		}
+
+		#[cfg(any(
+			target_pointer_width = "16",
+			target_pointer_width = "32",
+			target_pointer_width = "64"
+		))]
 		rhs: usize {
-			#[cfg(any(
-				target_pointer_width = "16",
-				target_pointer_width = "32"
-			))]
-			add -> i64 { lhs + rhs.into_i64() }
 		}
-		rhs: usize {
-			#[cfg(target_pointer_width = "64")]
-			add -> isize { lhs.into_isize() + rhs.into_isize_lossy()}
-		}
+
+		#[cfg(any(
+			target_pointer_width = "16",
+			target_pointer_width = "32",
+			target_pointer_width = "64"
+		))]
 		rhs: i8 {
-			add -> i64 { lhs + rhs.into_i64() }
 		}
+
+		#[cfg(any(
+			target_pointer_width = "16",
+			target_pointer_width = "32",
+			target_pointer_width = "64"
+		))]
 		rhs: i16 {
-			add -> i64 { lhs + rhs.into_i64() }
 		}
+
+		#[cfg(any(
+			target_pointer_width = "16",
+			target_pointer_width = "32",
+			target_pointer_width = "64"
+		))]
 		rhs: i32 {
-			add -> i64 { lhs + rhs.into_i64() }
 		}
+
+		#[cfg(any(
+			target_pointer_width = "16",
+			target_pointer_width = "32",
+			target_pointer_width = "64"
+		))]
 		rhs: i64 {
-			add -> i64 { lhs + rhs }
 		}
+
+		#[cfg(any(
+			target_pointer_width = "16",
+			target_pointer_width = "32",
+			target_pointer_width = "64"
+		))]
 		rhs: i128 {
-			add -> i128 { lhs.into_i128() + rhs }
 		}
+
+		#[cfg(any(
+			target_pointer_width = "16",
+			target_pointer_width = "32",
+			target_pointer_width = "64"
+		))]
 		rhs: isize {
-			#[cfg(any(
-				target_pointer_width = "16",
-				target_pointer_width = "32"
-			))]
-			add -> i64 { lhs + rhs.into_i64() }
 		}
-		rhs: isize {
-			#[cfg(target_pointer_width = "64")]
-			add -> isize { lhs.into_isize() + rhs }
-		}
+
+		#[cfg(any(
+			target_pointer_width = "16",
+			target_pointer_width = "32",
+			target_pointer_width = "64"
+		))]
 		rhs: f32 {
-			add -> f64 { lhs.into_f64_lossy() + rhs.into_f64() }
 		}
+
+		#[cfg(any(
+			target_pointer_width = "16",
+			target_pointer_width = "32",
+			target_pointer_width = "64"
+		))]
 		rhs: f64 {
-			add -> f64 { lhs.into_f64_lossy() + rhs }
 		}
 	}
 
 	lhs: i128 {
+		#[cfg(any(
+			target_pointer_width = "16",
+			target_pointer_width = "32",
+			target_pointer_width = "64"
+		))]
 		rhs: u8 {
-			add -> i128 { lhs + rhs.into_i128() }
 		}
+
+		#[cfg(any(
+			target_pointer_width = "16",
+			target_pointer_width = "32",
+			target_pointer_width = "64"
+		))]
 		rhs: u16 {
-			add -> i128 { lhs + rhs.into_i128() }
 		}
+
+		#[cfg(any(
+			target_pointer_width = "16",
+			target_pointer_width = "32",
+			target_pointer_width = "64"
+		))]
 		rhs: u32 {
-			add -> i128 { lhs + rhs.into_i128() }
 		}
+
+		#[cfg(any(
+			target_pointer_width = "16",
+			target_pointer_width = "32",
+			target_pointer_width = "64"
+		))]
 		rhs: u64 {
-			add -> i128 { lhs + rhs.into_i128() }
 		}
+
+		#[cfg(any(
+			target_pointer_width = "16",
+			target_pointer_width = "32",
+			target_pointer_width = "64"
+		))]
 		rhs: u128 {
-			add -> i128 { lhs + rhs.into_i128_lossy() }
 		}
+
+		#[cfg(any(
+			target_pointer_width = "16",
+			target_pointer_width = "32",
+			target_pointer_width = "64"
+		))]
 		rhs: usize {
-			add -> i128 { lhs + rhs.into_i128() }
 		}
+
+		#[cfg(any(
+			target_pointer_width = "16",
+			target_pointer_width = "32",
+			target_pointer_width = "64"
+		))]
 		rhs: i8 {
-			add -> i128 { lhs + rhs.into_i128() }
 		}
+
+		#[cfg(any(
+			target_pointer_width = "16",
+			target_pointer_width = "32",
+			target_pointer_width = "64"
+		))]
 		rhs: i16 {
-			add -> i128 { lhs + rhs.into_i128() }
 		}
+
+		#[cfg(any(
+			target_pointer_width = "16",
+			target_pointer_width = "32",
+			target_pointer_width = "64"
+		))]
 		rhs: i32 {
-			add -> i128 { lhs + rhs.into_i128() }
 		}
+
+		#[cfg(any(
+			target_pointer_width = "16",
+			target_pointer_width = "32",
+			target_pointer_width = "64"
+		))]
 		rhs: i64 {
-			add -> i128 { lhs + rhs.into_i128() }
 		}
+
+		#[cfg(any(
+			target_pointer_width = "16",
+			target_pointer_width = "32",
+			target_pointer_width = "64"
+		))]
 		rhs: i128 {
-			add -> i128 { lhs + rhs }
 		}
+
+		#[cfg(any(
+			target_pointer_width = "16",
+			target_pointer_width = "32",
+			target_pointer_width = "64"
+		))]
 		rhs: isize {
-			add -> i128 { lhs + rhs.into_i128() }
 		}
+
+		#[cfg(any(
+			target_pointer_width = "16",
+			target_pointer_width = "32",
+			target_pointer_width = "64"
+		))]
 		rhs: f32 {
-			add -> f64 { lhs.into_f64_lossy() + rhs.into_f64() }
 		}
+
+		#[cfg(any(
+			target_pointer_width = "16",
+			target_pointer_width = "32",
+			target_pointer_width = "64"
+		))]
 		rhs: f64 {
-			add -> f64 { lhs.into_f64_lossy() + rhs }
 		}
 	}
 
 	lhs: isize {
+		#[cfg(any(
+			target_pointer_width = "16",
+			target_pointer_width = "32",
+			target_pointer_width = "64"
+		))]
 		rhs: u8 {
-			add -> isize { lhs + rhs.into_isize() }
 		}
+
+		#[cfg(any(
+			target_pointer_width = "16",
+			target_pointer_width = "32",
+			target_pointer_width = "64"
+		))]
 		rhs: u16 {
-			#[cfg(target_pointer_width = "16")]
-			add -> isize { lhs + rhs.into_isize_lossy() }
 		}
-		rhs: u16 {
-			#[cfg(any(
-				target_pointer_width = "32",
-				target_pointer_width = "64"
-			))]
-			add -> isize { lhs + rhs.into_isize() }
-		}
+
+		#[cfg(any(
+			target_pointer_width = "16",
+			target_pointer_width = "32",
+			target_pointer_width = "64"
+		))]
 		rhs: u32 {
-			#[cfg(target_pointer_width = "16")]
-			add -> i32 { lhs.into_i32() + rhs.into_i32_lossy() }
 		}
-		rhs: u32 {
-			#[cfg(target_pointer_width = "32")]
-			add -> isize { lhs + rhs.into_isize_lossy() }
-		}
-		rhs: u32 {
-			#[cfg(target_pointer_width = "64")]
-			add -> isize { lhs + rhs.into_isize() }
-		}
+
+		#[cfg(any(
+			target_pointer_width = "16",
+			target_pointer_width = "32",
+			target_pointer_width = "64"
+		))]
 		rhs: u64 {
-			#[cfg(any(
-				target_pointer_width = "16",
-				target_pointer_width = "32"
-			))]
-			add -> i64 { lhs.into_isize() + rhs.into_i64_lossy() }
 		}
-		rhs: u64 {
-			#[cfg(target_pointer_width = "64")]
-			add -> isize { lhs + rhs.into_isize_lossy() }
-		}
+
+		#[cfg(any(
+			target_pointer_width = "16",
+			target_pointer_width = "32",
+			target_pointer_width = "64"
+		))]
 		rhs: u128 {
-			add -> i128 { lhs.into_i128() + rhs.into_i128_lossy() }
 		}
+
+		#[cfg(any(
+			target_pointer_width = "16",
+			target_pointer_width = "32",
+			target_pointer_width = "64"
+		))]
 		rhs: usize {
-			add -> isize { lhs + rhs.into_isize_lossy() }
 		}
+
+		#[cfg(any(
+			target_pointer_width = "16",
+			target_pointer_width = "32",
+			target_pointer_width = "64"
+		))]
 		rhs: i8 {
-			add -> isize { lhs + rhs.into_isize() }
 		}
+
+		#[cfg(any(
+			target_pointer_width = "16",
+			target_pointer_width = "32",
+			target_pointer_width = "64"
+		))]
 		rhs: i16 {
-			add -> isize { lhs + rhs.into_isize() }
 		}
+
+		#[cfg(any(
+			target_pointer_width = "16",
+			target_pointer_width = "32",
+			target_pointer_width = "64"
+		))]
 		rhs: i32 {
-			#[cfg(target_pointer_width = "16")]
-			add -> i32 { lhs.into_i32() + rhs }
 		}
-		rhs: i32 {
-			#[cfg(any(
-				target_pointer_width = "32",
-				target_pointer_width = "64"
-			))]
-			add -> isize { lhs + rhs.into_isize() }
-		}
+
+		#[cfg(any(
+			target_pointer_width = "16",
+			target_pointer_width = "32",
+			target_pointer_width = "64"
+		))]
 		rhs: i64 {
-			#[cfg(any(
-				target_pointer_width = "16",
-				target_pointer_width = "32"
-			))]
-			add -> i64 { lhs.into_i64() + rhs }
 		}
-		rhs: i64 {
-			#[cfg(target_pointer_width = "64")]
-			add -> isize { lhs + rhs.into_isize() }
-		}
+
+		#[cfg(any(
+			target_pointer_width = "16",
+			target_pointer_width = "32",
+			target_pointer_width = "64"
+		))]
 		rhs: i128 {
-			add -> i128 { lhs.into_i128() + rhs }
 		}
+
+		#[cfg(any(
+			target_pointer_width = "16",
+			target_pointer_width = "32",
+			target_pointer_width = "64"
+		))]
 		rhs: isize {
-			add -> isize { lhs + rhs }
 		}
+
+		#[cfg(any(
+			target_pointer_width = "16",
+			target_pointer_width = "32",
+			target_pointer_width = "64"
+		))]
 		rhs: f32 {
-			#[cfg(target_pointer_width = "16")]
-			add -> f32 { lhs.into_f32() + rhs }
 		}
-		rhs: f32 {
-			#[cfg(target_pointer_width = "32")]
-			add -> f32 { lhs.into_f32_lossy() + rhs }
-		}
-		rhs: f32 {
-			#[cfg(target_pointer_width = "64")]
-			add -> f64 { lhs.into_f64_lossy() + rhs.into_f64() }
-		}
+
+		#[cfg(any(
+			target_pointer_width = "16",
+			target_pointer_width = "32",
+			target_pointer_width = "64"
+		))]
 		rhs: f64 {
-			#[cfg(any(
-				target_pointer_width = "16",
-				target_pointer_width = "32"
-			))]
-			add -> f64 { lhs.into_f64() + rhs }
-		}
-		rhs: f64 {
-			#[cfg(target_pointer_width = "64")]
-			add -> f64 { lhs.into_f64_lossy() + rhs }
 		}
 	}
 
 	lhs: f32 {
+		#[cfg(any(
+			target_pointer_width = "16",
+			target_pointer_width = "32",
+			target_pointer_width = "64"
+		))]
 		rhs: u8 {
-			add -> f32 { lhs + rhs.into_f32() }
 		}
+
+		#[cfg(any(
+			target_pointer_width = "16",
+			target_pointer_width = "32",
+			target_pointer_width = "64"
+		))]
 		rhs: u16 {
-			add -> f32 { lhs + rhs.into_f32() }
 		}
+
+		#[cfg(any(
+			target_pointer_width = "16",
+			target_pointer_width = "32",
+			target_pointer_width = "64"
+		))]
 		rhs: u32 {
-			add -> f32 { lhs + rhs.into_f32_lossy() }
 		}
+
+		#[cfg(any(
+			target_pointer_width = "16",
+			target_pointer_width = "32",
+			target_pointer_width = "64"
+		))]
 		rhs: u64 {
-			add -> f64 { lhs.into_f64() + rhs.into_f64_lossy() }
 		}
+
+		#[cfg(any(
+			target_pointer_width = "16",
+			target_pointer_width = "32",
+			target_pointer_width = "64"
+		))]
 		rhs: u128 {
-			add -> f64 { lhs.into_f64() + rhs.into_f64_lossy() }
 		}
+
+		#[cfg(any(
+			target_pointer_width = "16",
+			target_pointer_width = "32",
+			target_pointer_width = "64"
+		))]
 		rhs: usize {
-			#[cfg(target_pointer_width = "16")]
-			add -> f32 { lhs + rhs.into_f32() }
 		}
-		rhs: usize {
-			#[cfg(target_pointer_width = "32")]
-			add -> f32 { lhs + rhs.into_f32_lossy() }
-		}
-		rhs: usize {
-			#[cfg(target_pointer_width = "64")]
-			add -> f64 { lhs.into_f64() + rhs.into_f64_lossy() }
-		}
+
+		#[cfg(any(
+			target_pointer_width = "16",
+			target_pointer_width = "32",
+			target_pointer_width = "64"
+		))]
 		rhs: i8 {
-			add -> f32 { lhs + rhs.into_f32() }
 		}
+
+		#[cfg(any(
+			target_pointer_width = "16",
+			target_pointer_width = "32",
+			target_pointer_width = "64"
+		))]
 		rhs: i16 {
-			add -> f32 { lhs + rhs.into_f32() }
 		}
+
+		#[cfg(any(
+			target_pointer_width = "16",
+			target_pointer_width = "32",
+			target_pointer_width = "64"
+		))]
 		rhs: i32 {
-			add -> f32 { lhs + rhs.into_f32_lossy() }
 		}
+
+		#[cfg(any(
+			target_pointer_width = "16",
+			target_pointer_width = "32",
+			target_pointer_width = "64"
+		))]
 		rhs: i64 {
-			add -> f64 { lhs.into_f64() + rhs.into_f64_lossy() }
 		}
+
+		#[cfg(any(
+			target_pointer_width = "16",
+			target_pointer_width = "32",
+			target_pointer_width = "64"
+		))]
 		rhs: i128 {
-			add -> f64 { lhs.into_f64() + rhs.into_f64_lossy() }
 		}
+
+		#[cfg(any(
+			target_pointer_width = "16",
+			target_pointer_width = "32",
+			target_pointer_width = "64"
+		))]
 		rhs: isize {
-			#[cfg(target_pointer_width = "16")]
-			add -> f32 { lhs + rhs.into_f32() }
 		}
-		rhs: isize {
-			#[cfg(target_pointer_width = "32")]
-			add -> f32 { lhs + rhs.into_f32_lossy() }
-		}
-		rhs: isize {
-			#[cfg(target_pointer_width = "64")]
-			add -> f64 { lhs.into_f64() + rhs.into_f64_lossy() }
-		}
+
+		#[cfg(any(
+			target_pointer_width = "16",
+			target_pointer_width = "32",
+			target_pointer_width = "64"
+		))]
 		rhs: f32 {
-			add -> f32 { lhs + rhs }
 		}
+
+		#[cfg(any(
+			target_pointer_width = "16",
+			target_pointer_width = "32",
+			target_pointer_width = "64"
+		))]
 		rhs: f64 {
-			add -> f64 { lhs.into_f64() + rhs }
 		}
 	}
 
 	lhs: f64 {
+		#[cfg(any(
+			target_pointer_width = "16",
+			target_pointer_width = "32",
+			target_pointer_width = "64"
+		))]
 		rhs: u8 {
-			add -> f64 { lhs + rhs.into_f64() }
 		}
+
+		#[cfg(any(
+			target_pointer_width = "16",
+			target_pointer_width = "32",
+			target_pointer_width = "64"
+		))]
 		rhs: u16 {
-			add -> f64 { lhs + rhs.into_f64() }
 		}
+
+		#[cfg(any(
+			target_pointer_width = "16",
+			target_pointer_width = "32",
+			target_pointer_width = "64"
+		))]
 		rhs: u32 {
-			add -> f64 { lhs + rhs.into_f64() }
 		}
+
+		#[cfg(any(
+			target_pointer_width = "16",
+			target_pointer_width = "32",
+			target_pointer_width = "64"
+		))]
 		rhs: u64 {
-			add -> f64 { lhs + rhs.into_f64_lossy() }
 		}
+
+		#[cfg(any(
+			target_pointer_width = "16",
+			target_pointer_width = "32",
+			target_pointer_width = "64"
+		))]
 		rhs: u128 {
-			add -> f64 { lhs + rhs.into_f64_lossy() }
 		}
+
+		#[cfg(any(
+			target_pointer_width = "16",
+			target_pointer_width = "32",
+			target_pointer_width = "64"
+		))]
 		rhs: usize {
-			#[cfg(any(
-				target_pointer_width = "16",
-				target_pointer_width = "32"
-			))]
-			add -> f64 { lhs + rhs.into_f64() }
 		}
-		rhs: usize {
-			#[cfg(target_pointer_width = "64")]
-			add -> f64 { lhs + rhs.into_f64_lossy() }
-		}
+
+		#[cfg(any(
+			target_pointer_width = "16",
+			target_pointer_width = "32",
+			target_pointer_width = "64"
+		))]
 		rhs: i8 {
-			add -> f64 { lhs + rhs.into_f64() }
 		}
+
+		#[cfg(any(
+			target_pointer_width = "16",
+			target_pointer_width = "32",
+			target_pointer_width = "64"
+		))]
 		rhs: i16 {
-			add -> f64 { lhs + rhs.into_f64() }
 		}
+
+		#[cfg(any(
+			target_pointer_width = "16",
+			target_pointer_width = "32",
+			target_pointer_width = "64"
+		))]
 		rhs: i32 {
-			add -> f64 { lhs + rhs.into_f64() }
 		}
+
+		#[cfg(any(
+			target_pointer_width = "16",
+			target_pointer_width = "32",
+			target_pointer_width = "64"
+		))]
 		rhs: i64 {
-			add -> f64 { lhs + rhs.into_f64_lossy() }
 		}
+
+		#[cfg(any(
+			target_pointer_width = "16",
+			target_pointer_width = "32",
+			target_pointer_width = "64"
+		))]
 		rhs: i128 {
-			add -> f64 { lhs + rhs.into_f64_lossy() }
 		}
+
+		#[cfg(any(
+			target_pointer_width = "16",
+			target_pointer_width = "32",
+			target_pointer_width = "64"
+		))]
 		rhs: isize {
-			#[cfg(any(
-				target_pointer_width = "16",
-				target_pointer_width = "32"
-			))]
-			add -> f64 { lhs + rhs.into_f64() }
 		}
-		rhs: isize {
-			#[cfg(target_pointer_width = "64")]
-			add -> f64 { lhs + rhs.into_f64_lossy() }
-		}
+
+		#[cfg(any(
+			target_pointer_width = "16",
+			target_pointer_width = "32",
+			target_pointer_width = "64"
+		))]
 		rhs: f32 {
-			add -> f64 { lhs + rhs.into_f64() }
 		}
+
+		#[cfg(any(
+			target_pointer_width = "16",
+			target_pointer_width = "32",
+			target_pointer_width = "64"
+		))]
 		rhs: f64 {
-			add -> f64 { lhs + rhs }
 		}
 	}
 }
+*/
 
 /// notouchie
 mod private {
