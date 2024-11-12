@@ -53,6 +53,7 @@ pub mod prelude_std;
 pub mod chain;
 pub mod encoding;
 pub mod lazy_wrap;
+pub mod nominal;
 pub mod num;
 pub mod rc;
 pub mod string;
