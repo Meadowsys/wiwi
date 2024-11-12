@@ -3,12 +3,12 @@ use crate::prelude_std::*;
 pub mod hex;
 pub mod z85;
 
-pub trait StrExt {
+pub trait Encodeable {
 	fn encode_z85(self) -> String;
 	fn encode_hex(self) -> String;
 }
 
-impl StrExt for &str {
+impl Encodeable for &str {
 	#[inline]
 	fn encode_z85(self) -> String {
 		z85::encode_z85(self.as_bytes())
@@ -17,6 +17,18 @@ impl StrExt for &str {
 	#[inline]
 	fn encode_hex(self) -> String {
 		hex::encode_hex(self.as_bytes())
+	}
+}
+
+impl Encodeable for &[u8] {
+	#[inline]
+	fn encode_z85(self) -> String {
+		z85::encode_z85(self)
+	}
+
+	#[inline]
+	fn encode_hex(self) -> String {
+		hex::encode_hex(self)
 	}
 }
 
