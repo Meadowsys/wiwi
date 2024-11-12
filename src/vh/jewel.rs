@@ -1,4 +1,5 @@
 use crate::prelude_std::*;
+use crate::num::*;
 use crate::rc::{ RcStr, Counter };
 
 pub mod store;
@@ -80,10 +81,9 @@ impl ModifierValue {
 	/// # Safety
 	///
 	/// `value` must be within the range `MIN..=MAX`
-	#[expect(clippy::as_conversions, reason = "casting bool to int")]
 	#[inline]
 	pub unsafe fn new_unchecked(value: i32, is_legendary: bool) -> Self {
-		Self { raw: value | ((is_legendary as i32) << 31) }
+		Self { raw: value | (is_legendary.into_i32() << 31) }
 	}
 
 	#[inline]

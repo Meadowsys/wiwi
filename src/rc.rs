@@ -1,4 +1,5 @@
 use crate::prelude_std::*;
+use crate::num::*;
 
 pub use self::inner::{ Counter, ThreadCounter, AtomicCounter };
 pub use self::str::{
@@ -201,13 +202,7 @@ impl<C: Counter, V, S> RcWeak<C, V, S> {
 		// SAFETY: same as above
 		let strong = unsafe { inner::counter_ref(self.inner).strong_count() };
 
-		#[expect(
-			clippy::as_conversions,
-			reason = "casting bool to int"
-		)]
-		let result = weak - (strong > 0) as usize;
-
-		result
+		weak - (strong > 0).into_usize()
 	}
 
 	/// "Upgrades" this pointer, returning a strong pointer [`Rc`] to the data
