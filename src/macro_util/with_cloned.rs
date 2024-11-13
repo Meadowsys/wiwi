@@ -5,7 +5,7 @@
 /// it's designed to fix, but for those just wanting to use the thing:
 ///
 /// ```
-/// # use wiwi::with_cloned::with_cloned;
+/// # use wiwi::macro_util::with_cloned;
 /// let s1 = String::from("a string");
 /// let s2 = String::from("another string");
 ///
@@ -94,7 +94,7 @@
 /// ```
 /// # use std::sync::{ Arc, Mutex };
 /// # use std::thread;
-/// # use wiwi::with_cloned::with_cloned;
+/// # use wiwi::macro_util::with_cloned;
 /// # let shared_data = Arc::new(Mutex::new(42));
 /// let join_handle = with_cloned! { shared_data in
 ///    // `shared_data` in here will refer to a clone, shadowing the original,
@@ -125,7 +125,7 @@
 /// of the macro:
 ///
 /// ```
-/// # use wiwi::with_cloned::with_cloned;
+/// # use wiwi::macro_util::with_cloned;
 /// let string = String::new();
 ///
 /// let modified_string = with_cloned! { mut string in
@@ -152,7 +152,7 @@
 /// Random, but the below code snippets are equivalent:
 ///
 /// ```
-/// # use wiwi::with_cloned::with_cloned;
+/// # use wiwi::macro_util::with_cloned;
 /// # let value = String::new();
 /// let cloned1 = value.clone();
 /// // macro clones it for the inner code, but the inner code
@@ -166,7 +166,7 @@
 macro_rules! with_cloned {
 	($($stuff:tt)*) => {
 		// hide potential distracting implementation details in docs
-		$crate::with_cloned::_with_cloned_impl! { $($stuff)* }
+		$crate::macro_util::_with_cloned_impl! { $($stuff)* }
 	}
 }
 pub use with_cloned;
@@ -190,7 +190,7 @@ macro_rules! _with_cloned_impl {
 				// we only support specifying mut for all or nothing, so this is for
 				// when caller is using mut for some but not all vars need to be mut
 				#[allow(unused_mut)]
-				let mut $thing = ::std::clone::Clone::clone(&$thing);
+				let mut $thing = $crate::prelude_std::Clone::clone(&$thing);
 			)+
 			$($stuff)*
 		}
@@ -198,7 +198,9 @@ macro_rules! _with_cloned_impl {
 
 	{ $($thing:ident),+ in $($stuff:tt)* } => {
 		{
-			$(let $thing = ::std::clone::Clone::clone(&$thing);)+
+			$(
+				let $thing = $crate::prelude_std::Clone::clone(&$thing);
+			)+
 			$($stuff)*
 		}
 	};
@@ -208,10 +210,13 @@ pub use _with_cloned_impl;
 
 #[cfg(test)]
 mod tests {
+	extern crate rand;
+
+	use crate::prelude_std::*;
 	use super::*;
-	use rand::{ Rng, thread_rng };
+	use rand::{ Rng as _, thread_rng };
 	use rand::distributions::uniform::SampleRange;
-	use std::sync::{ Arc, Mutex };
+	use std::sync::Mutex;
 	use std::thread;
 
 	#[test]
