@@ -53,14 +53,7 @@ where
 	clippy::type_complexity,
 	reason = "good naming makes it look alright I guess lol"
 )]
-pub struct Delimited<P, D, O, E, PBefore, OBefore, EBefore, PAfter, OAfter, EAfter>
-where
-	P: Parser<D, O, E>,
-	PBefore: Parser<D, OBefore, EBefore>,
-	PAfter: Parser<D, OAfter, EAfter>,
-	EBefore: Into<E>,
-	EAfter: Into<E>
-{
+pub struct Delimited<P, D, O, E, PBefore, OBefore, EBefore, PAfter, OAfter, EAfter> {
 	parser_before: PBefore,
 	parser: P,
 	parser_after: PAfter,
@@ -135,10 +128,7 @@ impl<'h, const N: usize> Parser<&'h [u8], &'h [u8; N]> for TakeConst<N> {
 	}
 }
 
-pub struct Void<P, D, O, E>
-where
-	P: Parser<D, O, E>
-{
+pub struct Void<P, D, O, E> {
 	parser: P,
 	/// ??? lol
 	__marker: PhantomData<fn(D) -> (O, E)>

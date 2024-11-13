@@ -3,20 +3,14 @@ use self::alloc_mod::Layout;
 use self::atomic::Ordering::*;
 
 #[repr(transparent)]
-pub struct RcInner<C, V, S>
-where
-	C: Counter
-{
+pub struct RcInner<C, V, S> {
 	ptr: ptr::NonNull<RcLayout<C, V, S>>
 }
 
 // if fields in this struct need to change,
 // make sure to change `calc_layout` accordingly
 #[repr(C)]
-struct RcLayout<C, V, S>
-where
-	C: Counter
-{
+struct RcLayout<C, V, S> {
 	/// The reference counter (handles counting both strong and weak references)
 	counter: C,
 
@@ -253,14 +247,8 @@ where
 /// value type, slice type, and slice length
 // TODO: make this fn `const` when `feature(const_alloc_layout)` is stable
 #[inline]
-fn calc_layout<C, V, S>(slice_len: usize) -> Layout
-where
-	C: Counter
-{
-	fn inner<C, V, S>(slice_len: usize) -> Option<Layout>
-	where
-		C: Counter
-	{
+fn calc_layout<C, V, S>(slice_len: usize) -> Layout {
+	fn inner<C, V, S>(slice_len: usize) -> Option<Layout> {
 		// if the size of `V` is not an even multiple of the align of the rest of the
 		// struct (max of `usize` and `C`), and align of `S` is less than or equal to
 		// align of `V`, the `slice` field will be at the end of `V` and there will be
