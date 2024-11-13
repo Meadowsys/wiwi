@@ -1,1 +1,1 @@
-window.SIDEBAR_ITEMS = {"macro":["nominal","nominal_mod","vec_chain"],"mod":["_changelog","chain","encoding","lazy_wrap","nominal","num","prelude_std","rc","string","vh"]};
+window.SIDEBAR_ITEMS = {"macro":["nominal","nominal_mod","vec_chain","with_cloned"],"mod":["_changelog","chain","encoding","lazy_wrap","macro_util","nominal","num","parser","prelude_std","rc","string","vh"]};

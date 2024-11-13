@@ -1,0 +1,1 @@
+window.SIDEBAR_ITEMS = {"enum":["Error"],"fn":["take","take_const","void"],"struct":["Success","Take","TakeConst","Void"],"trait":["Parser"],"type":["Result"]};
