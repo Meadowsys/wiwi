@@ -56,6 +56,7 @@ pub mod lazy_wrap;
 pub mod macro_util;
 pub mod nominal;
 pub mod num;
+pub mod parser;
 pub mod rc;
 pub mod string;
 pub mod vh;
