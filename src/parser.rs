@@ -19,6 +19,51 @@ pub enum Error<E> {
 
 pub type Result<D, O, E = ()> = std::result::Result<Success<D, O>, Error<E>>;
 
+impl<E> Error<E> {
+	#[inline]
+	fn from<EFrom>(error: Error<EFrom>) -> Self
+	where
+		EFrom: Into<E>
+	{
+		use self::Error::*;
+
+		match error {
+			NotEnoughData { missing } => { NotEnoughData { missing } }
+			Error { error } => { Error { error: error.into() } }
+			Fatal { error } => { Fatal { error: error.into() } }
+		}
+	}
+
+	#[inline]
+	fn into<EInto>(self) -> Error<EInto>
+	where
+		E: Into<EInto>
+	{
+		Error::from(self)
+	}
+}
+
+#[inline]
+pub fn delimited<P, D, O, E, PBefore, OBefore, EBefore, PAfter, OAfter, EAfter>(
+	parser_before: PBefore,
+	parser: P,
+	parser_after: PAfter
+) -> Delimited<P, D, O, E, PBefore, OBefore, EBefore, PAfter, OAfter, EAfter>
+where
+	P: Parser<D, O, E>,
+	PBefore: Parser<D, OBefore, EBefore>,
+	PAfter: Parser<D, OAfter, EAfter>,
+	EBefore: Into<E>,
+	EAfter: Into<E>
+{
+	Delimited {
+		parser_before,
+		parser,
+		parser_after,
+		__marker: PhantomData
+	}
+}
+
 #[inline]
 pub fn take<N>(amount: N) -> Take
 where
@@ -38,6 +83,55 @@ where
 	P: Parser<D, O, E>
 {
 	Void { parser, __marker: PhantomData }
+}
+
+#[expect(
+	clippy::type_complexity,
+	reason = "good naming makes it look alright I guess lol"
+)]
+pub struct Delimited<P, D, O, E, PBefore, OBefore, EBefore, PAfter, OAfter, EAfter>
+where
+	P: Parser<D, O, E>,
+	PBefore: Parser<D, OBefore, EBefore>,
+	PAfter: Parser<D, OAfter, EAfter>,
+	EBefore: Into<E>,
+	EAfter: Into<E>
+{
+	parser_before: PBefore,
+	parser: P,
+	parser_after: PAfter,
+	__marker: PhantomData<(
+		fn(D) -> (O, E),
+		fn(D) -> (OBefore, EBefore),
+		fn(D) -> (OAfter, EAfter)
+	)>
+}
+
+impl<P, D, O, E, PBefore, OBefore, EBefore, PAfter, OAfter, EAfter> Parser<D, O, E>
+for Delimited<P, D, O, E, PBefore, OBefore, EBefore, PAfter, OAfter, EAfter>
+where
+	P: Parser<D, O, E>,
+	PBefore: Parser<D, OBefore, EBefore>,
+	PAfter: Parser<D, OAfter, EAfter>,
+	EBefore: Into<E>,
+	EAfter: Into<E>
+{
+	#[inline]
+	fn parse(&mut self, data: D) -> Result<D, O, E> {
+		let Success {
+			output: _output_before,
+			data
+		} = self.parser_before.parse(data).map_err(Error::into)?;
+
+		let Success { output, data } = self.parser.parse(data)?;
+
+		let Success {
+			output: _output_after,
+			data
+		} = self.parser_after.parse(data).map_err(Error::into)?;
+
+		Ok(Success { output, data })
+	}
 }
 
 pub struct Take {
