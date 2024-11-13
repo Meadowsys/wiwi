@@ -1,5 +1,11 @@
 use crate::prelude_std::*;
 
+pub use self::hex::{ encode_hex, decode_hex };
+pub use self::z85::{ encode_z85, decode_z85 };
+
+pub mod base16;
+pub mod base32;
+pub mod base64;
 pub mod hex;
 pub mod z85;
 
