@@ -2,12 +2,18 @@ use crate::prelude_std::*;
 use super::{ Rc, RcWeak, Counter, ThreadCounter, AtomicCounter };
 
 #[repr(transparent)]
-pub struct RcStr<C: Counter, M = ()> {
+pub struct RcStr<C, M = ()>
+where
+	C: Counter
+{
 	inner: Rc<C, M, u8>
 }
 
 #[repr(transparent)]
-pub struct RcStrWeak<C: Counter, M = ()> {
+pub struct RcStrWeak<C, M = ()>
+where
+	C: Counter
+{
 	inner: RcWeak<C, M, u8>
 }
 
@@ -25,21 +31,30 @@ pub type RcStrAtomic<M = ()> = RcStr<AtomicCounter, M>;
 /// Weak pointer to an atomically counted reference counted thin pointer [`RcStrAtomic`]
 pub type RcStrAtomicWeak<M = ()> = RcStrWeak<AtomicCounter, M>;
 
-impl<C: Counter> RcStr<C> {
+impl<C> RcStr<C>
+where
+	C: Counter
+{
 	#[inline]
 	pub fn new(s: &str) -> Self {
 		Self { inner: Rc::from_slice_copy(s.as_bytes()) }
 	}
 }
 
-impl<C: Counter, M> RcStr<C, M> {
+impl<C, M> RcStr<C, M>
+where
+	C: Counter
+{
 	#[inline]
 	pub fn with_metadata(s: &str, metadata: M) -> Self {
 		Self { inner: Rc::from_value_and_slice_copy(metadata, s.as_bytes()) }
 	}
 }
 
-impl<C: Counter, M> RcStr<C, M> {
+impl<C, M> RcStr<C, M>
+where
+	C: Counter
+{
 	#[inline]
 	pub fn strong_count(&self) -> usize {
 		self.inner.strong_count()
@@ -56,14 +71,20 @@ impl<C: Counter, M> RcStr<C, M> {
 	}
 }
 
-impl<C: Counter, M> Clone for RcStr<C, M> {
+impl<C, M> Clone for RcStr<C, M>
+where
+	C: Counter
+{
 	#[inline]
 	fn clone(&self) -> Self {
 		Self { inner: self.inner.clone() }
 	}
 }
 
-impl<C: Counter, M> Deref for RcStr<C, M> {
+impl<C, M> Deref for RcStr<C, M>
+where
+	C: Counter
+{
 	type Target = str;
 
 	#[inline]
@@ -73,7 +94,10 @@ impl<C: Counter, M> Deref for RcStr<C, M> {
 	}
 }
 
-impl<C: Counter, M> RcStrWeak<C, M> {
+impl<C, M> RcStrWeak<C, M>
+where
+	C: Counter
+{
 	#[inline]
 	pub fn strong_count(&self) -> usize {
 		self.inner.strong_count()
@@ -90,7 +114,10 @@ impl<C: Counter, M> RcStrWeak<C, M> {
 	}
 }
 
-impl<C: Counter, M> Clone for RcStrWeak<C, M> {
+impl<C, M> Clone for RcStrWeak<C, M>
+where
+	C: Counter
+{
 	#[inline]
 	fn clone(&self) -> Self {
 		Self { inner: self.inner.clone() }

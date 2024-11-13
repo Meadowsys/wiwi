@@ -22,6 +22,7 @@
 	clippy::missing_safety_doc,
 	clippy::mixed_attributes_style,
 	clippy::multiple_unsafe_ops_per_block,
+	clippy::trait_duplication_in_bounds,
 	clippy::undocumented_unsafe_blocks,
 	clippy::unnecessary_safety_comment,
 	reason = "uwu"

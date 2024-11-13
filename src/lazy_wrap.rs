@@ -233,30 +233,50 @@ where
 // SAFETY: `LazyWrap` is `Send` if `T` and `F` are both `Send`.
 // Sending `LazyWrap` across threads can cause both `T` and `F` to be sent.
 // `F` can be sent to and run on another thread, so `F` must also be `Send`.
-unsafe impl<T, F> Send for LazyWrap<T, F> where T: Send, F: Send {}
+unsafe impl<T, F> Send for LazyWrap<T, F>
+where
+	T: Send,
+	F: Send
+{}
 
 // SAFETY: `LazyWrap` is `Sync` if `T` is `Sync` and `F` is `Send`.
 // Sharing `LazyWrap` across threads can cause `T` to be shared. `F` may be
 // run on the other thread via the shared reference if `LazyWrap` hasn't been
 // initialised/accessed yet, so `F` must be `Send`.
-unsafe impl<T, F> Sync for LazyWrap<T, F> where T: Sync, F: Send {}
+unsafe impl<T, F> Sync for LazyWrap<T, F>
+where
+	T: Sync,
+	F: Send
+{}
 
 // `UnwindSafe` if `T` and `F` are both `UnwindSafe`.
 // Sending `LazyWrap` across an unwind boundary will send `T` and `F` both. `T`
 // may be accessed and `F` may be called across an unwind boundary, and code may
 // panic while both is happening, so both `T` and `F` must be `UnwindSafe`.
-impl<T, F> UnwindSafe for LazyWrap<T, F> where T: UnwindSafe, F: UnwindSafe {}
+impl<T, F> UnwindSafe for LazyWrap<T, F>
+where
+	T: UnwindSafe,
+	F: UnwindSafe
+{}
 
 // `RefUnwindSafe` if `T` is `RefUnwindSafe` and `F` is `UnwindSafe`.
 // Sending references of `LazyWrap` will send `T` as a reference across. `F`
 // may be run and panic on the other side of the boundary if `LazyWrap` hasn't
 // been initialised yet, so must be `UnwindSafe`.
-impl<T, F> RefUnwindSafe for LazyWrap<T, F> where T: RefUnwindSafe, F: UnwindSafe {}
+impl<T, F> RefUnwindSafe for LazyWrap<T, F>
+where
+	T: RefUnwindSafe,
+	F: UnwindSafe
+{}
 
 // `Unpin` if `T` and `F` are both `Unpin`.
 // If either `T` or `F` cannot move, we cannot move either
 // (ie. cannot implement Unpin).
-impl<T, F> Unpin for LazyWrap<T, F> where T: Unpin, F: Unpin {}
+impl<T, F> Unpin for LazyWrap<T, F>
+where
+	T: Unpin,
+	F: Unpin
+{}
 
 impl<T, F> Debug for LazyWrap<T, F>
 where

@@ -19,14 +19,20 @@ mod str;
 /// Reference counted thin pointer, that can hold one sized
 /// value and one (dynamically sized) slice
 #[repr(transparent)]
-pub struct Rc<C: Counter, V, S> {
+pub struct Rc<C, V, S>
+where
+	C: Counter
+{
 	/// Opaque reference to inner data
 	inner: inner::RcInner<C, V, S>
 }
 
 /// Weak pointer to a reference counted thin pointer [`Rc`]
 #[repr(transparent)]
-pub struct RcWeak<C: Counter, V, S> {
+pub struct RcWeak<C, V, S>
+where
+	C: Counter
+{
 	/// Opaque reference to inner data
 	inner: inner::RcInner<C, V, S>
 }
@@ -43,7 +49,10 @@ pub type RcAtomic<V, S = ()> = Rc<AtomicCounter, V, S>;
 /// Weak pointer to an atomically counted reference counted thin pointer [`RcAtomic`]
 pub type RcAtomicWeak<V, S = ()> = RcWeak<AtomicCounter, V, S>;
 
-impl<C: Counter, V> Rc<C, V, ()> {
+impl<C, V> Rc<C, V, ()>
+where
+	C: Counter
+{
 	/// Creates a reference counter from a (sized) value, storing it in the `value`
 	/// field
 	#[inline]
@@ -52,7 +61,10 @@ impl<C: Counter, V> Rc<C, V, ()> {
 	}
 }
 
-impl<C: Counter, S> Rc<C, (), S> {
+impl<C, S> Rc<C, (), S>
+where
+	C: Counter
+{
 	/// Creates a reference counter from an array, storing it in the `slice` field
 	/// and erasing the array length from the type
 	///
@@ -65,7 +77,11 @@ impl<C: Counter, S> Rc<C, (), S> {
 	}
 }
 
-impl<C: Counter, S: Clone> Rc<C, (), S> {
+impl<C, S> Rc<C, (), S>
+where
+	C: Counter,
+	S: Clone
+{
 	/// Creates a reference counter from a slice, cloning all elements into the
 	/// `slice` field
 	///
@@ -78,7 +94,11 @@ impl<C: Counter, S: Clone> Rc<C, (), S> {
 	}
 }
 
-impl<C: Counter, S: Copy> Rc<C, (), S> {
+impl<C, S> Rc<C, (), S>
+where
+	C: Counter,
+	S: Copy
+{
 	/// Creates a reference counter from a slice, copying all elements into
 	/// the `slice` field
 	#[inline]
@@ -87,7 +107,10 @@ impl<C: Counter, S: Copy> Rc<C, (), S> {
 	}
 }
 
-impl<C: Counter, V, S> Rc<C, V, S> {
+impl<C, V, S> Rc<C, V, S>
+where
+	C: Counter
+{
 	/// Creates a reference counter from a value and an array, with the array
 	/// being stored in the `slice` field
 	#[inline]
@@ -96,7 +119,11 @@ impl<C: Counter, V, S> Rc<C, V, S> {
 	}
 }
 
-impl<C: Counter, V, S: Clone> Rc<C, V, S> {
+impl<C, V, S> Rc<C, V, S>
+where
+	C: Counter,
+	S: Clone
+{
 	/// Creates a reference counter from a value and a slice, cloning all
 	/// elements of the slice into the `slice` field
 	///
@@ -109,7 +136,11 @@ impl<C: Counter, V, S: Clone> Rc<C, V, S> {
 	}
 }
 
-impl<C: Counter, V, S: Copy> Rc<C, V, S> {
+impl<C, V, S> Rc<C, V, S>
+where
+	C: Counter,
+	S: Copy
+{
 	/// Creates a reference counter from a value and a slice, copying all
 	/// elements of the slice into the `slice` field
 	#[inline]
@@ -118,7 +149,10 @@ impl<C: Counter, V, S: Copy> Rc<C, V, S> {
 	}
 }
 
-impl<C: Counter, V, S> Rc<C, V, S> {
+impl<C, V, S> Rc<C, V, S>
+where
+	C: Counter
+{
 	/// Gets an immurable reference to the value stored in the `value` field
 	#[inline]
 	pub fn as_value_ref(&self) -> &V {
@@ -157,7 +191,10 @@ impl<C: Counter, V, S> Rc<C, V, S> {
 	}
 }
 
-impl<C: Counter, V, S> Clone for Rc<C, V, S> {
+impl<C, V, S> Clone for Rc<C, V, S>
+where
+	C: Counter
+{
 	/// Creates a new strong pointer to the same allocation,
 	/// incrementing the strong count
 	#[inline]
@@ -169,7 +206,10 @@ impl<C: Counter, V, S> Clone for Rc<C, V, S> {
 	}
 }
 
-impl<C: Counter, V, S> Drop for Rc<C, V, S> {
+impl<C, V, S> Drop for Rc<C, V, S>
+where
+	C: Counter
+{
 	#[inline]
 	fn drop(&mut self) {
 		// SAFETY: `self.inner` is a valid instance
@@ -185,7 +225,10 @@ impl<C: Counter, V, S> Drop for Rc<C, V, S> {
 	}
 }
 
-impl<C: Counter, V, S> RcWeak<C, V, S> {
+impl<C, V, S> RcWeak<C, V, S>
+where
+	C: Counter
+{
 	/// Gets the strong pointer count
 	#[inline]
 	pub fn strong_count(&self) -> usize {
@@ -216,7 +259,10 @@ impl<C: Counter, V, S> RcWeak<C, V, S> {
 	}
 }
 
-impl<C: Counter, V, S> Clone for RcWeak<C, V, S> {
+impl<C, V, S> Clone for RcWeak<C, V, S>
+where
+	C: Counter
+{
 	/// Creates a new weak pointer to the same allocation,
 	/// incrementing the weak count
 	#[inline]
@@ -228,7 +274,10 @@ impl<C: Counter, V, S> Clone for RcWeak<C, V, S> {
 	}
 }
 
-impl<C: Counter, V, S> Drop for RcWeak<C, V, S> {
+impl<C, V, S> Drop for RcWeak<C, V, S>
+where
+	C: Counter
+{
 	#[inline]
 	fn drop(&mut self) {
 		// SAFETY: `self.inner` is a valid instance
@@ -242,11 +291,33 @@ impl<C: Counter, V, S> Drop for RcWeak<C, V, S> {
 }
 
 // SAFETY: we are `Send` if the counter/value/slice are all `Send`
-unsafe impl<C: Counter + Send, V: Send, S: Send> Send for Rc<C, V, S> {}
+unsafe impl<C, V, S> Send for Rc<C, V, S>
+where
+	C: Counter + Send,
+	V: Send,
+	S: Send
+{}
+
 // SAFETY: same as above
-unsafe impl<C: Counter + Send, V: Send, S: Send> Send for RcWeak<C, V, S> {}
+unsafe impl<C, V, S> Send for RcWeak<C, V, S>
+where
+	C: Counter + Send,
+	V: Send,
+	S: Send
+{}
 
 // SAFETY: we are `Sync` if the counter/value/slice are all `Sync`
-unsafe impl<C: Counter + Sync, V: Sync, S: Sync> Sync for Rc<C, V, S> {}
+unsafe impl<C, V, S> Sync for Rc<C, V, S>
+where
+	C: Counter + Sync,
+	V: Sync,
+	S: Sync
+{}
+
 // SAFETY: same as above
-unsafe impl<C: Counter + Sync, V: Sync, S: Sync> Sync for RcWeak<C, V, S> {}
+unsafe impl<C, V, S> Sync for RcWeak<C, V, S>
+where
+	C: Counter + Sync,
+	V: Sync,
+	S: Sync
+{}

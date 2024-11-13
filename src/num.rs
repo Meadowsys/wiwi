@@ -19,7 +19,10 @@ macro_rules! from {
 		)]
 		#[doc = ""]
 		$(#[$trait_meta])*
-		pub trait $trait_name: Sealed {
+		pub trait $trait_name
+		where
+			Self: Sealed
+		{
 			#[doc = concat!("Convert from a [`", stringify!($type_name), "`] value")]
 			#[doc = ""]
 			$(#[$fn_meta])*
@@ -66,7 +69,10 @@ macro_rules! into {
 		)]
 		#[doc = ""]
 		$(#[$trait_meta])*
-		pub trait $trait_name: Sealed {
+		pub trait $trait_name
+		where
+			Self: Sealed
+		{
 			#[doc = concat!("Convert into a [`", stringify!($type_name), "`] value")]
 			#[doc = ""]
 			$(#[$fn_meta])*
@@ -2849,7 +2855,10 @@ mod private {
 	use super::*;
 
 	/// notouchie
-	pub trait Sealed: Sized {}
+	pub trait Sealed
+	where
+		Self: Sized
+	{}
 
 	macro_rules! impl_sealed {
 		{ $($type:ident)* } => {
@@ -2866,6 +2875,13 @@ mod private {
 		bool
 	}
 
-	impl<T: Sealed> Sealed for &T {}
-	impl<T: Sealed> Sealed for &mut T {}
+	impl<T> Sealed for &T
+	where
+		T: Sealed
+	{}
+
+	impl<T> Sealed for &mut T
+	where
+		T: Sealed
+	{}
 }

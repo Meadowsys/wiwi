@@ -6,9 +6,10 @@ mod vec;
 
 pub trait Chain
 where
-	Self: Sized + private::Sealed + Into<Self::Inner> + AsRef<Self::Inner> + AsMut<Self::Inner>
+	Self: Sized + private::Sealed + Into<Self::Inner> + AsRef<Self::Inner> + AsMut<Self::Inner>,
+	Self::Inner: ChainInner<Chain = Self>
 {
-	type Inner: ChainInner<Chain = Self>;
+	type Inner;
 
 	#[inline]
 	fn into_inner(self) -> Self::Inner {
@@ -42,9 +43,10 @@ where
 
 pub trait ChainInner
 where
-	Self: Sized + private::Sealed + Into<Self::Chain>
+	Self: Sized + private::Sealed + Into<Self::Chain>,
+	Self::Chain: Chain<Inner = Self>
 {
-	type Chain: Chain<Inner = Self>;
+	type Chain;
 
 	#[inline]
 	fn into_chain(self) -> Self::Chain {
@@ -59,7 +61,10 @@ where
 
 /// Trait implemented on chains and their inner types, allowing you to get a reference
 /// to the inner type regardless of if the chain or the inner type is passed in
-pub trait AsChainInner<I>: Sized + private::Sealed {
+pub trait AsChainInner<I>
+where
+	Self: Sized + private::Sealed
+{
 	fn as_inner(&self) -> &I;
 	fn as_inner_mut(&mut self) -> &mut I;
 }
@@ -75,7 +80,10 @@ pub trait AsChainInner<I>: Sized + private::Sealed {
 /// got initialised, and safely call [`assume_init`](MaybeUninit::assume_init).
 ///
 /// [`store`]: OutputStorage::store
-pub unsafe trait OutputStorage<T>: Sized + private::OutputStorageSealed<T> {
+pub unsafe trait OutputStorage<T>
+where
+	Self: Sized + private::OutputStorageSealed<T>
+{
 	/// # Safety
 	///
 	/// This can and should only be called once, and you must call it before returning,

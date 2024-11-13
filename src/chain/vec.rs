@@ -133,13 +133,15 @@ impl<T> VecChain<T> {
 		/// # Examples
 		///
 		/// TODO
-		append[I: AsChainInner<Vec<T>>](inner, other: &mut I)
-			=> inner.append(other.as_inner_mut())
+		append[I](inner, other: &mut I) where {
+			I: AsChainInner<Vec<T>>
+		} => inner.append(other.as_inner_mut())
 	}
 
 	chain_fn! {
-		binary_search[O: OutputStorage<Result<usize, usize>>](inner, x: &T, out: O) where {
-			T: Ord
+		binary_search[O](inner, x: &T, out: O) where {
+			T: Ord,
+			O: OutputStorage<Result<usize, usize>>
 		} => {
 			// SAFETY: we always write once to `out`
 			unsafe { out.store(inner.binary_search(x)) }
@@ -168,9 +170,12 @@ impl<T> VecChain<T> {
 	}
 
 	chain_fn! {
-		capacity[O: OutputStorage<usize>](inner, out: O)
+		capacity[O](inner, out: O) where {
+			O: OutputStorage<usize>
+		} => {
 			// SAFETY: we always write once to `out`
-			=> unsafe { out.store(inner.capacity()) }
+			unsafe { out.store(inner.capacity()) }
+		}
 	}
 
 	chain_fn! {
@@ -191,8 +196,9 @@ impl<T> VecChain<T> {
 	}
 
 	chain_fn! {
-		contains[O: OutputStorage<bool>](inner, x: &T, out: O) where {
-			T: PartialEq
+		contains[O](inner, x: &T, out: O) where {
+			T: PartialEq,
+			O: OutputStorage<bool>
 		} => {
 			// SAFETY: we always write once to `out`
 			unsafe { out.store(inner.contains(x)) }
@@ -219,8 +225,9 @@ impl<T> VecChain<T> {
 	}
 
 	chain_fn! {
-		ends_with[O: OutputStorage<bool>](inner, needle: &[T], out: O) where {
-			T: PartialEq
+		ends_with[O](inner, needle: &[T], out: O) where {
+			T: PartialEq,
+			O: OutputStorage<bool>
 		} => {
 			// SAFETY: we always write once to `out`
 			unsafe { out.store(inner.ends_with(needle)) }
@@ -245,9 +252,12 @@ impl<T> VecChain<T> {
 	}
 
 	chain_fn! {
-		len[O: OutputStorage<usize>](inner, out: O)
+		len[O](inner, out: O) where {
+			O: OutputStorage<usize>
+		} => {
 			// SAFETY: we always write once to `out`
-			=> unsafe { out.store(inner.len()) }
+			unsafe { out.store(inner.len()) }
+		}
 	}
 
 	chain_fn! {
@@ -256,9 +266,12 @@ impl<T> VecChain<T> {
 	}
 
 	chain_fn! {
-		remove[O: OutputStorage<T>](inner, index: usize, out: O)
+		remove[O](inner, index: usize, out: O) where {
+			O: OutputStorage<T>
+		} => {
 			// SAFETY: we always write once to `out`
-			=> unsafe { out.store(inner.remove(index)) }
+			unsafe { out.store(inner.remove(index)) }
+		}
 	}
 
 	chain_fn! {

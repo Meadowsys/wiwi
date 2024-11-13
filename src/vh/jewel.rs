@@ -5,34 +5,52 @@ use crate::num::*;
 use crate::rc::{ RcStr, Counter, AtomicCounter };
 use hashbrown::HashSet;
 
-struct JewelStore<C: Counter = AtomicCounter> {
+struct JewelStore<C = AtomicCounter>
+where
+	C: Counter
+{
 	modifiers: HashSet<Modifier<C>>,
 	jewels: Vec<Jewel<C>>
 }
 
-struct Jewel<C: Counter = AtomicCounter> {
+struct Jewel<C = AtomicCounter>
+where
+	C: Counter
+{
 	level: u16,
 	size: i16,
 	modifiers: JewelModifiers<C>
 }
 
-enum JewelModifiers<C: Counter = AtomicCounter> {
+enum JewelModifiers<C = AtomicCounter>
+where
+	C: Counter
+{
 	Chipped([ModifierInstance<C>; 1]),
 	Flawed([ModifierInstance<C>; 2]),
 	Flawless([ModifierInstance<C>; 3]),
 	Perfect([ModifierInstance<C>; 4])
 }
 
-struct ModifierInstance<C: Counter = AtomicCounter> {
+struct ModifierInstance<C = AtomicCounter>
+where
+	C: Counter
+{
 	modifier: Modifier<C>,
 	value: ModifierValue
 }
 
-struct Modifier<C: Counter = AtomicCounter> {
+struct Modifier<C = AtomicCounter>
+where
+	C: Counter
+{
 	inner: RcStr<C, ModifierMeta<C>>
 }
 
-struct ModifierMeta<C: Counter = AtomicCounter> {
+struct ModifierMeta<C = AtomicCounter>
+where
+	C: Counter
+{
 	display_name: RcStr<C>,
 	modifier_type: ModifierType
 }
@@ -72,7 +90,10 @@ impl JewelStore {
 	}
 
 	#[inline]
-	fn with_counter<C: Counter>() -> JewelStore<C> {
+	fn with_counter<C>() -> JewelStore<C>
+	where
+		C: Counter
+	{
 		JewelStore {
 			modifiers: HashSet::new(),
 			jewels: Vec::new()
@@ -80,7 +101,10 @@ impl JewelStore {
 	}
 }
 
-impl<C: Counter> JewelStore<C> {
+impl<C> JewelStore<C>
+where
+	C: Counter
+{
 	/// Register a modifier by its identifier, return [`Ok`] if added and [`Err`]
 	/// if the modifier already exists
 	#[inline]
@@ -100,7 +124,10 @@ impl<C: Counter> JewelStore<C> {
 	}
 }
 
-impl<C: Counter> Modifier<C> {
+impl<C> Modifier<C>
+where
+	C: Counter
+{
 	/// Create new modifier
 	///
 	/// This will always allocate, as it has no knowledge of existing modifier
@@ -117,32 +144,51 @@ impl<C: Counter> Modifier<C> {
 	}
 }
 
-impl<C: Counter> Borrow<str> for Modifier<C> {
+impl<C> Borrow<str> for Modifier<C>
+where
+	C: Counter
+{
 	#[inline]
 	fn borrow(&self) -> &str {
 		&self.inner
 	}
 }
 
-impl<C: Counter> Clone for Modifier<C> {
+impl<C> Clone for Modifier<C>
+where
+	C: Counter
+{
 	#[inline]
 	fn clone(&self) -> Self {
 		Self { inner: self.inner.clone() }
 	}
 }
 
-impl<C: Counter, C2: Counter> PartialEq<Modifier<C2>> for Modifier<C> {
+impl<C, C2> PartialEq<Modifier<C2>> for Modifier<C>
+where
+	C: Counter,
+	C2: Counter
+{
 	#[inline]
 	fn eq(&self, other: &Modifier<C2>) -> bool {
 		*self.inner == *other.inner
 	}
 }
 
-impl<C: Counter> Eq for Modifier<C> {}
+impl<C> Eq for Modifier<C>
+where
+	C: Counter
+{}
 
-impl<C: Counter> Hash for Modifier<C> {
+impl<C> Hash for Modifier<C>
+where
+	C: Counter
+{
 	#[inline]
-	fn hash<H: Hasher>(&self, state: &mut H) {
+	fn hash<H>(&self, state: &mut H)
+	where
+		H: Hasher
+	{
 		Hash::hash(&*self.inner, state)
 	}
 }

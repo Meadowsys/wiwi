@@ -20,7 +20,10 @@ pub enum Error<E> {
 pub type Result<D, O, E = ()> = std::result::Result<Success<D, O>, Error<E>>;
 
 #[inline]
-pub fn take<N: IntoUsize>(amount: N) -> Take {
+pub fn take<N>(amount: N) -> Take
+where
+	N: IntoUsize
+{
 	Take { amount: amount.into_usize() }
 }
 
@@ -30,7 +33,10 @@ pub fn take_const<const N: usize>() -> TakeConst<N> {
 }
 
 #[inline]
-pub fn void<P: Parser<D, O, E>, D, O, E>(parser: P) -> Void<P, D, O, E> {
+pub fn void<P, D, O, E>(parser: P) -> Void<P, D, O, E>
+where
+	P: Parser<D, O, E>
+{
 	Void { parser, __marker: PhantomData }
 }
 
@@ -71,7 +77,10 @@ impl<'h, const N: usize> Parser<&'h [u8], &'h [u8; N]> for TakeConst<N> {
 	}
 }
 
-pub struct Void<P: Parser<D, O, E>, D, O, E> {
+pub struct Void<P, D, O, E>
+where
+	P: Parser<D, O, E>
+{
 	parser: P,
 	/// ??? lol
 	__marker: PhantomData<fn(D) -> (O, E)>

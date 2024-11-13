@@ -3,14 +3,20 @@ use self::alloc_mod::Layout;
 use self::atomic::Ordering::*;
 
 #[repr(transparent)]
-pub struct RcInner<C: Counter, V, S> {
+pub struct RcInner<C, V, S>
+where
+	C: Counter
+{
 	ptr: ptr::NonNull<RcLayout<C, V, S>>
 }
 
 // if fields in this struct need to change,
 // make sure to change `calc_layout` accordingly
 #[repr(C)]
-struct RcLayout<C: Counter, V, S> {
+struct RcLayout<C, V, S>
+where
+	C: Counter
+{
 	/// The reference counter (handles counting both strong and weak references)
 	counter: C,
 
@@ -29,27 +35,44 @@ struct RcLayout<C: Counter, V, S> {
 }
 
 #[inline]
-pub fn new_from_value<C: Counter, V>(value: V) -> RcInner<C, V, ()> {
+pub fn new_from_value<C, V>(value: V) -> RcInner<C, V, ()>
+where
+	C: Counter
+{
 	new_from_value_and_slice_copy(value, &[])
 }
 
 #[inline]
-pub fn new_from_array_into_slice<C: Counter, S, const N: usize>(array: [S; N]) -> RcInner<C, (), S> {
+pub fn new_from_array_into_slice<C, S, const N: usize>(array: [S; N]) -> RcInner<C, (), S>
+where
+	C: Counter
+{
 	new_from_value_and_array_into_slice((), array)
 }
 
 #[inline]
-pub fn new_from_slice_clone<C: Counter, S: Clone>(slice: &[S]) -> RcInner<C, (), S> {
+pub fn new_from_slice_clone<C, S>(slice: &[S]) -> RcInner<C, (), S>
+where
+	C: Counter,
+	S: Clone
+{
 	new_from_value_and_slice_clone((), slice)
 }
 
 #[inline]
-pub fn new_from_slice_copy<C: Counter, S: Copy>(slice: &[S]) -> RcInner<C, (), S> {
+pub fn new_from_slice_copy<C, S>(slice: &[S]) -> RcInner<C, (), S>
+where
+	C: Counter,
+	S: Copy
+{
 	new_from_value_and_slice_copy((), slice)
 }
 
 #[inline]
-pub fn new_from_value_and_array_into_slice<C: Counter, V, S, const N: usize>(value: V, array: [S; N]) -> RcInner<C, V, S> {
+pub fn new_from_value_and_array_into_slice<C, V, S, const N: usize>(value: V, array: [S; N]) -> RcInner<C, V, S>
+where
+	C: Counter
+{
 	let array = ManuallyDrop::new(array);
 
 	// SAFETY: we put the array into `ManuallyDrop`
@@ -57,7 +80,11 @@ pub fn new_from_value_and_array_into_slice<C: Counter, V, S, const N: usize>(val
 }
 
 #[inline]
-pub fn new_from_value_and_slice_clone<C: Counter, V, S: Clone>(value: V, slice: &[S]) -> RcInner<C, V, S> {
+pub fn new_from_value_and_slice_clone<C, V, S>(value: V, slice: &[S]) -> RcInner<C, V, S>
+where
+	C: Counter,
+	S: Clone
+{
 	let instance = alloc_instance::<_, _, S>(slice.len());
 
 	// SAFETY:
@@ -82,7 +109,11 @@ pub fn new_from_value_and_slice_clone<C: Counter, V, S: Clone>(value: V, slice: 
 }
 
 #[inline]
-pub fn new_from_value_and_slice_copy<C: Counter, V, S: Copy>(value: V, slice: &[S]) -> RcInner<C, V, S> {
+pub fn new_from_value_and_slice_copy<C, V, S>(value: V, slice: &[S]) -> RcInner<C, V, S>
+where
+	C: Counter,
+	S: Copy
+{
 	// SAFETY: `S: Copy` enforced by trait bound
 	unsafe { new_from_value_and_slice_copy_unchecked(value, slice) }
 }
@@ -93,7 +124,10 @@ pub fn new_from_value_and_slice_copy<C: Counter, V, S: Copy>(value: V, slice: &[
 /// or the input slice should be prevented from dropping to avoid double
 /// dropping elements.
 #[inline]
-unsafe fn new_from_value_and_slice_copy_unchecked<C: Counter, V, S>(value: V, slice: &[S]) -> RcInner<C, V, S> {
+unsafe fn new_from_value_and_slice_copy_unchecked<C, V, S>(value: V, slice: &[S]) -> RcInner<C, V, S>
+where
+	C: Counter
+{
 	let instance = alloc_instance(slice.len());
 
 	// SAFETY:
@@ -125,7 +159,10 @@ unsafe fn new_from_value_and_slice_copy_unchecked<C: Counter, V, S>(value: V, sl
 /// [`Counter`]. Caller is responsible for initialising the `value` and `slice`
 /// fields.
 #[inline]
-fn alloc_instance<C: Counter, V, S>(slice_len: usize) -> RcInner<C, V, S> {
+fn alloc_instance<C, V, S>(slice_len: usize) -> RcInner<C, V, S>
+where
+	C: Counter
+{
 	let layout = calc_layout::<C, V, S>(slice_len);
 
 	// SAFETY: `calc_layout` never returns layout with 0 size
@@ -159,7 +196,10 @@ fn alloc_instance<C: Counter, V, S>(slice_len: usize) -> RcInner<C, V, S> {
 /// This instance must be fully initialised, and this must be the first time
 /// this function is called on this particular `instance`.
 #[inline]
-pub unsafe fn drop_instance<C: Counter, V, S>(instance: RcInner<C, V, S>) {
+pub unsafe fn drop_instance<C, V, S>(instance: RcInner<C, V, S>)
+where
+	C: Counter
+{
 	// SAFETY: caller promises `instance` is fully initialised
 	let slice_ref = unsafe { slice_ref(instance) };
 
@@ -190,7 +230,10 @@ pub unsafe fn drop_instance<C: Counter, V, S>(instance: RcInner<C, V, S>) {
 /// that is equivalent to leaking the value and slice fields, and is almost
 /// certainly incorrect.
 #[inline]
-pub unsafe fn dealloc_instance<C: Counter, V, S>(instance: RcInner<C, V, S>) {
+pub unsafe fn dealloc_instance<C, V, S>(instance: RcInner<C, V, S>)
+where
+	C: Counter
+{
 	// SAFETY: caller promises `counter` is initialised
 	let counter_ptr = unsafe { counter_ptr(instance).as_ptr() };
 
@@ -210,8 +253,14 @@ pub unsafe fn dealloc_instance<C: Counter, V, S>(instance: RcInner<C, V, S>) {
 /// value type, slice type, and slice length
 // TODO: make this fn `const` when `feature(const_alloc_layout)` is stable
 #[inline]
-fn calc_layout<C: Counter, V, S>(slice_len: usize) -> Layout {
-	fn inner<C: Counter, V, S>(slice_len: usize) -> Option<Layout> {
+fn calc_layout<C, V, S>(slice_len: usize) -> Layout
+where
+	C: Counter
+{
+	fn inner<C, V, S>(slice_len: usize) -> Option<Layout>
+	where
+		C: Counter
+	{
 		// if the size of `V` is not an even multiple of the align of the rest of the
 		// struct (max of `usize` and `C`), and align of `S` is less than or equal to
 		// align of `V`, the `slice` field will be at the end of `V` and there will be
@@ -253,7 +302,10 @@ fn calc_layout<C: Counter, V, S>(slice_len: usize) -> Layout {
 ///
 /// - The provided `instance` must not have been deallocated
 #[inline]
-unsafe fn counter_ptr<C: Counter, V, S>(instance: RcInner<C, V, S>) -> ptr::NonNull<C> {
+unsafe fn counter_ptr<C, V, S>(instance: RcInner<C, V, S>) -> ptr::NonNull<C>
+where
+	C: Counter
+{
 	// SAFETY: caller promises to uphold the requirements
 	let ptr = unsafe { &raw const (*instance.ptr.as_ptr()).counter };
 
@@ -267,7 +319,10 @@ unsafe fn counter_ptr<C: Counter, V, S>(instance: RcInner<C, V, S>) -> ptr::NonN
 /// - `instance` must outlive `'h` (the lifetime of the returned reference)
 /// - The returned reference must be the only mut reference into `counter` (exclusive borrow)
 #[inline]
-unsafe fn counter_uninit<'h, C: Counter, V, S>(instance: RcInner<C, V, S>) -> &'h mut MaybeUninit<C> {
+unsafe fn counter_uninit<'h, C, V, S>(instance: RcInner<C, V, S>) -> &'h mut MaybeUninit<C>
+where
+	C: Counter
+{
 	// SAFETY: caller promises to uphold the requirements
 	let ptr = unsafe { counter_ptr(instance).as_ptr() };
 
@@ -281,7 +336,10 @@ unsafe fn counter_uninit<'h, C: Counter, V, S>(instance: RcInner<C, V, S>) -> &'
 /// - The provided `instance` must have field `counter` already initialised
 /// - `instance` must outlive `'h` (the lifetime of the returned reference)
 #[inline]
-pub unsafe fn counter_ref<'h, C: Counter, V, S>(instance: RcInner<C, V, S>) -> &'h C {
+pub unsafe fn counter_ref<'h, C, V, S>(instance: RcInner<C, V, S>) -> &'h C
+where
+	C: Counter
+{
 	// SAFETY: caller promises to uphold the requirements
 	let ptr = unsafe { counter_ptr(instance).as_ptr() };
 
@@ -293,7 +351,10 @@ pub unsafe fn counter_ref<'h, C: Counter, V, S>(instance: RcInner<C, V, S>) -> &
 ///
 /// - The provided `instance` must not have been deallocated
 #[inline]
-unsafe fn slice_len_ptr<C: Counter, V, S>(instance: RcInner<C, V, S>) -> ptr::NonNull<usize> {
+unsafe fn slice_len_ptr<C, V, S>(instance: RcInner<C, V, S>) -> ptr::NonNull<usize>
+where
+	C: Counter
+{
 	// SAFETY: caller promises to uphold the requirements
 	let ptr = unsafe { &raw const (*instance.ptr.as_ptr()).slice_len };
 
@@ -307,7 +368,10 @@ unsafe fn slice_len_ptr<C: Counter, V, S>(instance: RcInner<C, V, S>) -> ptr::No
 /// - `instance` must outlive `'h` (the lifetime of the returned reference)
 /// - The returned reference must be the only mut reference into `slice_len` (exclusive borrow)
 #[inline]
-unsafe fn slice_len_uninit<'h, C: Counter, V, S>(instance: RcInner<C, V, S>) -> &'h mut MaybeUninit<usize> {
+unsafe fn slice_len_uninit<'h, C, V, S>(instance: RcInner<C, V, S>) -> &'h mut MaybeUninit<usize>
+where
+	C: Counter
+{
 	// SAFETY: caller promises to uphold the requirements
 	let ptr = unsafe { slice_len_ptr(instance).as_ptr() };
 
@@ -321,7 +385,10 @@ unsafe fn slice_len_uninit<'h, C: Counter, V, S>(instance: RcInner<C, V, S>) -> 
 /// - The provided `instance` must have field `slice_len` already initialised
 /// - `instance` must outlive `'h` (the lifetime of the returned reference)
 #[inline]
-unsafe fn slice_len<C: Counter, V, S>(instance: RcInner<C, V, S>) -> usize {
+unsafe fn slice_len<C, V, S>(instance: RcInner<C, V, S>) -> usize
+where
+	C: Counter
+{
 	// SAFETY: caller promises to uphold the requirements
 	let ptr = unsafe { slice_len_ptr(instance).as_ptr() };
 
@@ -333,7 +400,10 @@ unsafe fn slice_len<C: Counter, V, S>(instance: RcInner<C, V, S>) -> usize {
 ///
 /// - The provided `instance` must not have been dropped or deallocated
 #[inline]
-unsafe fn value_ptr<C: Counter, V, S>(instance: RcInner<C, V, S>) -> ptr::NonNull<V> {
+unsafe fn value_ptr<C, V, S>(instance: RcInner<C, V, S>) -> ptr::NonNull<V>
+where
+	C: Counter
+{
 	// SAFETY: caller promises to uphold the requirements
 	let ptr = unsafe { &raw const (*instance.ptr.as_ptr()).value };
 
@@ -347,7 +417,10 @@ unsafe fn value_ptr<C: Counter, V, S>(instance: RcInner<C, V, S>) -> ptr::NonNul
 /// - `instance` must outlive `'h` (the lifetime of the returned reference)
 /// - The returned reference must be the only mut reference into `value` (exclusive borrow)
 #[inline]
-unsafe fn value_uninit<'h, C: Counter, V, S>(instance: RcInner<C, V, S>) -> &'h mut MaybeUninit<V> {
+unsafe fn value_uninit<'h, C, V, S>(instance: RcInner<C, V, S>) -> &'h mut MaybeUninit<V>
+where
+	C: Counter
+{
 	// SAFETY: caller promises to uphold the requirements
 	let ptr = unsafe { value_ptr(instance).as_ptr() };
 
@@ -361,7 +434,10 @@ unsafe fn value_uninit<'h, C: Counter, V, S>(instance: RcInner<C, V, S>) -> &'h 
 /// - The provided `instance` must have field `value` already initialised
 /// - `instance` must outlive `'h` (the lifetime of the returned reference)
 #[inline]
-pub unsafe fn value_ref<'h, C: Counter, V, S>(instance: RcInner<C, V, S>) -> &'h V {
+pub unsafe fn value_ref<'h, C, V, S>(instance: RcInner<C, V, S>) -> &'h V
+where
+	C: Counter
+{
 	// SAFETY: caller promises to uphold the requirements
 	let ptr = unsafe { value_ptr(instance).as_ptr() };
 
@@ -373,7 +449,10 @@ pub unsafe fn value_ref<'h, C: Counter, V, S>(instance: RcInner<C, V, S>) -> &'h
 ///
 /// - The provided `instance` must not have been dropped or deallocated
 #[inline]
-unsafe fn slice_thin_ptr<C: Counter, V, S>(instance: RcInner<C, V, S>) -> ptr::NonNull<S> {
+unsafe fn slice_thin_ptr<C, V, S>(instance: RcInner<C, V, S>) -> ptr::NonNull<S>
+where
+	C: Counter
+{
 	// SAFETY: caller promises to uphold the requirements
 	let ptr = unsafe { &raw const (*instance.ptr.as_ptr()).slice };
 	let ptr = ptr.cast::<S>();
@@ -389,7 +468,10 @@ unsafe fn slice_thin_ptr<C: Counter, V, S>(instance: RcInner<C, V, S>) -> ptr::N
 /// - The provided `instance` must have `slice_len` elements in `slice` already initialised
 /// - `instance` must outlive `'h` (the lifetime of the returned reference)
 #[inline]
-pub unsafe fn slice_ref<'h, C: Counter, V, S>(instance: RcInner<C, V, S>) -> &'h [S] {
+pub unsafe fn slice_ref<'h, C, V, S>(instance: RcInner<C, V, S>) -> &'h [S]
+where
+	C: Counter
+{
 	// SAFETY: caller promises to uphold the requirements
 	let ptr = unsafe { slice_thin_ptr(instance).as_ptr() };
 
@@ -400,14 +482,20 @@ pub unsafe fn slice_ref<'h, C: Counter, V, S>(instance: RcInner<C, V, S>) -> &'h
 	unsafe { slice::from_raw_parts(ptr, slice_len) }
 }
 
-impl<C: Counter, V, S> Clone for RcInner<C, V, S> {
+impl<C, V, S> Clone for RcInner<C, V, S>
+where
+	C: Counter
+{
 	#[inline]
 	fn clone(&self) -> Self {
 		*self
 	}
 }
 
-impl<C: Counter, V, S> Copy for RcInner<C, V, S> {}
+impl<C, V, S> Copy for RcInner<C, V, S>
+where
+	C: Counter
+{}
 
 /// Trait for structs that can count references
 ///

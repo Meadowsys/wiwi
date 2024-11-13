@@ -333,7 +333,10 @@ impl<T, M> From<T> for Nominal<T, M> {
 
 // delegate trait impls by just calling T's impl
 
-impl<T: Clone, M> Clone for Nominal<T, M> {
+impl<T, M> Clone for Nominal<T, M>
+where
+	T: Clone
+{
 	#[inline]
 	fn clone(&self) -> Self {
 		Self::new(self.as_value_ref().clone())
@@ -345,9 +348,15 @@ impl<T: Clone, M> Clone for Nominal<T, M> {
 	}
 }
 
-impl<T: Copy, M> Copy for Nominal<T, M> {}
+impl<T, M> Copy for Nominal<T, M>
+where
+	T: Copy
+{}
 
-impl<T: Debug, M> Debug for Nominal<T, M> {
+impl<T, M> Debug for Nominal<T, M>
+where
+	T: Debug
+{
 	#[inline]
 	fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
 		f.debug_struct("Nominal")
@@ -356,30 +365,43 @@ impl<T: Debug, M> Debug for Nominal<T, M> {
 	}
 }
 
-impl<T: Display, M> Display for Nominal<T, M> {
+impl<T, M> Display for Nominal<T, M>
+where
+	T: Display
+{
 	#[inline]
 	fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
 		self.as_value_ref().fmt(f)
 	}
 }
 
-impl<T: Default, M> Default for Nominal<T, M> {
+impl<T, M> Default for Nominal<T, M>
+where
+	T: Default
+{
 	#[inline]
 	fn default() -> Self {
 		Self::new(T::default())
 	}
 }
 
-impl<T: Hash, M> Hash for Nominal<T, M> {
+impl<T, M> Hash for Nominal<T, M>
+where
+	T: Hash
+{
 	#[inline]
-	fn hash<H: Hasher>(&self, state: &mut H) {
+	fn hash<H>(&self, state: &mut H)
+	where
+		H: Hasher
+	{
 		self.as_value_ref().hash(state)
 	}
 
 	#[inline]
-	fn hash_slice<H: Hasher>(data: &[Self], state: &mut H)
+	fn hash_slice<H>(data: &[Self], state: &mut H)
 	where
-		Self: Sized
+		Self: Sized,
+		H: Hasher
 	{
 		#[expect(clippy::as_conversions, reason = "ptr cast")]
 		let slice_ptr = data as *const [Self] as *const [T];
@@ -393,7 +415,10 @@ impl<T: Hash, M> Hash for Nominal<T, M> {
 	}
 }
 
-impl<T: PartialEq<TR>, M, TR, MR> PartialEq<Nominal<TR, MR>> for Nominal<T, M> {
+impl<T, M, TR, MR> PartialEq<Nominal<TR, MR>> for Nominal<T, M>
+where
+	T: PartialEq<TR>
+{
 	#[inline]
 	fn eq(&self, other: &Nominal<TR, MR>) -> bool {
 		self.as_value_ref().eq(other.as_value_ref())
@@ -409,9 +434,15 @@ impl<T: PartialEq<TR>, M, TR, MR> PartialEq<Nominal<TR, MR>> for Nominal<T, M> {
 	}
 }
 
-impl<T: Eq, M> Eq for Nominal<T, M> {}
+impl<T, M> Eq for Nominal<T, M>
+where
+	T: Eq
+{}
 
-impl<T: PartialOrd<TR>, M, TR, MR> PartialOrd<Nominal<TR, MR>> for Nominal<T, M> {
+impl<T, M, TR, MR> PartialOrd<Nominal<TR, MR>> for Nominal<T, M>
+where
+	T: PartialOrd<TR>
+{
 	#[inline]
 	fn partial_cmp(&self, other: &Nominal<TR, MR>) -> Option<cmp::Ordering> {
 		self.as_value_ref().partial_cmp(other.as_value_ref())
@@ -438,7 +469,10 @@ impl<T: PartialOrd<TR>, M, TR, MR> PartialOrd<Nominal<TR, MR>> for Nominal<T, M>
 	}
 }
 
-impl<T: Ord, M> Ord for Nominal<T, M> {
+impl<T, M> Ord for Nominal<T, M>
+where
+	T: Ord
+{
 	#[inline]
 	fn cmp(&self, other: &Self) -> cmp::Ordering {
 		self.as_value_ref().cmp(other.as_value_ref())
