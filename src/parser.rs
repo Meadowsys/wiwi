@@ -3,7 +3,11 @@ use crate::num::*;
 use std::num::NonZero;
 
 pub trait Parser<D, O, E = ()> {
-	fn parse(&mut self, data: D) -> Result<D, O, E>;
+	fn parse(&self, data: D) -> Result<D, O, E>;
+}
+
+pub trait ParserStateful<D, O, E = ()> {
+	fn parse_stateful(&mut self, data: D) -> Result<D, O, E>;
 }
 
 pub struct Success<D, O> {
@@ -18,6 +22,16 @@ pub enum Error<E> {
 }
 
 pub type Result<D, O, E = ()> = std::result::Result<Success<D, O>, Error<E>>;
+
+impl<T, D, O, E> ParserStateful<D, O, E> for T
+where
+	T: Parser<D, O, E>
+{
+	#[inline]
+	fn parse_stateful(&mut self, data: D) -> Result<D, O, E> {
+		self.parse(data)
+	}
+}
 
 impl<E> Error<E> {
 	#[inline]
@@ -117,7 +131,7 @@ where
 	EAfter: Into<E>
 {
 	#[inline]
-	fn parse(&mut self, data: D) -> Result<D, O, E> {
+	fn parse(&self, data: D) -> Result<D, O, E> {
 		let Success {
 			output: _output_before,
 			data
@@ -140,7 +154,7 @@ pub struct Take {
 
 impl<'h> Parser<&'h [u8], &'h [u8]> for Take {
 	#[inline]
-	fn parse(&mut self, data: &'h [u8]) -> Result<&'h [u8], &'h [u8]> {
+	fn parse(&self, data: &'h [u8]) -> Result<&'h [u8], &'h [u8]> {
 		data.split_at_checked(self.amount)
 			.map(|(output, data)| Success { output, data })
 			.ok_or_else(|| Error::NotEnoughData {
@@ -155,7 +169,7 @@ pub struct TakeConst<const N: usize> {
 
 impl<'h, const N: usize> Parser<&'h [u8], &'h [u8; N]> for TakeConst<N> {
 	#[inline]
-	fn parse(&mut self, data: &'h [u8]) -> Result<&'h [u8], &'h [u8; N]> {
+	fn parse(&self, data: &'h [u8]) -> Result<&'h [u8], &'h [u8; N]> {
 		data.split_at_checked(N)
 			.map(|(output, data)| Success {
 				// SAFETY: output is going to be N length because `split_at_checked`
@@ -185,7 +199,7 @@ where
 	P: Parser<D, O, E>
 {
 	#[inline]
-	fn parse(&mut self, data: D) -> Result<D, (), E> {
+	fn parse(&self, data: D) -> Result<D, (), E> {
 		let Success { output: _void, data } = self.parser.parse(data)?;
 		Ok(Success { output: (), data })
 	}
