@@ -130,7 +130,6 @@ impl<'h, const N: usize> Parser<&'h [u8], &'h [u8; N]> for TakeConst<N> {
 
 pub struct Void<P, D, O, E> {
 	parser: P,
-	/// ??? lol
 	__marker: PhantomData<fn(D) -> (O, E)>
 }
 
