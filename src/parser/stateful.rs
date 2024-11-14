@@ -57,8 +57,8 @@ pub struct Delimited<P, D, O, E, PBefore, OBefore, EBefore, PAfter, OAfter, EAft
 	parser: P,
 	parser_after: PAfter,
 	__marker: PhantomData<(
-		fn(D) -> (O, E),
 		fn(D) -> (OBefore, EBefore),
+		fn(D) -> (O, E),
 		fn(D) -> (OAfter, EAfter)
 	)>
 }
