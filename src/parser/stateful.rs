@@ -1,6 +1,6 @@
 use crate::prelude_std::*;
 use crate::num::*;
-use super::{ stateless, Error, Input, Parser as _, ParserPhantom, Result, Success };
+use super::{ stateless, Error, Input, Needle, Parser as _, ParserPhantom, Result, Success };
 
 pub trait ParserStateful<I, O, E = ()>
 where
@@ -75,6 +75,11 @@ where
 }
 
 #[inline]
+pub fn tag<T>(tag: T) -> Tag<T> {
+	Tag { inner: stateless::tag(tag) }
+}
+
+#[inline]
 pub fn take<N>(amount: N) -> Take
 where
 	N: IntoUsize
@@ -144,6 +149,22 @@ where
 		} = self.parser_after.parse_stateful(input).map_err(Error::into)?;
 
 		Ok(Success { output, remaining_input })
+	}
+}
+
+#[repr(transparent)]
+pub struct Tag<T> {
+	inner: stateless::Tag<T>
+}
+
+impl<I, T> ParserStateful<I, ()> for Tag<T>
+where
+	I: Input,
+	T: Needle<I>
+{
+	#[inline]
+	fn parse_stateful(&mut self, input: I) -> Result<I, ()> {
+		self.inner.parse(input)
 	}
 }
 
