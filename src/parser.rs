@@ -62,3 +62,16 @@ impl<E> Error<E> {
 		Error::from(self)
 	}
 }
+
+#[inline]
+const fn max_init_cap<T>() -> usize {
+	// 1 MiB
+	const MAX_BYTES: usize = 1024 * 1024;
+
+	if size_of::<T>() == 0 {
+		// ZST, doesn't really matter honestly
+		MAX_BYTES
+	} else {
+		MAX_BYTES / size_of::<T>()
+	}
+}

@@ -1,6 +1,6 @@
 use crate::prelude_std::*;
 use crate::num::*;
-use super::{ util, Error, Input, Needle, ParserPhantom, Result, Success };
+use super::{ max_init_cap, util, Error, Input, Needle, ParserPhantom, Result, Success };
 use std::num::NonZero;
 
 pub trait Parser<I, O, E = ()>
@@ -124,6 +124,24 @@ decl_num_fn! {
 }
 
 #[inline]
+pub fn repeat<P, I, O, E>(parser: P, count: usize) -> Repeat<P, I, O, E>
+where
+	I: Clone + Input,
+	P: Parser<I, O, E>
+{
+	Repeat { parser, count, __marker: PhantomData }
+}
+
+#[inline]
+pub fn spin<P, I, O, E>(parser: P) -> Spin<P, I, O, E>
+where
+	I: Clone + Input,
+	P: Parser<I, O, E>
+{
+	Spin { parser, __marker: PhantomData }
+}
+
+#[inline]
 pub fn tag<T>(tag: T) -> Tag<T> {
 	Tag { tag }
 }
@@ -158,7 +176,7 @@ where
 // #[repr(transparent)]
 // pub struct ApplyMany<P, I, O, E>
 // where
-// 	I: Input + Clone
+// 	I: Input
 // {
 // 	parser: P,
 // 	__marker: ParserPhantom<I, O, E>
@@ -166,23 +184,23 @@ where
 //
 // impl<P, I, O, E> Parser<I, Vec<O>, E> for ApplyMany<P, I, O, E>
 // where
-// 	I: Input + Clone,
+// 	I: Clone + Input,
 // 	P: Parser<I, O, E>
 // {
 // 	#[inline]
 // 	fn parse(&self, input: I) -> Result<I, Vec<O>, E> {
-// 		let mut vec = Vec::new();
+// 		let mut out = Vec::new();
 // 		let mut remaining = input;
 //
 // 		loop {
 // 			// todo: i dont like this
 // 			match self.parser.parse(remaining.clone()) {
 // 				Ok(Success { output, remaining_input }) => {
-// 					vec.push(output);
+// 					out.push(output);
 // 					remaining = remaining_input;
 // 				}
 // 				Err(super::Error::NotEnoughData { .. }) => {
-// 					return Ok(Success { output: vec, remaining_input: remaining })
+// 					return Ok(Success { output: out, remaining_input: remaining })
 // 				}
 // 				Err(e) => { return Err(e) }
 // 			}
@@ -321,6 +339,66 @@ decl_num_struct! {
 	usize 8 NumUsizeLE NumUsizeBE NumUsizeNE
 	#[cfg(target_pointer_width = "64")]
 	isize 8 NumIsizeLE NumIsizeBE NumIsizeNE
+}
+
+pub struct Repeat<P, I, O, E>
+where
+	I: Input
+{
+	parser: P,
+	count: usize,
+	__marker: ParserPhantom<I, O, E>
+}
+
+impl<P, I, O, E> Parser<I, Vec<O>, E> for Repeat<P, I, O, E>
+where
+	I: Clone + Input,
+	P: Parser<I, O, E>
+{
+	#[inline]
+	fn parse(&self, mut input: I) -> Result<I, Vec<O>, E> {
+		let mut out = Vec::with_capacity(usize::max(const { max_init_cap::<O>() }, self.count));
+
+		for _ in 0..self.count {
+			let Success { output, remaining_input } = self.parser.parse(input.clone())?;
+			out.push(output);
+			input = remaining_input;
+		}
+
+		Ok(Success { output: out, remaining_input: input })
+	}
+}
+
+pub struct Spin<P, I, O, E>
+where
+	I: Input
+{
+	parser: P,
+	__marker: ParserPhantom<I, O, E>
+}
+
+impl<P, I, O, E> Parser<I, Vec<O>, E> for Spin<P, I, O, E>
+where
+	I: Clone + Input,
+	P: Parser<I, O, E>
+{
+	#[inline]
+	fn parse(&self, mut input: I) -> Result<I, Vec<O>, E> {
+		let mut out = Vec::new();
+
+		loop {
+			match self.parser.parse(input.clone()) {
+				Ok(Success { output, remaining_input }) => {
+					out.push(output);
+					input = remaining_input;
+				}
+				Err(Error::NotEnoughData { missing: _ }) => {
+					return Ok(Success { output: out, remaining_input: input })
+				}
+				Err(e) => { return Err(e) }
+			}
+		}
+	}
 }
 
 #[repr(transparent)]

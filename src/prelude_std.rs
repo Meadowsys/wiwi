@@ -36,6 +36,7 @@ pub use std::{
 
 	array,
 	env,
+	error,
 	hint,
 	ptr,
 	slice,
@@ -82,7 +83,6 @@ pub use std::convert::{
 	identity
 };
 pub use std::default::Default;
-pub use std::error::Error;
 pub use std::fmt::{ self, Debug, Display };
 pub use std::future::{ self, Future, IntoFuture };
 pub use std::hash::{ self, Hash, Hasher };
