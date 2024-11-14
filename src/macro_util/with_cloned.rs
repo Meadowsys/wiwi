@@ -166,7 +166,7 @@
 macro_rules! with_cloned {
 	($($stuff:tt)*) => {
 		// hide potential distracting implementation details in docs
-		$crate::macro_util::_with_cloned_impl! { $($stuff)* }
+		$crate::macro_util::__with_cloned_impl! { $($stuff)* }
 	}
 }
 pub use with_cloned;
