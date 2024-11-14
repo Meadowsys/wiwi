@@ -19,7 +19,7 @@ pub struct VecIntoIter<T> {
 	len: usize,
 	/// Remaining elements to emit
 	remaining: usize,
-	_marker: PhantomData<T>
+	__marker: PhantomData<T>
 }
 
 impl<T> Iter for VecIntoIter<T> {
@@ -82,9 +82,9 @@ impl<T> IntoIter for Vec<T> {
 		let capacity = me.capacity();
 		let len = me.len();
 		let remaining = len;
-		let _marker = PhantomData;
+		let __marker = PhantomData;
 
-		VecIntoIter { ptr, capacity, len, remaining, _marker }
+		VecIntoIter { ptr, capacity, len, remaining, __marker }
 	}
 }
 

@@ -390,7 +390,7 @@ impl<'h> Output for OutputVecBuffer<'h> {
 pub struct InputSliceBuffer<'h> {
 	ptr: *const u8,
 	remaining: usize,
-	_marker: PhantomData<&'h [u8]>
+	__marker: PhantomData<&'h [u8]>
 }
 
 impl<'h> InputSliceBuffer<'h> {
@@ -398,7 +398,7 @@ impl<'h> InputSliceBuffer<'h> {
 		Self {
 			ptr: bytes.as_ptr(),
 			remaining: bytes.len(),
-			_marker: PhantomData
+			__marker: PhantomData
 		}
 	}
 

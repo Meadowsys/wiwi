@@ -26,19 +26,19 @@ pub(super) enum CodepointUtf32 {
 pub(super) struct CharsUtf8Raw<'h> {
 	start: *const u8,
 	end: *const u8,
-	_marker: PhantomData<&'h [u8]>
+	__marker: PhantomData<&'h [u8]>
 }
 
 pub(super) struct CharsUtf16Raw<'h> {
 	start: *const u16,
 	end: *const u16,
-	_marker: PhantomData<&'h [u16]>
+	__marker: PhantomData<&'h [u16]>
 }
 
 pub(super) struct CharsUtf32Raw<'h> {
 	start: *const u32,
 	end: *const u32,
-	_marker: PhantomData<&'h [u32]>
+	__marker: PhantomData<&'h [u32]>
 }
 
 pub(super) struct CharsIndicesUtf8Raw<'h> {
@@ -635,19 +635,19 @@ pub(super) const unsafe fn next_codepoint_back_utf32_ptr_unchecked(mut back_ptr:
 #[inline]
 pub(super) unsafe fn new_chars_utf8_raw(utf8: &[u8]) -> CharsUtf8Raw<'_> {
 	let Range { start, end } = utf8.as_ptr_range();
-	CharsUtf8Raw { start, end, _marker: PhantomData }
+	CharsUtf8Raw { start, end, __marker: PhantomData }
 }
 
 #[inline]
 pub(super) unsafe fn new_chars_utf16_raw(utf16: &[u16]) -> CharsUtf16Raw<'_> {
 	let Range { start, end } = utf16.as_ptr_range();
-	CharsUtf16Raw { start, end, _marker: PhantomData }
+	CharsUtf16Raw { start, end, __marker: PhantomData }
 }
 
 #[inline]
 pub(super) unsafe fn new_chars_utf32_raw(utf32: &[u32]) -> CharsUtf32Raw<'_> {
 	let Range { start, end } = utf32.as_ptr_range();
-	CharsUtf32Raw { start, end, _marker: PhantomData }
+	CharsUtf32Raw { start, end, __marker: PhantomData }
 }
 
 #[inline]
