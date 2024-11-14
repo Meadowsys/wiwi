@@ -115,46 +115,11 @@ decl_num_fn! {
 	NumF64BE num_f64_be
 	NumF64NE num_f64_ne
 
-	#[cfg(target_pointer_width = "16")]
 	NumUsizeLE num_usize_le
-	#[cfg(target_pointer_width = "16")]
 	NumUsizeBE num_usize_be
-	#[cfg(target_pointer_width = "16")]
 	NumUsizeNE num_usize_ne
-
-	#[cfg(target_pointer_width = "16")]
 	NumIsizeLE num_isize_le
-	#[cfg(target_pointer_width = "16")]
 	NumIsizeBE num_isize_be
-	#[cfg(target_pointer_width = "16")]
-	NumIsizeNE num_isize_ne
-
-	#[cfg(target_pointer_width = "32")]
-	NumUsizeLE num_usize_le
-	#[cfg(target_pointer_width = "32")]
-	NumUsizeBE num_usize_be
-	#[cfg(target_pointer_width = "32")]
-	NumUsizeNE num_usize_ne
-
-	#[cfg(target_pointer_width = "32")]
-	NumIsizeLE num_isize_le
-	#[cfg(target_pointer_width = "32")]
-	NumIsizeBE num_isize_be
-	#[cfg(target_pointer_width = "32")]
-	NumIsizeNE num_isize_ne
-
-	#[cfg(target_pointer_width = "64")]
-	NumUsizeLE num_usize_le
-	#[cfg(target_pointer_width = "64")]
-	NumUsizeBE num_usize_be
-	#[cfg(target_pointer_width = "64")]
-	NumUsizeNE num_usize_ne
-
-	#[cfg(target_pointer_width = "64")]
-	NumIsizeLE num_isize_le
-	#[cfg(target_pointer_width = "64")]
-	NumIsizeBE num_isize_be
-	#[cfg(target_pointer_width = "64")]
 	NumIsizeNE num_isize_ne
 }
 
@@ -257,7 +222,7 @@ where
 	E: Endian<Num, N>
 {
 	#[inline]
-	fn parse(&self, input: &'h [u8]) -> Result<&'h [u8], Num, ()> {
+	fn parse(&self, input: &'h [u8]) -> Result<&'h [u8], Num> {
 		self.inner.parse(input).map(|Success { output, remaining_input }| Success {
 			output: E::from_bytes(output),
 			remaining_input
@@ -284,7 +249,7 @@ macro_rules! decl_num_struct {
 		$(#[$meta])*
 		impl<'h> Parser<&'h [u8], $num> for $struct {
 			#[inline]
-			fn parse(&self, input: &'h [u8]) -> Result<&'h [u8], $num, ()> {
+			fn parse(&self, input: &'h [u8]) -> Result<&'h [u8], $num> {
 				self.inner.parse(input)
 			}
 		}
