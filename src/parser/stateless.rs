@@ -22,11 +22,11 @@ where
 }
 
 #[inline]
-pub fn delimited<P, EReal, PBefore, OBefore, EBefore, I, O, E, PAfter, OAfter, EAfter>(
+pub fn delimited<P, I, O, E, EReal, PBefore, OBefore, EBefore, PAfter, OAfter, EAfter>(
 	parser_before: PBefore,
 	parser: P,
 	parser_after: PAfter
-) -> Delimited<P, EReal, PBefore, OBefore, EBefore, I, O, E, PAfter, OAfter, EAfter>
+) -> Delimited<P, I, O, E, EReal, PBefore, OBefore, EBefore, PAfter, OAfter, EAfter>
 where
 	I: Input,
 	PBefore: Parser<I, OBefore, EBefore>,
@@ -75,7 +75,7 @@ where
 	clippy::type_complexity,
 	reason = "good naming makes it look alright I guess lol"
 )]
-pub struct Delimited<P, EReal, PBefore, OBefore, EBefore, I, O, E, PAfter, OAfter, EAfter>
+pub struct Delimited<P, I, O, E, EReal, PBefore, OBefore, EBefore, PAfter, OAfter, EAfter>
 where
 	I: Input
 {
@@ -90,8 +90,8 @@ where
 	)>
 }
 
-impl<P, EReal, PBefore, OBefore, EBefore, I, O, E, PAfter, OAfter, EAfter> Parser<I, O, EReal>
-for Delimited<P, EReal, PBefore, OBefore, EBefore, I, O, E, PAfter, OAfter, EAfter>
+impl<P, I, O, E, EReal, PBefore, OBefore, EBefore, PAfter, OAfter, EAfter> Parser<I, O, EReal>
+for Delimited<P, I, O, E, EReal, PBefore, OBefore, EBefore, PAfter, OAfter, EAfter>
 where
 	I: Input,
 	PBefore: Parser<I, OBefore, EBefore>,
