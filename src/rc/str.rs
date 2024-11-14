@@ -17,14 +17,14 @@ where
 	inner: RcWeak<C, M, u8>
 }
 
-/// Single threaded reference counting thin pointer to a [`str`],
+/// Single threaded reference counting thin pointer to a [`prim@str`],
 /// optionally carrying arbitrary additional metadata
 pub type RcStrThread<M = ()> = RcStr<ThreadCounter, M>;
 
 /// Weak pointer to a single threaded reference counted thin pointer [`RcStrThread`]
 pub type RcStrThreadWeak<M = ()> = RcStrWeak<ThreadCounter, M>;
 
-/// Atomically counted reference counting thin pointer to a [`str`],
+/// Atomically counted reference counting thin pointer to a [`prim@str`],
 /// optionally carrying arbitrary additional metadata
 pub type RcStrAtomic<M = ()> = RcStr<AtomicCounter, M>;
 

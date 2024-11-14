@@ -220,8 +220,8 @@ impl<T, M> Nominal<T, M> {
 
 	/// Gets a reference to the wrapped value
 	///
-	/// Note: [`Deref`](std::ops::Deref) is not implemented on purpose,
-	/// to prevent unintentional auto-derefs
+	/// Note: [`Deref`] is not implemented on purpose, to prevent
+	/// unintentional auto-derefs
 	// TODO: should we reconsider the above?
 	#[inline]
 	pub fn as_value_ref(&self) -> &T {
@@ -230,8 +230,8 @@ impl<T, M> Nominal<T, M> {
 
 	/// Gets a mut reference to the wrapped value
 	///
-	/// Note: [`DerefMut`](std::ops::DerefMut) is not implemented on purpose,
-	/// to prevent unintentional auto-derefs
+	/// Note: [`DerefMut`] is not implemented on purpose, to prevent
+	/// unintentional auto-derefs
 	// TODO: should we reconsider the above?
 	#[inline]
 	pub fn as_value_mut(&mut self) -> &mut T {

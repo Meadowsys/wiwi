@@ -76,13 +76,15 @@ struct UnsafeBufWriteGuard {
 	/// This pointer is guaranteed not to move throughout the lifespan of `self`,
 	/// because as far as the vec itself is aware, we request it to allocate some
 	/// memory, it gives us at least that much, then we are not touching it, until
-	/// `self` gets unwrapped using [`into_full_vec`](Self::into_full_vec). After
-	/// that, we will never use this pointer again. We are then (unsafely) setting
-	/// the len of the vec to the initially requested amount of capacity, which
-	/// the caller of that method promises is initialised, since it is a safety
-	/// invariant of [`into_full_vec`]. What happens to the vec after we hand it's
-	/// ownership back to caller, is no longer on us to handle. The pointer has
-	/// been dropped, and our job is done.
+	/// `self` gets unwrapped using [`into_full_vec`]. After that, we will never
+	/// use this pointer again. We are then (unsafely) setting the len of the vec
+	/// to the initially requested amount of capacity, which the caller of that
+	/// method promises is initialised, since it is a safety invariant of
+	/// [`into_full_vec`]. What happens to the vec after we hand it's ownership
+	/// back to caller, is no longer on us to handle. The pointer has been dropped,
+	/// and our job is done.
+	///
+	/// [`into_full_vec`]: Self::into_full_vec
 	ptr: *mut u8,
 	/// The amount of capacity that the caller initially requested
 	///
@@ -90,10 +92,9 @@ struct UnsafeBufWriteGuard {
 	///
 	/// Previously, in the unwrapping operation, we used the value returned by
 	/// [`Vec::capacity`] to set the len of the vec. This is unsound, since
-	/// [`Vec::with_capacity`] is allowed to over allocate (but not under, so
-	/// we're safe there). Because of this fact, we must store the initial
-	/// requested capacity (that the caller promises to fill before taking the vec),
-	/// and use that value to set the len instead.
+	/// [`Vec::with_capacity`] is allowed to over allocate. Because of this, we
+	/// must store the initial requested capacity (that the caller promises to
+	/// fill before taking the vec), and use that value to set the len instead.
 	requested_capacity: usize,
 	/// In debug mode, tracks the amount of bytes written, and uses it to perform
 	/// assertions on preconditions. In release mode, this is not present
