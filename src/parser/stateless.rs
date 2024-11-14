@@ -155,6 +155,41 @@ where
 	Void { parser, __marker: PhantomData }
 }
 
+// #[repr(transparent)]
+// pub struct ApplyMany<P, I, O, E>
+// where
+// 	I: Input + Clone
+// {
+// 	parser: P,
+// 	__marker: ParserPhantom<I, O, E>
+// }
+//
+// impl<P, I, O, E> Parser<I, Vec<O>, E> for ApplyMany<P, I, O, E>
+// where
+// 	I: Input + Clone,
+// 	P: Parser<I, O, E>
+// {
+// 	#[inline]
+// 	fn parse(&self, input: I) -> Result<I, Vec<O>, E> {
+// 		let mut vec = Vec::new();
+// 		let mut remaining = input;
+//
+// 		loop {
+// 			// todo: i dont like this
+// 			match self.parser.parse(remaining.clone()) {
+// 				Ok(Success { output, remaining_input }) => {
+// 					vec.push(output);
+// 					remaining = remaining_input;
+// 				}
+// 				Err(super::Error::NotEnoughData { .. }) => {
+// 					return Ok(Success { output: vec, remaining_input: remaining })
+// 				}
+// 				Err(e) => { return Err(e) }
+// 			}
+// 		}
+// 	}
+// }
+
 #[expect(
 	clippy::type_complexity,
 	reason = "good naming makes it look alright I guess lol"
