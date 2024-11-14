@@ -1,4 +1,5 @@
 use crate::prelude_std::*;
+use crate::function::*;
 use crate::num::*;
 use super::{ stateless, util, Error, Input, Needle, Parser as _, ParserPhantom, Result, Success };
 
@@ -12,7 +13,7 @@ where
 	fn map<F, O2>(self, f: F) -> util::Map<Self, F, O>
 	where
 		Self: Sized,
-		F: FnMut(O) -> O2
+		F: FunctionMut<(O,), O2>
 	{
 		util::map(self, f)
 	}
@@ -21,11 +22,11 @@ where
 impl<F, I, O, E> ParserStateful<I, O, E> for F
 where
 	I: Input,
-	F: FnMut(I) -> Result<I, O, E>
+	F: FunctionMut<(I,), Result<I, O, E>>
 {
 	#[inline]
 	fn parse(&mut self, data: I) -> Result<I, O, E> {
-		self(data)
+		self.call_mut((data,))
 	}
 }
 

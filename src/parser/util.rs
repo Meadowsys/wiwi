@@ -1,4 +1,5 @@
 use crate::prelude_std::*;
+use crate::function::*;
 use super::{ stateful, stateless, Input, ParserPhantom, Result, Success };
 
 /// Wraps an implementor of [`Parser`](stateless::Parser) and provides an implementation
@@ -47,12 +48,12 @@ impl<P, I, O, E, F, O2> stateless::Parser<I, O2, E> for Map<P, F, O>
 where
 	I: Input,
 	P: stateless::Parser<I, O, E>,
-	F: Fn(O) -> O2
+	F: Function<(O,), O2>
 {
 	#[inline]
 	fn parse(&self, input: I) -> Result<I, O2, E> {
 		self.parser.parse(input).map(|Success { output, remaining_input }| {
-			Success { output: (self.map)(output), remaining_input }
+			Success { output: self.map.call((output,)), remaining_input }
 		})
 	}
 }
@@ -61,12 +62,12 @@ impl<P, I, O, E, F, O2> stateful::ParserStateful<I, O2, E> for Map<P, F, O>
 where
 	I: Input,
 	P: stateful::ParserStateful<I, O, E>,
-	F: FnMut(O) -> O2
+	F: FunctionMut<(O,), O2>
 {
 	#[inline]
 	fn parse(&mut self, input: I) -> Result<I, O2, E> {
 		self.parser.parse(input).map(|Success { output, remaining_input }| {
-			Success { output: (self.map)(output), remaining_input }
+			Success { output: self.map.call_mut((output,)), remaining_input }
 		})
 	}
 }

@@ -1,4 +1,5 @@
 use crate::prelude_std::*;
+use crate::function::*;
 use crate::num::*;
 use super::{ util, Error, Input, Needle, ParserPhantom, Result, Success };
 use std::num::NonZero;
@@ -13,7 +14,7 @@ where
 	fn map<F, O2>(self, f: F) -> util::Map<Self, F, O>
 	where
 		Self: Sized,
-		F: Fn(O) -> O2
+		F: Function<(O,), O2>
 	{
 		util::map(self, f)
 	}
@@ -22,11 +23,11 @@ where
 impl<F, I, O, E> Parser<I, O, E> for F
 where
 	I: Input,
-	F: Fn(I) -> Result<I, O, E>
+	F: Function<(I,), Result<I, O, E>>
 {
 	#[inline]
 	fn parse(&self, data: I) -> Result<I, O, E> {
-		self(data)
+		self.call((data,))
 	}
 }
 
@@ -149,7 +150,7 @@ where
 			})
 		};
 
-		self.tag.input_starts_with(&input)
+		input.starts_with(&self.tag)
 			.then(|| input.take_first(self.tag.len()))
 			.flatten()
 			.map(|(_, remaining_input)| Success { output: (), remaining_input })
