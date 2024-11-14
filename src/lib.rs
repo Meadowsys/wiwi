@@ -57,7 +57,7 @@ pub mod prelude_std;
 
 pub mod chain;
 pub mod encoding;
-pub mod function;
+// pub mod function;
 pub mod lazy_wrap;
 pub mod macro_util;
 pub mod nominal;
