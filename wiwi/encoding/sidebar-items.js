@@ -1,1 +1,1 @@
-window.SIDEBAR_ITEMS = {"mod":["hex","z85"],"trait":["Encodeable"]};
+window.SIDEBAR_ITEMS = {"mod":["base16","base32","base64","hex","z85"],"trait":["Encodeable"]};

@@ -408,7 +408,7 @@
 </span><span class="macro">macro_rules!</span> with_cloned {
 	($(<span class="macro-nonterminal">$stuff</span>:tt)<span class="kw-2">*</span>) =&gt; {
 		<span class="comment">// hide potential distracting implementation details in docs
-		</span><span class="macro-nonterminal">$</span><span class="macro">crate::macro_util::_with_cloned_impl!</span> { $(<span class="macro-nonterminal">$stuff</span>)* }
+		</span><span class="macro-nonterminal">$</span><span class="macro">crate::macro_util::__with_cloned_impl!</span> { $(<span class="macro-nonterminal">$stuff</span>)* }
 	}
 }
 <span class="kw">pub use </span>with_cloned;
@@ -416,7 +416,7 @@
 <span class="doccomment">/// implementation detail only, do not use
 </span><span class="attr">#[doc(hidden)]
 #[macro_export]
-</span><span class="macro">macro_rules!</span> _with_cloned_impl {
+</span><span class="macro">macro_rules!</span> __with_cloned_impl {
 	{ <span class="kw">_ in </span>$(<span class="macro-nonterminal">$stuff</span>:tt)* } =&gt; {
 		{
 			<span class="comment">// easier "removing" of the macro, eg. in case it's like, in some
@@ -448,7 +448,7 @@
 	};
 }
 <span class="attr">#[doc(hidden)]
-</span><span class="kw">pub use </span>_with_cloned_impl;
+</span><span class="kw">pub use </span>__with_cloned_impl;
 
 <span class="attr">#[cfg(test)]
 </span><span class="kw">mod </span>tests {

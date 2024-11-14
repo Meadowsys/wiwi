@@ -1,1 +1,1 @@
-window.SIDEBAR_ITEMS = {"enum":["Error"],"fn":["take","take_const","void"],"struct":["Success","Take","TakeConst","Void"],"trait":["Parser"],"type":["Result"]};
+window.SIDEBAR_ITEMS = {"enum":["Error"],"mod":["input","stateful","stateless","util"],"struct":["Success"],"type":["ParserPhantom","Result"]};

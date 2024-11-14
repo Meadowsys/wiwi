@@ -75,105 +75,81 @@
 <a href="#74" id="74">74</a>
 <a href="#75" id="75">75</a>
 <a href="#76" id="76">76</a>
-<a href="#77" id="77">77</a>
-<a href="#78" id="78">78</a>
-<a href="#79" id="79">79</a>
-<a href="#80" id="80">80</a>
-<a href="#81" id="81">81</a>
-<a href="#82" id="82">82</a>
-<a href="#83" id="83">83</a>
-<a href="#84" id="84">84</a>
-<a href="#85" id="85">85</a>
-<a href="#86" id="86">86</a>
-<a href="#87" id="87">87</a>
-<a href="#88" id="88">88</a>
-<a href="#89" id="89">89</a></pre></div><pre class="rust"><code><span class="kw">use </span><span class="kw">crate</span>::prelude_std::<span class="kw-2">*</span>;
-<span class="kw">use </span><span class="kw">crate</span>::num::<span class="kw-2">*</span>;
+<a href="#77" id="77">77</a></pre></div><pre class="rust"><code><span class="kw">use </span><span class="kw">crate</span>::prelude_std::<span class="kw-2">*</span>;
 <span class="kw">use </span>std::num::NonZero;
 
-<span class="kw">pub trait </span>Parser&lt;D, O, E = ()&gt; {
-	<span class="kw">fn </span>parse(<span class="kw-2">&amp;mut </span><span class="self">self</span>, data: D) -&gt; <span class="prelude-ty">Result</span>&lt;D, O, E&gt;;
-}
+<span class="kw">pub use </span>input::{ Input, Needle };
+<span class="kw">pub use </span>stateful::ParserStateful;
+<span class="kw">pub use </span>stateless::Parser;
 
-<span class="kw">pub struct </span>Success&lt;D, O&gt; {
+<span class="kw">pub mod </span>input;
+<span class="kw">pub mod </span>stateful;
+<span class="kw">pub mod </span>stateless;
+<span class="kw">pub mod </span>util;
+
+<span class="kw">pub struct </span>Success&lt;I, O&gt; {
 	<span class="kw">pub </span>output: O,
-	<span class="kw">pub </span>data: D,
+	<span class="kw">pub </span>remaining_input: I,
 }
 
-<span class="kw">pub enum </span>Error&lt;E&gt; {
+<span class="attr">#[derive(Debug)]
+</span><span class="kw">pub enum </span>Error&lt;E&gt; {
 	NotEnoughData { missing: <span class="prelude-ty">Option</span>&lt;NonZero&lt;usize&gt;&gt; },
 	Error { error: E },
 	Fatal { error: E }
 }
 
-<span class="kw">pub type </span><span class="prelude-ty">Result</span>&lt;D, O, E = ()&gt; = std::result::Result&lt;Success&lt;D, O&gt;, Error&lt;E&gt;&gt;;
+<span class="kw">pub type </span><span class="prelude-ty">Result</span>&lt;I, O, E = ()&gt; = std::result::Result&lt;Success&lt;I, O&gt;, Error&lt;E&gt;&gt;;
 
-<span class="attr">#[inline]
-</span><span class="kw">pub fn </span>take&lt;N: IntoUsize&gt;(amount: N) -&gt; Take {
-	Take { amount: amount.into_usize() }
-}
+<span class="kw">pub type </span>ParserPhantom&lt;I, O, E = ()&gt; = PhantomData&lt;ParserPhantomImpl&lt;I, O, E&gt;&gt;;
 
-<span class="attr">#[inline]
-</span><span class="kw">pub fn </span>take_const&lt;<span class="kw">const </span>N: usize&gt;() -&gt; TakeConst&lt;N&gt; {
-	TakeConst { __private: () }
-}
-
-<span class="attr">#[inline]
-</span><span class="kw">pub fn </span>void&lt;P: Parser&lt;D, O, E&gt;, D, O, E&gt;(parser: P) -&gt; Void&lt;P, D, O, E&gt; {
-	Void { parser, __marker: PhantomData }
-}
-
-<span class="kw">pub struct </span>Take {
-	amount: usize
-}
-
-<span class="kw">impl</span>&lt;<span class="lifetime">'h</span>&gt; Parser&lt;<span class="kw-2">&amp;</span><span class="lifetime">'h </span>[u8], <span class="kw-2">&amp;</span><span class="lifetime">'h </span>[u8]&gt; <span class="kw">for </span>Take {
-	<span class="attr">#[inline]
-	</span><span class="kw">fn </span>parse(<span class="kw-2">&amp;mut </span><span class="self">self</span>, data: <span class="kw-2">&amp;</span><span class="lifetime">'h </span>[u8]) -&gt; <span class="prelude-ty">Result</span>&lt;<span class="kw-2">&amp;</span><span class="lifetime">'h </span>[u8], <span class="kw-2">&amp;</span><span class="lifetime">'h </span>[u8]&gt; {
-		data.split_at_checked(<span class="self">self</span>.amount)
-			.map(|(output, data)| Success { output, data })
-			.ok_or_else(|| Error::NotEnoughData {
-				missing: NonZero::new(<span class="self">self</span>.amount - data.len())
-			})
-	}
-}
-
-<span class="kw">pub struct </span>TakeConst&lt;<span class="kw">const </span>N: usize&gt; {
-	__private: ()
-}
-
-<span class="kw">impl</span>&lt;<span class="lifetime">'h</span>, <span class="kw">const </span>N: usize&gt; Parser&lt;<span class="kw-2">&amp;</span><span class="lifetime">'h </span>[u8], <span class="kw-2">&amp;</span><span class="lifetime">'h </span>[u8; N]&gt; <span class="kw">for </span>TakeConst&lt;N&gt; {
-	<span class="attr">#[inline]
-	</span><span class="kw">fn </span>parse(<span class="kw-2">&amp;mut </span><span class="self">self</span>, data: <span class="kw-2">&amp;</span><span class="lifetime">'h </span>[u8]) -&gt; <span class="prelude-ty">Result</span>&lt;<span class="kw-2">&amp;</span><span class="lifetime">'h </span>[u8], <span class="kw-2">&amp;</span><span class="lifetime">'h </span>[u8; N]&gt; {
-		data.split_at_checked(N)
-			.map(|(output, data)| Success {
-				<span class="comment">// SAFETY: output is going to be N length because `split_at_checked`
-				</span>output: <span class="kw">unsafe </span>{
-					<span class="attr">#[expect(clippy::as_conversions, reason = <span class="string">"ptr cast"</span>)]
-					</span><span class="kw-2">&amp;*</span>(output <span class="kw">as </span><span class="kw-2">*const </span>[u8] <span class="kw">as </span><span class="kw-2">*const </span>[u8; N])
-				},
-				data
-			})
-			.ok_or_else(|| Error::NotEnoughData {
-				missing: NonZero::new(N - data.len())
-			})
-	}
-}
-
-<span class="kw">pub struct </span>Void&lt;P: Parser&lt;D, O, E&gt;, D, O, E&gt; {
-	parser: P,
-	<span class="doccomment">/// ??? lol
-	</span>__marker: PhantomData&lt;<span class="kw">fn</span>(D) -&gt; (O, E)&gt;
-}
-
-<span class="kw">impl</span>&lt;P, D, O, E&gt; Parser&lt;D, (), E&gt; <span class="kw">for </span>Void&lt;P, D, O, E&gt;
+<span class="doccomment">/// This is an implementation detail of [`ParserPhantom`]
+///
+/// This helps to enforce the trait bounds of [`Parser`]/[`ParserStateful`] in
+/// [`ParserPhantom`] type, to work around the fact that type aliases don't
+/// enforce their trait bounds for now, which is a known rust type checker limitation.
+</span><span class="attr">#[doc(hidden)]
+</span><span class="kw">pub struct </span>ParserPhantomImpl&lt;I, O, E&gt;
 <span class="kw">where
-	</span>P: Parser&lt;D, O, E&gt;
+	</span>I: Input
 {
+	__inner: <span class="kw">fn</span>(I) -&gt; <span class="prelude-ty">Result</span>&lt;I, O, E&gt;
+}
+
+<span class="kw">impl</span>&lt;E&gt; Error&lt;E&gt; {
 	<span class="attr">#[inline]
-	</span><span class="kw">fn </span>parse(<span class="kw-2">&amp;mut </span><span class="self">self</span>, data: D) -&gt; <span class="prelude-ty">Result</span>&lt;D, (), E&gt; {
-		<span class="kw">let </span>Success { output: _void, data } = <span class="self">self</span>.parser.parse(data)<span class="question-mark">?</span>;
-		<span class="prelude-val">Ok</span>(Success { output: (), data })
+	</span><span class="kw">fn </span>from&lt;EFrom&gt;(error: Error&lt;EFrom&gt;) -&gt; <span class="self">Self
+	</span><span class="kw">where
+		</span>EFrom: Into&lt;E&gt;
+	{
+		<span class="kw">use </span><span class="self">self</span>::Error::<span class="kw-2">*</span>;
+
+		<span class="kw">match </span>error {
+			NotEnoughData { missing } =&gt; { NotEnoughData { missing } }
+			Error { error } =&gt; { Error { error: error.into() } }
+			Fatal { error } =&gt; { Fatal { error: error.into() } }
+		}
+	}
+
+	<span class="attr">#[inline]
+	</span><span class="kw">fn </span>into&lt;EInto&gt;(<span class="self">self</span>) -&gt; Error&lt;EInto&gt;
+	<span class="kw">where
+		</span>E: Into&lt;EInto&gt;
+	{
+		Error::from(<span class="self">self</span>)
+	}
+}
+
+<span class="attr">#[inline]
+</span><span class="kw">const fn </span>max_init_cap&lt;T&gt;() -&gt; usize {
+	<span class="comment">// 1 MiB
+	</span><span class="kw">const </span>MAX_BYTES: usize = <span class="number">1024 </span>* <span class="number">1024</span>;
+
+	<span class="kw">if </span>size_of::&lt;T&gt;() == <span class="number">0 </span>{
+		<span class="comment">// ZST, doesn't really matter honestly
+		</span>MAX_BYTES
+	} <span class="kw">else </span>{
+		MAX_BYTES / size_of::&lt;T&gt;()
 	}
 }
 </code></pre></div></section></main></body></html>

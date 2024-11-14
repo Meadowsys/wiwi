@@ -2869,7 +2869,133 @@
 <a href="#2868" id="2868">2868</a>
 <a href="#2869" id="2869">2869</a>
 <a href="#2870" id="2870">2870</a>
-<a href="#2871" id="2871">2871</a></pre></div><pre class="rust"><code><span class="kw">use </span><span class="kw">crate</span>::prelude_std::<span class="kw-2">*</span>;
+<a href="#2871" id="2871">2871</a>
+<a href="#2872" id="2872">2872</a>
+<a href="#2873" id="2873">2873</a>
+<a href="#2874" id="2874">2874</a>
+<a href="#2875" id="2875">2875</a>
+<a href="#2876" id="2876">2876</a>
+<a href="#2877" id="2877">2877</a>
+<a href="#2878" id="2878">2878</a>
+<a href="#2879" id="2879">2879</a>
+<a href="#2880" id="2880">2880</a>
+<a href="#2881" id="2881">2881</a>
+<a href="#2882" id="2882">2882</a>
+<a href="#2883" id="2883">2883</a>
+<a href="#2884" id="2884">2884</a>
+<a href="#2885" id="2885">2885</a>
+<a href="#2886" id="2886">2886</a>
+<a href="#2887" id="2887">2887</a>
+<a href="#2888" id="2888">2888</a>
+<a href="#2889" id="2889">2889</a>
+<a href="#2890" id="2890">2890</a>
+<a href="#2891" id="2891">2891</a>
+<a href="#2892" id="2892">2892</a>
+<a href="#2893" id="2893">2893</a>
+<a href="#2894" id="2894">2894</a>
+<a href="#2895" id="2895">2895</a>
+<a href="#2896" id="2896">2896</a>
+<a href="#2897" id="2897">2897</a>
+<a href="#2898" id="2898">2898</a>
+<a href="#2899" id="2899">2899</a>
+<a href="#2900" id="2900">2900</a>
+<a href="#2901" id="2901">2901</a>
+<a href="#2902" id="2902">2902</a>
+<a href="#2903" id="2903">2903</a>
+<a href="#2904" id="2904">2904</a>
+<a href="#2905" id="2905">2905</a>
+<a href="#2906" id="2906">2906</a>
+<a href="#2907" id="2907">2907</a>
+<a href="#2908" id="2908">2908</a>
+<a href="#2909" id="2909">2909</a>
+<a href="#2910" id="2910">2910</a>
+<a href="#2911" id="2911">2911</a>
+<a href="#2912" id="2912">2912</a>
+<a href="#2913" id="2913">2913</a>
+<a href="#2914" id="2914">2914</a>
+<a href="#2915" id="2915">2915</a>
+<a href="#2916" id="2916">2916</a>
+<a href="#2917" id="2917">2917</a>
+<a href="#2918" id="2918">2918</a>
+<a href="#2919" id="2919">2919</a>
+<a href="#2920" id="2920">2920</a>
+<a href="#2921" id="2921">2921</a>
+<a href="#2922" id="2922">2922</a>
+<a href="#2923" id="2923">2923</a>
+<a href="#2924" id="2924">2924</a>
+<a href="#2925" id="2925">2925</a>
+<a href="#2926" id="2926">2926</a>
+<a href="#2927" id="2927">2927</a>
+<a href="#2928" id="2928">2928</a>
+<a href="#2929" id="2929">2929</a>
+<a href="#2930" id="2930">2930</a>
+<a href="#2931" id="2931">2931</a>
+<a href="#2932" id="2932">2932</a>
+<a href="#2933" id="2933">2933</a>
+<a href="#2934" id="2934">2934</a>
+<a href="#2935" id="2935">2935</a>
+<a href="#2936" id="2936">2936</a>
+<a href="#2937" id="2937">2937</a>
+<a href="#2938" id="2938">2938</a>
+<a href="#2939" id="2939">2939</a>
+<a href="#2940" id="2940">2940</a>
+<a href="#2941" id="2941">2941</a>
+<a href="#2942" id="2942">2942</a>
+<a href="#2943" id="2943">2943</a>
+<a href="#2944" id="2944">2944</a>
+<a href="#2945" id="2945">2945</a>
+<a href="#2946" id="2946">2946</a>
+<a href="#2947" id="2947">2947</a>
+<a href="#2948" id="2948">2948</a>
+<a href="#2949" id="2949">2949</a>
+<a href="#2950" id="2950">2950</a>
+<a href="#2951" id="2951">2951</a>
+<a href="#2952" id="2952">2952</a>
+<a href="#2953" id="2953">2953</a>
+<a href="#2954" id="2954">2954</a>
+<a href="#2955" id="2955">2955</a>
+<a href="#2956" id="2956">2956</a>
+<a href="#2957" id="2957">2957</a>
+<a href="#2958" id="2958">2958</a>
+<a href="#2959" id="2959">2959</a>
+<a href="#2960" id="2960">2960</a>
+<a href="#2961" id="2961">2961</a>
+<a href="#2962" id="2962">2962</a>
+<a href="#2963" id="2963">2963</a>
+<a href="#2964" id="2964">2964</a>
+<a href="#2965" id="2965">2965</a>
+<a href="#2966" id="2966">2966</a>
+<a href="#2967" id="2967">2967</a>
+<a href="#2968" id="2968">2968</a>
+<a href="#2969" id="2969">2969</a>
+<a href="#2970" id="2970">2970</a>
+<a href="#2971" id="2971">2971</a>
+<a href="#2972" id="2972">2972</a>
+<a href="#2973" id="2973">2973</a>
+<a href="#2974" id="2974">2974</a>
+<a href="#2975" id="2975">2975</a>
+<a href="#2976" id="2976">2976</a>
+<a href="#2977" id="2977">2977</a>
+<a href="#2978" id="2978">2978</a>
+<a href="#2979" id="2979">2979</a>
+<a href="#2980" id="2980">2980</a>
+<a href="#2981" id="2981">2981</a>
+<a href="#2982" id="2982">2982</a>
+<a href="#2983" id="2983">2983</a>
+<a href="#2984" id="2984">2984</a>
+<a href="#2985" id="2985">2985</a>
+<a href="#2986" id="2986">2986</a>
+<a href="#2987" id="2987">2987</a>
+<a href="#2988" id="2988">2988</a>
+<a href="#2989" id="2989">2989</a>
+<a href="#2990" id="2990">2990</a>
+<a href="#2991" id="2991">2991</a>
+<a href="#2992" id="2992">2992</a>
+<a href="#2993" id="2993">2993</a>
+<a href="#2994" id="2994">2994</a>
+<a href="#2995" id="2995">2995</a>
+<a href="#2996" id="2996">2996</a>
+<a href="#2997" id="2997">2997</a></pre></div><pre class="rust"><code><span class="kw">use </span><span class="kw">crate</span>::prelude_std::<span class="kw-2">*</span>;
 <span class="kw">use </span><span class="self">self</span>::private::Sealed;
 
 <span class="macro">macro_rules!</span> from {
@@ -2890,7 +3016,10 @@
 		</span>)]
 		#[doc = <span class="string">""</span>]
 		</span>$(<span class="attr">#[<span class="macro-nonterminal">$trait_meta</span>]</span>)*
-		<span class="kw">pub trait </span><span class="macro-nonterminal">$trait_name</span>: Sealed {
+		<span class="kw">pub trait </span><span class="macro-nonterminal">$trait_name
+		</span><span class="kw">where
+			</span><span class="self">Self</span>: Sealed
+		{
 			<span class="attr">#[doc = <span class="macro">concat!</span>(<span class="string">"Convert from a [`"</span>, <span class="macro">stringify!</span>(<span class="macro-nonterminal">$type_name</span>), <span class="string">"`] value"</span>)]
 			#[doc = <span class="string">""</span>]
 			</span>$(<span class="attr">#[<span class="macro-nonterminal">$fn_meta</span>]</span>)*
@@ -2937,7 +3066,10 @@
 		</span>)]
 		#[doc = <span class="string">""</span>]
 		</span>$(<span class="attr">#[<span class="macro-nonterminal">$trait_meta</span>]</span>)*
-		<span class="kw">pub trait </span><span class="macro-nonterminal">$trait_name</span>: Sealed {
+		<span class="kw">pub trait </span><span class="macro-nonterminal">$trait_name
+		</span><span class="kw">where
+			</span><span class="self">Self</span>: Sealed
+		{
 			<span class="attr">#[doc = <span class="macro">concat!</span>(<span class="string">"Convert into a [`"</span>, <span class="macro">stringify!</span>(<span class="macro-nonterminal">$type_name</span>), <span class="string">"`] value"</span>)]
 			#[doc = <span class="string">""</span>]
 			</span>$(<span class="attr">#[<span class="macro-nonterminal">$fn_meta</span>]</span>)*
@@ -3656,6 +3788,116 @@
 	</span>)]
 	#[inline(always)]
 	</span><span class="kw">fn </span>into_f64_lossy(<span class="self">self</span>) -&gt; f64 { <span class="self">self </span><span class="kw">as </span>u64 <span class="kw">as _ </span>}
+}
+
+<span class="kw">pub trait </span>ArrayConversions&lt;<span class="kw">const </span>N: usize&gt;
+<span class="kw">where
+	</span><span class="self">Self</span>: Sealed
+{
+	<span class="kw">fn </span>into_le_bytes(<span class="self">self</span>) -&gt; [u8; N];
+	<span class="kw">fn </span>into_be_bytes(<span class="self">self</span>) -&gt; [u8; N];
+	<span class="kw">fn </span>into_ne_bytes(<span class="self">self</span>) -&gt; [u8; N];
+	<span class="kw">fn </span>from_le_bytes(bytes: [u8; N]) -&gt; <span class="self">Self</span>;
+	<span class="kw">fn </span>from_be_bytes(bytes: [u8; N]) -&gt; <span class="self">Self</span>;
+	<span class="kw">fn </span>from_ne_bytes(bytes: [u8; N]) -&gt; <span class="self">Self</span>;
+}
+
+<span class="macro">macro_rules!</span> impl_array_conversions {
+	{ $($(<span class="attr">#[<span class="macro-nonterminal">$meta</span>:meta]</span>)* <span class="macro-nonterminal">$num</span>:ident <span class="macro-nonterminal">$bytes</span>:literal)* } =&gt; {
+		$(
+			$(<span class="attr">#[<span class="macro-nonterminal">$meta</span>]</span>)*
+			<span class="kw">impl </span>ArrayConversions&lt;<span class="macro-nonterminal">$bytes</span>&gt; <span class="kw">for </span><span class="macro-nonterminal">$num </span>{
+				<span class="attr">#[inline]
+				</span><span class="kw">fn </span>into_le_bytes(<span class="self">self</span>) -&gt; [u8; <span class="macro-nonterminal">$bytes</span>] { <span class="macro-nonterminal">$num::to_le_bytes</span>(<span class="self">self</span>) }
+
+				<span class="attr">#[inline]
+				</span><span class="kw">fn </span>into_be_bytes(<span class="self">self</span>) -&gt; [u8; <span class="macro-nonterminal">$bytes</span>] { <span class="macro-nonterminal">$num::to_be_bytes</span>(<span class="self">self</span>) }
+
+				<span class="attr">#[inline]
+				</span><span class="kw">fn </span>into_ne_bytes(<span class="self">self</span>) -&gt; [u8; <span class="macro-nonterminal">$bytes</span>] { <span class="macro-nonterminal">$num::to_ne_bytes</span>(<span class="self">self</span>) }
+
+				<span class="attr">#[inline]
+				</span><span class="kw">fn </span>from_le_bytes(bytes: [u8; <span class="macro-nonterminal">$bytes</span>]) -&gt; <span class="macro-nonterminal">$num </span>{ <span class="macro-nonterminal">$num::from_le_bytes</span>(bytes) }
+
+				<span class="attr">#[inline]
+				</span><span class="kw">fn </span>from_be_bytes(bytes: [u8; <span class="macro-nonterminal">$bytes</span>]) -&gt; <span class="macro-nonterminal">$num </span>{ <span class="macro-nonterminal">$num::from_be_bytes</span>(bytes) }
+
+				<span class="attr">#[inline]
+				</span><span class="kw">fn </span>from_ne_bytes(bytes: [u8; <span class="macro-nonterminal">$bytes</span>]) -&gt; <span class="macro-nonterminal">$num </span>{ <span class="macro-nonterminal">$num::from_ne_bytes</span>(bytes) }
+			}
+		)*
+	}
+}
+
+<span class="macro">impl_array_conversions!</span> {
+	u8 <span class="number">1
+	</span>u16 <span class="number">2
+	</span>u32 <span class="number">4
+	</span>u64 <span class="number">8
+	</span>u128 <span class="number">16
+
+	</span>i8 <span class="number">1
+	</span>i16 <span class="number">2
+	</span>i32 <span class="number">4
+	</span>i64 <span class="number">8
+	</span>i128 <span class="number">16
+
+	</span>f32 <span class="number">4
+	</span>f64 <span class="number">8
+
+	</span><span class="attr">#[cfg(target_pointer_width = <span class="string">"16"</span>)]
+	</span>usize <span class="number">2
+	</span><span class="attr">#[cfg(target_pointer_width = <span class="string">"16"</span>)]
+	</span>isize <span class="number">2
+
+	</span><span class="attr">#[cfg(target_pointer_width = <span class="string">"32"</span>)]
+	</span>usize <span class="number">4
+	</span><span class="attr">#[cfg(target_pointer_width = <span class="string">"32"</span>)]
+	</span>isize <span class="number">4
+
+	</span><span class="attr">#[cfg(target_pointer_width = <span class="string">"64"</span>)]
+	</span>usize <span class="number">8
+	</span><span class="attr">#[cfg(target_pointer_width = <span class="string">"64"</span>)]
+	</span>isize <span class="number">8
+</span>}
+
+<span class="kw">pub trait </span>Endian&lt;Num, <span class="kw">const </span>N: usize&gt;
+<span class="kw">where
+	</span>Num: ArrayConversions&lt;N&gt;
+{
+	<span class="kw">fn </span>from_bytes(bytes: [u8; N]) -&gt; Num;
+	<span class="kw">fn </span>into_bytes(num: Num) -&gt; [u8; N];
+}
+
+<span class="macro">macro_rules!</span> decl_endian_structs {
+	{ $(<span class="macro-nonterminal">$</span><span class="kw">struct</span>:<span class="macro-nonterminal">ident $from</span>:ident <span class="macro-nonterminal">$into</span>:ident)* } =&gt; {
+		$(
+			<span class="kw">pub struct </span><span class="macro-nonterminal">$</span><span class="kw">struct </span>{
+				<span class="macro-nonterminal">__private</span>: ()
+			}
+
+			<span class="kw">impl</span>&lt;Num, <span class="kw">const </span>N: usize&gt; Endian&lt;Num, N&gt; <span class="kw">for </span><span class="macro-nonterminal">$</span><span class="kw">struct
+			where
+				</span><span class="macro-nonterminal">Num</span>: ArrayConversions&lt;N&gt;
+			{
+				<span class="attr">#[inline]
+				</span><span class="kw">fn </span>from_bytes(bytes: [u8; N]) -&gt; Num {
+					Num::<span class="macro-nonterminal">$from</span>(bytes)
+				}
+
+				<span class="attr">#[inline]
+				</span><span class="kw">fn </span>into_bytes(num: Num) -&gt; [u8; N] {
+					Num::<span class="macro-nonterminal">$into</span>(num)
+				}
+			}
+		)*
+	}
+}
+
+<span class="macro">decl_endian_structs!</span> {
+	EndianLittle from_le_bytes into_le_bytes
+	EndianBig from_be_bytes into_be_bytes
+	EndianNative from_ne_bytes into_ne_bytes
 }
 
 <span class="comment">/*
@@ -5720,7 +5962,10 @@ op_trait! {
 	<span class="kw">use super</span>::<span class="kw-2">*</span>;
 
 	<span class="doccomment">/// notouchie
-	</span><span class="kw">pub trait </span>Sealed: Sized {}
+	</span><span class="kw">pub trait </span>Sealed
+	<span class="kw">where
+		</span><span class="self">Self</span>: Sized
+	{}
 
 	<span class="macro">macro_rules!</span> impl_sealed {
 		{ $(<span class="macro-nonterminal">$</span><span class="kw">type</span>:<span class="macro-nonterminal">ident</span>)* } =&gt; {
@@ -5737,7 +5982,14 @@ op_trait! {
 		bool
 	}
 
-	<span class="kw">impl</span>&lt;T: Sealed&gt; Sealed <span class="kw">for </span><span class="kw-2">&amp;</span>T {}
-	<span class="kw">impl</span>&lt;T: Sealed&gt; Sealed <span class="kw">for </span><span class="kw-2">&amp;mut </span>T {}
+	<span class="kw">impl</span>&lt;T&gt; Sealed <span class="kw">for </span><span class="kw-2">&amp;</span>T
+	<span class="kw">where
+		</span>T: Sealed
+	{}
+
+	<span class="kw">impl</span>&lt;T&gt; Sealed <span class="kw">for </span><span class="kw-2">&amp;mut </span>T
+	<span class="kw">where
+		</span>T: Sealed
+	{}
 }
 </code></pre></div></section></main></body></html>

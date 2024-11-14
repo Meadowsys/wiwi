@@ -1,0 +1,1 @@
+window.SIDEBAR_ITEMS = {"fn":["adapt_stateful"],"struct":["AdaptStateful","Map"]};

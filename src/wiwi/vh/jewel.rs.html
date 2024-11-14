@@ -188,41 +188,105 @@
 <a href="#187" id="187">187</a>
 <a href="#188" id="188">188</a>
 <a href="#189" id="189">189</a>
-<a href="#190" id="190">190</a></pre></div><pre class="rust"><code><span class="kw">extern crate </span>hashbrown;
+<a href="#190" id="190">190</a>
+<a href="#191" id="191">191</a>
+<a href="#192" id="192">192</a>
+<a href="#193" id="193">193</a>
+<a href="#194" id="194">194</a>
+<a href="#195" id="195">195</a>
+<a href="#196" id="196">196</a>
+<a href="#197" id="197">197</a>
+<a href="#198" id="198">198</a>
+<a href="#199" id="199">199</a>
+<a href="#200" id="200">200</a>
+<a href="#201" id="201">201</a>
+<a href="#202" id="202">202</a>
+<a href="#203" id="203">203</a>
+<a href="#204" id="204">204</a>
+<a href="#205" id="205">205</a>
+<a href="#206" id="206">206</a>
+<a href="#207" id="207">207</a>
+<a href="#208" id="208">208</a>
+<a href="#209" id="209">209</a>
+<a href="#210" id="210">210</a>
+<a href="#211" id="211">211</a>
+<a href="#212" id="212">212</a>
+<a href="#213" id="213">213</a>
+<a href="#214" id="214">214</a>
+<a href="#215" id="215">215</a>
+<a href="#216" id="216">216</a>
+<a href="#217" id="217">217</a>
+<a href="#218" id="218">218</a>
+<a href="#219" id="219">219</a>
+<a href="#220" id="220">220</a>
+<a href="#221" id="221">221</a>
+<a href="#222" id="222">222</a>
+<a href="#223" id="223">223</a>
+<a href="#224" id="224">224</a>
+<a href="#225" id="225">225</a>
+<a href="#226" id="226">226</a>
+<a href="#227" id="227">227</a>
+<a href="#228" id="228">228</a>
+<a href="#229" id="229">229</a>
+<a href="#230" id="230">230</a>
+<a href="#231" id="231">231</a>
+<a href="#232" id="232">232</a>
+<a href="#233" id="233">233</a>
+<a href="#234" id="234">234</a>
+<a href="#235" id="235">235</a>
+<a href="#236" id="236">236</a></pre></div><pre class="rust"><code><span class="kw">extern crate </span>hashbrown;
 
 <span class="kw">use </span><span class="kw">crate</span>::prelude_std::<span class="kw-2">*</span>;
 <span class="kw">use </span><span class="kw">crate</span>::num::<span class="kw-2">*</span>;
 <span class="kw">use </span><span class="kw">crate</span>::rc::{ RcStr, Counter, AtomicCounter };
 <span class="kw">use </span>hashbrown::HashSet;
 
-<span class="kw">struct </span>JewelStore&lt;C: Counter = AtomicCounter&gt; {
+<span class="kw">struct </span>JewelStore&lt;C = AtomicCounter&gt;
+<span class="kw">where
+	</span>C: Counter
+{
 	modifiers: HashSet&lt;Modifier&lt;C&gt;&gt;,
 	jewels: Vec&lt;Jewel&lt;C&gt;&gt;
 }
 
-<span class="kw">struct </span>Jewel&lt;C: Counter = AtomicCounter&gt; {
+<span class="kw">struct </span>Jewel&lt;C = AtomicCounter&gt;
+<span class="kw">where
+	</span>C: Counter
+{
 	level: u16,
 	size: i16,
 	modifiers: JewelModifiers&lt;C&gt;
 }
 
-<span class="kw">enum </span>JewelModifiers&lt;C: Counter = AtomicCounter&gt; {
+<span class="kw">enum </span>JewelModifiers&lt;C = AtomicCounter&gt;
+<span class="kw">where
+	</span>C: Counter
+{
 	Chipped([ModifierInstance&lt;C&gt;; <span class="number">1</span>]),
 	Flawed([ModifierInstance&lt;C&gt;; <span class="number">2</span>]),
 	Flawless([ModifierInstance&lt;C&gt;; <span class="number">3</span>]),
 	Perfect([ModifierInstance&lt;C&gt;; <span class="number">4</span>])
 }
 
-<span class="kw">struct </span>ModifierInstance&lt;C: Counter = AtomicCounter&gt; {
+<span class="kw">struct </span>ModifierInstance&lt;C = AtomicCounter&gt;
+<span class="kw">where
+	</span>C: Counter
+{
 	modifier: Modifier&lt;C&gt;,
 	value: ModifierValue
 }
 
-<span class="kw">struct </span>Modifier&lt;C: Counter = AtomicCounter&gt; {
+<span class="kw">struct </span>Modifier&lt;C = AtomicCounter&gt;
+<span class="kw">where
+	</span>C: Counter
+{
 	inner: RcStr&lt;C, ModifierMeta&lt;C&gt;&gt;
 }
 
-<span class="kw">struct </span>ModifierMeta&lt;C: Counter = AtomicCounter&gt; {
+<span class="kw">struct </span>ModifierMeta&lt;C = AtomicCounter&gt;
+<span class="kw">where
+	</span>C: Counter
+{
 	display_name: RcStr&lt;C&gt;,
 	modifier_type: ModifierType
 }
@@ -262,7 +326,10 @@
 	}
 
 	<span class="attr">#[inline]
-	</span><span class="kw">fn </span>with_counter&lt;C: Counter&gt;() -&gt; JewelStore&lt;C&gt; {
+	</span><span class="kw">fn </span>with_counter&lt;C&gt;() -&gt; JewelStore&lt;C&gt;
+	<span class="kw">where
+		</span>C: Counter
+	{
 		JewelStore {
 			modifiers: HashSet::new(),
 			jewels: Vec::new()
@@ -270,7 +337,10 @@
 	}
 }
 
-<span class="kw">impl</span>&lt;C: Counter&gt; JewelStore&lt;C&gt; {
+<span class="kw">impl</span>&lt;C&gt; JewelStore&lt;C&gt;
+<span class="kw">where
+	</span>C: Counter
+{
 	<span class="doccomment">/// Register a modifier by its identifier, return [`Ok`] if added and [`Err`]
 	/// if the modifier already exists
 	</span><span class="attr">#[inline]
@@ -290,7 +360,10 @@
 	}
 }
 
-<span class="kw">impl</span>&lt;C: Counter&gt; Modifier&lt;C&gt; {
+<span class="kw">impl</span>&lt;C&gt; Modifier&lt;C&gt;
+<span class="kw">where
+	</span>C: Counter
+{
 	<span class="doccomment">/// Create new modifier
 	///
 	/// This will always allocate, as it has no knowledge of existing modifier
@@ -307,32 +380,51 @@
 	}
 }
 
-<span class="kw">impl</span>&lt;C: Counter&gt; Borrow&lt;str&gt; <span class="kw">for </span>Modifier&lt;C&gt; {
+<span class="kw">impl</span>&lt;C&gt; Borrow&lt;str&gt; <span class="kw">for </span>Modifier&lt;C&gt;
+<span class="kw">where
+	</span>C: Counter
+{
 	<span class="attr">#[inline]
 	</span><span class="kw">fn </span>borrow(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; <span class="kw-2">&amp;</span>str {
 		<span class="kw-2">&amp;</span><span class="self">self</span>.inner
 	}
 }
 
-<span class="kw">impl</span>&lt;C: Counter&gt; Clone <span class="kw">for </span>Modifier&lt;C&gt; {
+<span class="kw">impl</span>&lt;C&gt; Clone <span class="kw">for </span>Modifier&lt;C&gt;
+<span class="kw">where
+	</span>C: Counter
+{
 	<span class="attr">#[inline]
 	</span><span class="kw">fn </span>clone(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; <span class="self">Self </span>{
 		<span class="self">Self </span>{ inner: <span class="self">self</span>.inner.clone() }
 	}
 }
 
-<span class="kw">impl</span>&lt;C: Counter, C2: Counter&gt; PartialEq&lt;Modifier&lt;C2&gt;&gt; <span class="kw">for </span>Modifier&lt;C&gt; {
+<span class="kw">impl</span>&lt;C, C2&gt; PartialEq&lt;Modifier&lt;C2&gt;&gt; <span class="kw">for </span>Modifier&lt;C&gt;
+<span class="kw">where
+	</span>C: Counter,
+	C2: Counter
+{
 	<span class="attr">#[inline]
 	</span><span class="kw">fn </span>eq(<span class="kw-2">&amp;</span><span class="self">self</span>, other: <span class="kw-2">&amp;</span>Modifier&lt;C2&gt;) -&gt; bool {
 		<span class="kw-2">*</span><span class="self">self</span>.inner == <span class="kw-2">*</span>other.inner
 	}
 }
 
-<span class="kw">impl</span>&lt;C: Counter&gt; Eq <span class="kw">for </span>Modifier&lt;C&gt; {}
+<span class="kw">impl</span>&lt;C&gt; Eq <span class="kw">for </span>Modifier&lt;C&gt;
+<span class="kw">where
+	</span>C: Counter
+{}
 
-<span class="kw">impl</span>&lt;C: Counter&gt; Hash <span class="kw">for </span>Modifier&lt;C&gt; {
+<span class="kw">impl</span>&lt;C&gt; Hash <span class="kw">for </span>Modifier&lt;C&gt;
+<span class="kw">where
+	</span>C: Counter
+{
 	<span class="attr">#[inline]
-	</span><span class="kw">fn </span>hash&lt;H: Hasher&gt;(<span class="kw-2">&amp;</span><span class="self">self</span>, state: <span class="kw-2">&amp;mut </span>H) {
+	</span><span class="kw">fn </span>hash&lt;H&gt;(<span class="kw-2">&amp;</span><span class="self">self</span>, state: <span class="kw-2">&amp;mut </span>H)
+	<span class="kw">where
+		</span>H: Hasher
+	{
 		Hash::hash(<span class="kw-2">&amp;*</span><span class="self">self</span>.inner, state)
 	}
 }

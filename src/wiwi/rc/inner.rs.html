@@ -584,19 +584,95 @@
 <a href="#583" id="583">583</a>
 <a href="#584" id="584">584</a>
 <a href="#585" id="585">585</a>
-<a href="#586" id="586">586</a></pre></div><pre class="rust"><code><span class="kw">use </span><span class="kw">crate</span>::prelude_std::<span class="kw-2">*</span>;
+<a href="#586" id="586">586</a>
+<a href="#587" id="587">587</a>
+<a href="#588" id="588">588</a>
+<a href="#589" id="589">589</a>
+<a href="#590" id="590">590</a>
+<a href="#591" id="591">591</a>
+<a href="#592" id="592">592</a>
+<a href="#593" id="593">593</a>
+<a href="#594" id="594">594</a>
+<a href="#595" id="595">595</a>
+<a href="#596" id="596">596</a>
+<a href="#597" id="597">597</a>
+<a href="#598" id="598">598</a>
+<a href="#599" id="599">599</a>
+<a href="#600" id="600">600</a>
+<a href="#601" id="601">601</a>
+<a href="#602" id="602">602</a>
+<a href="#603" id="603">603</a>
+<a href="#604" id="604">604</a>
+<a href="#605" id="605">605</a>
+<a href="#606" id="606">606</a>
+<a href="#607" id="607">607</a>
+<a href="#608" id="608">608</a>
+<a href="#609" id="609">609</a>
+<a href="#610" id="610">610</a>
+<a href="#611" id="611">611</a>
+<a href="#612" id="612">612</a>
+<a href="#613" id="613">613</a>
+<a href="#614" id="614">614</a>
+<a href="#615" id="615">615</a>
+<a href="#616" id="616">616</a>
+<a href="#617" id="617">617</a>
+<a href="#618" id="618">618</a>
+<a href="#619" id="619">619</a>
+<a href="#620" id="620">620</a>
+<a href="#621" id="621">621</a>
+<a href="#622" id="622">622</a>
+<a href="#623" id="623">623</a>
+<a href="#624" id="624">624</a>
+<a href="#625" id="625">625</a>
+<a href="#626" id="626">626</a>
+<a href="#627" id="627">627</a>
+<a href="#628" id="628">628</a>
+<a href="#629" id="629">629</a>
+<a href="#630" id="630">630</a>
+<a href="#631" id="631">631</a>
+<a href="#632" id="632">632</a>
+<a href="#633" id="633">633</a>
+<a href="#634" id="634">634</a>
+<a href="#635" id="635">635</a>
+<a href="#636" id="636">636</a>
+<a href="#637" id="637">637</a>
+<a href="#638" id="638">638</a>
+<a href="#639" id="639">639</a>
+<a href="#640" id="640">640</a>
+<a href="#641" id="641">641</a>
+<a href="#642" id="642">642</a>
+<a href="#643" id="643">643</a>
+<a href="#644" id="644">644</a>
+<a href="#645" id="645">645</a>
+<a href="#646" id="646">646</a>
+<a href="#647" id="647">647</a>
+<a href="#648" id="648">648</a>
+<a href="#649" id="649">649</a>
+<a href="#650" id="650">650</a>
+<a href="#651" id="651">651</a>
+<a href="#652" id="652">652</a>
+<a href="#653" id="653">653</a>
+<a href="#654" id="654">654</a>
+<a href="#655" id="655">655</a>
+<a href="#656" id="656">656</a>
+<a href="#657" id="657">657</a>
+<a href="#658" id="658">658</a>
+<a href="#659" id="659">659</a>
+<a href="#660" id="660">660</a>
+<a href="#661" id="661">661</a>
+<a href="#662" id="662">662</a></pre></div><pre class="rust"><code><span class="kw">use </span><span class="kw">crate</span>::prelude_std::<span class="kw-2">*</span>;
 <span class="kw">use </span><span class="self">self</span>::alloc_mod::Layout;
 <span class="kw">use </span><span class="self">self</span>::atomic::Ordering::<span class="kw-2">*</span>;
 
 <span class="attr">#[repr(transparent)]
-</span><span class="kw">pub struct </span>RcInner&lt;C: Counter, V, S&gt; {
+</span><span class="kw">pub struct </span>RcInner&lt;C, V, S&gt; {
 	ptr: ptr::NonNull&lt;RcLayout&lt;C, V, S&gt;&gt;
 }
 
 <span class="comment">// if fields in this struct need to change,
 // make sure to change `calc_layout` accordingly
 </span><span class="attr">#[repr(C)]
-</span><span class="kw">struct </span>RcLayout&lt;C: Counter, V, S&gt; {
+</span><span class="kw">struct </span>RcLayout&lt;C, V, S&gt; {
 	<span class="doccomment">/// The reference counter (handles counting both strong and weak references)
 	</span>counter: C,
 
@@ -615,27 +691,44 @@
 }
 
 <span class="attr">#[inline]
-</span><span class="kw">pub fn </span>new_from_value&lt;C: Counter, V&gt;(value: V) -&gt; RcInner&lt;C, V, ()&gt; {
+</span><span class="kw">pub fn </span>new_from_value&lt;C, V&gt;(value: V) -&gt; RcInner&lt;C, V, ()&gt;
+<span class="kw">where
+	</span>C: Counter
+{
 	new_from_value_and_slice_copy(value, <span class="kw-2">&amp;</span>[])
 }
 
 <span class="attr">#[inline]
-</span><span class="kw">pub fn </span>new_from_array_into_slice&lt;C: Counter, S, <span class="kw">const </span>N: usize&gt;(array: [S; N]) -&gt; RcInner&lt;C, (), S&gt; {
+</span><span class="kw">pub fn </span>new_from_array_into_slice&lt;C, S, <span class="kw">const </span>N: usize&gt;(array: [S; N]) -&gt; RcInner&lt;C, (), S&gt;
+<span class="kw">where
+	</span>C: Counter
+{
 	new_from_value_and_array_into_slice((), array)
 }
 
 <span class="attr">#[inline]
-</span><span class="kw">pub fn </span>new_from_slice_clone&lt;C: Counter, S: Clone&gt;(slice: <span class="kw-2">&amp;</span>[S]) -&gt; RcInner&lt;C, (), S&gt; {
+</span><span class="kw">pub fn </span>new_from_slice_clone&lt;C, S&gt;(slice: <span class="kw-2">&amp;</span>[S]) -&gt; RcInner&lt;C, (), S&gt;
+<span class="kw">where
+	</span>C: Counter,
+	S: Clone
+{
 	new_from_value_and_slice_clone((), slice)
 }
 
 <span class="attr">#[inline]
-</span><span class="kw">pub fn </span>new_from_slice_copy&lt;C: Counter, S: Copy&gt;(slice: <span class="kw-2">&amp;</span>[S]) -&gt; RcInner&lt;C, (), S&gt; {
+</span><span class="kw">pub fn </span>new_from_slice_copy&lt;C, S&gt;(slice: <span class="kw-2">&amp;</span>[S]) -&gt; RcInner&lt;C, (), S&gt;
+<span class="kw">where
+	</span>C: Counter,
+	S: Copy
+{
 	new_from_value_and_slice_copy((), slice)
 }
 
 <span class="attr">#[inline]
-</span><span class="kw">pub fn </span>new_from_value_and_array_into_slice&lt;C: Counter, V, S, <span class="kw">const </span>N: usize&gt;(value: V, array: [S; N]) -&gt; RcInner&lt;C, V, S&gt; {
+</span><span class="kw">pub fn </span>new_from_value_and_array_into_slice&lt;C, V, S, <span class="kw">const </span>N: usize&gt;(value: V, array: [S; N]) -&gt; RcInner&lt;C, V, S&gt;
+<span class="kw">where
+	</span>C: Counter
+{
 	<span class="kw">let </span>array = ManuallyDrop::new(array);
 
 	<span class="comment">// SAFETY: we put the array into `ManuallyDrop`
@@ -643,7 +736,11 @@
 }
 
 <span class="attr">#[inline]
-</span><span class="kw">pub fn </span>new_from_value_and_slice_clone&lt;C: Counter, V, S: Clone&gt;(value: V, slice: <span class="kw-2">&amp;</span>[S]) -&gt; RcInner&lt;C, V, S&gt; {
+</span><span class="kw">pub fn </span>new_from_value_and_slice_clone&lt;C, V, S&gt;(value: V, slice: <span class="kw-2">&amp;</span>[S]) -&gt; RcInner&lt;C, V, S&gt;
+<span class="kw">where
+	</span>C: Counter,
+	S: Clone
+{
 	<span class="kw">let </span>instance = alloc_instance::&lt;<span class="kw">_</span>, <span class="kw">_</span>, S&gt;(slice.len());
 
 	<span class="comment">// SAFETY:
@@ -668,7 +765,11 @@
 }
 
 <span class="attr">#[inline]
-</span><span class="kw">pub fn </span>new_from_value_and_slice_copy&lt;C: Counter, V, S: Copy&gt;(value: V, slice: <span class="kw-2">&amp;</span>[S]) -&gt; RcInner&lt;C, V, S&gt; {
+</span><span class="kw">pub fn </span>new_from_value_and_slice_copy&lt;C, V, S&gt;(value: V, slice: <span class="kw-2">&amp;</span>[S]) -&gt; RcInner&lt;C, V, S&gt;
+<span class="kw">where
+	</span>C: Counter,
+	S: Copy
+{
 	<span class="comment">// SAFETY: `S: Copy` enforced by trait bound
 	</span><span class="kw">unsafe </span>{ new_from_value_and_slice_copy_unchecked(value, slice) }
 }
@@ -679,7 +780,10 @@
 /// or the input slice should be prevented from dropping to avoid double
 /// dropping elements.
 </span><span class="attr">#[inline]
-</span><span class="kw">unsafe fn </span>new_from_value_and_slice_copy_unchecked&lt;C: Counter, V, S&gt;(value: V, slice: <span class="kw-2">&amp;</span>[S]) -&gt; RcInner&lt;C, V, S&gt; {
+</span><span class="kw">unsafe fn </span>new_from_value_and_slice_copy_unchecked&lt;C, V, S&gt;(value: V, slice: <span class="kw-2">&amp;</span>[S]) -&gt; RcInner&lt;C, V, S&gt;
+<span class="kw">where
+	</span>C: Counter
+{
 	<span class="kw">let </span>instance = alloc_instance(slice.len());
 
 	<span class="comment">// SAFETY:
@@ -711,7 +815,10 @@
 /// [`Counter`]. Caller is responsible for initialising the `value` and `slice`
 /// fields.
 </span><span class="attr">#[inline]
-</span><span class="kw">fn </span>alloc_instance&lt;C: Counter, V, S&gt;(slice_len: usize) -&gt; RcInner&lt;C, V, S&gt; {
+</span><span class="kw">fn </span>alloc_instance&lt;C, V, S&gt;(slice_len: usize) -&gt; RcInner&lt;C, V, S&gt;
+<span class="kw">where
+	</span>C: Counter
+{
 	<span class="kw">let </span>layout = calc_layout::&lt;C, V, S&gt;(slice_len);
 
 	<span class="comment">// SAFETY: `calc_layout` never returns layout with 0 size
@@ -745,7 +852,10 @@
 /// This instance must be fully initialised, and this must be the first time
 /// this function is called on this particular `instance`.
 </span><span class="attr">#[inline]
-</span><span class="kw">pub unsafe fn </span>drop_instance&lt;C: Counter, V, S&gt;(instance: RcInner&lt;C, V, S&gt;) {
+</span><span class="kw">pub unsafe fn </span>drop_instance&lt;C, V, S&gt;(instance: RcInner&lt;C, V, S&gt;)
+<span class="kw">where
+	</span>C: Counter
+{
 	<span class="comment">// SAFETY: caller promises `instance` is fully initialised
 	</span><span class="kw">let </span>slice_ref = <span class="kw">unsafe </span>{ slice_ref(instance) };
 
@@ -776,7 +886,10 @@
 /// that is equivalent to leaking the value and slice fields, and is almost
 /// certainly incorrect.
 </span><span class="attr">#[inline]
-</span><span class="kw">pub unsafe fn </span>dealloc_instance&lt;C: Counter, V, S&gt;(instance: RcInner&lt;C, V, S&gt;) {
+</span><span class="kw">pub unsafe fn </span>dealloc_instance&lt;C, V, S&gt;(instance: RcInner&lt;C, V, S&gt;)
+<span class="kw">where
+	</span>C: Counter
+{
 	<span class="comment">// SAFETY: caller promises `counter` is initialised
 	</span><span class="kw">let </span>counter_ptr = <span class="kw">unsafe </span>{ counter_ptr(instance).as_ptr() };
 
@@ -796,8 +909,8 @@
 /// value type, slice type, and slice length
 </span><span class="comment">// TODO: make this fn `const` when `feature(const_alloc_layout)` is stable
 </span><span class="attr">#[inline]
-</span><span class="kw">fn </span>calc_layout&lt;C: Counter, V, S&gt;(slice_len: usize) -&gt; Layout {
-	<span class="kw">fn </span>inner&lt;C: Counter, V, S&gt;(slice_len: usize) -&gt; <span class="prelude-ty">Option</span>&lt;Layout&gt; {
+</span><span class="kw">fn </span>calc_layout&lt;C, V, S&gt;(slice_len: usize) -&gt; Layout {
+	<span class="kw">fn </span>inner&lt;C, V, S&gt;(slice_len: usize) -&gt; <span class="prelude-ty">Option</span>&lt;Layout&gt; {
 		<span class="comment">// if the size of `V` is not an even multiple of the align of the rest of the
 		// struct (max of `usize` and `C`), and align of `S` is less than or equal to
 		// align of `V`, the `slice` field will be at the end of `V` and there will be
@@ -839,7 +952,10 @@
 ///
 /// - The provided `instance` must not have been deallocated
 </span><span class="attr">#[inline]
-</span><span class="kw">unsafe fn </span>counter_ptr&lt;C: Counter, V, S&gt;(instance: RcInner&lt;C, V, S&gt;) -&gt; ptr::NonNull&lt;C&gt; {
+</span><span class="kw">unsafe fn </span>counter_ptr&lt;C, V, S&gt;(instance: RcInner&lt;C, V, S&gt;) -&gt; ptr::NonNull&lt;C&gt;
+<span class="kw">where
+	</span>C: Counter
+{
 	<span class="comment">// SAFETY: caller promises to uphold the requirements
 	</span><span class="kw">let </span>ptr = <span class="kw">unsafe </span>{ <span class="kw-2">&amp;</span>raw <span class="kw">const </span>(<span class="kw-2">*</span>instance.ptr.as_ptr()).counter };
 
@@ -853,7 +969,10 @@
 /// - `instance` must outlive `'h` (the lifetime of the returned reference)
 /// - The returned reference must be the only mut reference into `counter` (exclusive borrow)
 </span><span class="attr">#[inline]
-</span><span class="kw">unsafe fn </span>counter_uninit&lt;<span class="lifetime">'h</span>, C: Counter, V, S&gt;(instance: RcInner&lt;C, V, S&gt;) -&gt; <span class="kw-2">&amp;</span><span class="lifetime">'h </span><span class="kw-2">mut </span>MaybeUninit&lt;C&gt; {
+</span><span class="kw">unsafe fn </span>counter_uninit&lt;<span class="lifetime">'h</span>, C, V, S&gt;(instance: RcInner&lt;C, V, S&gt;) -&gt; <span class="kw-2">&amp;</span><span class="lifetime">'h </span><span class="kw-2">mut </span>MaybeUninit&lt;C&gt;
+<span class="kw">where
+	</span>C: Counter
+{
 	<span class="comment">// SAFETY: caller promises to uphold the requirements
 	</span><span class="kw">let </span>ptr = <span class="kw">unsafe </span>{ counter_ptr(instance).as_ptr() };
 
@@ -867,7 +986,10 @@
 /// - The provided `instance` must have field `counter` already initialised
 /// - `instance` must outlive `'h` (the lifetime of the returned reference)
 </span><span class="attr">#[inline]
-</span><span class="kw">pub unsafe fn </span>counter_ref&lt;<span class="lifetime">'h</span>, C: Counter, V, S&gt;(instance: RcInner&lt;C, V, S&gt;) -&gt; <span class="kw-2">&amp;</span><span class="lifetime">'h </span>C {
+</span><span class="kw">pub unsafe fn </span>counter_ref&lt;<span class="lifetime">'h</span>, C, V, S&gt;(instance: RcInner&lt;C, V, S&gt;) -&gt; <span class="kw-2">&amp;</span><span class="lifetime">'h </span>C
+<span class="kw">where
+	</span>C: Counter
+{
 	<span class="comment">// SAFETY: caller promises to uphold the requirements
 	</span><span class="kw">let </span>ptr = <span class="kw">unsafe </span>{ counter_ptr(instance).as_ptr() };
 
@@ -879,7 +1001,10 @@
 ///
 /// - The provided `instance` must not have been deallocated
 </span><span class="attr">#[inline]
-</span><span class="kw">unsafe fn </span>slice_len_ptr&lt;C: Counter, V, S&gt;(instance: RcInner&lt;C, V, S&gt;) -&gt; ptr::NonNull&lt;usize&gt; {
+</span><span class="kw">unsafe fn </span>slice_len_ptr&lt;C, V, S&gt;(instance: RcInner&lt;C, V, S&gt;) -&gt; ptr::NonNull&lt;usize&gt;
+<span class="kw">where
+	</span>C: Counter
+{
 	<span class="comment">// SAFETY: caller promises to uphold the requirements
 	</span><span class="kw">let </span>ptr = <span class="kw">unsafe </span>{ <span class="kw-2">&amp;</span>raw <span class="kw">const </span>(<span class="kw-2">*</span>instance.ptr.as_ptr()).slice_len };
 
@@ -893,7 +1018,10 @@
 /// - `instance` must outlive `'h` (the lifetime of the returned reference)
 /// - The returned reference must be the only mut reference into `slice_len` (exclusive borrow)
 </span><span class="attr">#[inline]
-</span><span class="kw">unsafe fn </span>slice_len_uninit&lt;<span class="lifetime">'h</span>, C: Counter, V, S&gt;(instance: RcInner&lt;C, V, S&gt;) -&gt; <span class="kw-2">&amp;</span><span class="lifetime">'h </span><span class="kw-2">mut </span>MaybeUninit&lt;usize&gt; {
+</span><span class="kw">unsafe fn </span>slice_len_uninit&lt;<span class="lifetime">'h</span>, C, V, S&gt;(instance: RcInner&lt;C, V, S&gt;) -&gt; <span class="kw-2">&amp;</span><span class="lifetime">'h </span><span class="kw-2">mut </span>MaybeUninit&lt;usize&gt;
+<span class="kw">where
+	</span>C: Counter
+{
 	<span class="comment">// SAFETY: caller promises to uphold the requirements
 	</span><span class="kw">let </span>ptr = <span class="kw">unsafe </span>{ slice_len_ptr(instance).as_ptr() };
 
@@ -907,7 +1035,10 @@
 /// - The provided `instance` must have field `slice_len` already initialised
 /// - `instance` must outlive `'h` (the lifetime of the returned reference)
 </span><span class="attr">#[inline]
-</span><span class="kw">unsafe fn </span>slice_len&lt;C: Counter, V, S&gt;(instance: RcInner&lt;C, V, S&gt;) -&gt; usize {
+</span><span class="kw">unsafe fn </span>slice_len&lt;C, V, S&gt;(instance: RcInner&lt;C, V, S&gt;) -&gt; usize
+<span class="kw">where
+	</span>C: Counter
+{
 	<span class="comment">// SAFETY: caller promises to uphold the requirements
 	</span><span class="kw">let </span>ptr = <span class="kw">unsafe </span>{ slice_len_ptr(instance).as_ptr() };
 
@@ -919,7 +1050,10 @@
 ///
 /// - The provided `instance` must not have been dropped or deallocated
 </span><span class="attr">#[inline]
-</span><span class="kw">unsafe fn </span>value_ptr&lt;C: Counter, V, S&gt;(instance: RcInner&lt;C, V, S&gt;) -&gt; ptr::NonNull&lt;V&gt; {
+</span><span class="kw">unsafe fn </span>value_ptr&lt;C, V, S&gt;(instance: RcInner&lt;C, V, S&gt;) -&gt; ptr::NonNull&lt;V&gt;
+<span class="kw">where
+	</span>C: Counter
+{
 	<span class="comment">// SAFETY: caller promises to uphold the requirements
 	</span><span class="kw">let </span>ptr = <span class="kw">unsafe </span>{ <span class="kw-2">&amp;</span>raw <span class="kw">const </span>(<span class="kw-2">*</span>instance.ptr.as_ptr()).value };
 
@@ -933,7 +1067,10 @@
 /// - `instance` must outlive `'h` (the lifetime of the returned reference)
 /// - The returned reference must be the only mut reference into `value` (exclusive borrow)
 </span><span class="attr">#[inline]
-</span><span class="kw">unsafe fn </span>value_uninit&lt;<span class="lifetime">'h</span>, C: Counter, V, S&gt;(instance: RcInner&lt;C, V, S&gt;) -&gt; <span class="kw-2">&amp;</span><span class="lifetime">'h </span><span class="kw-2">mut </span>MaybeUninit&lt;V&gt; {
+</span><span class="kw">unsafe fn </span>value_uninit&lt;<span class="lifetime">'h</span>, C, V, S&gt;(instance: RcInner&lt;C, V, S&gt;) -&gt; <span class="kw-2">&amp;</span><span class="lifetime">'h </span><span class="kw-2">mut </span>MaybeUninit&lt;V&gt;
+<span class="kw">where
+	</span>C: Counter
+{
 	<span class="comment">// SAFETY: caller promises to uphold the requirements
 	</span><span class="kw">let </span>ptr = <span class="kw">unsafe </span>{ value_ptr(instance).as_ptr() };
 
@@ -947,7 +1084,10 @@
 /// - The provided `instance` must have field `value` already initialised
 /// - `instance` must outlive `'h` (the lifetime of the returned reference)
 </span><span class="attr">#[inline]
-</span><span class="kw">pub unsafe fn </span>value_ref&lt;<span class="lifetime">'h</span>, C: Counter, V, S&gt;(instance: RcInner&lt;C, V, S&gt;) -&gt; <span class="kw-2">&amp;</span><span class="lifetime">'h </span>V {
+</span><span class="kw">pub unsafe fn </span>value_ref&lt;<span class="lifetime">'h</span>, C, V, S&gt;(instance: RcInner&lt;C, V, S&gt;) -&gt; <span class="kw-2">&amp;</span><span class="lifetime">'h </span>V
+<span class="kw">where
+	</span>C: Counter
+{
 	<span class="comment">// SAFETY: caller promises to uphold the requirements
 	</span><span class="kw">let </span>ptr = <span class="kw">unsafe </span>{ value_ptr(instance).as_ptr() };
 
@@ -959,7 +1099,10 @@
 ///
 /// - The provided `instance` must not have been dropped or deallocated
 </span><span class="attr">#[inline]
-</span><span class="kw">unsafe fn </span>slice_thin_ptr&lt;C: Counter, V, S&gt;(instance: RcInner&lt;C, V, S&gt;) -&gt; ptr::NonNull&lt;S&gt; {
+</span><span class="kw">unsafe fn </span>slice_thin_ptr&lt;C, V, S&gt;(instance: RcInner&lt;C, V, S&gt;) -&gt; ptr::NonNull&lt;S&gt;
+<span class="kw">where
+	</span>C: Counter
+{
 	<span class="comment">// SAFETY: caller promises to uphold the requirements
 	</span><span class="kw">let </span>ptr = <span class="kw">unsafe </span>{ <span class="kw-2">&amp;</span>raw <span class="kw">const </span>(<span class="kw-2">*</span>instance.ptr.as_ptr()).slice };
 	<span class="kw">let </span>ptr = ptr.cast::&lt;S&gt;();
@@ -975,7 +1118,10 @@
 /// - The provided `instance` must have `slice_len` elements in `slice` already initialised
 /// - `instance` must outlive `'h` (the lifetime of the returned reference)
 </span><span class="attr">#[inline]
-</span><span class="kw">pub unsafe fn </span>slice_ref&lt;<span class="lifetime">'h</span>, C: Counter, V, S&gt;(instance: RcInner&lt;C, V, S&gt;) -&gt; <span class="kw-2">&amp;</span><span class="lifetime">'h </span>[S] {
+</span><span class="kw">pub unsafe fn </span>slice_ref&lt;<span class="lifetime">'h</span>, C, V, S&gt;(instance: RcInner&lt;C, V, S&gt;) -&gt; <span class="kw-2">&amp;</span><span class="lifetime">'h </span>[S]
+<span class="kw">where
+	</span>C: Counter
+{
 	<span class="comment">// SAFETY: caller promises to uphold the requirements
 	</span><span class="kw">let </span>ptr = <span class="kw">unsafe </span>{ slice_thin_ptr(instance).as_ptr() };
 
@@ -986,14 +1132,20 @@
 	</span><span class="kw">unsafe </span>{ slice::from_raw_parts(ptr, slice_len) }
 }
 
-<span class="kw">impl</span>&lt;C: Counter, V, S&gt; Clone <span class="kw">for </span>RcInner&lt;C, V, S&gt; {
+<span class="kw">impl</span>&lt;C, V, S&gt; Clone <span class="kw">for </span>RcInner&lt;C, V, S&gt;
+<span class="kw">where
+	</span>C: Counter
+{
 	<span class="attr">#[inline]
 	</span><span class="kw">fn </span>clone(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; <span class="self">Self </span>{
 		<span class="kw-2">*</span><span class="self">self
 	</span>}
 }
 
-<span class="kw">impl</span>&lt;C: Counter, V, S&gt; Copy <span class="kw">for </span>RcInner&lt;C, V, S&gt; {}
+<span class="kw">impl</span>&lt;C, V, S&gt; Copy <span class="kw">for </span>RcInner&lt;C, V, S&gt;
+<span class="kw">where
+	</span>C: Counter
+{}
 
 <span class="doccomment">/// Trait for structs that can count references
 ///

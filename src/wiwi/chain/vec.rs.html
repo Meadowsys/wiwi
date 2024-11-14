@@ -565,7 +565,20 @@
 <a href="#564" id="564">564</a>
 <a href="#565" id="565">565</a>
 <a href="#566" id="566">566</a>
-<a href="#567" id="567">567</a></pre></div><pre class="rust"><code><span class="kw">use </span><span class="kw">crate</span>::prelude_std::<span class="kw-2">*</span>;
+<a href="#567" id="567">567</a>
+<a href="#568" id="568">568</a>
+<a href="#569" id="569">569</a>
+<a href="#570" id="570">570</a>
+<a href="#571" id="571">571</a>
+<a href="#572" id="572">572</a>
+<a href="#573" id="573">573</a>
+<a href="#574" id="574">574</a>
+<a href="#575" id="575">575</a>
+<a href="#576" id="576">576</a>
+<a href="#577" id="577">577</a>
+<a href="#578" id="578">578</a>
+<a href="#579" id="579">579</a>
+<a href="#580" id="580">580</a></pre></div><pre class="rust"><code><span class="kw">use </span><span class="kw">crate</span>::prelude_std::<span class="kw-2">*</span>;
 <span class="kw">use super</span>::{ chain_fn, AsChainInner, ChainInner <span class="kw">as _</span>, OutputStorage };
 
 <span class="macro">super::decl_chain!</span> {
@@ -700,13 +713,15 @@
 		/// # Examples
 		///
 		/// TODO
-		</span>append[I: AsChainInner&lt;Vec&lt;T&gt;&gt;](inner, other: <span class="kw-2">&amp;mut </span>I)
-			=&gt; inner.append(other.as_inner_mut())
+		</span>append[I](inner, other: <span class="kw-2">&amp;mut </span>I) <span class="kw">where </span>{
+			I: AsChainInner&lt;Vec&lt;T&gt;&gt;
+		} =&gt; inner.append(other.as_inner_mut())
 	}
 
 	<span class="macro">chain_fn!</span> {
-		binary_search[O: OutputStorage&lt;<span class="prelude-ty">Result</span>&lt;usize, usize&gt;&gt;](inner, x: <span class="kw-2">&amp;</span>T, out: O) <span class="kw">where </span>{
-			T: Ord
+		binary_search[O](inner, x: <span class="kw-2">&amp;</span>T, out: O) <span class="kw">where </span>{
+			T: Ord,
+			O: OutputStorage&lt;<span class="prelude-ty">Result</span>&lt;usize, usize&gt;&gt;
 		} =&gt; {
 			<span class="comment">// SAFETY: we always write once to `out`
 			</span><span class="kw">unsafe </span>{ out.store(inner.binary_search(x)) }
@@ -735,9 +750,12 @@
 	}
 
 	<span class="macro">chain_fn!</span> {
-		capacity[O: OutputStorage&lt;usize&gt;](inner, out: O)
+		capacity[O](inner, out: O) <span class="kw">where </span>{
+			O: OutputStorage&lt;usize&gt;
+		} =&gt; {
 			<span class="comment">// SAFETY: we always write once to `out`
-			</span>=&gt; <span class="kw">unsafe </span>{ out.store(inner.capacity()) }
+			</span><span class="kw">unsafe </span>{ out.store(inner.capacity()) }
+		}
 	}
 
 	<span class="macro">chain_fn!</span> {
@@ -758,8 +776,9 @@
 	}
 
 	<span class="macro">chain_fn!</span> {
-		contains[O: OutputStorage&lt;bool&gt;](inner, x: <span class="kw-2">&amp;</span>T, out: O) <span class="kw">where </span>{
-			T: PartialEq
+		contains[O](inner, x: <span class="kw-2">&amp;</span>T, out: O) <span class="kw">where </span>{
+			T: PartialEq,
+			O: OutputStorage&lt;bool&gt;
 		} =&gt; {
 			<span class="comment">// SAFETY: we always write once to `out`
 			</span><span class="kw">unsafe </span>{ out.store(inner.contains(x)) }
@@ -786,8 +805,9 @@
 	}
 
 	<span class="macro">chain_fn!</span> {
-		ends_with[O: OutputStorage&lt;bool&gt;](inner, needle: <span class="kw-2">&amp;</span>[T], out: O) <span class="kw">where </span>{
-			T: PartialEq
+		ends_with[O](inner, needle: <span class="kw-2">&amp;</span>[T], out: O) <span class="kw">where </span>{
+			T: PartialEq,
+			O: OutputStorage&lt;bool&gt;
 		} =&gt; {
 			<span class="comment">// SAFETY: we always write once to `out`
 			</span><span class="kw">unsafe </span>{ out.store(inner.ends_with(needle)) }
@@ -812,9 +832,12 @@
 	}
 
 	<span class="macro">chain_fn!</span> {
-		len[O: OutputStorage&lt;usize&gt;](inner, out: O)
+		len[O](inner, out: O) <span class="kw">where </span>{
+			O: OutputStorage&lt;usize&gt;
+		} =&gt; {
 			<span class="comment">// SAFETY: we always write once to `out`
-			</span>=&gt; <span class="kw">unsafe </span>{ out.store(inner.len()) }
+			</span><span class="kw">unsafe </span>{ out.store(inner.len()) }
+		}
 	}
 
 	<span class="macro">chain_fn!</span> {
@@ -823,9 +846,12 @@
 	}
 
 	<span class="macro">chain_fn!</span> {
-		remove[O: OutputStorage&lt;T&gt;](inner, index: usize, out: O)
+		remove[O](inner, index: usize, out: O) <span class="kw">where </span>{
+			O: OutputStorage&lt;T&gt;
+		} =&gt; {
 			<span class="comment">// SAFETY: we always write once to `out`
-			</span>=&gt; <span class="kw">unsafe </span>{ out.store(inner.remove(index)) }
+			</span><span class="kw">unsafe </span>{ out.store(inner.remove(index)) }
+		}
 	}
 
 	<span class="macro">chain_fn!</span> {

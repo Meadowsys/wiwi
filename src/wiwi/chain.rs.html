@@ -646,7 +646,15 @@
 <a href="#645" id="645">645</a>
 <a href="#646" id="646">646</a>
 <a href="#647" id="647">647</a>
-<a href="#648" id="648">648</a></pre></div><pre class="rust"><code><span class="kw">use </span><span class="kw">crate</span>::prelude_std::<span class="kw-2">*</span>;
+<a href="#648" id="648">648</a>
+<a href="#649" id="649">649</a>
+<a href="#650" id="650">650</a>
+<a href="#651" id="651">651</a>
+<a href="#652" id="652">652</a>
+<a href="#653" id="653">653</a>
+<a href="#654" id="654">654</a>
+<a href="#655" id="655">655</a>
+<a href="#656" id="656">656</a></pre></div><pre class="rust"><code><span class="kw">use </span><span class="kw">crate</span>::prelude_std::<span class="kw-2">*</span>;
 
 <span class="kw">pub use </span>vec::{ vec_chain, VecChain };
 
@@ -654,9 +662,10 @@
 
 <span class="kw">pub trait </span>Chain
 <span class="kw">where
-	</span><span class="self">Self</span>: Sized + private::Sealed + Into&lt;<span class="self">Self</span>::Inner&gt; + AsRef&lt;<span class="self">Self</span>::Inner&gt; + AsMut&lt;<span class="self">Self</span>::Inner&gt;
+	</span><span class="self">Self</span>: Sized + private::Sealed + Into&lt;<span class="self">Self</span>::Inner&gt; + AsRef&lt;<span class="self">Self</span>::Inner&gt; + AsMut&lt;<span class="self">Self</span>::Inner&gt;,
+	<span class="self">Self</span>::Inner: ChainInner&lt;Chain = <span class="self">Self</span>&gt;
 {
-	<span class="kw">type </span>Inner: ChainInner&lt;Chain = <span class="self">Self</span>&gt;;
+	<span class="kw">type </span>Inner;
 
 	<span class="attr">#[inline]
 	</span><span class="kw">fn </span>into_inner(<span class="self">self</span>) -&gt; <span class="self">Self</span>::Inner {
@@ -690,9 +699,10 @@
 
 <span class="kw">pub trait </span>ChainInner
 <span class="kw">where
-	</span><span class="self">Self</span>: Sized + private::Sealed + Into&lt;<span class="self">Self</span>::Chain&gt;
+	</span><span class="self">Self</span>: Sized + private::Sealed + Into&lt;<span class="self">Self</span>::Chain&gt;,
+	<span class="self">Self</span>::Chain: Chain&lt;Inner = <span class="self">Self</span>&gt;
 {
-	<span class="kw">type </span>Chain: Chain&lt;Inner = <span class="self">Self</span>&gt;;
+	<span class="kw">type </span>Chain;
 
 	<span class="attr">#[inline]
 	</span><span class="kw">fn </span>into_chain(<span class="self">self</span>) -&gt; <span class="self">Self</span>::Chain {
@@ -707,7 +717,10 @@
 
 <span class="doccomment">/// Trait implemented on chains and their inner types, allowing you to get a reference
 /// to the inner type regardless of if the chain or the inner type is passed in
-</span><span class="kw">pub trait </span>AsChainInner&lt;I&gt;: Sized + private::Sealed {
+</span><span class="kw">pub trait </span>AsChainInner&lt;I&gt;
+<span class="kw">where
+	</span><span class="self">Self</span>: Sized + private::Sealed
+{
 	<span class="kw">fn </span>as_inner(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; <span class="kw-2">&amp;</span>I;
 	<span class="kw">fn </span>as_inner_mut(<span class="kw-2">&amp;mut </span><span class="self">self</span>) -&gt; <span class="kw-2">&amp;mut </span>I;
 }
@@ -723,7 +736,10 @@
 /// got initialised, and safely call [`assume_init`](MaybeUninit::assume_init).
 ///
 /// [`store`]: OutputStorage::store
-</span><span class="kw">pub unsafe trait </span>OutputStorage&lt;T&gt;: Sized + private::OutputStorageSealed&lt;T&gt; {
+</span><span class="kw">pub unsafe trait </span>OutputStorage&lt;T&gt;
+<span class="kw">where
+	</span><span class="self">Self</span>: Sized + private::OutputStorageSealed&lt;T&gt;
+{
 	<span class="doccomment">/// # Safety
 	///
 	/// This can and should only be called once, and you must call it before returning,

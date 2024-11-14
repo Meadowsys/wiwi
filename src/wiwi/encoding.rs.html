@@ -365,8 +365,21 @@
 <a href="#364" id="364">364</a>
 <a href="#365" id="365">365</a>
 <a href="#366" id="366">366</a>
-<a href="#367" id="367">367</a></pre></div><pre class="rust"><code><span class="kw">use </span><span class="kw">crate</span>::prelude_std::<span class="kw-2">*</span>;
+<a href="#367" id="367">367</a>
+<a href="#368" id="368">368</a>
+<a href="#369" id="369">369</a>
+<a href="#370" id="370">370</a>
+<a href="#371" id="371">371</a>
+<a href="#372" id="372">372</a>
+<a href="#373" id="373">373</a>
+<a href="#374" id="374">374</a></pre></div><pre class="rust"><code><span class="kw">use </span><span class="kw">crate</span>::prelude_std::<span class="kw-2">*</span>;
 
+<span class="kw">pub use </span><span class="self">self</span>::hex::{ encode_hex, decode_hex };
+<span class="kw">pub use </span><span class="self">self</span>::z85::{ encode_z85, decode_z85 };
+
+<span class="kw">pub mod </span>base16;
+<span class="kw">pub mod </span>base32;
+<span class="kw">pub mod </span>base64;
 <span class="kw">pub mod </span>hex;
 <span class="kw">pub mod </span>z85;
 
@@ -437,13 +450,15 @@
 	/// This pointer is guaranteed not to move throughout the lifespan of `self`,
 	/// because as far as the vec itself is aware, we request it to allocate some
 	/// memory, it gives us at least that much, then we are not touching it, until
-	/// `self` gets unwrapped using [`into_full_vec`](Self::into_full_vec). After
-	/// that, we will never use this pointer again. We are then (unsafely) setting
-	/// the len of the vec to the initially requested amount of capacity, which
-	/// the caller of that method promises is initialised, since it is a safety
-	/// invariant of [`into_full_vec`]. What happens to the vec after we hand it's
-	/// ownership back to caller, is no longer on us to handle. The pointer has
-	/// been dropped, and our job is done.
+	/// `self` gets unwrapped using [`into_full_vec`]. After that, we will never
+	/// use this pointer again. We are then (unsafely) setting the len of the vec
+	/// to the initially requested amount of capacity, which the caller of that
+	/// method promises is initialised, since it is a safety invariant of
+	/// [`into_full_vec`]. What happens to the vec after we hand it's ownership
+	/// back to caller, is no longer on us to handle. The pointer has been dropped,
+	/// and our job is done.
+	///
+	/// [`into_full_vec`]: Self::into_full_vec
 	</span>ptr: <span class="kw-2">*mut </span>u8,
 	<span class="doccomment">/// The amount of capacity that the caller initially requested
 	///
@@ -451,10 +466,9 @@
 	///
 	/// Previously, in the unwrapping operation, we used the value returned by
 	/// [`Vec::capacity`] to set the len of the vec. This is unsound, since
-	/// [`Vec::with_capacity`] is allowed to over allocate (but not under, so
-	/// we're safe there). Because of this fact, we must store the initial
-	/// requested capacity (that the caller promises to fill before taking the vec),
-	/// and use that value to set the len instead.
+	/// [`Vec::with_capacity`] is allowed to over allocate. Because of this, we
+	/// must store the initial requested capacity (that the caller promises to
+	/// fill before taking the vec), and use that value to set the len instead.
 	</span>requested_capacity: usize,
 	<span class="doccomment">/// In debug mode, tracks the amount of bytes written, and uses it to perform
 	/// assertions on preconditions. In release mode, this is not present

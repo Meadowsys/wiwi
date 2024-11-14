@@ -284,10 +284,22 @@
 <a href="#283" id="283">283</a>
 <a href="#284" id="284">284</a>
 <a href="#285" id="285">285</a>
-<a href="#286" id="286">286</a></pre></div><pre class="rust"><code><span class="attr">#![no_implicit_prelude]
+<a href="#286" id="286">286</a>
+<a href="#287" id="287">287</a>
+<a href="#288" id="288">288</a>
+<a href="#289" id="289">289</a>
+<a href="#290" id="290">290</a>
+<a href="#291" id="291">291</a>
+<a href="#292" id="292">292</a>
+<a href="#293" id="293">293</a>
+<a href="#294" id="294">294</a></pre></div><pre class="rust"><code><span class="attr">#![no_implicit_prelude]
 
 </span><span class="comment">// TODO: review these
-// #![warn(
+</span><span class="attr">#![allow(
+	clippy::unnecessary_lazy_evaluations,
+	reason = <span class="string">"uwu"
+</span>)]
+</span><span class="comment">// #![warn(
 // 	// missing_docs,
 // 	// clippy::missing_docs_in_private_items
 // )]
@@ -308,6 +320,7 @@
 	clippy::missing_safety_doc,
 	clippy::mixed_attributes_style,
 	clippy::multiple_unsafe_ops_per_block,
+	clippy::trait_duplication_in_bounds,
 	clippy::undocumented_unsafe_blocks,
 	clippy::unnecessary_safety_comment,
 	reason = <span class="string">"uwu"
@@ -338,13 +351,16 @@
 
 <span class="kw">pub mod </span>chain;
 <span class="kw">pub mod </span>encoding;
-<span class="kw">pub mod </span>lazy_wrap;
+<span class="comment">// pub mod function;
+</span><span class="kw">pub mod </span>lazy_wrap;
 <span class="kw">pub mod </span>macro_util;
 <span class="kw">pub mod </span>nominal;
 <span class="kw">pub mod </span>num;
 <span class="kw">pub mod </span>parser;
 <span class="kw">pub mod </span>rc;
+<span class="kw">pub mod </span>serialiser_binary;
 <span class="kw">pub mod </span>string;
+<span class="kw">pub mod </span>tuple;
 <span class="kw">pub mod </span>vh;
 
 <span class="comment">// #[cfg(feature = "aoc-unstable")]
