@@ -66,6 +66,11 @@ where
 }
 
 #[inline]
+pub fn take_array<const N: usize>() -> TakeArray<N> {
+	TakeArray { inner: stateless::take_array() }
+}
+
+#[inline]
 pub fn take_const<const N: usize>() -> TakeConst<N> {
 	TakeConst { inner: stateless::take_const() }
 }
@@ -157,6 +162,20 @@ where
 {
 	#[inline]
 	fn parse(&mut self, input: I) -> Result<I, I> {
+		self.inner.parse(input)
+	}
+}
+
+pub struct TakeArray<const N: usize> {
+	inner: stateless::TakeArray<N>
+}
+
+impl<I, const N: usize> ParserStateful<I, I::ConstSizeOwned<N>> for TakeArray<N>
+where
+	I: Input
+{
+	#[inline]
+	fn parse(&mut self, input: I) -> Result<I, I::ConstSizeOwned<N>> {
 		self.inner.parse(input)
 	}
 }
