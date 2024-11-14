@@ -172,6 +172,22 @@ impl_fn! {
 	A13 A14 A15 A16
 }
 
+#[inline]
+pub fn fn_adapter<F, Args, Return>(f: F) -> FnAdapter<F, Args, Return>
+where
+	F: Function<Args, Return>
+{
+	FnAdapter { f, __marker: PhantomData }
+}
+
+#[inline]
+pub fn fnmut_adapter<F, Args, Return>(f: F) -> FnMutAdapter<F, Args, Return>
+where
+	F: FunctionMut<Args, Return>
+{
+	FnMutAdapter { f, __marker: PhantomData }
+}
+
 #[repr(transparent)]
 pub struct FnAdapter<F, Args = (), Return = ()> {
 	f: F,
