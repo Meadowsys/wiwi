@@ -1,3 +1,10 @@
+//! Function traits like Rust's [`Fn`], [`FnMut`], and [`FnOnce`] traits
+//!
+//! "why" you may be wondering? because, these are traits I can implement on my
+//! own types without using unstable feature flags, then I can use these traits
+//! in trait bounds, and they will accept items implementing rust's core function
+//! traits (eg. functions and closures), and my own custom, nameable types.
+
 use crate::prelude_std::*;
 
 /// Function trait akin to rust's [`Fn`]
