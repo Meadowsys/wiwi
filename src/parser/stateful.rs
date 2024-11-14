@@ -1,12 +1,21 @@
 use crate::prelude_std::*;
 use crate::num::*;
-use super::{ stateless, Error, Input, Needle, Parser as _, ParserPhantom, Result, Success };
+use super::{ stateless, util, Error, Input, Needle, Parser as _, ParserPhantom, Result, Success };
 
 pub trait ParserStateful<I, O, E = ()>
 where
 	I: Input
 {
-	fn parse_stateful(&mut self, input: I) -> Result<I, O, E>;
+	fn parse(&mut self, input: I) -> Result<I, O, E>;
+
+	#[inline]
+	fn map<F, O2>(self, f: F) -> util::Map<Self, F, O>
+	where
+		Self: Sized,
+		F: FnMut(O) -> O2
+	{
+		util::map(self, f)
+	}
 }
 
 impl<F, I, O, E> ParserStateful<I, O, E> for F
@@ -15,7 +24,7 @@ where
 	F: FnMut(I) -> Result<I, O, E>
 {
 	#[inline]
-	fn parse_stateful(&mut self, data: I) -> Result<I, O, E> {
+	fn parse(&mut self, data: I) -> Result<I, O, E> {
 		self(data)
 	}
 }
@@ -101,21 +110,21 @@ where
 	EAfter: Into<EReal>
 {
 	#[inline]
-	fn parse_stateful(&mut self, input: I) -> Result<I, O, EReal> {
+	fn parse(&mut self, input: I) -> Result<I, O, EReal> {
 		let Success {
 			output: _output_before,
 			remaining_input: input
-		} = self.parser_before.parse_stateful(input).map_err(Error::into)?;
+		} = self.parser_before.parse(input).map_err(Error::into)?;
 
 		let Success {
 			output,
 			remaining_input: input
-		} = self.parser.parse_stateful(input).map_err(Error::into)?;
+		} = self.parser.parse(input).map_err(Error::into)?;
 
 		let Success {
 			output: _output_after,
 			remaining_input
-		} = self.parser_after.parse_stateful(input).map_err(Error::into)?;
+		} = self.parser_after.parse(input).map_err(Error::into)?;
 
 		Ok(Success { output, remaining_input })
 	}
@@ -132,7 +141,7 @@ where
 	T: Needle<I>
 {
 	#[inline]
-	fn parse_stateful(&mut self, input: I) -> Result<I, ()> {
+	fn parse(&mut self, input: I) -> Result<I, ()> {
 		self.inner.parse(input)
 	}
 }
@@ -147,7 +156,7 @@ where
 	I: Input
 {
 	#[inline]
-	fn parse_stateful(&mut self, input: I) -> Result<I, I> {
+	fn parse(&mut self, input: I) -> Result<I, I> {
 		self.inner.parse(input)
 	}
 }
@@ -162,7 +171,7 @@ where
 	I: Input
 {
 	#[inline]
-	fn parse_stateful(&mut self, input: I) -> Result<I, I::ConstSize<N>> {
+	fn parse(&mut self, input: I) -> Result<I, I::ConstSize<N>> {
 		self.inner.parse(input)
 	}
 }
@@ -182,8 +191,8 @@ where
 	P: ParserStateful<I, O, E>
 {
 	#[inline]
-	fn parse_stateful(&mut self, input: I) -> Result<I, (), E> {
-		let Success { output: _void, remaining_input } = self.parser.parse_stateful(input)?;
+	fn parse(&mut self, input: I) -> Result<I, (), E> {
+		let Success { output: _void, remaining_input } = self.parser.parse(input)?;
 		Ok(Success { output: (), remaining_input })
 	}
 }

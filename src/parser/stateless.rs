@@ -1,13 +1,22 @@
 use crate::prelude_std::*;
 use crate::num::*;
-use super::{ Error, Input, Needle, ParserPhantom, Result, Success };
+use super::{ util, Error, Input, Needle, ParserPhantom, Result, Success };
 use std::num::NonZero;
 
 pub trait Parser<I, O, E = ()>
 where
 	I: Input
 {
-	fn parse(&self, data: I) -> Result<I, O, E>;
+	fn parse(&self, input: I) -> Result<I, O, E>;
+
+	#[inline]
+	fn map<F, O2>(self, f: F) -> util::Map<Self, F, O>
+	where
+		Self: Sized,
+		F: Fn(O) -> O2
+	{
+		util::map(self, f)
+	}
 }
 
 impl<F, I, O, E> Parser<I, O, E> for F
