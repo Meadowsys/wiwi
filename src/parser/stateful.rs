@@ -21,37 +21,6 @@ where
 }
 
 #[inline]
-pub fn wrap<P, I, O, E>(parser: P) -> StatefulAdapter<P, I, O, E>
-where
-	I: Input,
-	P: stateless::Parser<I, O, E>
-{
-	StatefulAdapter { parser, __marker: PhantomData }
-}
-
-/// Wraps an implementor of [`Parser`](stateless::Parser) and provides an implementation
-/// of [`ParserStateful`]
-#[repr(transparent)]
-pub struct StatefulAdapter<P, I, O, E>
-where
-	I: Input
-{
-	parser: P,
-	__marker: ParserPhantom<I, O, E>
-}
-
-impl<P, I, O, E> ParserStateful<I, O, E> for StatefulAdapter<P, I, O, E>
-where
-	I: Input,
-	P: stateless::Parser<I, O, E>
-{
-	#[inline]
-	fn parse_stateful(&mut self, input: I) -> Result<I, O, E> {
-		self.parser.parse(input)
-	}
-}
-
-#[inline]
 pub fn delimited<P, EReal, PBefore, OBefore, EBefore, I, O, E, PAfter, OAfter, EAfter>(
 	parser_before: PBefore,
 	parser: P,

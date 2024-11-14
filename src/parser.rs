@@ -8,6 +8,7 @@ pub use stateless::Parser;
 pub mod input;
 pub mod stateful;
 pub mod stateless;
+pub mod util;
 
 pub struct Success<I, O> {
 	pub output: O,
