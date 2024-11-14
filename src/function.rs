@@ -172,26 +172,35 @@ impl_fn! {
 	A13 A14 A15 A16
 }
 
-#[inline]
-pub fn fn_adapter<F, Args, Return>(f: F) -> FnAdapter<F, Args, Return>
-where
-	F: Function<Args, Return>
-{
-	FnAdapter { f, __marker: PhantomData }
-}
-
-#[inline]
-pub fn fnmut_adapter<F, Args, Return>(f: F) -> FnMutAdapter<F, Args, Return>
-where
-	F: FunctionMut<Args, Return>
-{
-	FnMutAdapter { f, __marker: PhantomData }
-}
-
 #[repr(transparent)]
 pub struct FnAdapter<F, Args = (), Return = ()> {
 	f: F,
 	__marker: PhantomData<fn(Args) -> Return>
+}
+
+impl<F, Args, Return> FnAdapter<F, Args, Return>
+where
+	F: Function<Args, Return>
+{
+	#[inline]
+	pub fn new(f: F) -> Self {
+		Self { f, __marker: PhantomData }
+	}
+
+	#[inline]
+	pub fn into_inner(self) -> F {
+		self.f
+	}
+}
+
+impl<F, Args, Return> Function<Args, Return> for FnAdapter<F, Args, Return>
+where
+	F: Function<Args, Return>
+{
+	#[inline]
+	fn call(&self, args: Args) -> Return {
+		self.f.call(args)
+	}
 }
 
 impl<F, Args, Return> FunctionMut<Args, Return> for FnAdapter<F, Args, Return>
@@ -218,6 +227,31 @@ where
 pub struct FnMutAdapter<F, Args = (), Return = ()> {
 	f: F,
 	__marker: PhantomData<fn(Args) -> Return>
+}
+
+impl<F, Args, Return> FnMutAdapter<F, Args, Return>
+where
+	F: FunctionMut<Args, Return>
+{
+	#[inline]
+	pub fn new(f: F) -> Self {
+		Self { f, __marker: PhantomData }
+	}
+
+	#[inline]
+	pub fn into_inner(self) -> F {
+		self.f
+	}
+}
+
+impl<F, Args, Return> FunctionMut<Args, Return> for FnMutAdapter<F, Args, Return>
+where
+	F: FunctionMut<Args, Return>
+{
+	#[inline]
+	fn call_mut(&mut self, args: Args) -> Return {
+		self.f.call_mut(args)
+	}
 }
 
 impl<F, Args, Return> FunctionOnce<Args, Return> for FnMutAdapter<F, Args, Return>
