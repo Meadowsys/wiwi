@@ -6,6 +6,7 @@
 //! traits (eg. functions and closures), and my own custom, nameable types.
 
 use crate::prelude_std::*;
+use crate::macro_util::macro_recurse;
 
 /// Function trait akin to rust's [`Fn`]
 ///
@@ -35,64 +36,26 @@ macro_rules! impl_fn {
 		$fn_name:ident($self_ident:ident $($self:tt)*)
 		$first:ident $($type_params:ident)*
 	} => {
-		impl_fn! {
-			@recurse
-			$trait_name
-			$std_trait
-			$fn_name($self_ident $($self)*)
-			[$($type_params)*]
-			[$first]
+		macro_recurse! {
+			@exclude_zero
+			impl_fn
+			{
+				$trait_name
+				$std_trait
+				$fn_name($self_ident $($self)*)
+			}
+			{ $first $($type_params)* }
 		}
 	};
 
 	{
-		@recurse
-		$trait_name:ident
-		$std_trait:ident
-		$fn_name:ident($self_ident:ident $($self:tt)*)
-		[$next:ident $($remaining:ident)*]
-		[$($rest:ident)*]
-	} => {
-		impl_fn! {
-			@impl
-			$trait_name
-			$std_trait
-			$fn_name($self_ident $($self)*)
-			$($rest)*
+		@wiwi_macro_recurse
+		{
+			$trait_name:ident
+			$std_trait:ident
+			$fn_name:ident($self_ident:ident $($self:tt)*)
 		}
-		impl_fn! {
-			@recurse
-			$trait_name
-			$std_trait
-			$fn_name($self_ident $($self)*)
-			[$($remaining)*]
-			[$($rest)* $next]
-		}
-	};
-
-	{
-		@recurse
-		$trait_name:ident
-		$std_trait:ident
-		$fn_name:ident($self_ident:ident $($self:tt)*)
-		[]
-		[$($rest:ident)*]
-	} => {
-		impl_fn! {
-			@impl
-			$trait_name
-			$std_trait
-			$fn_name($self_ident $($self)*)
-			$($rest)*
-		}
-	};
-
-	{
-		@impl
-		$trait_name:ident
-		$std_trait:ident
-		$fn_name:ident($self_ident:ident $($self:tt)*)
-		$($type_params:ident)*
+		{ $($type_params:ident)* }
 	} => {
 		#[doc(hidden)]
 		impl<F, R, $($type_params),*> $trait_name<($($type_params,)*), R> for F

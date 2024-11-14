@@ -174,7 +174,7 @@ pub use with_cloned;
 /// implementation detail only, do not use
 #[doc(hidden)]
 #[macro_export]
-macro_rules! _with_cloned_impl {
+macro_rules! __with_cloned_impl {
 	{ _ in $($stuff:tt)* } => {
 		{
 			// easier "removing" of the macro, eg. in case it's like, in some
@@ -206,7 +206,7 @@ macro_rules! _with_cloned_impl {
 	};
 }
 #[doc(hidden)]
-pub use _with_cloned_impl;
+pub use __with_cloned_impl;
 
 #[cfg(test)]
 mod tests {
