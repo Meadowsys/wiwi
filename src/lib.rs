@@ -64,6 +64,7 @@ pub mod nominal;
 pub mod num;
 pub mod parser;
 pub mod rc;
+pub mod serialiser_binary;
 pub mod string;
 pub mod tuple;
 pub mod vh;
