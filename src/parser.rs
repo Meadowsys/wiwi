@@ -15,6 +15,7 @@ pub struct Success<I, O> {
 	pub remaining_input: I,
 }
 
+#[derive(Debug)]
 pub enum Error<E> {
 	NotEnoughData { missing: Option<NonZero<usize>> },
 	Error { error: E },
