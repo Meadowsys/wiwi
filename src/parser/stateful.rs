@@ -24,8 +24,8 @@ where
 	F: FnMut(I) -> Result<I, O, E>
 {
 	#[inline]
-	fn parse(&mut self, data: I) -> Result<I, O, E> {
-		self(data)
+	fn parse(&mut self, input: I) -> Result<I, O, E> {
+		self(input)
 	}
 }
 

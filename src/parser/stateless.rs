@@ -25,8 +25,8 @@ where
 	F: Fn(I) -> Result<I, O, E>
 {
 	#[inline]
-	fn parse(&self, data: I) -> Result<I, O, E> {
-		self(data)
+	fn parse(&self, input: I) -> Result<I, O, E> {
+		self(input)
 	}
 }
 
@@ -53,6 +53,111 @@ where
 	}
 }
 
+macro_rules! decl_num_fn {
+	{ $($(#[$meta:meta])* $struct:ident $fn:ident)* } => {
+		$(
+			$(#[$meta])*
+			#[inline]
+			pub fn $fn() -> $struct {
+				let inner = Number { inner: take_array(), __marker: PhantomData };
+				$struct { inner }
+			}
+		)*
+	};
+}
+
+decl_num_fn! {
+	NumU8LE num_u8_le
+	NumU8BE num_u8_be
+	NumU8NE num_u8_ne
+
+	NumU16LE num_u16_le
+	NumU16BE num_u16_be
+	NumU16NE num_u16_ne
+
+	NumU32LE num_u32_le
+	NumU32BE num_u32_be
+	NumU32NE num_u32_ne
+
+	NumU64LE num_u64_le
+	NumU64BE num_u64_be
+	NumU64NE num_u64_ne
+
+	NumU128LE num_u128_le
+	NumU128BE num_u128_be
+	NumU128NE num_u128_ne
+
+	NumI8LE num_i8_le
+	NumI8BE num_i8_be
+	NumI8NE num_i8_ne
+
+	NumI16LE num_i16_le
+	NumI16BE num_i16_be
+	NumI16NE num_i16_ne
+
+	NumI32LE num_i32_le
+	NumI32BE num_i32_be
+	NumI32NE num_i32_ne
+
+	NumI64LE num_i64_le
+	NumI64BE num_i64_be
+	NumI64NE num_i64_ne
+
+	NumI128LE num_i128_le
+	NumI128BE num_i128_be
+	NumI128NE num_i128_ne
+
+	NumF32LE num_f32_le
+	NumF32BE num_f32_be
+	NumF32NE num_f32_ne
+
+	NumF64LE num_f64_le
+	NumF64BE num_f64_be
+	NumF64NE num_f64_ne
+
+	#[cfg(target_pointer_width = "16")]
+	NumUsizeLE num_usize_le
+	#[cfg(target_pointer_width = "16")]
+	NumUsizeBE num_usize_be
+	#[cfg(target_pointer_width = "16")]
+	NumUsizeNE num_usize_ne
+
+	#[cfg(target_pointer_width = "16")]
+	NumIsizeLE num_isize_le
+	#[cfg(target_pointer_width = "16")]
+	NumIsizeBE num_isize_be
+	#[cfg(target_pointer_width = "16")]
+	NumIsizeNE num_isize_ne
+
+	#[cfg(target_pointer_width = "32")]
+	NumUsizeLE num_usize_le
+	#[cfg(target_pointer_width = "32")]
+	NumUsizeBE num_usize_be
+	#[cfg(target_pointer_width = "32")]
+	NumUsizeNE num_usize_ne
+
+	#[cfg(target_pointer_width = "32")]
+	NumIsizeLE num_isize_le
+	#[cfg(target_pointer_width = "32")]
+	NumIsizeBE num_isize_be
+	#[cfg(target_pointer_width = "32")]
+	NumIsizeNE num_isize_ne
+
+	#[cfg(target_pointer_width = "64")]
+	NumUsizeLE num_usize_le
+	#[cfg(target_pointer_width = "64")]
+	NumUsizeBE num_usize_be
+	#[cfg(target_pointer_width = "64")]
+	NumUsizeNE num_usize_ne
+
+	#[cfg(target_pointer_width = "64")]
+	NumIsizeLE num_isize_le
+	#[cfg(target_pointer_width = "64")]
+	NumIsizeBE num_isize_be
+	#[cfg(target_pointer_width = "64")]
+	NumIsizeNE num_isize_ne
+}
+
 #[inline]
 pub fn tag<T>(tag: T) -> Tag<T> {
 	Tag { tag }
@@ -64,6 +169,11 @@ where
 	N: IntoUsize
 {
 	Take { amount: amount.into_usize() }
+}
+
+#[inline]
+pub fn take_array<const N: usize>() -> TakeArray<N> {
+	TakeArray { __private: () }
 }
 
 #[inline]
@@ -132,6 +242,88 @@ where
 }
 
 #[repr(transparent)]
+struct Number<Num, E, const N: usize>
+where
+	Num: ArrayConversions<N>,
+	E: Endian<Num, N>
+{
+	inner: TakeArray<N>,
+	__marker: PhantomData<(fn() -> Num, E)>
+}
+
+impl<'h, Num, E, const N: usize> Parser<&'h [u8], Num> for Number<Num, E, N>
+where
+	Num: ArrayConversions<N>,
+	E: Endian<Num, N>
+{
+	#[inline]
+	fn parse(&self, input: &'h [u8]) -> Result<&'h [u8], Num, ()> {
+		self.inner.parse(input).map(|Success { output, remaining_input }| Success {
+			output: E::from_bytes(output),
+			remaining_input
+		})
+	}
+}
+
+macro_rules! decl_num_struct {
+	{ $($(#[$meta:meta])* $num:ident $n:literal $struct_le:ident $struct_be:ident $struct_ne:ident )* } => {
+		$(
+			decl_num_struct! { @impl $(#[$meta])* $num EndianLittle $n $struct_le }
+			decl_num_struct! { @impl $(#[$meta])* $num EndianBig $n $struct_be }
+			decl_num_struct! { @impl $(#[$meta])* $num EndianNative $n $struct_ne }
+		)*
+	};
+
+	{ @impl $(#[$meta:meta])* $num:ident $endian:ident $n:literal $struct:ident } => {
+		$(#[$meta])*
+		#[repr(transparent)]
+		pub struct $struct {
+			inner: Number<$num, $endian, $n>
+		}
+
+		$(#[$meta])*
+		impl<'h> Parser<&'h [u8], $num> for $struct {
+			#[inline]
+			fn parse(&self, input: &'h [u8]) -> Result<&'h [u8], $num, ()> {
+				self.inner.parse(input)
+			}
+		}
+	};
+}
+
+decl_num_struct! {
+	u8 1 NumU8LE NumU8BE NumU8NE
+	u16 2 NumU16LE NumU16BE NumU16NE
+	u32 4 NumU32LE NumU32BE NumU32NE
+	u64 8 NumU64LE NumU64BE NumU64NE
+	u128 16 NumU128LE NumU128BE NumU128NE
+
+	i8 1 NumI8LE NumI8BE NumI8NE
+	i16 2 NumI16LE NumI16BE NumI16NE
+	i32 4 NumI32LE NumI32BE NumI32NE
+	i64 8 NumI64LE NumI64BE NumI64NE
+	i128 16 NumI128LE NumI128BE NumI128NE
+
+	f32 4 NumF32LE NumF32BE NumF32NE
+	f64 8 NumF64LE NumF64BE NumF64NE
+
+	#[cfg(target_pointer_width = "16")]
+	usize 2 NumUsizeLE NumUsizeBE NumUsizeNE
+	#[cfg(target_pointer_width = "16")]
+	isize 2 NumIsizeLE NumIsizeBE NumIsizeNE
+
+	#[cfg(target_pointer_width = "32")]
+	usize 4 NumUsizeLE NumUsizeBE NumUsizeNE
+	#[cfg(target_pointer_width = "32")]
+	isize 4 NumIsizeLE NumIsizeBE NumIsizeNE
+
+	#[cfg(target_pointer_width = "64")]
+	usize 8 NumUsizeLE NumUsizeBE NumUsizeNE
+	#[cfg(target_pointer_width = "64")]
+	isize 8 NumIsizeLE NumIsizeBE NumIsizeNE
+}
+
+#[repr(transparent)]
 pub struct Tag<T> {
 	tag: T
 }
@@ -167,11 +359,30 @@ where
 	I: Input
 {
 	#[inline]
-	fn parse(&self, data: I) -> Result<I, I> {
-		data.take_first(self.amount)
+	fn parse(&self, input: I) -> Result<I, I> {
+		input.take_first(self.amount)
 			.map(|(output, remaining_input)| Success { output, remaining_input })
 			.ok_or_else(|| Error::NotEnoughData {
-				missing: NonZero::new(self.amount - data.len())
+				missing: NonZero::new(self.amount - input.len())
+			})
+	}
+}
+
+#[repr(transparent)]
+pub struct TakeArray<const N: usize> {
+	__private: ()
+}
+
+impl<I, const N: usize> Parser<I, I::ConstSizeOwned<N>> for TakeArray<N>
+where
+	I: Input
+{
+	#[inline]
+	fn parse(&self, input: I) -> Result<I, I::ConstSizeOwned<N>> {
+		input.take_first_const_owned()
+			.map(|(output, remaining_input)| Success { output, remaining_input })
+			.ok_or_else(|| Error::NotEnoughData {
+				missing: NonZero::new(N - input.len())
 			})
 	}
 }

@@ -793,6 +793,116 @@ impl IntoF64Lossy for bool {
 	fn into_f64_lossy(self) -> f64 { self as u64 as _ }
 }
 
+pub trait ArrayConversions<const N: usize>
+where
+	Self: Sealed
+{
+	fn into_le_bytes(self) -> [u8; N];
+	fn into_be_bytes(self) -> [u8; N];
+	fn into_ne_bytes(self) -> [u8; N];
+	fn from_le_bytes(bytes: [u8; N]) -> Self;
+	fn from_be_bytes(bytes: [u8; N]) -> Self;
+	fn from_ne_bytes(bytes: [u8; N]) -> Self;
+}
+
+macro_rules! impl_array_conversions {
+	{ $($(#[$meta:meta])* $num:ident $bytes:literal)* } => {
+		$(
+			$(#[$meta])*
+			impl ArrayConversions<$bytes> for $num {
+				#[inline]
+				fn into_le_bytes(self) -> [u8; $bytes] { $num::to_le_bytes(self) }
+
+				#[inline]
+				fn into_be_bytes(self) -> [u8; $bytes] { $num::to_be_bytes(self) }
+
+				#[inline]
+				fn into_ne_bytes(self) -> [u8; $bytes] { $num::to_ne_bytes(self) }
+
+				#[inline]
+				fn from_le_bytes(bytes: [u8; $bytes]) -> $num { $num::from_le_bytes(bytes) }
+
+				#[inline]
+				fn from_be_bytes(bytes: [u8; $bytes]) -> $num { $num::from_be_bytes(bytes) }
+
+				#[inline]
+				fn from_ne_bytes(bytes: [u8; $bytes]) -> $num { $num::from_ne_bytes(bytes) }
+			}
+		)*
+	}
+}
+
+impl_array_conversions! {
+	u8 1
+	u16 2
+	u32 4
+	u64 8
+	u128 16
+
+	i8 1
+	i16 2
+	i32 4
+	i64 8
+	i128 16
+
+	f32 4
+	f64 8
+
+	#[cfg(target_pointer_width = "16")]
+	usize 2
+	#[cfg(target_pointer_width = "16")]
+	isize 2
+
+	#[cfg(target_pointer_width = "32")]
+	usize 4
+	#[cfg(target_pointer_width = "32")]
+	isize 4
+
+	#[cfg(target_pointer_width = "64")]
+	usize 8
+	#[cfg(target_pointer_width = "64")]
+	isize 8
+}
+
+pub trait Endian<Num, const N: usize>
+where
+	Num: ArrayConversions<N>
+{
+	fn from_bytes(bytes: [u8; N]) -> Num;
+	fn into_bytes(num: Num) -> [u8; N];
+}
+
+macro_rules! decl_endian_structs {
+	{ $($struct:ident $from:ident $into:ident)* } => {
+		$(
+			pub struct $struct {
+				__private: ()
+			}
+
+			impl<Num, const N: usize> Endian<Num, N> for $struct
+			where
+				Num: ArrayConversions<N>
+			{
+				#[inline]
+				fn from_bytes(bytes: [u8; N]) -> Num {
+					Num::$from(bytes)
+				}
+
+				#[inline]
+				fn into_bytes(num: Num) -> [u8; N] {
+					Num::$into(num)
+				}
+			}
+		)*
+	}
+}
+
+decl_endian_structs! {
+	EndianLittle from_le_bytes into_le_bytes
+	EndianBig from_be_bytes into_be_bytes
+	EndianNative from_ne_bytes into_ne_bytes
+}
+
 /*
 macro_rules! op_trait {
 	{

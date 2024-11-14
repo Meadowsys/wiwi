@@ -2,6 +2,7 @@ use crate::prelude_std::*;
 
 pub trait Input: Sized {
 	type ConstSize<const N: usize>: Sized;
+	type ConstSizeOwned<const N: usize>: Sized + 'static;
 
 	fn len(&self) -> usize;
 
@@ -20,6 +21,7 @@ pub trait Input: Sized {
 
 	fn take_first(&self, i: usize) -> Option<(Self, Self)>;
 	fn take_first_const<const N: usize>(&self) -> Option<(Self::ConstSize<N>, Self)>;
+	fn take_first_const_owned<const N: usize>(&self) -> Option<(Self::ConstSizeOwned<N>, Self)>;
 }
 
 pub trait Needle<I>
@@ -38,6 +40,7 @@ where
 
 impl<'h> Input for &'h [u8] {
 	type ConstSize<const N: usize> = &'h [u8; N];
+	type ConstSizeOwned<const N: usize> = [u8; N];
 
 	#[inline]
 	fn len(&self) -> usize {
@@ -56,6 +59,11 @@ impl<'h> Input for &'h [u8] {
 			unsafe { &*output.as_ptr().cast() },
 			remaining_input
 		))
+	}
+
+	#[inline]
+	fn take_first_const_owned<const N: usize>(&self) -> Option<(Self::ConstSizeOwned<N>, Self)> {
+		self.take_first_const().map(|(output, remaining_input)| (*output, remaining_input))
 	}
 }
 
