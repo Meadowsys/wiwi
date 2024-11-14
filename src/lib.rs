@@ -65,6 +65,7 @@ pub mod num;
 pub mod parser;
 pub mod rc;
 pub mod string;
+pub mod tuple;
 pub mod vh;
 
 // #[cfg(feature = "aoc-unstable")]
