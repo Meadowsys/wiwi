@@ -1,25 +1,30 @@
 use crate::prelude_std::*;
 use crate::num::*;
-use super::{ Error, Parser as _, Result, Success, stateless };
+use super::{ stateless, Error, Input, Parser as _, ParserPhantom, Result, Success };
 
-pub trait ParserStateful<D, O, E = ()> {
-	fn parse_stateful(&mut self, data: D) -> Result<D, O, E>;
+pub trait ParserStateful<I, O, E = ()>
+where
+	I: Input
+{
+	fn parse_stateful(&mut self, input: I) -> Result<I, O, E>;
 }
 
-impl<F, D, O, E> ParserStateful<D, O, E> for F
+impl<F, I, O, E> ParserStateful<I, O, E> for F
 where
-	F: FnMut(D) -> Result<D, O, E>
+	I: Input,
+	F: FnMut(I) -> Result<I, O, E>
 {
 	#[inline]
-	fn parse_stateful(&mut self, data: D) -> Result<D, O, E> {
+	fn parse_stateful(&mut self, data: I) -> Result<I, O, E> {
 		self(data)
 	}
 }
 
 #[inline]
-pub fn wrap<P, D, O, E>(parser: P) -> StatefulAdapter<P, D, O, E>
+pub fn wrap<P, I, O, E>(parser: P) -> StatefulAdapter<P, I, O, E>
 where
-	P: stateless::Parser<D, O, E>
+	I: Input,
+	P: stateless::Parser<I, O, E>
 {
 	StatefulAdapter { parser, __marker: PhantomData }
 }
@@ -27,33 +32,39 @@ where
 /// Wraps an implementor of [`Parser`](stateless::Parser) and provides an implementation
 /// of [`ParserStateful`]
 #[repr(transparent)]
-pub struct StatefulAdapter<P, D, O, E> {
+pub struct StatefulAdapter<P, I, O, E>
+where
+	I: Input
+{
 	parser: P,
-	__marker: PhantomData<fn(D) -> (O, E)>
+	__marker: ParserPhantom<I, O, E>
 }
 
-impl<P, D, O, E> ParserStateful<D, O, E> for StatefulAdapter<P, D, O, E>
+impl<P, I, O, E> ParserStateful<I, O, E> for StatefulAdapter<P, I, O, E>
 where
-	P: stateless::Parser<D, O, E>
+	I: Input,
+	P: stateless::Parser<I, O, E>
 {
 	#[inline]
-	fn parse_stateful(&mut self, data: D) -> Result<D, O, E> {
-		self.parser.parse(data)
+	fn parse_stateful(&mut self, input: I) -> Result<I, O, E> {
+		self.parser.parse(input)
 	}
 }
 
 #[inline]
-pub fn delimited<P, D, O, E, PBefore, OBefore, EBefore, PAfter, OAfter, EAfter>(
+pub fn delimited<P, EReal, PBefore, OBefore, EBefore, I, O, E, PAfter, OAfter, EAfter>(
 	parser_before: PBefore,
 	parser: P,
 	parser_after: PAfter
-) -> Delimited<P, D, O, E, PBefore, OBefore, EBefore, PAfter, OAfter, EAfter>
+) -> Delimited<P, EReal, PBefore, OBefore, EBefore, I, O, E, PAfter, OAfter, EAfter>
 where
-	P: ParserStateful<D, O, E>,
-	PBefore: ParserStateful<D, OBefore, EBefore>,
-	PAfter: ParserStateful<D, OAfter, EAfter>,
-	EBefore: Into<E>,
-	EAfter: Into<E>
+	I: Input,
+	PBefore: ParserStateful<I, OBefore, EBefore>,
+	P: ParserStateful<I, O, E>,
+	PAfter: ParserStateful<I, OAfter, EAfter>,
+	EBefore: Into<EReal>,
+	E: Into<EReal>,
+	EAfter: Into<EReal>
 {
 	Delimited {
 		parser_before,
@@ -77,9 +88,10 @@ pub fn take_const<const N: usize>() -> TakeConst<N> {
 }
 
 #[inline]
-pub fn void<P, D, O, E>(parser: P) -> Void<P, D, O, E>
+pub fn void<P, I, O, E>(parser: P) -> Void<P, I, O, E>
 where
-	P: ParserStateful<D, O, E>
+	I: Input,
+	P: ParserStateful<I, O, E>
 {
 	Void { parser, __marker: PhantomData }
 }
@@ -88,78 +100,100 @@ where
 	clippy::type_complexity,
 	reason = "good naming makes it look alright I guess lol"
 )]
-pub struct Delimited<P, D, O, E, PBefore, OBefore, EBefore, PAfter, OAfter, EAfter> {
+pub struct Delimited<P, EReal, PBefore, OBefore, EBefore, I, O, E, PAfter, OAfter, EAfter>
+where
+	I: Input
+{
 	parser_before: PBefore,
 	parser: P,
 	parser_after: PAfter,
 	__marker: PhantomData<(
-		fn(D) -> (OBefore, EBefore),
-		fn(D) -> (O, E),
-		fn(D) -> (OAfter, EAfter)
+		ParserPhantom<I, OBefore, EBefore>,
+		ParserPhantom<I, O, E>,
+		ParserPhantom<I, OAfter, EAfter>,
+		fn() -> EReal
 	)>
 }
 
-impl<P, D, O, E, PBefore, OBefore, EBefore, PAfter, OAfter, EAfter> ParserStateful<D, O, E>
-for Delimited<P, D, O, E, PBefore, OBefore, EBefore, PAfter, OAfter, EAfter>
+impl<P, EReal, PBefore, OBefore, EBefore, I, O, E, PAfter, OAfter, EAfter> ParserStateful<I, O, EReal>
+for Delimited<P, EReal, PBefore, OBefore, EBefore, I, O, E, PAfter, OAfter, EAfter>
 where
-	P: ParserStateful<D, O, E>,
-	PBefore: ParserStateful<D, OBefore, EBefore>,
-	PAfter: ParserStateful<D, OAfter, EAfter>,
-	EBefore: Into<E>,
-	EAfter: Into<E>
+	I: Input,
+	PBefore: ParserStateful<I, OBefore, EBefore>,
+	P: ParserStateful<I, O, E>,
+	PAfter: ParserStateful<I, OAfter, EAfter>,
+	EBefore: Into<EReal>,
+	E: Into<EReal>,
+	EAfter: Into<EReal>
 {
 	#[inline]
-	fn parse_stateful(&mut self, data: D) -> Result<D, O, E> {
+	fn parse_stateful(&mut self, input: I) -> Result<I, O, EReal> {
 		let Success {
 			output: _output_before,
-			data
-		} = self.parser_before.parse_stateful(data).map_err(Error::into)?;
+			remaining_input: input
+		} = self.parser_before.parse_stateful(input).map_err(Error::into)?;
 
-		let Success { output, data } = self.parser.parse_stateful(data)?;
+		let Success {
+			output,
+			remaining_input: input
+		} = self.parser.parse_stateful(input).map_err(Error::into)?;
 
 		let Success {
 			output: _output_after,
-			data
-		} = self.parser_after.parse_stateful(data).map_err(Error::into)?;
+			remaining_input
+		} = self.parser_after.parse_stateful(input).map_err(Error::into)?;
 
-		Ok(Success { output, data })
+		Ok(Success { output, remaining_input })
 	}
 }
 
+#[repr(transparent)]
 pub struct Take {
 	inner: stateless::Take
 }
 
-impl<'h> ParserStateful<&'h [u8], &'h [u8]> for Take {
+impl<I> ParserStateful<I, I> for Take
+where
+	I: Input
+{
 	#[inline]
-	fn parse_stateful(&mut self, data: &'h [u8]) -> Result<&'h [u8], &'h [u8]> {
-		self.inner.parse(data)
+	fn parse_stateful(&mut self, input: I) -> Result<I, I> {
+		self.inner.parse(input)
 	}
 }
 
+#[repr(transparent)]
 pub struct TakeConst<const N: usize> {
 	inner: stateless::TakeConst<N>
 }
 
-impl<'h, const N: usize> ParserStateful<&'h [u8], &'h [u8; N]> for TakeConst<N> {
+impl<I, const N: usize> ParserStateful<I, I::ConstSize<N>> for TakeConst<N>
+where
+	I: Input
+{
 	#[inline]
-	fn parse_stateful(&mut self, data: &'h [u8]) -> Result<&'h [u8], &'h [u8; N]> {
-		self.inner.parse(data)
+	fn parse_stateful(&mut self, input: I) -> Result<I, I::ConstSize<N>> {
+		self.inner.parse(input)
 	}
 }
 
-pub struct Void<P, D, O, E> {
+#[repr(transparent)]
+pub struct Void<P, I, O, E>
+where
+	I: Input
+{
 	parser: P,
-	__marker: PhantomData<fn(D) -> (O, E)>
+	__marker: ParserPhantom<I, O, E>
 }
 
-impl<P, D, O, E> ParserStateful<D, (), E> for Void<P, D, O, E>
+impl<P, I, O, E> ParserStateful<I, (), E> for Void<P, I, O, E>
 where
-	P: ParserStateful<D, O, E>
+	I: Input,
+	P: ParserStateful<I, O, E>
 {
 	#[inline]
-	fn parse_stateful(&mut self, data: D) -> Result<D, (), E> {
-		let Success { output: _void, data } = self.parser.parse_stateful(data)?;
-		Ok(Success { output: (), data })
+	fn parse_stateful(&mut self, input: I) -> Result<I, (), E> {
+		let Success { output: _void, remaining_input } = self.parser.parse_stateful(input)?;
+		Ok(Success { output: (), remaining_input })
 	}
 }

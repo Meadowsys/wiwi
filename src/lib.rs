@@ -1,6 +1,10 @@
 #![no_implicit_prelude]
 
 // TODO: review these
+#![allow(
+	clippy::unnecessary_lazy_evaluations,
+	reason = "uwu"
+)]
 // #![warn(
 // 	// missing_docs,
 // 	// clippy::missing_docs_in_private_items

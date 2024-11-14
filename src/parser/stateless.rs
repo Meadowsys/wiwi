@@ -1,34 +1,40 @@
 use crate::prelude_std::*;
 use crate::num::*;
-use super::{ Error, Result, Success };
+use super::{ Error, Input, Needle, ParserPhantom, Result, Success };
 use std::num::NonZero;
 
-pub trait Parser<D, O, E = ()> {
-	fn parse(&self, data: D) -> Result<D, O, E>;
+pub trait Parser<I, O, E = ()>
+where
+	I: Input
+{
+	fn parse(&self, data: I) -> Result<I, O, E>;
 }
 
-impl<F, D, O, E> Parser<D, O, E> for F
+impl<F, I, O, E> Parser<I, O, E> for F
 where
-	F: Fn(D) -> Result<D, O, E>
+	I: Input,
+	F: Fn(I) -> Result<I, O, E>
 {
 	#[inline]
-	fn parse(&self, data: D) -> Result<D, O, E> {
+	fn parse(&self, data: I) -> Result<I, O, E> {
 		self(data)
 	}
 }
 
 #[inline]
-pub fn delimited<P, D, O, E, PBefore, OBefore, EBefore, PAfter, OAfter, EAfter>(
+pub fn delimited<P, EReal, PBefore, OBefore, EBefore, I, O, E, PAfter, OAfter, EAfter>(
 	parser_before: PBefore,
 	parser: P,
 	parser_after: PAfter
-) -> Delimited<P, D, O, E, PBefore, OBefore, EBefore, PAfter, OAfter, EAfter>
+) -> Delimited<P, EReal, PBefore, OBefore, EBefore, I, O, E, PAfter, OAfter, EAfter>
 where
-	P: Parser<D, O, E>,
-	PBefore: Parser<D, OBefore, EBefore>,
-	PAfter: Parser<D, OAfter, EAfter>,
-	EBefore: Into<E>,
-	EAfter: Into<E>
+	I: Input,
+	PBefore: Parser<I, OBefore, EBefore>,
+	P: Parser<I, O, E>,
+	PAfter: Parser<I, OAfter, EAfter>,
+	EBefore: Into<EReal>,
+	E: Into<EReal>,
+	EAfter: Into<EReal>
 {
 	Delimited {
 		parser_before,
@@ -36,6 +42,11 @@ where
 		parser_after,
 		__marker: PhantomData
 	}
+}
+
+#[inline]
+pub fn tag<T>(tag: T) -> Tag<T> {
+	Tag { tag }
 }
 
 #[inline]
@@ -52,9 +63,10 @@ pub fn take_const<const N: usize>() -> TakeConst<N> {
 }
 
 #[inline]
-pub fn void<P, D, O, E>(parser: P) -> Void<P, D, O, E>
+pub fn void<P, I, O, E>(parser: P) -> Void<P, I, O, E>
 where
-	P: Parser<D, O, E>
+	I: Input,
+	P: Parser<I, O, E>
 {
 	Void { parser, __marker: PhantomData }
 }
@@ -63,93 +75,134 @@ where
 	clippy::type_complexity,
 	reason = "good naming makes it look alright I guess lol"
 )]
-pub struct Delimited<P, D, O, E, PBefore, OBefore, EBefore, PAfter, OAfter, EAfter> {
+pub struct Delimited<P, EReal, PBefore, OBefore, EBefore, I, O, E, PAfter, OAfter, EAfter>
+where
+	I: Input
+{
 	parser_before: PBefore,
 	parser: P,
 	parser_after: PAfter,
 	__marker: PhantomData<(
-		fn(D) -> (OBefore, EBefore),
-		fn(D) -> (O, E),
-		fn(D) -> (OAfter, EAfter)
+		ParserPhantom<I, OBefore, EBefore>,
+		ParserPhantom<I, O, E>,
+		ParserPhantom<I, OAfter, EAfter>,
+		fn() -> EReal
 	)>
 }
 
-impl<P, D, O, E, PBefore, OBefore, EBefore, PAfter, OAfter, EAfter> Parser<D, O, E>
-for Delimited<P, D, O, E, PBefore, OBefore, EBefore, PAfter, OAfter, EAfter>
+impl<P, EReal, PBefore, OBefore, EBefore, I, O, E, PAfter, OAfter, EAfter> Parser<I, O, EReal>
+for Delimited<P, EReal, PBefore, OBefore, EBefore, I, O, E, PAfter, OAfter, EAfter>
 where
-	P: Parser<D, O, E>,
-	PBefore: Parser<D, OBefore, EBefore>,
-	PAfter: Parser<D, OAfter, EAfter>,
-	EBefore: Into<E>,
-	EAfter: Into<E>
+	I: Input,
+	PBefore: Parser<I, OBefore, EBefore>,
+	P: Parser<I, O, E>,
+	PAfter: Parser<I, OAfter, EAfter>,
+	EBefore: Into<EReal>,
+	E: Into<EReal>,
+	EAfter: Into<EReal>
 {
 	#[inline]
-	fn parse(&self, data: D) -> Result<D, O, E> {
+	fn parse(&self, input: I) -> Result<I, O, EReal> {
 		let Success {
 			output: _output_before,
-			data
-		} = self.parser_before.parse(data).map_err(Error::into)?;
+			remaining_input: input
+		} = self.parser_before.parse(input).map_err(Error::into)?;
 
-		let Success { output, data } = self.parser.parse(data)?;
+		let Success {
+			output,
+			remaining_input: input
+		} = self.parser.parse(input).map_err(Error::into)?;
 
 		let Success {
 			output: _output_after,
-			data
-		} = self.parser_after.parse(data).map_err(Error::into)?;
+			remaining_input
+		} = self.parser_after.parse(input).map_err(Error::into)?;
 
-		Ok(Success { output, data })
+		Ok(Success { output, remaining_input })
 	}
 }
 
+#[repr(transparent)]
+pub struct Tag<T> {
+	tag: T
+}
+
+impl<I, T> Parser<I, ()> for Tag<T>
+where
+	I: Input,
+	T: Needle<I>
+{
+	#[inline]
+	fn parse(&self, input: I) -> Result<I, ()> {
+		let true = input.len() >= self.tag.len() else {
+			return Err(Error::NotEnoughData {
+				missing: NonZero::new(self.tag.len() - input.len())
+			})
+		};
+
+		self.tag.input_starts_with(&input)
+			.then(|| input.take_first(self.tag.len()))
+			.flatten()
+			.map(|(_, remaining_input)| Success { output: (), remaining_input })
+			.ok_or_else(|| Error::Error { error: () })
+	}
+}
+
+#[repr(transparent)]
 pub struct Take {
 	amount: usize
 }
 
-impl<'h> Parser<&'h [u8], &'h [u8]> for Take {
+impl<I> Parser<I, I> for Take
+where
+	I: Input
+{
 	#[inline]
-	fn parse(&self, data: &'h [u8]) -> Result<&'h [u8], &'h [u8]> {
-		data.split_at_checked(self.amount)
-			.map(|(output, data)| Success { output, data })
+	fn parse(&self, data: I) -> Result<I, I> {
+		data.take_first(self.amount)
+			.map(|(output, remaining_input)| Success { output, remaining_input })
 			.ok_or_else(|| Error::NotEnoughData {
 				missing: NonZero::new(self.amount - data.len())
 			})
 	}
 }
 
+#[repr(transparent)]
 pub struct TakeConst<const N: usize> {
 	__private: ()
 }
 
-impl<'h, const N: usize> Parser<&'h [u8], &'h [u8; N]> for TakeConst<N> {
+impl<I, const N: usize> Parser<I, I::ConstSize<N>> for TakeConst<N>
+where
+	I: Input
+{
 	#[inline]
-	fn parse(&self, data: &'h [u8]) -> Result<&'h [u8], &'h [u8; N]> {
-		data.split_at_checked(N)
-			.map(|(output, data)| Success {
-				// SAFETY: output is going to be N length because `split_at_checked`
-				output: unsafe {
-					#[expect(clippy::as_conversions, reason = "ptr cast")]
-					&*(output as *const [u8] as *const [u8; N])
-				},
-				data
-			})
+	fn parse(&self, input: I) -> Result<I, I::ConstSize<N>> {
+		input.take_first_const()
+			.map(|(output, remaining_input)| Success { output, remaining_input })
 			.ok_or_else(|| Error::NotEnoughData {
-				missing: NonZero::new(N - data.len())
+				missing: NonZero::new(N - input.len())
 			})
 	}
 }
 
-pub struct Void<P, D, O, E> {
+#[repr(transparent)]
+pub struct Void<P, I, O, E>
+where
+	I: Input
+{
 	parser: P,
-	__marker: PhantomData<fn(D) -> (O, E)>
+	__marker: ParserPhantom<I, O, E>
 }
 
-impl<P, D, O, E> Parser<D, (), E> for Void<P, D, O, E>
+impl<P, I, O, E> Parser<I, (), E> for Void<P, I, O, E>
 where
-	P: Parser<D, O, E>
+	I: Input,
+	P: Parser<I, O, E>
 {
 	#[inline]
-	fn parse(&self, data: D) -> Result<D, (), E> {
-		let Success { output: _void, data } = self.parser.parse(data)?;
-		Ok(Success { output: (), data })
+	fn parse(&self, input: I) -> Result<I, (), E> {
+		let Success { output: _void, remaining_input } = self.parser.parse(input)?;
+		Ok(Success { output: (), remaining_input })
 	}
 }
