@@ -6,6 +6,42 @@ pub trait ParserStateful<D, O, E = ()> {
 	fn parse_stateful(&mut self, data: D) -> Result<D, O, E>;
 }
 
+impl<F, D, O, E> ParserStateful<D, O, E> for F
+where
+	F: FnMut(D) -> Result<D, O, E>
+{
+	#[inline]
+	fn parse_stateful(&mut self, data: D) -> Result<D, O, E> {
+		self(data)
+	}
+}
+
+#[inline]
+pub fn wrap<P, D, O, E>(parser: P) -> StatefulAdapter<P, D, O, E>
+where
+	P: stateless::Parser<D, O, E>
+{
+	StatefulAdapter { parser, __marker: PhantomData }
+}
+
+/// Wraps an implementor of [`Parser`](stateless::Parser) and provides an implementation
+/// of [`ParserStateful`]
+#[repr(transparent)]
+pub struct StatefulAdapter<P, D, O, E> {
+	parser: P,
+	__marker: PhantomData<fn(D) -> (O, E)>
+}
+
+impl<P, D, O, E> ParserStateful<D, O, E> for StatefulAdapter<P, D, O, E>
+where
+	P: stateless::Parser<D, O, E>
+{
+	#[inline]
+	fn parse_stateful(&mut self, data: D) -> Result<D, O, E> {
+		self.parser.parse(data)
+	}
+}
+
 #[inline]
 pub fn delimited<P, D, O, E, PBefore, OBefore, EBefore, PAfter, OAfter, EAfter>(
 	parser_before: PBefore,

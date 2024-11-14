@@ -7,6 +7,16 @@ pub trait Parser<D, O, E = ()> {
 	fn parse(&self, data: D) -> Result<D, O, E>;
 }
 
+impl<F, D, O, E> Parser<D, O, E> for F
+where
+	F: Fn(D) -> Result<D, O, E>
+{
+	#[inline]
+	fn parse(&self, data: D) -> Result<D, O, E> {
+		self(data)
+	}
+}
+
 #[inline]
 pub fn delimited<P, D, O, E, PBefore, OBefore, EBefore, PAfter, OAfter, EAfter>(
 	parser_before: PBefore,
