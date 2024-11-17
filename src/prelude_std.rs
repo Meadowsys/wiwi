@@ -36,7 +36,6 @@ pub use std::{
 
 	array,
 	env,
-	error,
 	hint,
 	ptr,
 	slice,
