@@ -873,8 +873,11 @@ where
 }
 
 macro_rules! decl_endian_structs {
-	{ $($struct:ident $from:ident $into:ident)* } => {
+	{ $($endian_str:literal $struct:ident $from:ident $into:ident)* } => {
 		$(
+			/// Implements [`Endian`] trait and provides
+			#[doc = $endian_str]
+			/// conversions between numbers and arrays
 			pub struct $struct {
 				__private: ()
 			}
@@ -898,9 +901,9 @@ macro_rules! decl_endian_structs {
 }
 
 decl_endian_structs! {
-	EndianLittle from_le_bytes into_le_bytes
-	EndianBig from_be_bytes into_be_bytes
-	EndianNative from_ne_bytes into_ne_bytes
+	"little endian" EndianLittle from_le_bytes into_le_bytes
+	"big endian" EndianBig from_be_bytes into_be_bytes
+	"native endian" EndianNative from_ne_bytes into_ne_bytes
 }
 
 /*
