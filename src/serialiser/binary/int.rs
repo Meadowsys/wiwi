@@ -1,6 +1,135 @@
 use crate::prelude_std::*;
 use crate::num::*;
-use super::{ Serialise, Deserialise, Input, Output };
+use super::{ Serialise, Serialiser, Deserialise, Input, Output };
+
+#[repr(transparent)]
+struct IntSerialiser<Num, const BYTES: usize>
+where
+	Num: BytesWithinBounds<BYTES>
+{
+	num: Num
+}
+
+impl<Num, const BYTES: usize> Serialiser<'_> for IntSerialiser<Num, BYTES>
+where
+	Num: BytesWithinBounds<BYTES>
+{
+	#[inline]
+	fn serialise<O>(&self, out: O)
+	where
+		O: Output
+	{
+		let bytes = self.num.clone().into_le_bytes();
+
+		let repr = if Num::SIGNED {
+			// SAFETY: trait bound `BytesWithinBounds` ensures safety invariant
+			unsafe { get_repr_info_signed_le(bytes) }
+		} else {
+			// SAFETY: same as above
+			unsafe { get_repr_info_unsigned_le(bytes) }
+		};
+
+		// SAFETY: same as above again lol
+		unsafe { serialise_repr_and_marker(out, bytes, repr) }
+	}
+}
+
+/// # Safety
+///
+/// See safety comment on [`hint_bytes_valid`]
+#[inline]
+unsafe fn serialise_repr_and_marker<O, const BYTES: usize>(out: O, bytes: [u8; BYTES], repr: IntReprInfo)
+where
+	O: Output
+{
+	// SAFETY: caller promises safety preconditions are met
+	unsafe { hint_bytes_valid::<BYTES>() }
+
+	match repr {
+		IntReprInfo::Inline => {}
+		IntReprInfo::I8 => {}
+		IntReprInfo::I16 if BYTES >= 2 => {}
+		IntReprInfo::I24 if BYTES >= 3 => {}
+		IntReprInfo::I32 if BYTES >= 4 => {}
+		IntReprInfo::I48 if BYTES >= 6 => {}
+		IntReprInfo::I64 if BYTES >= 8 => {}
+		IntReprInfo::I96 if BYTES >= 12 => {}
+		IntReprInfo::BigintUnsigned(_len) => {}
+		IntReprInfo::BigintSigned(_len) => {}
+		_ => {
+			// SAFETY: we're using if guards to filter out branches that aren't
+			// applicable (and won't happen) for our value of `BYTES`
+			unsafe { hint::unreachable_unchecked() }
+		}
+	}
+
+	todo!()
+}
+
+/// Helper marker trait for number types that both have the necessary traits
+/// implemented, and are appropriately sized for, usage with [`IntSerialiser`]
+///
+/// # Safety
+///
+/// `BYTES` must be greater than 0, and less than or equal to 256.
+unsafe trait BytesWithinBounds<const BYTES: usize>
+where
+	Self: ArrayConversions<BYTES> + Clone + IntSignedness
+{}
+
+// SAFETY: size is within bounds
+unsafe impl BytesWithinBounds<1> for u8 {}
+
+// SAFETY: size is within bounds
+unsafe impl BytesWithinBounds<2> for u16 {}
+
+// SAFETY: size is within bounds
+unsafe impl BytesWithinBounds<4> for u32 {}
+
+// SAFETY: size is within bounds
+unsafe impl BytesWithinBounds<8> for u64 {}
+
+// SAFETY: size is within bounds
+unsafe impl BytesWithinBounds<16> for u128 {}
+
+#[cfg(target_pointer_width = "16")]
+// SAFETY: size is within bounds
+unsafe impl BytesWithinBounds<2> for usize {}
+
+#[cfg(target_pointer_width = "32")]
+// SAFETY: size is within bounds
+unsafe impl BytesWithinBounds<4> for usize {}
+
+#[cfg(target_pointer_width = "64")]
+// SAFETY: size is within bounds
+unsafe impl BytesWithinBounds<8> for usize {}
+
+// SAFETY: size is within bounds
+unsafe impl BytesWithinBounds<1> for i8 {}
+
+// SAFETY: size is within bounds
+unsafe impl BytesWithinBounds<2> for i16 {}
+
+// SAFETY: size is within bounds
+unsafe impl BytesWithinBounds<4> for i32 {}
+
+// SAFETY: size is within bounds
+unsafe impl BytesWithinBounds<8> for i64 {}
+
+// SAFETY: size is within bounds
+unsafe impl BytesWithinBounds<16> for i128 {}
+
+#[cfg(target_pointer_width = "16")]
+// SAFETY: size is within bounds
+unsafe impl BytesWithinBounds<2> for isize {}
+
+#[cfg(target_pointer_width = "32")]
+// SAFETY: size is within bounds
+unsafe impl BytesWithinBounds<4> for isize {}
+
+#[cfg(target_pointer_width = "64")]
+// SAFETY: size is within bounds
+unsafe impl BytesWithinBounds<8> for isize {}
 
 enum IntReprInfo {
 	Inline,
