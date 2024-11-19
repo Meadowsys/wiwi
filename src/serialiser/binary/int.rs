@@ -3,6 +3,7 @@ use crate::num::*;
 use super::{ Serialise, Deserialise, Input, Output };
 
 enum IntReprInfo {
+	Inline,
 	I8,
 	I16,
 	I24,
