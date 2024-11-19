@@ -856,20 +856,52 @@ where
 macro_rules! impl_generic_num_conversions {
 	{
 		for $to:ident
-		$($(#[$meta:meta])* $from:ident $lossness:ident via $trait:ident::$fn:ident)*
+		lossless $trait_lossless:ident::$fn_lossless:ident
+		lossy $trait_lossy:ident::$fn_lossy:ident
+		$($(#[$meta:meta])* $from:ident $lossness:ident)*
 	} => {
-		$(impl_generic_num_conversions! { @impl $(#[$meta])* $from $to $lossness $trait $fn })*
+		$(
+			impl_generic_num_conversions! {
+				@impl $trait_lossless $fn_lossless
+				$trait_lossy $fn_lossy
+				$(#[$meta])* $from $to $lossness
+			}
+		)*
 	};
 
-	{ @impl $(#[$meta:meta])* $from:ident $to:ident lossless $trait:ident $fn:ident } => {
-		impl_generic_num_conversions! { @impl $(#[$meta])* $from $to FromNum from_num $trait $fn }
+	{ @impl
+		$trait_lossless:ident $fn_lossless:ident
+		$trait_lossy:ident $fn_lossy:ident
+		$(#[$meta:meta])* $from:ident $to:ident lossless
+	} => {
+		impl_generic_num_conversions! {
+			@impl
+			$(#[$meta])* $from $to
+			FromNum from_num
+			$trait_lossless $fn_lossless
+		}
 	};
 
-	{ @impl $(#[$meta:meta])* $from:ident $to:ident lossy $trait:ident $fn:ident } => {
-		impl_generic_num_conversions! { @impl $(#[$meta])* $from $to FromNumLossy from_num_lossy $trait $fn }
+	{ @impl
+		$trait_lossless:ident $fn_lossless:ident
+		$trait_lossy:ident $fn_lossy:ident
+		$(#[$meta:meta])* $from:ident $to:ident lossy
+	} => {
+		impl_generic_num_conversions! {
+			@impl
+			$(#[$meta])* $from $to
+			FromNumLossy from_num_lossy
+			$trait_lossy $fn_lossy
+		}
 	};
 
-	{ @impl $(#[$meta:meta])* $from:ident $to:ident $generic_trait:ident $generic_fn:ident $trait:ident $fn:ident } => {
+	{
+		@impl
+		$(#[$meta:meta])*
+		$from:ident $to:ident
+		$generic_trait:ident $generic_fn:ident
+		$trait:ident $fn:ident
+	} => {
 		$(#[$meta])*
 		impl $generic_trait<$from> for $to {
 			#[inline(always)]
@@ -882,256 +914,297 @@ macro_rules! impl_generic_num_conversions {
 
 impl_generic_num_conversions! {
 	for u8
-	u8 lossless via IntoU8::into_u8
-	// u16 lossless via IntoU8::into_u8
-	// u32 lossless via IntoU8::into_u8
-	// u64 lossless via IntoU8::into_u8
-	// u128 lossless via IntoU8::into_u8
-	// usize lossless via IntoU8::into_u8
-	// i8 lossless via IntoU8::into_u8
-	// i16 lossless via IntoU8::into_u8
-	// i32 lossless via IntoU8::into_u8
-	// i64 lossless via IntoU8::into_u8
-	// i128 lossless via IntoU8::into_u8
-	// isize lossless via IntoU8::into_u8
-	// f32 lossless via IntoU8::into_u8
-	// f64 lossless via IntoU8::into_u8
+	lossless IntoU8::into_u8
+	lossy IntoU8Lossy::into_u8_lossy
+
+	u8 lossless
+	// u16 lossless
+	// u32 lossless
+	// u64 lossless
+	// u128 lossless
+	// usize lossless
+	// i8 lossless
+	// i16 lossless
+	// i32 lossless
+	// i64 lossless
+	// i128 lossless
+	// isize lossless
+	// f32 lossless
+	// f64 lossless
 }
 
 impl_generic_num_conversions! {
 	for u16
-	u8 lossless via IntoU16::into_u16
-	u16 lossless via IntoU16::into_u16
-	// u32 lossless via IntoU16::into_u16
-	// u64 lossless via IntoU16::into_u16
-	// u128 lossless via IntoU16::into_u16
-	// usize lossless via IntoU16::into_u16
-	// i8 lossless via IntoU16::into_u16
-	// i16 lossless via IntoU16::into_u16
-	// i32 lossless via IntoU16::into_u16
-	// i64 lossless via IntoU16::into_u16
-	// i128 lossless via IntoU16::into_u16
-	// isize lossless via IntoU16::into_u16
-	// f32 lossless via IntoU16::into_u16
-	// f64 lossless via IntoU16::into_u16
+	lossless IntoU16::into_u16
+	lossy IntoU16Lossy::into_u16_lossy
+
+	u8 lossless
+	u16 lossless
+	// u32 lossless
+	// u64 lossless
+	// u128 lossless
+	// usize lossless
+	// i8 lossless
+	// i16 lossless
+	// i32 lossless
+	// i64 lossless
+	// i128 lossless
+	// isize lossless
+	// f32 lossless
+	// f64 lossless
 }
 
 impl_generic_num_conversions! {
 	for u32
-	u8 lossless via IntoU32::into_u32
-	u16 lossless via IntoU32::into_u32
-	u32 lossless via IntoU32::into_u32
-	// u64 lossless via IntoU32::into_u32
-	// u128 lossless via IntoU32::into_u32
-	// usize lossless via IntoU32::into_u32
-	// i8 lossless via IntoU32::into_u32
-	// i16 lossless via IntoU32::into_u32
-	// i32 lossless via IntoU32::into_u32
-	// i64 lossless via IntoU32::into_u32
-	// i128 lossless via IntoU32::into_u32
-	// isize lossless via IntoU32::into_u32
-	// f32 lossless via IntoU32::into_u32
-	// f64 lossless via IntoU32::into_u32
+	lossless IntoU32::into_u32
+	lossy IntoU32Lossy::into_u32_lossy
+
+	u8 lossless
+	u16 lossless
+	u32 lossless
+	// u64 lossless
+	// u128 lossless
+	// usize lossless
+	// i8 lossless
+	// i16 lossless
+	// i32 lossless
+	// i64 lossless
+	// i128 lossless
+	// isize lossless
+	// f32 lossless
+	// f64 lossless
 }
 
 impl_generic_num_conversions! {
 	for u64
-	u8 lossless via IntoU64::into_u64
-	u16 lossless via IntoU64::into_u64
-	u32 lossless via IntoU64::into_u64
-	u64 lossless via IntoU64::into_u64
-	// u128 lossless via IntoU64::into_u64
-	// usize lossless via IntoU64::into_u64
-	// i8 lossless via IntoU64::into_u64
-	// i16 lossless via IntoU64::into_u64
-	// i32 lossless via IntoU64::into_u64
-	// i64 lossless via IntoU64::into_u64
-	// i128 lossless via IntoU64::into_u64
-	// isize lossless via IntoU64::into_u64
-	// f32 lossless via IntoU64::into_u64
-	// f64 lossless via IntoU64::into_u64
+	lossless IntoU64::into_u64
+	lossy IntoU64Lossy::into_u64_lossy
+
+	u8 lossless
+	u16 lossless
+	u32 lossless
+	u64 lossless
+	// u128 lossless
+	// usize lossless
+	// i8 lossless
+	// i16 lossless
+	// i32 lossless
+	// i64 lossless
+	// i128 lossless
+	// isize lossless
+	// f32 lossless
+	// f64 lossless
 }
 
 impl_generic_num_conversions! {
 	for u128
-	u8 lossless via IntoU128::into_u128
-	u16 lossless via IntoU128::into_u128
-	u32 lossless via IntoU128::into_u128
-	u64 lossless via IntoU128::into_u128
-	u128 lossless via IntoU128::into_u128
-	// usize lossless via IntoU128::into_u128
-	// i8 lossless via IntoU128::into_u128
-	// i16 lossless via IntoU128::into_u128
-	// i32 lossless via IntoU128::into_u128
-	// i64 lossless via IntoU128::into_u128
-	// i128 lossless via IntoU128::into_u128
-	// isize lossless via IntoU128::into_u128
-	// f32 lossless via IntoU128::into_u128
-	// f64 lossless via IntoU128::into_u128
+	lossless IntoU128::into_u128
+	lossy IntoU128Lossy::into_u128_lossy
+
+	u8 lossless
+	u16 lossless
+	u32 lossless
+	u64 lossless
+	u128 lossless
+	// usize lossless
+	// i8 lossless
+	// i16 lossless
+	// i32 lossless
+	// i64 lossless
+	// i128 lossless
+	// isize lossless
+	// f32 lossless
+	// f64 lossless
 }
 
 impl_generic_num_conversions! {
 	for usize
-	u8 lossless via IntoUsize::into_usize
-	u16 lossless via IntoUsize::into_usize
-	// u32 lossless via IntoUsize::into_usize
-	// u64 lossless via IntoUsize::into_usize
-	// u128 lossless via IntoUsize::into_usize
-	usize lossless via IntoUsize::into_usize
-	// i8 lossless via IntoUsize::into_usize
-	// i16 lossless via IntoUsize::into_usize
-	// i32 lossless via IntoUsize::into_usize
-	// i64 lossless via IntoUsize::into_usize
-	// i128 lossless via IntoUsize::into_usize
-	// isize lossless via IntoUsize::into_usize
-	// f32 lossless via IntoUsize::into_usize
-	// f64 lossless via IntoUsize::into_usize
+	lossless IntoUsize::into_usize
+	lossy IntoUsizeLossy::into_usize_lossy
+
+	u8 lossless
+	u16 lossless
+	// u32 lossless
+	// u64 lossless
+	// u128 lossless
+	usize lossless
+	// i8 lossless
+	// i16 lossless
+	// i32 lossless
+	// i64 lossless
+	// i128 lossless
+	// isize lossless
+	// f32 lossless
+	// f64 lossless
 }
 
 impl_generic_num_conversions! {
 	for i8
-	// u8 lossless via IntoI8::into_i8
-	// u16 lossless via IntoI8::into_i8
-	// u32 lossless via IntoI8::into_i8
-	// u64 lossless via IntoI8::into_i8
-	// u128 lossless via IntoI8::into_i8
-	// usize lossless via IntoI8::into_i8
-	i8 lossless via IntoI8::into_i8
-	// i16 lossless via IntoI8::into_i8
-	// i32 lossless via IntoI8::into_i8
-	// i64 lossless via IntoI8::into_i8
-	// i128 lossless via IntoI8::into_i8
-	// isize lossless via IntoI8::into_i8
-	// f32 lossless via IntoI8::into_i8
-	// f64 lossless via IntoI8::into_i8
+	lossless IntoI8::into_i8
+	lossy IntoI8Lossy::into_i8_lossy
+
+	// u8 lossless
+	// u16 lossless
+	// u32 lossless
+	// u64 lossless
+	// u128 lossless
+	// usize lossless
+	i8 lossless
+	// i16 lossless
+	// i32 lossless
+	// i64 lossless
+	// i128 lossless
+	// isize lossless
+	// f32 lossless
+	// f64 lossless
 }
 
 impl_generic_num_conversions! {
 	for i16
-	u8 lossless via IntoI16::into_i16
-	// u16 lossless via IntoI16::into_i16
-	// u32 lossless via IntoI16::into_i16
-	// u64 lossless via IntoI16::into_i16
-	// u128 lossless via IntoI16::into_i16
-	// usize lossless via IntoI16::into_i16
-	i8 lossless via IntoI16::into_i16
-	i16 lossless via IntoI16::into_i16
-	// i32 lossless via IntoI16::into_i16
-	// i64 lossless via IntoI16::into_i16
-	// i128 lossless via IntoI16::into_i16
-	// isize lossless via IntoI16::into_i16
-	// f32 lossless via IntoI16::into_i16
-	// f64 lossless via IntoI16::into_i16
+	lossless IntoI16::into_i16
+	lossy IntoI16Lossy::into_i16_lossy
+
+	u8 lossless
+	// u16 lossless
+	// u32 lossless
+	// u64 lossless
+	// u128 lossless
+	// usize lossless
+	i8 lossless
+	i16 lossless
+	// i32 lossless
+	// i64 lossless
+	// i128 lossless
+	// isize lossless
+	// f32 lossless
+	// f64 lossless
 }
 
 impl_generic_num_conversions! {
 	for i32
-	u8 lossless via IntoI32::into_i32
-	u16 lossless via IntoI32::into_i32
-	// u32 lossless via IntoI32::into_i32
-	// u64 lossless via IntoI32::into_i32
-	// u128 lossless via IntoI32::into_i32
-	// usize lossless via IntoI32::into_i32
-	i8 lossless via IntoI32::into_i32
-	i16 lossless via IntoI32::into_i32
-	i32 lossless via IntoI32::into_i32
-	// i64 lossless via IntoI32::into_i32
-	// i128 lossless via IntoI32::into_i32
-	// isize lossless via IntoI32::into_i32
-	// f32 lossless via IntoI32::into_i32
-	// f64 lossless via IntoI32::into_i32
+	lossless IntoI32::into_i32
+	lossy IntoI32Lossy::into_i32_lossy
+
+	u8 lossless
+	u16 lossless
+	// u32 lossless
+	// u64 lossless
+	// u128 lossless
+	// usize lossless
+	i8 lossless
+	i16 lossless
+	i32 lossless
+	// i64 lossless
+	// i128 lossless
+	// isize lossless
+	// f32 lossless
+	// f64 lossless
 }
 
 impl_generic_num_conversions! {
 	for i64
-	u8 lossless via IntoI64::into_i64
-	u16 lossless via IntoI64::into_i64
-	u32 lossless via IntoI64::into_i64
-	// u64 lossless via IntoI64::into_i64
-	// u128 lossless via IntoI64::into_i64
-	// usize lossless via IntoI64::into_i64
-	i8 lossless via IntoI64::into_i64
-	i16 lossless via IntoI64::into_i64
-	i32 lossless via IntoI64::into_i64
-	i64 lossless via IntoI64::into_i64
-	// i128 lossless via IntoI64::into_i64
-	// isize lossless via IntoI64::into_i64
-	// f32 lossless via IntoI64::into_i64
-	// f64 lossless via IntoI64::into_i64
+	lossless IntoI64::into_i64
+	lossy IntoI64Lossy::into_i64_lossy
+
+	u8 lossless
+	u16 lossless
+	u32 lossless
+	// u64 lossless
+	// u128 lossless
+	// usize lossless
+	i8 lossless
+	i16 lossless
+	i32 lossless
+	i64 lossless
+	// i128 lossless
+	// isize lossless
+	// f32 lossless
+	// f64 lossless
 }
 
 impl_generic_num_conversions! {
 	for i128
-	u8 lossless via IntoI128::into_i128
-	u16 lossless via IntoI128::into_i128
-	u32 lossless via IntoI128::into_i128
-	u64 lossless via IntoI128::into_i128
-	// u128 lossless via IntoI128::into_i128
-	// usize lossless via IntoI128::into_i128
-	i8 lossless via IntoI128::into_i128
-	i16 lossless via IntoI128::into_i128
-	i32 lossless via IntoI128::into_i128
-	i64 lossless via IntoI128::into_i128
-	i128 lossless via IntoI128::into_i128
-	// isize lossless via IntoI128::into_i128
-	// f32 lossless via IntoI128::into_i128
-	// f64 lossless via IntoI128::into_i128
+	lossless IntoI128::into_i128
+	lossy IntoI128Lossy::into_i128_lossy
+
+	u8 lossless
+	u16 lossless
+	u32 lossless
+	u64 lossless
+	// u128 lossless
+	// usize lossless
+	i8 lossless
+	i16 lossless
+	i32 lossless
+	i64 lossless
+	i128 lossless
+	// isize lossless
+	// f32 lossless
+	// f64 lossless
 }
 
 impl_generic_num_conversions! {
 	for isize
-	u8 lossless via IntoIsize::into_isize
-	// u16 lossless via IntoIsize::into_isize
-	// u32 lossless via IntoIsize::into_isize
-	// u64 lossless via IntoIsize::into_isize
-	// u128 lossless via IntoIsize::into_isize
-	// usize lossless via IntoIsize::into_isize
-	i8 lossless via IntoIsize::into_isize
-	i16 lossless via IntoIsize::into_isize
-	// i32 lossless via IntoIsize::into_isize
-	// i64 lossless via IntoIsize::into_isize
-	// i128 lossless via IntoIsize::into_isize
-	isize lossless via IntoIsize::into_isize
-	// f32 lossless via IntoIsize::into_isize
-	// f64 lossless via IntoIsize::into_isize
+	lossless IntoIsize::into_isize
+	lossy IntoIsizeLossy::into_isize_lossy
+
+	u8 lossless
+	// u16 lossless
+	// u32 lossless
+	// u64 lossless
+	// u128 lossless
+	// usize lossless
+	i8 lossless
+	i16 lossless
+	// i32 lossless
+	// i64 lossless
+	// i128 lossless
+	isize lossless
+	// f32 lossless
+	// f64 lossless
 }
 
 impl_generic_num_conversions! {
 	for f32
-	u8 lossless via IntoF32::into_f32
-	u16 lossless via IntoF32::into_f32
-	// u32 lossless via IntoF32::into_f32
-	// u64 lossless via IntoF32::into_f32
-	// u128 lossless via IntoF32::into_f32
-	// usize lossless via IntoF32::into_f32
-	i8 lossless via IntoF32::into_f32
-	i16 lossless via IntoF32::into_f32
-	// i32 lossless via IntoF32::into_f32
-	// i64 lossless via IntoF32::into_f32
-	// i128 lossless via IntoF32::into_f32
-	// isize lossless via IntoF32::into_f32
-	f32 lossless via IntoF32::into_f32
-	// f64 lossless via IntoF32::into_f32
+	lossless IntoF32::into_f32
+	lossy IntoF32Lossy::into_f32_lossy
+
+	u8 lossless
+	u16 lossless
+	// u32 lossless
+	// u64 lossless
+	// u128 lossless
+	// usize lossless
+	i8 lossless
+	i16 lossless
+	// i32 lossless
+	// i64 lossless
+	// i128 lossless
+	// isize lossless
+	f32 lossless
+	// f64 lossless
 }
 
 impl_generic_num_conversions! {
 	for f64
-	u8 lossless via IntoF64::into_f64
-	u16 lossless via IntoF64::into_f64
-	u32 lossless via IntoF64::into_f64
-	// u64 lossless via IntoF64::into_f64
-	// u128 lossless via IntoF64::into_f64
-	// usize lossless via IntoF64::into_f64
-	i8 lossless via IntoF64::into_f64
-	i16 lossless via IntoF64::into_f64
-	i32 lossless via IntoF64::into_f64
-	// i64 lossless via IntoF64::into_f64
-	// i128 lossless via IntoF64::into_f64
-	// isize lossless via IntoF64::into_f64
-	f32 lossless via IntoF64::into_f64
-	f64 lossless via IntoF64::into_f64
-}
+	lossless IntoF64::into_f64
+	lossy IntoF64Lossy::into_f64_lossy
 
+	u8 lossless
+	u16 lossless
+	u32 lossless
+	// u64 lossless
+	// u128 lossless
+	// usize lossless
+	i8 lossless
+	i16 lossless
+	i32 lossless
+	// i64 lossless
+	// i128 lossless
+	// isize lossless
+	f32 lossless
+	f64 lossless
+}
 
 pub trait ArrayConversions<const N: usize>
 where
