@@ -1,6 +1,12 @@
-#![allow(dead_code, reason = "wip (todo remove me)")]
+#![allow(
+	dead_code,
+	unused_imports,
+	reason = "wip (todo remove me)"
+)]
 
 use crate::prelude_std::*;
+
+mod int;
 
 pub trait Serialise<'h> {
 	type Serialiser: Serialiser<'h>;
@@ -8,10 +14,26 @@ pub trait Serialise<'h> {
 	fn serialiser(&'h self) -> Self::Serialiser;
 }
 
-pub trait Serialiser<'h>: Sized {}
+pub trait Serialiser<'h>: Sized {
+	fn serialise<O>(&self, out: O)
+	where
+		O: Output;
+}
 
 pub trait Deserialise<'h>: Sized {
 	type Error: std::error::Error + From<Error>;
+
+	fn deserialise<I>(input: I) -> Result<Self, Self::Error>
+	where
+		I: Input<'h>;
+}
+
+pub trait Input<'h> {
+	fn read_bytes(&mut self, bytes: usize) -> Option<&'h [u8]>;
+}
+
+pub trait Output {
+	fn write_bytes(&mut self, bytes: &[u8]);
 }
 
 /// Error type but it's blank (it will be filled soon™)
