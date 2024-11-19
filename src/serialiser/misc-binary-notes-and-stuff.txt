@@ -229,23 +229,23 @@
 11100100 - i48
 11100101 - i64
 11100110 - i96
-11100111 - arbitrary length bigint (1-256 bytes length is up to 2048 bit int, surely that's enough lol, though we should do some kind of exponential curve?)
-11101000 - false
+11100111 - arbitrary length bigint (unsigned)
+11101000 - arbitrary length bigint (signed)
 11101001 - true
-11101010 - none ----------------
-11101011 - f16
-11101100 - f32
-11101101 - f64
-11101110 - f128
-11101111 - f256
-11110000 - string (utf-8 string)
-11110001 - array
-11110010 - map
-11110011 - binary
-11110100 - char (24 bit (3 byte) unicode value)  -----------
-11110101 - begin magic number sequence
-11110110 - body length
-11110111 - body length + checksum (blake3)
+11101010 - false
+11101011 - none
+11101100 - f16
+11101101 - f32
+11101110 - f64
+11101111 - f128
+11110000 - f256
+11110001 - string (utf-8)
+11110010 - array
+11110011 - map
+11110100 - binary
+11110101 - char (24 bit (3 byte) unicode value)  -----------
+11110110 - begin magic number sequence
+11110111 - body length
 11111000 - body length + checksum (sha3-512)
 11111001 - body length + arbitrary length checksum (shake256)
 11111010 - value registry
