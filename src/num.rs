@@ -1322,6 +1322,95 @@ decl_endian_structs! {
 	"native endian" EndianNative from_ne_bytes into_ne_bytes
 }
 
+pub trait IntSignedness
+where
+	Self: Sealed
+{
+	const SIGNED: bool;
+}
+
+macro_rules! impl_int_signedness {
+	{ $($int:ident $signed:literal)* } => {
+		$(
+			impl IntSignedness for $int {
+				const SIGNED: bool = $signed;
+			}
+		)*
+	}
+}
+
+impl_int_signedness! {
+	u8 false
+	u16 false
+	u32 false
+	u64 false
+	u128 false
+	usize false
+	i8 true
+	i16 true
+	i32 true
+	i64 true
+	i128 true
+	isize true
+}
+
+pub trait IntUnsigned
+where
+	Self: Sealed,
+	Self::Signed: IntSigned<Unsigned = Self>
+{
+	type Signed;
+
+	fn cast_signed(self) -> Self::Signed;
+}
+
+pub trait IntSigned
+where
+	Self: Sealed,
+	Self::Unsigned: IntUnsigned<Signed = Self>
+{
+	type Unsigned;
+
+	fn cast_unsigned(self) -> Self::Unsigned;
+}
+
+macro_rules! impl_int_signed_and_unsigned {
+	{ $($unsigned:ident $signed:ident)* } => {
+		$(
+			impl IntUnsigned for $unsigned {
+				type Signed = $signed;
+
+				#[expect(
+					clippy::as_conversions,
+					reason = "implementation detail of a more restrictive API"
+				)]
+				#[inline(always)]
+				fn cast_signed(self) -> $signed { self as _ }
+			}
+
+			impl IntSigned for $signed {
+				type Unsigned = $unsigned;
+
+				#[expect(
+					clippy::as_conversions,
+					reason = "implementation detail of a more restrictive API"
+				)]
+				#[inline(always)]
+				fn cast_unsigned(self) -> $unsigned { self as _ }
+			}
+		)*
+	}
+}
+
+impl_int_signed_and_unsigned! {
+	u8 i8
+	u16 i16
+	u32 i32
+	u64 i64
+	u128 i128
+	usize isize
+}
+
 /*
 macro_rules! op_trait {
 	{
