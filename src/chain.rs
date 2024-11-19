@@ -1,7 +1,9 @@
 use crate::prelude_std::*;
 
+pub use array::ArrayChain;
 pub use vec::{ vec_chain, VecChain };
 
+mod array;
 mod vec;
 
 pub trait Chain
