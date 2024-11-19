@@ -1223,22 +1223,22 @@ macro_rules! impl_array_conversions {
 		$(
 			$(#[$meta])*
 			impl ArrayConversions<$bytes> for $num {
-				#[inline]
+				#[inline(always)]
 				fn into_le_bytes(self) -> [u8; $bytes] { $num::to_le_bytes(self) }
 
-				#[inline]
+				#[inline(always)]
 				fn into_be_bytes(self) -> [u8; $bytes] { $num::to_be_bytes(self) }
 
-				#[inline]
+				#[inline(always)]
 				fn into_ne_bytes(self) -> [u8; $bytes] { $num::to_ne_bytes(self) }
 
-				#[inline]
+				#[inline(always)]
 				fn from_le_bytes(bytes: [u8; $bytes]) -> $num { $num::from_le_bytes(bytes) }
 
-				#[inline]
+				#[inline(always)]
 				fn from_be_bytes(bytes: [u8; $bytes]) -> $num { $num::from_be_bytes(bytes) }
 
-				#[inline]
+				#[inline(always)]
 				fn from_ne_bytes(bytes: [u8; $bytes]) -> $num { $num::from_ne_bytes(bytes) }
 			}
 		)*
