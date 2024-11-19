@@ -923,12 +923,12 @@ impl_generic_num_conversions! {
 	// u64 lossless
 	// u128 lossless
 	// usize lossless
-	// i8 lossless
-	// i16 lossless
-	// i32 lossless
-	// i64 lossless
-	// i128 lossless
-	// isize lossless
+	i8 lossy
+	i16 lossy
+	i32 lossy
+	i64 lossy
+	i128 lossy
+	isize lossy
 	// f32 lossless
 	// f64 lossless
 }
@@ -944,12 +944,12 @@ impl_generic_num_conversions! {
 	// u64 lossless
 	// u128 lossless
 	// usize lossless
-	// i8 lossless
-	// i16 lossless
-	// i32 lossless
-	// i64 lossless
-	// i128 lossless
-	// isize lossless
+	i8 lossy
+	i16 lossy
+	i32 lossy
+	i64 lossy
+	i128 lossy
+	isize lossy
 	// f32 lossless
 	// f64 lossless
 }
@@ -965,12 +965,12 @@ impl_generic_num_conversions! {
 	// u64 lossless
 	// u128 lossless
 	// usize lossless
-	// i8 lossless
-	// i16 lossless
-	// i32 lossless
-	// i64 lossless
-	// i128 lossless
-	// isize lossless
+	i8 lossy
+	i16 lossy
+	i32 lossy
+	i64 lossy
+	i128 lossy
+	isize lossy
 	// f32 lossless
 	// f64 lossless
 }
@@ -986,12 +986,12 @@ impl_generic_num_conversions! {
 	u64 lossless
 	// u128 lossless
 	// usize lossless
-	// i8 lossless
-	// i16 lossless
-	// i32 lossless
-	// i64 lossless
-	// i128 lossless
-	// isize lossless
+	i8 lossy
+	i16 lossy
+	i32 lossy
+	i64 lossy
+	i128 lossy
+	isize lossy
 	// f32 lossless
 	// f64 lossless
 }
@@ -1007,12 +1007,12 @@ impl_generic_num_conversions! {
 	u64 lossless
 	u128 lossless
 	// usize lossless
-	// i8 lossless
-	// i16 lossless
-	// i32 lossless
-	// i64 lossless
-	// i128 lossless
-	// isize lossless
+	i8 lossy
+	i16 lossy
+	i32 lossy
+	i64 lossy
+	i128 lossy
+	isize lossy
 	// f32 lossless
 	// f64 lossless
 }
@@ -1028,12 +1028,12 @@ impl_generic_num_conversions! {
 	// u64 lossless
 	// u128 lossless
 	usize lossless
-	// i8 lossless
-	// i16 lossless
-	// i32 lossless
-	// i64 lossless
-	// i128 lossless
-	// isize lossless
+	i8 lossy
+	i16 lossy
+	i32 lossy
+	i64 lossy
+	i128 lossy
+	isize lossy
 	// f32 lossless
 	// f64 lossless
 }
@@ -1043,7 +1043,7 @@ impl_generic_num_conversions! {
 	lossless IntoI8::into_i8
 	lossy IntoI8Lossy::into_i8_lossy
 
-	// u8 lossless
+	u8 lossy
 	// u16 lossless
 	// u32 lossless
 	// u64 lossless
@@ -1065,7 +1065,7 @@ impl_generic_num_conversions! {
 	lossy IntoI16Lossy::into_i16_lossy
 
 	u8 lossless
-	// u16 lossless
+	u16 lossy
 	// u32 lossless
 	// u64 lossless
 	// u128 lossless
@@ -1087,7 +1087,7 @@ impl_generic_num_conversions! {
 
 	u8 lossless
 	u16 lossless
-	// u32 lossless
+	u32 lossy
 	// u64 lossless
 	// u128 lossless
 	// usize lossless
@@ -1109,7 +1109,7 @@ impl_generic_num_conversions! {
 	u8 lossless
 	u16 lossless
 	u32 lossless
-	// u64 lossless
+	u64 lossy
 	// u128 lossless
 	// usize lossless
 	i8 lossless
@@ -1131,7 +1131,7 @@ impl_generic_num_conversions! {
 	u16 lossless
 	u32 lossless
 	u64 lossless
-	// u128 lossless
+	u128 lossy
 	// usize lossless
 	i8 lossless
 	i16 lossless
@@ -1153,7 +1153,7 @@ impl_generic_num_conversions! {
 	// u32 lossless
 	// u64 lossless
 	// u128 lossless
-	// usize lossless
+	usize lossy
 	i8 lossless
 	i16 lossless
 	// i32 lossless
