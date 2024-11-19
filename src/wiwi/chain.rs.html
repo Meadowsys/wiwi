@@ -654,10 +654,46 @@
 <a href="#653" id="653">653</a>
 <a href="#654" id="654">654</a>
 <a href="#655" id="655">655</a>
-<a href="#656" id="656">656</a></pre></div><pre class="rust"><code><span class="kw">use </span><span class="kw">crate</span>::prelude_std::<span class="kw-2">*</span>;
+<a href="#656" id="656">656</a>
+<a href="#657" id="657">657</a>
+<a href="#658" id="658">658</a>
+<a href="#659" id="659">659</a>
+<a href="#660" id="660">660</a>
+<a href="#661" id="661">661</a>
+<a href="#662" id="662">662</a>
+<a href="#663" id="663">663</a>
+<a href="#664" id="664">664</a>
+<a href="#665" id="665">665</a>
+<a href="#666" id="666">666</a>
+<a href="#667" id="667">667</a>
+<a href="#668" id="668">668</a>
+<a href="#669" id="669">669</a>
+<a href="#670" id="670">670</a>
+<a href="#671" id="671">671</a>
+<a href="#672" id="672">672</a>
+<a href="#673" id="673">673</a>
+<a href="#674" id="674">674</a>
+<a href="#675" id="675">675</a>
+<a href="#676" id="676">676</a>
+<a href="#677" id="677">677</a>
+<a href="#678" id="678">678</a>
+<a href="#679" id="679">679</a>
+<a href="#680" id="680">680</a>
+<a href="#681" id="681">681</a>
+<a href="#682" id="682">682</a>
+<a href="#683" id="683">683</a>
+<a href="#684" id="684">684</a>
+<a href="#685" id="685">685</a>
+<a href="#686" id="686">686</a>
+<a href="#687" id="687">687</a>
+<a href="#688" id="688">688</a>
+<a href="#689" id="689">689</a>
+<a href="#690" id="690">690</a></pre></div><pre class="rust"><code><span class="kw">use </span><span class="kw">crate</span>::prelude_std::<span class="kw-2">*</span>;
 
+<span class="kw">pub use </span>array::ArrayChain;
 <span class="kw">pub use </span>vec::{ vec_chain, VecChain };
 
+<span class="kw">mod </span>array;
 <span class="kw">mod </span>vec;
 
 <span class="kw">pub trait </span>Chain
@@ -687,12 +723,44 @@
 		<span class="self">self</span>.as_mut()
 	}
 
-	<span class="attr">#[inline]
-	</span><span class="kw">fn </span>with_inner&lt;F&gt;(<span class="kw-2">mut </span><span class="self">self</span>, f: F) -&gt; <span class="self">Self
+	<span class="doccomment">/// Takes a closure that is called, passing in a reference to the inner value
+	///
+	/// This is useful for if there is something we have not implemented, or you
+	/// otherwise need to borrow the inner struct for something, but are in the
+	/// middle of some chain. It lets you do otherwise nonchainable operations
+	/// inline with other chaining operations, so no need to break the chain c:
+	///
+	/// The closure passed in is allowed to return anything, but the return value
+	/// is simply ignored. This makes it so you can call a function for its side
+	/// effect, even if that function returns something you wouldn't have needed
+	/// anyways.
+	///
+	/// For example, [`MaybeUninit::write`] returns `&amp;mut T`, but you might not
+	/// need that reference, so instead of writing `
+	/// .with_inner(|val| { val.write(...); })`, you can simply write
+	/// `.with_inner(|val| val.write(...))`.
+	///
+	/// # Examples
+	///
+	/// ```
+	/// # use wiwi::chain::{ Chain as _, VecChain };
+	/// let chain = VecChain::&lt;usize&gt;::new();
+	///
+	/// // let's pretend `push` and `reserve` don't already have chainable versions...
+	/// let chain = chain
+	///    .with_inner(|v| v.reserve(10))
+	///    .with_inner(|v| v.push(1))
+	///    .with_inner(|v| v.push(2));
+	///
+	/// assert!(chain.as_inner().len() == 2);
+	/// assert!(chain.as_inner().capacity() &gt;= 10);
+	/// ```
+	</span><span class="attr">#[inline]
+	</span><span class="kw">fn </span>with_inner&lt;F, Void&gt;(<span class="kw-2">mut </span><span class="self">self</span>, f: F) -&gt; <span class="self">Self
 	</span><span class="kw">where
-		</span>F: FnOnce(<span class="kw-2">&amp;mut </span><span class="self">Self</span>::Inner)
+		</span>F: FnOnce(<span class="kw-2">&amp;mut </span><span class="self">Self</span>::Inner) -&gt; Void
 	{
-		f(<span class="self">self</span>.as_inner_mut());
+		<span class="kw">let </span>_void = f(<span class="self">self</span>.as_inner_mut());
 		<span class="self">self
 	</span>}
 }

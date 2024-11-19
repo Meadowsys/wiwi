@@ -1,1 +1,1 @@
-window.SIDEBAR_ITEMS = {"macro":["vec_chain"],"struct":["VecChain"],"trait":["AsChainInner","Chain","ChainInner","OutputStorage"]};
+window.SIDEBAR_ITEMS = {"macro":["vec_chain"],"struct":["ArrayChain","VecChain"],"trait":["AsChainInner","Chain","ChainInner","OutputStorage"]};
