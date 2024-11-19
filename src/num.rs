@@ -866,6 +866,7 @@ impl_array_conversions! {
 
 pub trait Endian<Num, const N: usize>
 where
+	Self: Sealed,
 	Num: ArrayConversions<N>
 {
 	fn from_bytes(bytes: [u8; N]) -> Num;
@@ -881,6 +882,8 @@ macro_rules! decl_endian_structs {
 			pub struct $struct {
 				__private: ()
 			}
+
+			impl Sealed for $struct {}
 
 			impl<Num, const N: usize> Endian<Num, N> for $struct
 			where
