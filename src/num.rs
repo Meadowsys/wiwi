@@ -931,6 +931,7 @@ impl_generic_num_conversions! {
 	isize lossy
 	f32 lossy
 	f64 lossy
+	bool lossless
 }
 
 impl_generic_num_conversions! {
@@ -958,6 +959,7 @@ impl_generic_num_conversions! {
 	isize lossy
 	f32 lossy
 	f64 lossy
+	bool lossless
 }
 
 impl_generic_num_conversions! {
@@ -985,6 +987,7 @@ impl_generic_num_conversions! {
 	isize lossy
 	f32 lossy
 	f64 lossy
+	bool lossless
 }
 
 impl_generic_num_conversions! {
@@ -1006,6 +1009,7 @@ impl_generic_num_conversions! {
 	isize lossy
 	f32 lossy
 	f64 lossy
+	bool lossless
 }
 
 impl_generic_num_conversions! {
@@ -1027,6 +1031,7 @@ impl_generic_num_conversions! {
 	isize lossy
 	f32 lossy
 	f64 lossy
+	bool lossless
 }
 
 impl_generic_num_conversions! {
@@ -1060,6 +1065,7 @@ impl_generic_num_conversions! {
 	isize lossy
 	f32 lossy
 	f64 lossy
+	bool lossless
 }
 
 impl_generic_num_conversions! {
@@ -1081,6 +1087,7 @@ impl_generic_num_conversions! {
 	isize lossy
 	f32 lossy
 	f64 lossy
+	bool lossless
 }
 
 impl_generic_num_conversions! {
@@ -1108,6 +1115,7 @@ impl_generic_num_conversions! {
 	isize lossy
 	f32 lossy
 	f64 lossy
+	bool lossless
 }
 
 impl_generic_num_conversions! {
@@ -1141,6 +1149,7 @@ impl_generic_num_conversions! {
 	isize lossy
 	f32 lossy
 	f64 lossy
+	bool lossless
 }
 
 impl_generic_num_conversions! {
@@ -1168,6 +1177,7 @@ impl_generic_num_conversions! {
 	isize lossless
 	f32 lossy
 	f64 lossy
+	bool lossless
 }
 
 impl_generic_num_conversions! {
@@ -1189,6 +1199,7 @@ impl_generic_num_conversions! {
 	isize lossless
 	f32 lossy
 	f64 lossy
+	bool lossless
 }
 
 impl_generic_num_conversions! {
@@ -1234,6 +1245,7 @@ impl_generic_num_conversions! {
 	isize lossless
 	f32 lossy
 	f64 lossy
+	bool lossless
 }
 
 impl_generic_num_conversions! {
@@ -1255,6 +1267,7 @@ impl_generic_num_conversions! {
 	isize lossy
 	f32 lossless
 	f64 lossy
+	bool lossless
 }
 
 impl_generic_num_conversions! {
@@ -1276,6 +1289,7 @@ impl_generic_num_conversions! {
 	isize lossy
 	f32 lossless
 	f64 lossless
+	bool lossless
 }
 
 pub trait ArrayConversions<const N: usize>
