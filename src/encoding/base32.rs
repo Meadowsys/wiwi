@@ -1,5 +1,5 @@
-use crate::_internal::encoding_utils::{ ChunkedSlice, UnsafeBufWriteGuard };
-use std::{ hint, ptr };
+use crate::prelude_std::*;
+use super::{ ChunkedSlice, UnsafeBufWriteGuard };
 
 // // table unused, for ref only, cause it can be calculated
 // pub const TABLE_ENCODER_LEN: usize = 32;
@@ -53,10 +53,11 @@ fn _encode<
 	let mut dest = UnsafeBufWriteGuard::with_capacity(capacity);
 
 	for _ in 0..frames {
-		unsafe {
-			let frame = frames_iter.next_frame_unchecked();
-			encode_frame::<BREAKPOINT, LOWER, UPPER_ADJUSTED>(frame, &mut dest);
-		}
+		// SAFETY: calculated
+		let frame = unsafe { frames_iter.next_frame_unchecked() };
+
+		// SAFETY: calculated
+		unsafe { encode_frame::<BREAKPOINT, LOWER, UPPER_ADJUSTED>(frame, &mut dest) }
 	}
 
 	if remainder > 0 {
@@ -66,28 +67,40 @@ fn _encode<
 			2 => { 4 }
 			3 => { 3 }
 			4 => { 1 }
-			_ => unsafe {
+			_ => {
 				// SAFETY: `remainder` is calculated by mod 5, so it cannot be 5 or
 				// more. and we just checked in an if statement that `remainder` is
 				// greater than 0. therefore, `remainder` can only be 1, 2, 3, or 4,
 				// all of which are covered by match branches.
-				hint::unreachable_unchecked()
+				unsafe { hint::unreachable_unchecked() }
 			}
 		};
 
-		unsafe {
-			frames_iter.with_remainder_unchecked(|frame| {
-				encode_frame::<BREAKPOINT, LOWER, UPPER_ADJUSTED>(frame, &mut dest);
-				let ptr = dest.as_mut_ptr().sub(padding_amount);
-				static PADDING: &[u8; 6] = b"======";
-				ptr::copy_nonoverlapping(PADDING.as_ptr(), ptr, padding_amount);
-			});
-		}
+		let f = |frame: &[u8; 5]| {
+			static PADDING: &[u8; 6] = b"======";
+
+			// SAFETY: calculated
+			unsafe { encode_frame::<BREAKPOINT, LOWER, UPPER_ADJUSTED>(frame, &mut dest) }
+
+			// SAFETY: calculated
+			let ptr = unsafe { dest.as_mut_ptr().sub(padding_amount) };
+
+			// SAFETY: calculated
+			unsafe { ptr::copy_nonoverlapping(PADDING.as_ptr(), ptr, padding_amount) }
+		};
+
+		// SAFETY: calculated
+		unsafe { frames_iter.with_remainder_unchecked(f) }
 	}
 
+	// SAFETY: calculated
 	let vec = unsafe { dest.into_full_vec() };
-	debug_assert!(String::from_utf8(vec.clone()).is_ok(), "output bytes valid utf-8");
-	unsafe { String::from_utf8_unchecked(vec) }
+
+	// SAFETY: we only write valid ASCII as part of encoding process
+	unsafe {
+		debug_assert!(str::from_utf8(&vec).is_ok(), "output bytes valid utf-8");
+		String::from_utf8_unchecked(vec)
+	}
 }
 
 unsafe fn encode_frame<
@@ -95,31 +108,29 @@ unsafe fn encode_frame<
 	const LOWER: u8,
 	const UPPER_ADJUSTED: u8
 >(frame: &[u8; BINARY_FRAME_LEN], dest: &mut UnsafeBufWriteGuard) {
-	let frame = frame.as_ptr();
-
 	// keep first 5 bits from byte 0, leaving 3 bits left
-	let byte1 = *frame >> 3;
+	let byte1 = frame[0] >> 3;
 
 	// take remaining 3 from byte 0, then 2 from byte 1, leaving 6 bits left
-	let byte2 = ((*frame << 2) & 0b11100) | (*frame.add(1) >> 6);
+	let byte2 = ((frame[0] << 2) & 0b11100) | (frame[1] >> 6);
 
 	// take 5 in middle of byte 1, leaving 1 bit left
-	let byte3 = (*frame.add(1) >> 1) & 0b11111;
+	let byte3 = (frame[1] >> 1) & 0b11111;
 
 	// take last bit from byte 1, then 4 from byte 2, leaving 4 bits left
-	let byte4 = ((*frame.add(1) << 4) & 0b10000) | (*frame.add(2) >> 4);
+	let byte4 = ((frame[1] << 4) & 0b10000) | (frame[2] >> 4);
 
 	// take last 4 bits from byte 2, then 1 from byte 3, leaving 7 bits left
-	let byte5 = ((*frame.add(2) << 1) & 0b11110) | (*frame.add(3) >> 7);
+	let byte5 = ((frame[2] << 1) & 0b11110) | (frame[3] >> 7);
 
 	// take 5 from byte 3, leaving 2 bits left
-	let byte6 = (*frame.add(3) >> 2) & 0b11111;
+	let byte6 = (frame[3] >> 2) & 0b11111;
 
 	// take remaining 2 bits from byte 3, then 3 bits from byte 4, leaving 5 bits left
-	let byte7 = ((*frame.add(3) << 3) & 0b11000) | (*frame.add(4) >> 5);
+	let byte7 = ((frame[3] << 3) & 0b11000) | (frame[4] >> 5);
 
 	// take remaining 5 bits
-	let byte8 = *frame.add(4) & 0b11111;
+	let byte8 = frame[4] & 0b11111;
 
 	let bytes = [
 		// multi cursor editing is great
@@ -133,13 +144,13 @@ unsafe fn encode_frame<
 		if byte8 > BREAKPOINT { byte8 + UPPER_ADJUSTED } else { byte8 + LOWER }
 	];
 
-	dest.write_bytes_const::<8>(bytes.as_ptr());
+	// SAFETY: caller promises we can call this once
+	unsafe { dest.write_bytes_const::<8>(bytes.as_ptr()) }
 }
 
 #[cfg(test)]
 mod tests {
 	use super::*;
-	use rand::{ Rng, thread_rng };
 
 	#[test]
 	fn rfc_provided_examples() {

@@ -212,22 +212,8 @@ impl UnsafeBufWriteGuard {
 	/// [`add_byte_count`](Self::add_byte_count). This offsets the internally
 	/// stored pointer by that amount. If you don't, calling any other write
 	/// function on this struct will clobber over what you just wrote.
-	///
-	///
-	/// # Safety
-	///
-	/// As with the rest of the write functions, you must not write, in total,
-	/// more than the amount of capacity that you requested when creating `self`.
-	/// Additionally, you should call [`add_byte_count`](Self::add_byte_count).
-	///
-	/// This function is technically safe to call if you don't do anything with
-	/// the returned pointer. All pointer operations are unsafe already. `std`
-	/// has many `as_ptr` and `as_mut_ptr` APIs that aren't `unsafe`, but still,
-	/// this function is conservatively marked unsafe. Even though it probably
-	/// doesn't need to be.
-	#[expect(dead_code, reason = "bweh")]
 	#[inline]
-	pub unsafe fn as_mut_ptr(&mut self) -> *mut u8 {
+	pub fn as_mut_ptr(&mut self) -> *mut u8 {
 		self.ptr
 	}
 
