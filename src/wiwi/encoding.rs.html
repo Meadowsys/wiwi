@@ -367,48 +367,52 @@
 <a href="#366" id="366">366</a>
 <a href="#367" id="367">367</a>
 <a href="#368" id="368">368</a>
-<a href="#369" id="369">369</a>
-<a href="#370" id="370">370</a>
-<a href="#371" id="371">371</a>
-<a href="#372" id="372">372</a>
-<a href="#373" id="373">373</a>
-<a href="#374" id="374">374</a></pre></div><pre class="rust"><code><span class="kw">use </span><span class="kw">crate</span>::prelude_std::<span class="kw-2">*</span>;
-
-<span class="kw">pub use </span><span class="self">self</span>::hex::{ encode_hex, decode_hex };
-<span class="kw">pub use </span><span class="self">self</span>::z85::{ encode_z85, decode_z85 };
+<a href="#369" id="369">369</a></pre></div><pre class="rust"><code><span class="kw">use </span><span class="kw">crate</span>::prelude_std::<span class="kw-2">*</span>;
 
 <span class="kw">pub mod </span>base16;
 <span class="kw">pub mod </span>base32;
 <span class="kw">pub mod </span>base64;
 <span class="kw">pub mod </span>hex;
+<span class="kw">pub mod </span>rfc1751;
 <span class="kw">pub mod </span>z85;
 
 <span class="kw">pub trait </span>Encodeable {
-	<span class="kw">fn </span>encode_z85(<span class="self">self</span>) -&gt; String;
+	<span class="kw">fn </span>encode_base16(<span class="self">self</span>) -&gt; String;
 	<span class="kw">fn </span>encode_hex(<span class="self">self</span>) -&gt; String;
+	<span class="kw">fn </span>encode_z85(<span class="self">self</span>) -&gt; String;
 }
 
 <span class="kw">impl </span>Encodeable <span class="kw">for </span><span class="kw-2">&amp;</span>str {
 	<span class="attr">#[inline]
-	</span><span class="kw">fn </span>encode_z85(<span class="self">self</span>) -&gt; String {
-		z85::encode_z85(<span class="self">self</span>.as_bytes())
+	</span><span class="kw">fn </span>encode_base16(<span class="self">self</span>) -&gt; String {
+		base16::encode_base16(<span class="self">self</span>.as_bytes())
 	}
 
 	<span class="attr">#[inline]
 	</span><span class="kw">fn </span>encode_hex(<span class="self">self</span>) -&gt; String {
 		hex::encode_hex(<span class="self">self</span>.as_bytes())
 	}
+
+	<span class="attr">#[inline]
+	</span><span class="kw">fn </span>encode_z85(<span class="self">self</span>) -&gt; String {
+		z85::encode_z85(<span class="self">self</span>.as_bytes())
+	}
 }
 
 <span class="kw">impl </span>Encodeable <span class="kw">for </span><span class="kw-2">&amp;</span>[u8] {
 	<span class="attr">#[inline]
-	</span><span class="kw">fn </span>encode_z85(<span class="self">self</span>) -&gt; String {
-		z85::encode_z85(<span class="self">self</span>)
+	</span><span class="kw">fn </span>encode_base16(<span class="self">self</span>) -&gt; String {
+		base16::encode_base16(<span class="self">self</span>)
 	}
 
 	<span class="attr">#[inline]
 	</span><span class="kw">fn </span>encode_hex(<span class="self">self</span>) -&gt; String {
 		hex::encode_hex(<span class="self">self</span>)
+	}
+
+	<span class="attr">#[inline]
+	</span><span class="kw">fn </span>encode_z85(<span class="self">self</span>) -&gt; String {
+		z85::encode_z85(<span class="self">self</span>)
 	}
 }
 
@@ -575,22 +579,8 @@
 	/// [`add_byte_count`](Self::add_byte_count). This offsets the internally
 	/// stored pointer by that amount. If you don't, calling any other write
 	/// function on this struct will clobber over what you just wrote.
-	///
-	///
-	/// # Safety
-	///
-	/// As with the rest of the write functions, you must not write, in total,
-	/// more than the amount of capacity that you requested when creating `self`.
-	/// Additionally, you should call [`add_byte_count`](Self::add_byte_count).
-	///
-	/// This function is technically safe to call if you don't do anything with
-	/// the returned pointer. All pointer operations are unsafe already. `std`
-	/// has many `as_ptr` and `as_mut_ptr` APIs that aren't `unsafe`, but still,
-	/// this function is conservatively marked unsafe. Even though it probably
-	/// doesn't need to be.
-	</span><span class="attr">#[expect(dead_code, reason = <span class="string">"bweh"</span>)]
-	#[inline]
-	</span><span class="kw">pub unsafe fn </span>as_mut_ptr(<span class="kw-2">&amp;mut </span><span class="self">self</span>) -&gt; <span class="kw-2">*mut </span>u8 {
+	</span><span class="attr">#[inline]
+	</span><span class="kw">pub fn </span>as_mut_ptr(<span class="kw-2">&amp;mut </span><span class="self">self</span>) -&gt; <span class="kw-2">*mut </span>u8 {
 		<span class="self">self</span>.ptr
 	}
 

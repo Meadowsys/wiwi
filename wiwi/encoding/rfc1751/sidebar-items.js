@@ -1,0 +1,1 @@
+window.SIDEBAR_ITEMS = {"static":["WORD_TABLE"],"struct":["WordRef"]};
