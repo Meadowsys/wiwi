@@ -214,7 +214,7 @@ mod tests {
 
 	use crate::prelude_std::*;
 	use super::*;
-	use rand::{ Rng as _, thread_rng };
+	use rand::thread_rng;
 	use rand::distributions::uniform::SampleRange;
 	use std::sync::Mutex;
 	use std::thread;
