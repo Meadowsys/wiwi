@@ -942,7 +942,7 @@
 		<span class="macro">extend_layout!</span>(value, Layout::new::&lt;V&gt;());
 		<span class="macro">extend_layout!</span>(slice, Layout::array::&lt;S&gt;(slice_len).ok()<span class="question-mark">?</span>);
 
-		<span class="prelude-val">Some</span>(layout)
+		<span class="prelude-val">Some</span>(layout.pad_to_align())
 	}
 
 	inner::&lt;C, V, S&gt;(slice_len).expect(<span class="string">"rc layout calculation failed"</span>)
