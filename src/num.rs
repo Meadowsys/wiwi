@@ -918,19 +918,19 @@ impl_generic_num_conversions! {
 	lossy IntoU8Lossy::into_u8_lossy
 
 	u8 lossless
-	// u16 lossless
-	// u32 lossless
-	// u64 lossless
-	// u128 lossless
-	// usize lossless
+	u16 lossy
+	u32 lossy
+	u64 lossy
+	u128 lossy
+	usize lossy
 	i8 lossy
 	i16 lossy
 	i32 lossy
 	i64 lossy
 	i128 lossy
 	isize lossy
-	// f32 lossless
-	// f64 lossless
+	f32 lossy
+	f64 lossy
 }
 
 impl_generic_num_conversions! {
@@ -940,18 +940,24 @@ impl_generic_num_conversions! {
 
 	u8 lossless
 	u16 lossless
-	// u32 lossless
-	// u64 lossless
-	// u128 lossless
-	// usize lossless
+	u32 lossy
+	u64 lossy
+	u128 lossy
+	#[cfg(target_pointer_width = "16")]
+	usize lossless
+	#[cfg(any(
+		target_pointer_width = "32",
+		target_pointer_width = "64"
+	))]
+	usize lossy
 	i8 lossy
 	i16 lossy
 	i32 lossy
 	i64 lossy
 	i128 lossy
 	isize lossy
-	// f32 lossless
-	// f64 lossless
+	f32 lossy
+	f64 lossy
 }
 
 impl_generic_num_conversions! {
@@ -962,17 +968,23 @@ impl_generic_num_conversions! {
 	u8 lossless
 	u16 lossless
 	u32 lossless
-	// u64 lossless
-	// u128 lossless
-	// usize lossless
+	u64 lossy
+	u128 lossy
+	#[cfg(any(
+		target_pointer_width = "16",
+		target_pointer_width = "32"
+	))]
+	usize lossless
+	#[cfg(target_pointer_width = "64")]
+	usize lossy
 	i8 lossy
 	i16 lossy
 	i32 lossy
 	i64 lossy
 	i128 lossy
 	isize lossy
-	// f32 lossless
-	// f64 lossless
+	f32 lossy
+	f64 lossy
 }
 
 impl_generic_num_conversions! {
@@ -984,16 +996,16 @@ impl_generic_num_conversions! {
 	u16 lossless
 	u32 lossless
 	u64 lossless
-	// u128 lossless
-	// usize lossless
+	u128 lossy
+	usize lossless
 	i8 lossy
 	i16 lossy
 	i32 lossy
 	i64 lossy
 	i128 lossy
 	isize lossy
-	// f32 lossless
-	// f64 lossless
+	f32 lossy
+	f64 lossy
 }
 
 impl_generic_num_conversions! {
@@ -1006,15 +1018,15 @@ impl_generic_num_conversions! {
 	u32 lossless
 	u64 lossless
 	u128 lossless
-	// usize lossless
+	usize lossless
 	i8 lossy
 	i16 lossy
 	i32 lossy
 	i64 lossy
 	i128 lossy
 	isize lossy
-	// f32 lossless
-	// f64 lossless
+	f32 lossy
+	f64 lossy
 }
 
 impl_generic_num_conversions! {
@@ -1024,9 +1036,21 @@ impl_generic_num_conversions! {
 
 	u8 lossless
 	u16 lossless
-	// u32 lossless
-	// u64 lossless
-	// u128 lossless
+	#[cfg(target_pointer_width = "16")]
+	u32 lossy
+	#[cfg(any(
+		target_pointer_width = "32",
+		target_pointer_width = "64"
+	))]
+	u32 lossless
+	#[cfg(any(
+		target_pointer_width = "16",
+		target_pointer_width = "32"
+	))]
+	u64 lossy
+	#[cfg(target_pointer_width = "64")]
+	u64 lossless
+	u128 lossy
 	usize lossless
 	i8 lossy
 	i16 lossy
@@ -1034,8 +1058,8 @@ impl_generic_num_conversions! {
 	i64 lossy
 	i128 lossy
 	isize lossy
-	// f32 lossless
-	// f64 lossless
+	f32 lossy
+	f64 lossy
 }
 
 impl_generic_num_conversions! {
@@ -1044,19 +1068,19 @@ impl_generic_num_conversions! {
 	lossy IntoI8Lossy::into_i8_lossy
 
 	u8 lossy
-	// u16 lossless
-	// u32 lossless
-	// u64 lossless
-	// u128 lossless
-	// usize lossless
+	u16 lossy
+	u32 lossy
+	u64 lossy
+	u128 lossy
+	usize lossy
 	i8 lossless
-	// i16 lossless
-	// i32 lossless
-	// i64 lossless
-	// i128 lossless
-	// isize lossless
-	// f32 lossless
-	// f64 lossless
+	i16 lossy
+	i32 lossy
+	i64 lossy
+	i128 lossy
+	isize lossy
+	f32 lossy
+	f64 lossy
 }
 
 impl_generic_num_conversions! {
@@ -1066,18 +1090,24 @@ impl_generic_num_conversions! {
 
 	u8 lossless
 	u16 lossy
-	// u32 lossless
-	// u64 lossless
-	// u128 lossless
-	// usize lossless
+	u32 lossy
+	u64 lossy
+	u128 lossy
+	usize lossy
 	i8 lossless
 	i16 lossless
-	// i32 lossless
-	// i64 lossless
-	// i128 lossless
-	// isize lossless
-	// f32 lossless
-	// f64 lossless
+	i32 lossy
+	i64 lossy
+	i128 lossy
+	#[cfg(target_pointer_width = "16")]
+	isize lossless
+	#[cfg(any(
+		target_pointer_width = "32",
+		target_pointer_width = "64"
+	))]
+	isize lossy
+	f32 lossy
+	f64 lossy
 }
 
 impl_generic_num_conversions! {
@@ -1088,17 +1118,29 @@ impl_generic_num_conversions! {
 	u8 lossless
 	u16 lossless
 	u32 lossy
-	// u64 lossless
-	// u128 lossless
-	// usize lossless
+	u64 lossy
+	u128 lossy
+	#[cfg(target_pointer_width = "16")]
+	usize lossless
+	#[cfg(any(
+		target_pointer_width = "32",
+		target_pointer_width = "64"
+	))]
+	usize lossy
 	i8 lossless
 	i16 lossless
 	i32 lossless
-	// i64 lossless
-	// i128 lossless
-	// isize lossless
-	// f32 lossless
-	// f64 lossless
+	i64 lossy
+	i128 lossy
+	#[cfg(any(
+		target_pointer_width = "16",
+		target_pointer_width = "32"
+	))]
+	isize lossless
+	#[cfg(target_pointer_width = "64")]
+	isize lossy
+	f32 lossy
+	f64 lossy
 }
 
 impl_generic_num_conversions! {
@@ -1110,16 +1152,22 @@ impl_generic_num_conversions! {
 	u16 lossless
 	u32 lossless
 	u64 lossy
-	// u128 lossless
-	// usize lossless
+	u128 lossy
+	#[cfg(any(
+		target_pointer_width = "16",
+		target_pointer_width = "32"
+	))]
+	usize lossless
+	#[cfg(target_pointer_width = "64")]
+	usize lossy
 	i8 lossless
 	i16 lossless
 	i32 lossless
 	i64 lossless
-	// i128 lossless
-	// isize lossless
-	// f32 lossless
-	// f64 lossless
+	i128 lossy
+	isize lossless
+	f32 lossy
+	f64 lossy
 }
 
 impl_generic_num_conversions! {
@@ -1132,15 +1180,15 @@ impl_generic_num_conversions! {
 	u32 lossless
 	u64 lossless
 	u128 lossy
-	// usize lossless
+	usize lossless
 	i8 lossless
 	i16 lossless
 	i32 lossless
 	i64 lossless
 	i128 lossless
-	// isize lossless
-	// f32 lossless
-	// f64 lossless
+	isize lossless
+	f32 lossy
+	f64 lossy
 }
 
 impl_generic_num_conversions! {
@@ -1149,19 +1197,43 @@ impl_generic_num_conversions! {
 	lossy IntoIsizeLossy::into_isize_lossy
 
 	u8 lossless
-	// u16 lossless
-	// u32 lossless
-	// u64 lossless
-	// u128 lossless
+	#[cfg(target_pointer_width = "16")]
+	u16 lossy
+	#[cfg(any(
+		target_pointer_width = "32",
+		target_pointer_width = "64"
+	))]
+	u16 lossless
+	#[cfg(any(
+		target_pointer_width = "16",
+		target_pointer_width = "32"
+	))]
+	u32 lossy
+	#[cfg(target_pointer_width = "64")]
+	u32 lossless
+	u64 lossy
+	u128 lossy
 	usize lossy
 	i8 lossless
 	i16 lossless
-	// i32 lossless
-	// i64 lossless
-	// i128 lossless
+	#[cfg(target_pointer_width = "16")]
+	i32 lossy
+	#[cfg(any(
+		target_pointer_width = "32",
+		target_pointer_width = "64"
+	))]
+	i32 lossless
+	#[cfg(any(
+		target_pointer_width = "16",
+		target_pointer_width = "32"
+	))]
+	i64 lossy
+	#[cfg(target_pointer_width = "64")]
+	i64 lossless
+	i128 lossy
 	isize lossless
-	// f32 lossless
-	// f64 lossless
+	f32 lossy
+	f64 lossy
 }
 
 impl_generic_num_conversions! {
@@ -1171,18 +1243,18 @@ impl_generic_num_conversions! {
 
 	u8 lossless
 	u16 lossless
-	// u32 lossless
-	// u64 lossless
-	// u128 lossless
-	// usize lossless
+	u32 lossy
+	u64 lossy
+	u128 lossy
+	usize lossy
 	i8 lossless
 	i16 lossless
-	// i32 lossless
-	// i64 lossless
-	// i128 lossless
-	// isize lossless
+	i32 lossy
+	i64 lossy
+	i128 lossy
+	isize lossy
 	f32 lossless
-	// f64 lossless
+	f64 lossy
 }
 
 impl_generic_num_conversions! {
@@ -1193,15 +1265,15 @@ impl_generic_num_conversions! {
 	u8 lossless
 	u16 lossless
 	u32 lossless
-	// u64 lossless
-	// u128 lossless
-	// usize lossless
+	u64 lossy
+	u128 lossy
+	usize lossy
 	i8 lossless
 	i16 lossless
 	i32 lossless
-	// i64 lossless
-	// i128 lossless
-	// isize lossless
+	i64 lossy
+	i128 lossy
+	isize lossy
 	f32 lossless
 	f64 lossless
 }
