@@ -280,7 +280,7 @@ fn calc_layout<C, V, S>(slice_len: usize) -> Layout {
 		extend_layout!(value, Layout::new::<V>());
 		extend_layout!(slice, Layout::array::<S>(slice_len).ok()?);
 
-		Some(layout)
+		Some(layout.pad_to_align())
 	}
 
 	inner::<C, V, S>(slice_len).expect("rc layout calculation failed")
