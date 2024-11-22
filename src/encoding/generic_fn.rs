@@ -108,10 +108,24 @@ impl Encodable<Base16> for &[u8] {
 	}
 }
 
+impl Encodable<Base16> for &str {
+	#[inline]
+	fn encode(self) -> String {
+		base16::encode_base16(self.as_bytes())
+	}
+}
+
 impl Decodable<Base16> for &[u8] {
 	#[inline]
 	fn decode(self) -> Result<Vec<u8>, base16::DecodeError> {
 		base16::decode_base16(self)
+	}
+}
+
+impl Decodable<Base16> for &str {
+	#[inline]
+	fn decode(self) -> Result<Vec<u8>, base16::DecodeError> {
+		base16::decode_base16(self.as_bytes())
 	}
 }
 
@@ -130,6 +144,13 @@ impl Encodable<Base32> for &[u8] {
 	#[inline]
 	fn encode(self) -> String {
 		base32::encode_base32(self)
+	}
+}
+
+impl Encodable<Base32> for &str {
+	#[inline]
+	fn encode(self) -> String {
+		base32::encode_base32(self.as_bytes())
 	}
 }
 
@@ -162,10 +183,24 @@ impl Encodable<Hex> for &[u8] {
 	}
 }
 
+impl Encodable<Hex> for &str {
+	#[inline]
+	fn encode(self) -> String {
+		hex::encode_hex(self.as_bytes())
+	}
+}
+
 impl Decodable<Hex> for &[u8] {
 	#[inline]
 	fn decode(self) -> Result<Vec<u8>, hex::DecodeError> {
 		hex::decode_hex(self)
+	}
+}
+
+impl Decodable<Hex> for &str {
+	#[inline]
+	fn decode(self) -> Result<Vec<u8>, hex::DecodeError> {
+		hex::decode_hex(self.as_bytes())
 	}
 }
 
@@ -174,6 +209,11 @@ pub struct RFC1751 {
 }
 
 impl Sealed for RFC1751 {}
+
+impl Encoding for RFC1751 {
+	type EncodeOutput = (/* todo */);
+	type DecodeOutput = (/* todo */);
+}
 
 pub struct Z85 {
 	__private: ()
@@ -193,10 +233,24 @@ impl Encodable<Z85> for &[u8] {
 	}
 }
 
+impl Encodable<Z85> for &str {
+	#[inline]
+	fn encode(self) -> String {
+		z85::encode_z85(self.as_bytes())
+	}
+}
+
 impl Decodable<Z85> for &[u8] {
 	#[inline]
 	fn decode(self) -> Result<Vec<u8>, z85::DecodeError> {
 		z85::decode_z85(self)
+	}
+}
+
+impl Decodable<Z85> for &str {
+	#[inline]
+	fn decode(self) -> Result<Vec<u8>, z85::DecodeError> {
+		z85::decode_z85(self.as_bytes())
 	}
 }
 
