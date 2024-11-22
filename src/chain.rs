@@ -216,11 +216,55 @@ macro_rules! decl_chain {
 			}
 		}
 
+		// impl From<&Inner> for Chain where Inner: Clone
+		impl$(<$($generics_decl)*>)? $crate::prelude_std::From<&$($inner)+> for $chain$(<$($generics)*>)?
+		where
+			$($inner)+: $crate::prelude_std::Clone
+		{
+			#[inline]
+			fn from(inner: &$($inner)+) -> Self {
+				Self { _inner: inner.clone() }
+			}
+		}
+
+		// impl From<&mut Inner> for Chain where Inner: Clone
+		impl$(<$($generics_decl)*>)? $crate::prelude_std::From<&mut $($inner)+> for $chain$(<$($generics)*>)?
+		where
+			$($inner)+: $crate::prelude_std::Clone
+		{
+			#[inline]
+			fn from(inner: &mut $($inner)+) -> Self {
+				Self { _inner: inner.clone() }
+			}
+		}
+
 		// impl From<Chain> for Inner
 		impl$(<$($generics_decl)*>)? $crate::prelude_std::From<$chain$(<$($generics)*>)?> for $($inner)+ {
 			#[inline]
 			fn from(chain: $chain$(<$($generics)*>)?) -> Self {
 				chain._inner
+			}
+		}
+
+		// impl From<&Chain> for Inner where Inner: Clone
+		impl$(<$($generics_decl)*>)? $crate::prelude_std::From<&$chain$(<$($generics)*>)?> for $($inner)+
+		where
+			$($inner)+: $crate::prelude_std::Clone
+		{
+			#[inline]
+			fn from(chain: &$chain$(<$($generics)*>)?) -> Self {
+				chain._inner.clone()
+			}
+		}
+
+		// impl From<&mut Chain> for Inner where Inner: Clone
+		impl$(<$($generics_decl)*>)? $crate::prelude_std::From<&mut $chain$(<$($generics)*>)?> for $($inner)+
+		where
+			$($inner)+: $crate::prelude_std::Clone
+		{
+			#[inline]
+			fn from(chain: &mut $chain$(<$($generics)*>)?) -> Self {
+				chain._inner.clone()
 			}
 		}
 
