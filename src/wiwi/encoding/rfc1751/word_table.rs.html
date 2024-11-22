@@ -222,7 +222,9 @@
 <a href="#221" id="221">221</a>
 <a href="#222" id="222">222</a>
 <a href="#223" id="223">223</a>
-<a href="#224" id="224">224</a></pre></div><pre class="rust"><code><span class="comment">// each entry in the word table is just a pointer, a pointer to another static
+<a href="#224" id="224">224</a>
+<a href="#225" id="225">225</a>
+<a href="#226" id="226">226</a></pre></div><pre class="rust"><code><span class="comment">// each entry in the word table is just a pointer, a pointer to another static
 // that's an array with the first byte being the length and the rest being the
 // word. why? because I thought this could be possible... this is probably really
 // cursed and horrible but I did it anyways lol
@@ -308,11 +310,13 @@
 			$(<span class="macro">make_array!</span>(@str <span class="macro-nonterminal">$str</span>)),*
 		];
 	};
-	(@str <span class="macro-nonterminal">$str</span>:literal) =&gt; {{
-		<span class="kw">static </span>STR: [u8; <span class="macro-nonterminal">$str</span>.len() + <span class="number">1</span>] = WordRef::make_array(<span class="macro-nonterminal">$str</span>);
-		<span class="comment">// SAFETY: ptr is from static
-		</span><span class="kw">unsafe </span>{ WordRef::new(STR.as_ptr()) }
-	}};
+	(@str <span class="macro-nonterminal">$str</span>:literal) =&gt; {
+		{
+			<span class="kw">static </span>STR: [u8; <span class="macro-nonterminal">$str</span>.len() + <span class="number">1</span>] = WordRef::make_array(<span class="macro-nonterminal">$str</span>);
+			<span class="comment">// SAFETY: ptr is from static
+			</span><span class="kw">unsafe </span>{ WordRef::new(STR.as_ptr()) }
+		}
+	};
 }
 
 <span class="macro">make_array!</span> {
