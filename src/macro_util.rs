@@ -1,9 +1,12 @@
 mod macro_recurse;
+mod void;
 mod with_cloned;
 
 pub use macro_recurse::macro_recurse;
 #[doc(hidden)]
 pub use macro_recurse::__macro_recurse_impl;
+
+pub use void::void;
 
 pub use with_cloned::with_cloned;
 #[doc(hidden)]
