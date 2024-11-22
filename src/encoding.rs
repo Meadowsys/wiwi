@@ -7,46 +7,6 @@ pub mod hex;
 pub mod rfc1751;
 pub mod z85;
 
-pub trait Encodeable {
-	fn encode_base16(self) -> String;
-	fn encode_hex(self) -> String;
-	fn encode_z85(self) -> String;
-}
-
-impl Encodeable for &str {
-	#[inline]
-	fn encode_base16(self) -> String {
-		base16::encode_base16(self.as_bytes())
-	}
-
-	#[inline]
-	fn encode_hex(self) -> String {
-		hex::encode_hex(self.as_bytes())
-	}
-
-	#[inline]
-	fn encode_z85(self) -> String {
-		z85::encode_z85(self.as_bytes())
-	}
-}
-
-impl Encodeable for &[u8] {
-	#[inline]
-	fn encode_base16(self) -> String {
-		base16::encode_base16(self)
-	}
-
-	#[inline]
-	fn encode_hex(self) -> String {
-		hex::encode_hex(self)
-	}
-
-	#[inline]
-	fn encode_z85(self) -> String {
-		z85::encode_z85(self)
-	}
-}
-
 /// Helper for unsafe buffer operations, when the _exact_ total capacity needed
 /// is known ahead of time and requested up front
 ///
