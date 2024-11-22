@@ -1,5 +1,7 @@
-pub use chrono;
+pub extern crate chrono;
+extern crate tokio;
 
+use crate::prelude_std::*;
 use chrono::{ DateTime, Local, TimeDelta, TimeZone };
 use std::future::Future;
 use tokio::time::sleep;
@@ -78,6 +80,7 @@ impl ClockTimer {
 
 	/// Runs the next tick and returns timing information for it, if this
 	/// interval is not finished already.
+	#[inline]
 	pub async fn tick(&mut self) -> Option<Tick> {
 		if self.remaining < TimeDelta::zero() { return None }
 
@@ -203,7 +206,7 @@ pub mod builder {
 	impl Builder {
 		/// New builder. You can also obtain a builder through [`ClockTimer::builder`]
 		// there is no default that makes sense here
-		#[allow(clippy::new_without_default)]
+		#[expect(clippy::new_without_default, reason = "api design")]
 		#[inline]
 		pub fn new() -> Self {
 			// its gonna optimise away to be noop lol
