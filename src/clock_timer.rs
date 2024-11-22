@@ -74,8 +74,8 @@ pub struct Tick {
 impl ClockTimer {
 	/// Gets a [`ClockTimer`] builder
 	#[inline]
-	pub fn builder() -> builder::Builder {
-		builder::Builder::new()
+	pub fn builder() -> builder2::Builder {
+		builder2::Builder::new()
 	}
 
 	/// Runs the next tick and returns timing information for it, if this
@@ -303,6 +303,103 @@ pub mod builder {
 			let remaining = end - next_tick;
 
 			ClockTimer { next_tick, interval, elapsed, remaining }
+		}
+	}
+}
+
+pub mod builder2 {
+	use super::*;
+
+	pub struct MarkerUninit {
+		__private: ()
+	}
+
+	pub struct MarkerInit {
+		__private: ()
+	}
+
+	#[repr(transparent)]
+	pub struct Builder<
+		Start = MarkerUninit,
+		End = MarkerUninit,
+		Interval = MarkerUninit
+	> {
+		inner: BuilderInner,
+		__marker: PhantomData<(Start, End, Interval)>
+	}
+
+	struct BuilderInner {
+		start: MaybeUninit<DateTime<Local>>,
+		end: MaybeUninit<DateTime<Local>>,
+		interval: MaybeUninit<TimeDelta>
+	}
+
+	impl Builder {
+		#[expect(clippy::new_without_default, reason = "api design")]
+		#[inline]
+		pub fn new() -> Builder {
+			Builder {
+				inner: BuilderInner {
+					start: MaybeUninit::uninit(),
+					end: MaybeUninit::uninit(),
+					interval: MaybeUninit::uninit()
+				},
+				__marker: PhantomData
+			}
+		}
+	}
+
+	impl<End, Interval> Builder<MarkerUninit, End, Interval> {
+		#[inline]
+		pub fn with_start_datetime<TZ: TimeZone>(mut self, datetime: DateTime<TZ>) -> Builder<MarkerInit, End, Interval> {
+			self.inner.start.write(datetime.with_timezone(&Local));
+			Builder { inner: self.inner, __marker: PhantomData }
+		}
+	}
+
+	impl<Start, Interval> Builder<Start, MarkerUninit, Interval> {
+		#[inline]
+		pub fn with_end_datetime<TZ: TimeZone>(mut self, datetime: DateTime<TZ>) -> Builder<Start, MarkerInit, Interval> {
+			self.inner.end.write(datetime.with_timezone(&Local));
+			Builder { inner: self.inner, __marker: PhantomData }
+		}
+	}
+
+	impl<Interval> Builder<MarkerInit, MarkerUninit, Interval> {
+		#[inline]
+		pub fn with_duration(mut self, duration: TimeDelta) -> Builder<MarkerInit, MarkerInit, Interval> {
+			// SAFETY: enforced by type system (typestate pattern)
+			let start = unsafe { self.inner.start.assume_init() };
+
+			self.inner.end.write(start + duration);
+			Builder { inner: self.inner, __marker: PhantomData }
+		}
+	}
+
+	impl<Start, End> Builder<Start, End, MarkerUninit> {
+		#[inline]
+		pub fn with_interval(mut self, interval: TimeDelta) -> Builder<Start, End, MarkerInit> {
+			self.inner.interval.write(interval);
+			Builder { inner: self.inner, __marker: PhantomData }
+		}
+	}
+
+	impl Builder<MarkerInit, MarkerInit, MarkerInit> {
+		#[inline]
+		pub fn build(self) -> ClockTimer {
+			// SAFETY: enforced by type system (typestate pattern)
+			let start = unsafe { self.inner.start.assume_init() };
+			// SAFETY: enforced by type system (typestate pattern)
+			let end = unsafe { self.inner.end.assume_init() };
+			// SAFETY: enforced by type system (typestate pattern)
+			let interval = unsafe { self.inner.interval.assume_init() };
+
+			ClockTimer {
+				next_tick: start,
+				interval,
+				elapsed: TimeDelta::zero(),
+				remaining: end - start
+			}
 		}
 	}
 }
