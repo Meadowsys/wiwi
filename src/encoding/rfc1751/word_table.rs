@@ -84,11 +84,13 @@ macro_rules! make_array {
 			$(make_array!(@str $str)),*
 		];
 	};
-	(@str $str:literal) => {{
-		static STR: [u8; $str.len() + 1] = WordRef::make_array($str);
-		// SAFETY: ptr is from static
-		unsafe { WordRef::new(STR.as_ptr()) }
-	}};
+	(@str $str:literal) => {
+		{
+			static STR: [u8; $str.len() + 1] = WordRef::make_array($str);
+			// SAFETY: ptr is from static
+			unsafe { WordRef::new(STR.as_ptr()) }
+		}
+	};
 }
 
 make_array! {
