@@ -5,11 +5,8 @@
 	clippy::unnecessary_lazy_evaluations,
 	reason = "uwu"
 )]
-// #![warn(
-// 	// missing_docs,
-// 	// clippy::missing_docs_in_private_items
-// )]
-#![deny(
+#![warn(
+	// missing_docs,
 	unconditional_recursion,
 	unexpected_cfgs,
 	unfulfilled_lint_expectations,
@@ -22,6 +19,7 @@
 	clippy::inline_always,
 	clippy::items_after_statements,
 	clippy::items_after_test_module,
+	// clippy::missing_docs_in_private_items
 	clippy::missing_inline_in_public_items,
 	clippy::missing_safety_doc,
 	clippy::mixed_attributes_style,
