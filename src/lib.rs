@@ -56,6 +56,7 @@ pub mod prelude_std;
 pub mod chain;
 pub mod clock_timer;
 pub mod encoding;
+pub mod filetypes;
 // pub mod function;
 pub mod lazy_wrap;
 pub mod macro_util;
