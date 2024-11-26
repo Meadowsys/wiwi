@@ -29,6 +29,8 @@
 	reason = "uwu"
 )]
 
+mod builder;
+
 // #[cfg(feature = "memory-usage")]
 // mod memory_usage;
 
