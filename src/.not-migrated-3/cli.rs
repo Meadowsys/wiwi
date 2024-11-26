@@ -10,7 +10,7 @@ pub struct Cli {
 }
 
 impl Cli {
-	// todo return type
+	// TODO: return type
 	#[inline]
 	pub fn bool<F, FReturn>(&mut self, f: F)
 	where

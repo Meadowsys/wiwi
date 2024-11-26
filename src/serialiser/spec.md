@@ -20,9 +20,9 @@ The serialised format may begin with a "magic number" and a version to help iden
 
 Following that, there may be a body length / checksum value. See below for details.
 
-Next, there may be a value registry. Signal the start of it with the byte `0xfa`, followed by a variable length unsigned integer, <!-- todo link to the below? --> followed by the items in the registry.
+Next, there may be a value registry. Signal the start of it with the byte `0xfa`, followed by a variable length unsigned integer, <!-- TODO: link to the below? --> followed by the items in the registry.
 
-Then, there must be a serialised value. There _must_ only be one. If you want multiple root objects, use an array. <!-- todo link also -->
+Then, there must be a serialised value. There _must_ only be one. If you want multiple root objects, use an array. <!-- TODO: link also -->
 
 ## `none`
 
