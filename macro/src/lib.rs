@@ -29,7 +29,14 @@
 	reason = "uwu"
 )]
 
+use proc_macro::TokenStream;
+
 mod builder;
+
+#[proc_macro_attribute]
+pub fn builder(attr: TokenStream, item: TokenStream) -> TokenStream {
+	builder::builder(attr.into(), item.into()).into()
+}
 
 // #[cfg(feature = "memory-usage")]
 // mod memory_usage;

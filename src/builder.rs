@@ -1,3 +1,7 @@
+extern crate wiwiwiwiwi;
+
+pub use wiwiwiwiwi::builder;
+
 pub struct Uninit {
 	__private: ()
 }
