@@ -53,6 +53,7 @@ pub mod _changelog {}
 
 pub mod prelude_std;
 
+pub mod builder;
 pub mod chain;
 pub mod clock_timer;
 pub mod encoding;
