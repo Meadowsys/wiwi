@@ -309,20 +309,12 @@ pub mod builder {
 
 pub mod builder2 {
 	use super::*;
-
-	pub struct MarkerUninit {
-		__private: ()
-	}
-
-	pub struct MarkerInit {
-		__private: ()
-	}
-
+	use crate::builder::{ Init, Uninit };
 	#[repr(transparent)]
 	pub struct Builder<
-		Start = MarkerUninit,
-		End = MarkerUninit,
-		Interval = MarkerUninit
+		Start = Uninit,
+		End = Uninit,
+		Interval = Uninit
 	> {
 		inner: BuilderInner,
 		__marker: PhantomData<(Start, End, Interval)>
@@ -349,25 +341,25 @@ pub mod builder2 {
 		}
 	}
 
-	impl<End, Interval> Builder<MarkerUninit, End, Interval> {
+	impl<End, Interval> Builder<Uninit, End, Interval> {
 		#[inline]
-		pub fn with_start_datetime<TZ: TimeZone>(mut self, datetime: DateTime<TZ>) -> Builder<MarkerInit, End, Interval> {
+		pub fn with_start_datetime<TZ: TimeZone>(mut self, datetime: DateTime<TZ>) -> Builder<Init, End, Interval> {
 			self.inner.start.write(datetime.with_timezone(&Local));
 			Builder { inner: self.inner, __marker: PhantomData }
 		}
 	}
 
-	impl<Start, Interval> Builder<Start, MarkerUninit, Interval> {
+	impl<Start, Interval> Builder<Start, Uninit, Interval> {
 		#[inline]
-		pub fn with_end_datetime<TZ: TimeZone>(mut self, datetime: DateTime<TZ>) -> Builder<Start, MarkerInit, Interval> {
+		pub fn with_end_datetime<TZ: TimeZone>(mut self, datetime: DateTime<TZ>) -> Builder<Start, Init, Interval> {
 			self.inner.end.write(datetime.with_timezone(&Local));
 			Builder { inner: self.inner, __marker: PhantomData }
 		}
 	}
 
-	impl<Interval> Builder<MarkerInit, MarkerUninit, Interval> {
+	impl<Interval> Builder<Init, Uninit, Interval> {
 		#[inline]
-		pub fn with_duration(mut self, duration: TimeDelta) -> Builder<MarkerInit, MarkerInit, Interval> {
+		pub fn with_duration(mut self, duration: TimeDelta) -> Builder<Init, Init, Interval> {
 			// SAFETY: enforced by type system (typestate pattern)
 			let start = unsafe { self.inner.start.assume_init() };
 
@@ -376,15 +368,15 @@ pub mod builder2 {
 		}
 	}
 
-	impl<Start, End> Builder<Start, End, MarkerUninit> {
+	impl<Start, End> Builder<Start, End, Uninit> {
 		#[inline]
-		pub fn with_interval(mut self, interval: TimeDelta) -> Builder<Start, End, MarkerInit> {
+		pub fn with_interval(mut self, interval: TimeDelta) -> Builder<Start, End, Init> {
 			self.inner.interval.write(interval);
 			Builder { inner: self.inner, __marker: PhantomData }
 		}
 	}
 
-	impl Builder<MarkerInit, MarkerInit, MarkerInit> {
+	impl Builder<Init, Init, Init> {
 		#[inline]
 		pub fn build(self) -> ClockTimer {
 			// SAFETY: enforced by type system (typestate pattern)
