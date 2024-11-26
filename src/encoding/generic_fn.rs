@@ -1,5 +1,5 @@
+#![allow(unused_imports, reason = "wip")]
 use crate::prelude_std::*;
-#[expect(unused_imports, reason = "wip")]
 use super::{ base16, base32, base64, hex, rfc1751, z85 };
 
 #[inline]
