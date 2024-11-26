@@ -1,5 +1,6 @@
 #![no_implicit_prelude]
 
+// keep synced with macro lib.rs
 // TODO: review these
 #![allow(
 	clippy::unnecessary_lazy_evaluations,
