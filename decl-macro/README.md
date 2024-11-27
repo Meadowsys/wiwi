@@ -1,6 +1,6 @@
 # wiwiwiwiwiwiwiwiwiwi
 
-Procedural macro crate for [`wiwi`](https://github.com/meadowsys/wiwi). You're probably looking for that crate instead of this one :p
+Declarative macro crate for [`wiwi`](https://github.com/meadowsys/wiwi). You're probably looking for that crate instead of this one :p
 
 Depend on `wiwi` instead, do not depend on this crate directly.
 
