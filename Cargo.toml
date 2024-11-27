@@ -30,29 +30,15 @@ keywords = [
 ]
 
 [dependencies]
-wiwiwiwiwi = { path = "proc-macro", version = "=0.10.0" }
-wiwiwiwiwiwiwiwiwiwi = { path = "decl-macro", version = "=0.10.0" }
+wiwiwiwiwi = { workspace = true }
+wiwiwiwiwiwiwiwiwiwi = { workspace = true }
 
-# argon2 = { version = "0.5.3", optional = true }
-# chacha20poly1305 = { version = "0.10.1", optional = true }
-chrono = { version = "0.4.38", features = ["clock"] }
-hashbrown = { version = "0.15.0", features = ["default-hasher"] }
-home = "0.5.9"
-# httparse = { version = "1.8.0", optional = true }
-# image = { version = "0.25.1", optional = true }
-# ordered-float = { version = "4.2.0", optional = true }
-# p384 = { version = "0.13.0", optional = true }
-parking_lot = "0.12.3"
-# rand = { version = "0.8.5", optional = true }
-# rand_chacha = { version = "0.3.1", optional = true }
-# serde = { version = "1.0.204", optional = true }
-# serde_json = { version = "1.0.116", optional = true }
-# spin_sleep = { version = "1.2.0", optional = true }
-thiserror = { version = "1.0.69" }
-tokio = { version = "1.41.1", features = ["full"] }
-# url = { version = "2.5.0", optional = true }
-# uuid = { version = "1.8.0", optional = true }
-# zeroize = { version = "1.7.0", optional = true }
+chrono = { workspace = true }
+hashbrown = { workspace = true }
+home = { workspace = true }
+parking_lot = { workspace = true }
+thiserror = { workspace = true }
+tokio = { workspace = true }
 
 [features]
 nightly = []
@@ -114,6 +100,35 @@ edition = "2021"
 authors = ["Meadowsys <meadowsys@kiwin.gay>"]
 repository = "https://github.com/meadowsys/wiwi"
 license = "MIT"
+
+[workspace.dependencies]
+wiwiwiwiwi = { path = "proc-macro", version = "=0.10.0" }
+wiwiwiwiwiwiwiwiwiwi = { path = "decl-macro", version = "=0.10.0" }
+
+# argon2 = "0.5.3"
+# chacha20poly1305 = "0.10.1"
+chrono = { version = "0.4.38", features = ["clock"] }
+darling = "0.20.10"
+hashbrown = { version = "0.15.0", features = ["default-hasher"] }
+home = "0.5.9"
+# httparse = "1.8.0"
+# image = "0.25.1"
+# ordered version = "4.2.0"
+# p384 = "0.13.0"
+parking_lot = "0.12.3"
+proc-macro2 = "1.0.83"
+quote = "1.0.36"
+# rand = "0.8.5"
+# rand_chacha = "0.3.1"
+# serde = "1.0.204"
+# serde_json = "1.0.116"
+# spin_sleep = "1.2.0"
+syn = "2.0.66"
+thiserror = { version = "1.0.69" }
+tokio = { version = "1.41.1", features = ["full"] }
+# url = "2.5.0"
+# uuid = "1.8.0"
+# zeroize = "1.7.0"
 
 [workspace.lints.rust]
 # missing_docs = "warn"
