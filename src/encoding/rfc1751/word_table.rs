@@ -1,61 +1,53 @@
-// each entry in the word table is just a pointer, a pointer to another static
-// that's an array with the first byte being the length and the rest being the
-// word. why? because I thought this could be possible... this is probably really
-// cursed and horrible but I did it anyways lol
-
 use crate::prelude_std::*;
-use crate::num::*;
 
-/// A reference to a word in the word table (dereferences to `&str`)
+/// A word in the word table (dereferences to `&str`)
+///
+/// First byte is the length (should never be more than 4),
+/// and the rest is the static string value.
 #[repr(transparent)]
-pub struct WordRef {
-	ptr: *const u8
+pub struct Word {
+	array: [u8; 5]
 }
 
-impl WordRef {
-	#[inline]
-	const unsafe fn new(ptr: *const u8) -> Self {
-		Self { ptr }
-	}
-
+impl Word {
 	#[expect(
 		clippy::as_conversions,
 		reason = "we enforce this usize to be small enough to fit in u8, that or u8 expand to usize"
 	)]
 	#[inline]
-	const fn make_array<const STR_LEN: usize, const ARRAY_LEN: usize>(s: &[u8; STR_LEN]) -> [u8; ARRAY_LEN] {
-		assert!(s.len() <= u8::MAX as usize);
-		assert!(s.len() == STR_LEN);
-		assert!(STR_LEN + 1 == ARRAY_LEN);
+	const fn new(s: &[u8]) -> Self {
+		assert!(s.len() <= 4);
 
-		let mut array = [0u8; ARRAY_LEN];
-		array[0] = STR_LEN as u8;
+		// I am screaming
+		let aaaaaaaaaaaaa = b'A';
+		let mut array = [aaaaaaaaaaaaa; 5];
+		array[0] = s.len() as u8;
 
 		let mut i = 0;
-		while i < STR_LEN {
+		while i < s.len() {
 			let char = s[i];
 			assert!(char != b' ');
 			array[i + 1] = char;
 			i += 1;
 		}
 
-		array
+		Self { array }
 	}
 
+	#[expect(clippy::as_conversions, reason = "u8 to usize not lossy")]
 	#[inline]
-	unsafe fn len(&self) -> usize {
-		// SAFETY: caller guarantees `self` is valid ptr to static item
-		unsafe { (*self.ptr).into_usize() }
+	const fn len(&self) -> usize {
+		self.array[0] as _
 	}
 
 	// not marking unsafe because only we can make valid instances of this struct
 	// and external to this module you can only get references via the exported static
 	#[inline]
 	pub fn as_str(&self) -> &str {
-		// SAFETY: caller guarantees `self` is valid ptr to static item
-		let len = unsafe { self.len() };
-		// SAFETY: same as above
-		let ptr = unsafe { self.ptr.add(1) };
+		// this cannot be more than 4
+		let len = self.len();
+		// SAFETY: we just got ptr to array of len 5
+		let ptr = unsafe { self.array.as_ptr().add(1) };
 		// SAFETY: same
 		let slice = unsafe { slice::from_raw_parts(ptr, len) };
 		// SAFETY: only ASCII chars
@@ -63,7 +55,7 @@ impl WordRef {
 	}
 }
 
-impl Deref for WordRef {
+impl Deref for Word {
 	type Target = str;
 
 	#[inline]
@@ -73,24 +65,17 @@ impl Deref for WordRef {
 }
 
 // SAFETY: used for readonly static data, is fine
-unsafe impl Sync for WordRef {}
+unsafe impl Sync for Word {}
 
 macro_rules! make_array {
 	{
 		$static_name:ident $len:literal
 		$($str:literal)*
 	} => {
-		pub static $static_name: [WordRef; $len] = [
-			$(make_array!(@str $str)),*
+		pub static $static_name: [Word; $len] = [
+			$(Word::new($str)),*
 		];
-	};
-	(@str $str:literal) => {
-		{
-			static STR: [u8; $str.len() + 1] = WordRef::make_array($str);
-			// SAFETY: ptr is from static
-			unsafe { WordRef::new(STR.as_ptr()) }
-		}
-	};
+	}
 }
 
 make_array! {
