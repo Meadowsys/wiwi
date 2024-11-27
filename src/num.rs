@@ -1821,6 +1821,20 @@ macro_rules! op_trait {
 		$output_ty:ident
 		$($body:tt)*
 	} => {
+		$(#[$meta])*
+		impl $trait_name for $lhs_ty {
+			type Output = $output_ty;
+
+			#[inline(always)]
+			fn $fn_name(self) -> $output_ty {
+				#[inline(always)]
+				fn inner($lhs: $lhs_ty) -> $output_ty {
+					$($body)*
+				}
+
+				inner(self)
+			}
+		}
 	};
 
 	{ impl(helper_rhs) add $($stuff:tt)* } => { op_trait! { impl(normal) Add add $($stuff)* } };
@@ -1870,11 +1884,41 @@ op_trait! { trait NegWrapping fn neg_wrapping() }
 op_trait! {
 	impl
 	lhs: u8 {
-		// neg => {}
 		rhs: u8 {
 			add -> u8 { lhs + rhs }
 		}
 	}
+
+	lhs: u16 {}
+
+	lhs: u32 {}
+
+	lhs: u64 {}
+
+	lhs: u128 {}
+
+	lhs: usize {}
+
+	lhs: i8 {
+		neg -> i8 { -lhs }
+		rhs: i8 {
+			add -> i8 { lhs + rhs }
+		}
+	}
+
+	lhs: i16 {}
+
+	lhs: i32 {}
+
+	lhs: i64 {}
+
+	lhs: i128 {}
+
+	lhs: isize {}
+
+	lhs: f32 {}
+
+	lhs: f64 {}
 }
 
 /*
