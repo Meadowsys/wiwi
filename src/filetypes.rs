@@ -1,3 +1,8 @@
+#![allow(
+	dead_code,
+	reason = "wip"
+)]
+
 use crate::prelude_std::*;
 use std::path::Path;
 

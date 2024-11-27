@@ -1,3 +1,7 @@
+#![allow(
+	unused_variables,
+	reason = "wip"
+)]
 use crate::prelude_std::*;
 use crate::num::*;
 use super::{ Serialise, Serialiser, Deserialise, Input, Output };
