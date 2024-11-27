@@ -862,14 +862,16 @@ macro_rules! impl_generic_num_conversions {
 	} => {
 		$(
 			impl_generic_num_conversions! {
-				@impl $trait_lossless $fn_lossless
+				@impl
+				$trait_lossless $fn_lossless
 				$trait_lossy $fn_lossy
 				$(#[$meta])* $from $to $lossness
 			}
 		)*
 	};
 
-	{ @impl
+	{
+		@impl
 		$trait_lossless:ident $fn_lossless:ident
 		$trait_lossy:ident $fn_lossy:ident
 		$(#[$meta:meta])* $from:ident $to:ident lossless
@@ -882,7 +884,8 @@ macro_rules! impl_generic_num_conversions {
 		}
 	};
 
-	{ @impl
+	{
+		@impl
 		$trait_lossless:ident $fn_lossless:ident
 		$trait_lossy:ident $fn_lossy:ident
 		$(#[$meta:meta])* $from:ident $to:ident lossy
