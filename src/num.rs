@@ -1550,7 +1550,7 @@ macro_rules! op_trait {
 
 	{
 		$(#[$trait_meta:meta])*
-		trait(checked) $trait_name:ident
+		trait(option) $trait_name:ident
 		$(#[$fn_meta:meta])*
 		fn $fn_name:ident(rhs)
 		$(
@@ -1574,7 +1574,7 @@ macro_rules! op_trait {
 
 	{
 		$(#[$trait_meta:meta])*
-		trait(checked) $trait_name:ident
+		trait(option) $trait_name:ident
 		$(#[$fn_meta:meta])*
 		fn $fn_name:ident()
 		$(
@@ -1597,7 +1597,7 @@ macro_rules! op_trait {
 
 	{
 		$(#[$trait_meta:meta])*
-		trait(overflowing) $trait_name:ident
+		trait(tuple) $trait_name:ident
 		$(#[$fn_meta:meta])*
 		fn $fn_name:ident(rhs)
 		$(
@@ -1621,7 +1621,7 @@ macro_rules! op_trait {
 
 	{
 		$(#[$trait_meta:meta])*
-		trait(overflowing) $trait_name:ident
+		trait(tuple) $trait_name:ident
 		$(#[$fn_meta:meta])*
 		fn $fn_name:ident()
 		$(
@@ -1644,54 +1644,7 @@ macro_rules! op_trait {
 
 	{
 		$(#[$trait_meta:meta])*
-		trait(saturating) $trait_name:ident
-		$(#[$fn_meta:meta])*
-		fn $fn_name:ident(rhs)
-		$(
-			$(#[$output_meta:meta])*
-			type Output
-		)?
-	} => {
-		$(#[$trait_meta])*
-		pub trait $trait_name<R>
-		where
-			Self: Sealed,
-			R: Sealed
-		{
-			$($(#[$output_meta])*)?
-			type Output;
-
-			$(#[$fn_meta])*
-			fn $fn_name(self, rhs: R) -> Self::Output;
-		}
-	};
-
-	{
-		$(#[$trait_meta:meta])*
-		trait(saturating) $trait_name:ident
-		$(#[$fn_meta:meta])*
-		fn $fn_name:ident()
-		$(
-			$(#[$output_meta:meta])*
-			type Output
-		)?
-	} => {
-		$(#[$trait_meta])*
-		pub trait $trait_name
-		where
-			Self: Sealed
-		{
-			$($(#[$output_meta])*)?
-			type Output;
-
-			$(#[$fn_meta])*
-			fn $fn_name(self) -> Self::Output;
-		}
-	};
-
-	{
-		$(#[$trait_meta:meta])*
-		trait(unchecked) $trait_name:ident
+		trait(unsafe) $trait_name:ident
 		$(#[$fn_meta:meta])*
 		fn $fn_name:ident(rhs)
 		$(
@@ -1719,7 +1672,7 @@ macro_rules! op_trait {
 
 	{
 		$(#[$trait_meta:meta])*
-		trait(unchecked) $trait_name:ident
+		trait(unsafe) $trait_name:ident
 		$(#[$fn_meta:meta])*
 		fn $fn_name:ident()
 		$(
@@ -1743,53 +1696,6 @@ macro_rules! op_trait {
 			unsafe fn $fn_name(self) -> Self::Output;
 		}
 	};
-
-	{
-		$(#[$trait_meta:meta])*
-		trait(wrapping) $trait_name:ident
-		$(#[$fn_meta:meta])*
-		fn $fn_name:ident(rhs)
-		$(
-			$(#[$output_meta:meta])*
-			type Output
-		)?
-	} => {
-		$(#[$trait_meta])*
-		pub trait $trait_name<R>
-		where
-			Self: Sealed,
-			R: Sealed
-		{
-			$($(#[$output_meta])*)?
-			type Output;
-
-			$(#[$fn_meta])*
-			fn $fn_name(self, rhs: R) -> Self::Output;
-		}
-	};
-
-	{
-		$(#[$trait_meta:meta])*
-		trait(wrapping) $trait_name:ident
-		$(#[$fn_meta:meta])*
-		fn $fn_name:ident()
-		$(
-			$(#[$output_meta:meta])*
-			type Output
-		)?
-	} => {
-		$(#[$trait_meta])*
-		pub trait $trait_name
-		where
-			Self: Sealed
-		{
-			$($(#[$output_meta])*)?
-			type Output;
-
-			$(#[$fn_meta])*
-			fn $fn_name(self) -> Self::Output;
-		}
-	};
 }
 
 op_trait! { trait Add fn add(rhs) }
@@ -1798,38 +1704,38 @@ op_trait! { trait Mul fn mul(rhs) }
 op_trait! { trait Div fn div(rhs) }
 op_trait! { trait Neg fn neg() }
 
-op_trait! { trait(checked) AddChecked fn add_checked(rhs) }
-op_trait! { trait(checked) SubChecked fn sub_checked(rhs) }
-op_trait! { trait(checked) MulChecked fn mul_checked(rhs) }
-op_trait! { trait(checked) DivChecked fn div_checked(rhs) }
-op_trait! { trait(checked) NegChecked fn neg_checked() }
+op_trait! { trait(option) AddChecked fn add_checked(rhs) }
+op_trait! { trait(option) SubChecked fn sub_checked(rhs) }
+op_trait! { trait(option) MulChecked fn mul_checked(rhs) }
+op_trait! { trait(option) DivChecked fn div_checked(rhs) }
+op_trait! { trait(option) NegChecked fn neg_checked() }
 
-op_trait! { trait(overflowing) AddOverflowing fn add_overflowing(rhs) }
-op_trait! { trait(overflowing) SubOverflowing fn sub_overflowing(rhs) }
-op_trait! { trait(overflowing) MulOverflowing fn mul_overflowing(rhs) }
-op_trait! { trait(overflowing) DivOverflowing fn div_overflowing(rhs) }
-op_trait! { trait(overflowing) NegOverflowing fn neg_overflowing() }
+op_trait! { trait(tuple) AddOverflowing fn add_overflowing(rhs) }
+op_trait! { trait(tuple) SubOverflowing fn sub_overflowing(rhs) }
+op_trait! { trait(tuple) MulOverflowing fn mul_overflowing(rhs) }
+op_trait! { trait(tuple) DivOverflowing fn div_overflowing(rhs) }
+op_trait! { trait(tuple) NegOverflowing fn neg_overflowing() }
 
-op_trait! { trait(saturating) AddSaturating fn add_saturating(rhs) }
-op_trait! { trait(saturating) SubSaturating fn sub_saturating(rhs) }
-op_trait! { trait(saturating) MulSaturating fn mul_saturating(rhs) }
-op_trait! { trait(saturating) DivSaturating fn div_saturating(rhs) }
-op_trait! { trait(saturating) NegSaturating fn neg_saturating() }
+op_trait! { trait AddSaturating fn add_saturating(rhs) }
+op_trait! { trait SubSaturating fn sub_saturating(rhs) }
+op_trait! { trait MulSaturating fn mul_saturating(rhs) }
+op_trait! { trait DivSaturating fn div_saturating(rhs) }
+op_trait! { trait NegSaturating fn neg_saturating() }
 
-// TODO: strict op?
-// TODO: unbounded shifts?
+// // TODO: strict op?
+// // TODO: unbounded shifts?
 
-op_trait! { trait(unchecked) AddUnchecked fn add_unchecked(rhs) }
-op_trait! { trait(unchecked) SubUnchecked fn sub_unchecked(rhs) }
-op_trait! { trait(unchecked) MulUnchecked fn mul_unchecked(rhs) }
-op_trait! { trait(unchecked) DivUnchecked fn div_unchecked(rhs) }
-op_trait! { trait(unchecked) NegUnchecked fn neg_unchecked() }
+op_trait! { trait(unsafe) AddUnchecked fn add_unchecked(rhs) }
+op_trait! { trait(unsafe) SubUnchecked fn sub_unchecked(rhs) }
+op_trait! { trait(unsafe) MulUnchecked fn mul_unchecked(rhs) }
+op_trait! { trait(unsafe) DivUnchecked fn div_unchecked(rhs) }
+op_trait! { trait(unsafe) NegUnchecked fn neg_unchecked() }
 
-op_trait! { trait(wrapping) AddWrapping fn add_wrapping(rhs) }
-op_trait! { trait(wrapping) SubWrapping fn sub_wrapping(rhs) }
-op_trait! { trait(wrapping) MulWrapping fn mul_wrapping(rhs) }
-op_trait! { trait(wrapping) DivWrapping fn div_wrapping(rhs) }
-op_trait! { trait(wrapping) NegWrapping fn neg_wrapping() }
+op_trait! { trait AddWrapping fn add_wrapping(rhs) }
+op_trait! { trait SubWrapping fn sub_wrapping(rhs) }
+op_trait! { trait MulWrapping fn mul_wrapping(rhs) }
+op_trait! { trait DivWrapping fn div_wrapping(rhs) }
+op_trait! { trait NegWrapping fn neg_wrapping() }
 
 /*
 macro_rules! op_trait {
