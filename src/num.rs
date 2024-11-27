@@ -1838,8 +1838,10 @@ macro_rules! op_trait {
 	};
 
 	{ impl(helper_rhs) add $($stuff:tt)* } => { op_trait! { impl(normal) Add add $($stuff)* } };
+	{ impl(helper_rhs) sub $($stuff:tt)* } => { op_trait! { impl(normal) Sub sub $($stuff)* } };
+	{ impl(helper_rhs) mul $($stuff:tt)* } => { op_trait! { impl(normal) Mul mul $($stuff)* } };
+	{ impl(helper_rhs) div $($stuff:tt)* } => { op_trait! { impl(normal) Div div $($stuff)* } };
 	{ impl(helper_lhs) neg $($stuff:tt)* } => { op_trait! { impl(normal1) Neg neg $($stuff)* } };
-
 }
 
 op_trait! { trait Add fn add(rhs) }
@@ -1883,9 +1885,48 @@ op_trait! { trait NegWrapping fn neg_wrapping() }
 
 op_trait! {
 	impl
+
 	lhs: u8 {
 		rhs: u8 {
 			add -> u8 { lhs + rhs }
+			sub -> u8 { lhs - rhs }
+			mul -> u8 { lhs * rhs }
+			div -> u8 { lhs / rhs }
+		}
+
+		rhs: u16 {
+			add -> u16 { lhs.into_u16() + rhs }
+			sub -> u16 { lhs.into_u16() - rhs }
+			mul -> u16 { lhs.into_u16() * rhs }
+			div -> u16 { lhs.into_u16() / rhs }
+		}
+
+		rhs: u32 {
+			add -> u32 { lhs.into_u32() + rhs }
+			sub -> u32 { lhs.into_u32() - rhs }
+			mul -> u32 { lhs.into_u32() * rhs }
+			div -> u32 { lhs.into_u32() / rhs }
+		}
+
+		rhs: u64 {
+			add -> u64 { lhs.into_u64() + rhs }
+			sub -> u64 { lhs.into_u64() - rhs }
+			mul -> u64 { lhs.into_u64() * rhs }
+			div -> u64 { lhs.into_u64() / rhs }
+		}
+
+		rhs: u128 {
+			add -> u128 { lhs.into_u128() + rhs }
+			sub -> u128 { lhs.into_u128() - rhs }
+			mul -> u128 { lhs.into_u128() * rhs }
+			div -> u128 { lhs.into_u128() / rhs }
+		}
+
+		rhs: usize {
+			add -> usize { lhs.into_usize() + rhs }
+			sub -> usize { lhs.into_usize() - rhs }
+			mul -> usize { lhs.into_usize() * rhs }
+			div -> usize { lhs.into_usize() / rhs }
 		}
 	}
 
