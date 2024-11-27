@@ -68,18 +68,12 @@ impl Deref for Word {
 unsafe impl Sync for Word {}
 
 macro_rules! make_array {
-	{
-		$static_name:ident $len:literal
-		$($str:literal)*
-	} => {
-		pub static $static_name: [Word; $len] = [
-			$(Word::new($str)),*
-		];
+	{ $($str:literal)* } => {
+		[$(Word::new($str)),*]
 	}
 }
 
-make_array! {
-	WORD_TABLE 2048
+pub static WORD_TABLE: [Word; 2048] = make_array! {
 	b"A"    b"ABE"  b"ACE"  b"ACT"  b"AD"   b"ADA"  b"ADD"  b"AGO"  b"AID"  b"AIM"  b"AIR"  b"ALL"  b"ALP"  b"AM"   b"AMY"  b"AN"
 	b"ANA"  b"AND"  b"ANN"  b"ANT"  b"ANY"  b"APE"  b"APS"  b"APT"  b"ARC"  b"ARE"  b"ARK"  b"ARM"  b"ART"  b"AS"   b"ASH"  b"ASK"
 	b"AT"   b"ATE"  b"AUG"  b"AUK"  b"AVE"  b"AWE"  b"AWK"  b"AWL"  b"AWN"  b"AX"   b"AYE"  b"BAD"  b"BAG"  b"BAH"  b"BAM"  b"BAN"
@@ -208,4 +202,4 @@ make_array! {
 	b"WENT" b"WERE" b"WERT" b"WEST" b"WHAM" b"WHAT" b"WHEE" b"WHEN" b"WHET" b"WHOA" b"WHOM" b"WICK" b"WIFE" b"WILD" b"WILL" b"WIND"
 	b"WINE" b"WING" b"WINK" b"WINO" b"WIRE" b"WISE" b"WISH" b"WITH" b"WOLF" b"WONT" b"WOOD" b"WOOL" b"WORD" b"WORE" b"WORK" b"WORM"
 	b"WORN" b"WOVE" b"WRIT" b"WYNN" b"YALE" b"YANG" b"YANK" b"YARD" b"YARN" b"YAWL" b"YAWN" b"YEAH" b"YEAR" b"YELL" b"YOGA" b"YOKE"
-}
+};
