@@ -5,7 +5,7 @@
 /// it's designed to fix, but for those just wanting to use the thing:
 ///
 /// ```
-/// # use wiwi::macro_util::with_cloned;
+/// # use wiwiwiwiwiwiwiwiwiwi::with_cloned;
 /// let s1 = String::from("a string");
 /// let s2 = String::from("another string");
 ///
@@ -94,7 +94,7 @@
 /// ```
 /// # use std::sync::{ Arc, Mutex };
 /// # use std::thread;
-/// # use wiwi::macro_util::with_cloned;
+/// # use wiwiwiwiwiwiwiwiwiwi::with_cloned;
 /// # let shared_data = Arc::new(Mutex::new(42));
 /// let join_handle = with_cloned! { shared_data in
 ///    // `shared_data` in here will refer to a clone, shadowing the original,
@@ -125,7 +125,7 @@
 /// of the macro:
 ///
 /// ```
-/// # use wiwi::macro_util::with_cloned;
+/// # use wiwiwiwiwiwiwiwiwiwi::with_cloned;
 /// let string = String::new();
 ///
 /// let modified_string = with_cloned! { mut string in
@@ -152,7 +152,7 @@
 /// Random, but the below code snippets are equivalent:
 ///
 /// ```
-/// # use wiwi::macro_util::with_cloned;
+/// # use wiwiwiwiwiwiwiwiwiwi::with_cloned;
 /// # let value = String::new();
 /// let cloned1 = value.clone();
 /// // macro clones it for the inner code, but the inner code
@@ -189,7 +189,7 @@ macro_rules! __with_cloned_impl {
 				// we only support specifying mut for all or nothing, so this is for
 				// when caller is using mut for some but not all vars need to be mut
 				#[allow(unused_mut)]
-				let mut $thing = $crate::prelude_std::Clone::clone(&$thing);
+				let mut $thing = ::core::clone::Clone::clone(&$thing);
 			)+
 			$($stuff)*
 		}
@@ -198,7 +198,7 @@ macro_rules! __with_cloned_impl {
 	{ $($thing:ident),+ in $($stuff:tt)* } => {
 		{
 			$(
-				let $thing = $crate::prelude_std::Clone::clone(&$thing);
+				let $thing = ::core::clone::Clone::clone(&$thing);
 			)+
 			$($stuff)*
 		}
