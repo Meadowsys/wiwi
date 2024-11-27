@@ -1,36 +1,5 @@
 #![no_implicit_prelude]
 
-// keep synced with macro lib.rs
-// TODO: review these
-#![allow(
-	clippy::unnecessary_lazy_evaluations,
-	reason = "uwu"
-)]
-#![warn(
-	// missing_docs,
-	unconditional_recursion,
-	unexpected_cfgs,
-	unfulfilled_lint_expectations,
-	unsafe_op_in_unsafe_fn,
-	unused_unsafe,
-	clippy::allow_attributes,
-	clippy::allow_attributes_without_reason,
-	clippy::as_conversions,
-	clippy::empty_docs,
-	clippy::inline_always,
-	clippy::items_after_statements,
-	clippy::items_after_test_module,
-	// clippy::missing_docs_in_private_items
-	clippy::missing_inline_in_public_items,
-	clippy::missing_safety_doc,
-	clippy::mixed_attributes_style,
-	clippy::multiple_unsafe_ops_per_block,
-	clippy::trait_duplication_in_bounds,
-	clippy::undocumented_unsafe_blocks,
-	clippy::unnecessary_safety_comment,
-	reason = "uwu"
-)]
-
 #![cfg_attr(docsrs, feature(doc_cfg))]
 
 #![cfg_attr(all(docsrs, kiwingay), doc = "")]

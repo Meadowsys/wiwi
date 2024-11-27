@@ -1,17 +1,3 @@
-[workspace]
-members = [
-	"decl-macro",
-	"proc-macro",
-	"scripts"
-]
-
-[workspace.package]
-version = "0.10.0"
-edition = "2021"
-authors = ["Meadowsys <meadowsys@kiwin.gay>"]
-repository = "https://github.com/meadowsys/wiwi"
-license = "MIT"
-
 [package]
 name = "wiwi"
 description = "A library, of, Stuff™"
@@ -97,6 +83,9 @@ lto = true
 codegen-units = 1
 opt-level = 3
 
+[lints]
+workspace = true
+
 [package.metadata.docs.rs]
 # https://docs.rs/about/metadata
 
@@ -111,3 +100,43 @@ targets = [
 	"x86_64-unknown-linux-gnu",
 	"x86_64-pc-windows-msvc"
 ]
+
+[workspace]
+members = [
+	"decl-macro",
+	"proc-macro",
+	"scripts"
+]
+
+[workspace.package]
+version = "0.10.0"
+edition = "2021"
+authors = ["Meadowsys <meadowsys@kiwin.gay>"]
+repository = "https://github.com/meadowsys/wiwi"
+license = "MIT"
+
+[workspace.lints.rust]
+# missing_docs = "warn"
+unconditional_recursion = "warn"
+unexpected_cfgs = "warn"
+unfulfilled_lint_expectations = "warn"
+unsafe_op_in_unsafe_fn = "warn"
+unused_unsafe = "warn"
+
+[workspace.lints.clippy]
+allow_attributes = "warn"
+allow_attributes_without_reason = "warn"
+as_conversions = "warn"
+empty_docs = "warn"
+inline_always = "warn"
+items_after_statements = "warn"
+items_after_test_module = "warn"
+# missing_docs_in_private_items = "warn"
+missing_inline_in_public_items = "warn"
+missing_safety_doc = "warn"
+mixed_attributes_style = "warn"
+multiple_unsafe_ops_per_block = "warn"
+trait_duplication_in_bounds = "warn"
+undocumented_unsafe_blocks = "warn"
+unnecessary_lazy_evaluations = "allow"
+unnecessary_safety_comment = "warn"
