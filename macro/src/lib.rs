@@ -30,12 +30,13 @@
 )]
 
 use proc_macro::TokenStream;
+use syn::parse_macro_input;
 
 mod builder;
 
 #[proc_macro_attribute]
 pub fn builder(attr: TokenStream, item: TokenStream) -> TokenStream {
-	builder::builder(attr.into(), item.into()).into()
+	builder::builder(attr, parse_macro_input!(item)).into()
 }
 
 // #[cfg(feature = "memory-usage")]
