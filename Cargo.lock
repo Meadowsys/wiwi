@@ -1070,6 +1070,7 @@ dependencies = [
  "thiserror",
  "tokio",
  "wiwiwiwiwi",
+ "wiwiwiwiwiwiwiwiwiwi",
  "z85",
 ]
 
@@ -1089,6 +1090,10 @@ dependencies = [
  "quote",
  "syn",
 ]
+
+[[package]]
+name = "wiwiwiwiwiwiwiwiwiwi"
+version = "0.10.0"
 
 [[package]]
 name = "z85"

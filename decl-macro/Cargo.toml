@@ -1,24 +1,11 @@
 [package]
-name = "wiwiwiwiwi"
-description = "proc macros for wiwi, a library, of, Stuff™ (implementation detail; do not depend on this crate directly)"
+name = "wiwiwiwiwiwiwiwiwiwi"
+description = "declarative macros for wiwi, a library, of, Stuff™ (implementation detail; do not depend on this crate directly)"
 version = { workspace = true }
 edition = { workspace = true }
 authors = { workspace = true }
 repository = { workspace = true }
 license = { workspace = true }
-
-[lib]
-proc-macro = true
-
-[dependencies]
-darling = "0.20.10"
-proc-macro2 = "1.0.83"
-quote = "1.0.36"
-syn = "2.0.66"
-
-[features]
-# TODO: this should be adjusted
-default = ["syn/full", "syn/visit"]
 
 [package.metadata.docs.rs]
 # https://docs.rs/about/metadata

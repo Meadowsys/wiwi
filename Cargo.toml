@@ -1,5 +1,6 @@
 [workspace]
 members = [
+	"decl-macro",
 	"proc-macro",
 	"scripts"
 ]
@@ -44,6 +45,7 @@ keywords = [
 
 [dependencies]
 wiwiwiwiwi = { path = "proc-macro", version = "=0.10.0" }
+wiwiwiwiwiwiwiwiwiwi = { path = "decl-macro", version = "=0.10.0" }
 
 # argon2 = { version = "0.5.3", optional = true }
 # chacha20poly1305 = { version = "0.10.1", optional = true }
