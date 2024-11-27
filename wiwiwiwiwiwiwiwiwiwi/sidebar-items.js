@@ -1,1 +1,1 @@
-window.SIDEBAR_ITEMS = {"fn":["h"]};
+window.SIDEBAR_ITEMS = {"macro":["macro_recurse","void","with_cloned"]};

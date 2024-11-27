@@ -203,85 +203,56 @@
 <a href="#202" id="202">202</a>
 <a href="#203" id="203">203</a>
 <a href="#204" id="204">204</a>
-<a href="#205" id="205">205</a>
-<a href="#206" id="206">206</a>
-<a href="#207" id="207">207</a>
-<a href="#208" id="208">208</a>
-<a href="#209" id="209">209</a>
-<a href="#210" id="210">210</a>
-<a href="#211" id="211">211</a>
-<a href="#212" id="212">212</a>
-<a href="#213" id="213">213</a>
-<a href="#214" id="214">214</a>
-<a href="#215" id="215">215</a>
-<a href="#216" id="216">216</a>
-<a href="#217" id="217">217</a>
-<a href="#218" id="218">218</a>
-<a href="#219" id="219">219</a>
-<a href="#220" id="220">220</a>
-<a href="#221" id="221">221</a>
-<a href="#222" id="222">222</a>
-<a href="#223" id="223">223</a>
-<a href="#224" id="224">224</a>
-<a href="#225" id="225">225</a>
-<a href="#226" id="226">226</a></pre></div><pre class="rust"><code><span class="comment">// each entry in the word table is just a pointer, a pointer to another static
-// that's an array with the first byte being the length and the rest being the
-// word. why? because I thought this could be possible... this is probably really
-// cursed and horrible but I did it anyways lol
+<a href="#205" id="205">205</a></pre></div><pre class="rust"><code><span class="kw">use </span><span class="kw">crate</span>::prelude_std::<span class="kw-2">*</span>;
 
-</span><span class="kw">use </span><span class="kw">crate</span>::prelude_std::<span class="kw-2">*</span>;
-<span class="kw">use </span><span class="kw">crate</span>::num::<span class="kw-2">*</span>;
-
-<span class="doccomment">/// A reference to a word in the word table (dereferences to `&amp;str`)
+<span class="doccomment">/// A word in the word table (dereferences to `&amp;str`)
+///
+/// First byte is the length (should never be more than 4),
+/// and the rest is the static string value.
 </span><span class="attr">#[repr(transparent)]
-</span><span class="kw">pub struct </span>WordRef {
-	ptr: <span class="kw-2">*const </span>u8
+</span><span class="kw">pub struct </span>Word {
+	array: [u8; <span class="number">5</span>]
 }
 
-<span class="kw">impl </span>WordRef {
-	<span class="attr">#[inline]
-	</span><span class="kw">const unsafe fn </span>new(ptr: <span class="kw-2">*const </span>u8) -&gt; <span class="self">Self </span>{
-		<span class="self">Self </span>{ ptr }
-	}
-
+<span class="kw">impl </span>Word {
 	<span class="attr">#[expect(
 		clippy::as_conversions,
 		reason = <span class="string">"we enforce this usize to be small enough to fit in u8, that or u8 expand to usize"
 	</span>)]
 	#[inline]
-	</span><span class="kw">const fn </span>make_array&lt;<span class="kw">const </span>STR_LEN: usize, <span class="kw">const </span>ARRAY_LEN: usize&gt;(s: <span class="kw-2">&amp;</span>[u8; STR_LEN]) -&gt; [u8; ARRAY_LEN] {
-		<span class="macro">assert!</span>(s.len() &lt;= u8::MAX <span class="kw">as </span>usize);
-		<span class="macro">assert!</span>(s.len() == STR_LEN);
-		<span class="macro">assert!</span>(STR_LEN + <span class="number">1 </span>== ARRAY_LEN);
+	</span><span class="kw">const fn </span>new(s: <span class="kw-2">&amp;</span>[u8]) -&gt; <span class="self">Self </span>{
+		<span class="macro">assert!</span>(s.len() &lt;= <span class="number">4</span>);
 
-		<span class="kw">let </span><span class="kw-2">mut </span>array = [<span class="number">0u8</span>; ARRAY_LEN];
-		array[<span class="number">0</span>] = STR_LEN <span class="kw">as </span>u8;
+		<span class="comment">// I am screaming
+		</span><span class="kw">let </span>aaaaaaaaaaaaa = <span class="string">b'A'</span>;
+		<span class="kw">let </span><span class="kw-2">mut </span>array = [aaaaaaaaaaaaa; <span class="number">5</span>];
+		array[<span class="number">0</span>] = s.len() <span class="kw">as </span>u8;
 
 		<span class="kw">let </span><span class="kw-2">mut </span>i = <span class="number">0</span>;
-		<span class="kw">while </span>i &lt; STR_LEN {
+		<span class="kw">while </span>i &lt; s.len() {
 			<span class="kw">let </span>char = s[i];
 			<span class="macro">assert!</span>(char != <span class="string">b' '</span>);
 			array[i + <span class="number">1</span>] = char;
 			i += <span class="number">1</span>;
 		}
 
-		array
+		<span class="self">Self </span>{ array }
 	}
 
-	<span class="attr">#[inline]
-	</span><span class="kw">unsafe fn </span>len(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; usize {
-		<span class="comment">// SAFETY: caller guarantees `self` is valid ptr to static item
-		</span><span class="kw">unsafe </span>{ (<span class="kw-2">*</span><span class="self">self</span>.ptr).into_usize() }
-	}
+	<span class="attr">#[expect(clippy::as_conversions, reason = <span class="string">"u8 to usize not lossy"</span>)]
+	#[inline]
+	</span><span class="kw">const fn </span>len(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; usize {
+		<span class="self">self</span>.array[<span class="number">0</span>] <span class="kw">as _
+	</span>}
 
 	<span class="comment">// not marking unsafe because only we can make valid instances of this struct
 	// and external to this module you can only get references via the exported static
 	</span><span class="attr">#[inline]
 	</span><span class="kw">pub fn </span>as_str(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; <span class="kw-2">&amp;</span>str {
-		<span class="comment">// SAFETY: caller guarantees `self` is valid ptr to static item
-		</span><span class="kw">let </span>len = <span class="kw">unsafe </span>{ <span class="self">self</span>.len() };
-		<span class="comment">// SAFETY: same as above
-		</span><span class="kw">let </span>ptr = <span class="kw">unsafe </span>{ <span class="self">self</span>.ptr.add(<span class="number">1</span>) };
+		<span class="comment">// this cannot be more than 4
+		</span><span class="kw">let </span>len = <span class="self">self</span>.len();
+		<span class="comment">// SAFETY: we just got ptr to array of len 5
+		</span><span class="kw">let </span>ptr = <span class="kw">unsafe </span>{ <span class="self">self</span>.array.as_ptr().add(<span class="number">1</span>) };
 		<span class="comment">// SAFETY: same
 		</span><span class="kw">let </span>slice = <span class="kw">unsafe </span>{ slice::from_raw_parts(ptr, len) };
 		<span class="comment">// SAFETY: only ASCII chars
@@ -289,7 +260,7 @@
 	}
 }
 
-<span class="kw">impl </span>Deref <span class="kw">for </span>WordRef {
+<span class="kw">impl </span>Deref <span class="kw">for </span>Word {
 	<span class="kw">type </span>Target = str;
 
 	<span class="attr">#[inline]
@@ -299,29 +270,16 @@
 }
 
 <span class="comment">// SAFETY: used for readonly static data, is fine
-</span><span class="kw">unsafe impl </span>Sync <span class="kw">for </span>WordRef {}
+</span><span class="kw">unsafe impl </span>Sync <span class="kw">for </span>Word {}
 
 <span class="macro">macro_rules!</span> make_array {
-	{
-		<span class="macro-nonterminal">$static_name</span>:ident <span class="macro-nonterminal">$len</span>:literal
-		$(<span class="macro-nonterminal">$str</span>:literal)*
-	} =&gt; {
-		<span class="kw">pub static </span><span class="macro-nonterminal">$static_name</span>: [WordRef; <span class="macro-nonterminal">$len</span>] = [
-			$(<span class="macro">make_array!</span>(@str <span class="macro-nonterminal">$str</span>)),*
-		];
-	};
-	(@str <span class="macro-nonterminal">$str</span>:literal) =&gt; {
-		{
-			<span class="kw">static </span>STR: [u8; <span class="macro-nonterminal">$str</span>.len() + <span class="number">1</span>] = WordRef::make_array(<span class="macro-nonterminal">$str</span>);
-			<span class="comment">// SAFETY: ptr is from static
-			</span><span class="kw">unsafe </span>{ WordRef::new(STR.as_ptr()) }
-		}
-	};
+	{ $(<span class="macro-nonterminal">$str</span>:literal)* } =&gt; {
+		[$(Word::new(<span class="macro-nonterminal">$str</span>)),<span class="kw-2">*</span>]
+	}
 }
 
-<span class="macro">make_array!</span> {
-	WORD_TABLE <span class="number">2048
-	</span><span class="string">b"A"    b"ABE"  b"ACE"  b"ACT"  b"AD"   b"ADA"  b"ADD"  b"AGO"  b"AID"  b"AIM"  b"AIR"  b"ALL"  b"ALP"  b"AM"   b"AMY"  b"AN"
+<span class="kw">pub static </span>WORD_TABLE: [Word; <span class="number">2048</span>] = <span class="macro">make_array!</span> {
+	<span class="string">b"A"    b"ABE"  b"ACE"  b"ACT"  b"AD"   b"ADA"  b"ADD"  b"AGO"  b"AID"  b"AIM"  b"AIR"  b"ALL"  b"ALP"  b"AM"   b"AMY"  b"AN"
 	b"ANA"  b"AND"  b"ANN"  b"ANT"  b"ANY"  b"APE"  b"APS"  b"APT"  b"ARC"  b"ARE"  b"ARK"  b"ARM"  b"ART"  b"AS"   b"ASH"  b"ASK"
 	b"AT"   b"ATE"  b"AUG"  b"AUK"  b"AVE"  b"AWE"  b"AWK"  b"AWL"  b"AWN"  b"AX"   b"AYE"  b"BAD"  b"BAG"  b"BAH"  b"BAM"  b"BAN"
 	b"BAR"  b"BAT"  b"BAY"  b"BE"   b"BED"  b"BEE"  b"BEG"  b"BEN"  b"BET"  b"BEY"  b"BIB"  b"BID"  b"BIG"  b"BIN"  b"BIT"  b"BOB"
@@ -449,5 +407,5 @@
 	b"WENT" b"WERE" b"WERT" b"WEST" b"WHAM" b"WHAT" b"WHEE" b"WHEN" b"WHET" b"WHOA" b"WHOM" b"WICK" b"WIFE" b"WILD" b"WILL" b"WIND"
 	b"WINE" b"WING" b"WINK" b"WINO" b"WIRE" b"WISE" b"WISH" b"WITH" b"WOLF" b"WONT" b"WOOD" b"WOOL" b"WORD" b"WORE" b"WORK" b"WORM"
 	b"WORN" b"WOVE" b"WRIT" b"WYNN" b"YALE" b"YANG" b"YANK" b"YARD" b"YARN" b"YAWL" b"YAWN" b"YEAH" b"YEAR" b"YELL" b"YOGA" b"YOKE"
-</span>}
+</span>};
 </code></pre></div></section></main></body></html>
