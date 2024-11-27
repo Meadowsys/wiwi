@@ -903,13 +903,13 @@ macro_rules! impl_generic_num_conversions {
 		$(#[$meta:meta])*
 		$from:ident $to:ident
 		$generic_trait:ident $generic_fn:ident
-		$trait:ident $fn:ident
+		$trait_name:ident $fn_name:ident
 	} => {
 		$(#[$meta])*
 		impl $generic_trait<$from> for $to {
 			#[inline(always)]
 			fn $generic_fn(num: $from) -> $to {
-				<$from as $trait>::$fn(num)
+				<$from as $trait_name>::$fn_name(num)
 			}
 		}
 	};
@@ -1696,6 +1696,136 @@ macro_rules! op_trait {
 			unsafe fn $fn_name(self) -> Self::Output;
 		}
 	};
+
+	{
+		impl
+		$(
+			$lhs:ident: $lhs_ty:ident { $($lhs_stuff:tt)* }
+		)*
+	} => {
+		$(
+			op_trait! {
+				impl(lhs_stuff)
+				$lhs $lhs_ty $($lhs_stuff)*
+			}
+		)*
+	};
+
+	{
+		impl(lhs_stuff)
+		$lhs:ident $lhs_ty:ident
+		$rhs:ident: $rhs_ty:ident { $($rhs_stuff:tt)* }
+		$($rest:tt)*
+	} => {
+		op_trait! {
+			impl(rhs_stuff)
+			$lhs $lhs_ty
+			$rhs $rhs_ty
+			$($rhs_stuff)*
+		}
+		op_trait! {
+			impl(lhs_stuff)
+			$lhs $lhs_ty
+			$($rest)*
+		}
+	};
+
+	{
+		impl(lhs_stuff)
+		$lhs:ident $lhs_ty:ident
+		$(#[$meta:meta])*
+		$op:ident -> $output_ty:ident { $($body:tt)* }
+		$($rest:tt)*
+	} => {
+		op_trait! {
+			impl(helper_lhs)
+			$op
+			$(#[$meta])*
+			$lhs $lhs_ty
+			$output_ty
+			$($body)*
+		}
+		op_trait! {
+			impl(lhs_stuff)
+			$lhs $lhs_ty
+			$($rest)*
+		}
+	};
+
+	{
+		impl(lhs_stuff)
+		$lhs:ident $lhs_ty:ident
+	} => {};
+
+	{
+		impl(rhs_stuff)
+		$lhs:ident $lhs_ty:ident
+		$rhs:ident $rhs_ty:ident
+		$(#[$meta:meta])*
+		$op:ident -> $output_ty:ident { $($body:tt)* }
+		$($rest:tt)*
+	} => {
+		op_trait! {
+			impl(helper_rhs)
+			$op
+			$(#[$meta])*
+			$lhs $lhs_ty
+			$rhs $rhs_ty
+			$output_ty
+			$($body)*
+		}
+		op_trait! {
+			impl(rhs_stuff)
+			$lhs $lhs_ty
+			$rhs $rhs_ty
+			$($rest)*
+		}
+	};
+
+	{
+		impl(rhs_stuff)
+		$lhs:ident $lhs_ty:ident
+		$rhs:ident $rhs_ty:ident
+	} => {};
+
+	{
+		impl(normal)
+		$trait_name:ident $fn_name:ident
+		$(#[$meta:meta])*
+		$lhs:ident $lhs_ty:ident
+		$rhs:ident $rhs_ty:ident
+		$output_ty:ident
+		$($body:tt)*
+	} => {
+		$(#[$meta])*
+		impl $trait_name<$rhs_ty> for $lhs_ty {
+			type Output = $output_ty;
+
+			#[inline(always)]
+			fn $fn_name(self, rhs: $rhs_ty) -> $output_ty {
+				#[inline(always)]
+				fn inner($lhs: $lhs_ty, $rhs: $rhs_ty) -> $output_ty {
+					$($body)*
+				}
+
+				inner(self, rhs)
+			}
+		}
+	};
+
+	{
+		impl(normal1)
+		$trait_name:ident $fn_name:ident
+		$(#[$meta:meta])*
+		$lhs:ident $lhs_ty:ident
+		$output_ty:ident
+		$($body:tt)*
+	} => {
+	};
+
+	{ impl(helper_rhs) add $($stuff:tt)* } => { op_trait! { impl(normal) Add add $($stuff)* } };
+	{ impl(helper_lhs) neg $($stuff:tt)* } => { op_trait! { impl(normal1) Neg neg $($stuff)* } };
+
 }
 
 op_trait! { trait Add fn add(rhs) }
@@ -1736,6 +1866,16 @@ op_trait! { trait SubWrapping fn sub_wrapping(rhs) }
 op_trait! { trait MulWrapping fn mul_wrapping(rhs) }
 op_trait! { trait DivWrapping fn div_wrapping(rhs) }
 op_trait! { trait NegWrapping fn neg_wrapping() }
+
+op_trait! {
+	impl
+	lhs: u8 {
+		// neg => {}
+		rhs: u8 {
+			add -> u8 { lhs + rhs }
+		}
+	}
+}
 
 /*
 macro_rules! op_trait {
