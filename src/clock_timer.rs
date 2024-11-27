@@ -310,6 +310,7 @@ pub mod builder {
 pub mod builder2 {
 	use super::*;
 	use crate::builder::{ Init, Uninit };
+
 	#[repr(transparent)]
 	pub struct Builder<
 		Start = Uninit,
