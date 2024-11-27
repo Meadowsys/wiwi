@@ -6,4 +6,3 @@ macro_rules! void {
 		}
 	}
 }
-pub use void;

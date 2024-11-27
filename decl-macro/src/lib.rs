@@ -1,5 +1,3 @@
-/// h
-#[inline]
-pub fn h() -> &'static str {
-	"h"
-}
+mod macro_recurse;
+mod void;
+mod with_cloned;

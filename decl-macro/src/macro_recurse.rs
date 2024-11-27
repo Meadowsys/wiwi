@@ -2,10 +2,9 @@
 macro_rules! macro_recurse {
 	($($stuff:tt)*) => {
 		// hide potential distracting implementation details in docs
-		$crate::macro_util::__macro_recurse_impl! { $($stuff)* }
+		$crate::__macro_recurse_impl! { $($stuff)* }
 	}
 }
-pub use macro_recurse;
 
 #[doc(hidden)]
 #[macro_export]
@@ -18,7 +17,7 @@ macro_rules! __macro_recurse_impl {
 		// idents to recurse
 		{ $($idents:ident)* }
 	} => {
-		$crate::macro_util::__macro_recurse_impl! {
+		$crate::__macro_recurse_impl! {
 			@impl
 			$macro
 			{ $($stuff)* }
@@ -36,7 +35,7 @@ macro_rules! __macro_recurse_impl {
 		// idents to recurse
 		{ $first:ident $($idents:ident)* }
 	} => {
-		$crate::macro_util::__macro_recurse_impl! {
+		$crate::__macro_recurse_impl! {
 			@impl
 			$macro
 			{ $($stuff)* }
@@ -55,7 +54,7 @@ macro_rules! __macro_recurse_impl {
 			{ $($stuff)* }
 			{ $($rest)* }
 		}
-		$crate::macro_util::__macro_recurse_impl! {
+		$crate::__macro_recurse_impl! {
 			@impl
 			$macro
 			{ $($stuff)* }
@@ -76,5 +75,3 @@ macro_rules! __macro_recurse_impl {
 		}
 	};
 }
-#[doc(hidden)]
-pub use __macro_recurse_impl;

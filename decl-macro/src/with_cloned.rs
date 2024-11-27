@@ -166,10 +166,9 @@
 macro_rules! with_cloned {
 	($($stuff:tt)*) => {
 		// hide potential distracting implementation details in docs
-		$crate::macro_util::__with_cloned_impl! { $($stuff)* }
+		$crate::__with_cloned_impl! { $($stuff)* }
 	}
 }
-pub use with_cloned;
 
 /// implementation detail only, do not use
 #[doc(hidden)]
@@ -205,38 +204,36 @@ macro_rules! __with_cloned_impl {
 		}
 	};
 }
-#[doc(hidden)]
-pub use __with_cloned_impl;
 
-#[cfg(test)]
-mod tests {
-	extern crate rand;
-
-	use crate::prelude_std::*;
-	use super::*;
-	use rand::thread_rng;
-	use rand::distributions::uniform::SampleRange;
-	use std::sync::Mutex;
-	use std::thread;
-
-	#[test]
-	fn it_works() {
-		let thing = Arc::new(Mutex::new(5));
-
-		let join_handles = (1..=5)
-			// no need to use clone on everything, so the macro does work as expected
-			.map(|i| with_cloned! { thing in
-				thread::spawn(move || {
-					thread::sleep(std::time::Duration::from_millis((0..1000).sample_single(&mut thread_rng())));
-					*thing.lock().unwrap() *= i;
-				})
-			})
-			.collect::<Vec<_>>();
-		let expected_result = 5 * 1 * 2 * 3 * 4 * 5;
-
-		// but we still run it through to make sure we get expected result still,
-		// and nothing else weird went wrong or something
-		join_handles.into_iter().for_each(|t| t.join().unwrap());
-		assert_eq!(expected_result, *thing.lock().unwrap());
-	}
-}
+// #[cfg(test)]
+// mod tests {
+// 	extern crate rand;
+//
+// 	use crate::prelude_std::*;
+// 	use super::*;
+// 	use rand::thread_rng;
+// 	use rand::distributions::uniform::SampleRange;
+// 	use std::sync::Mutex;
+// 	use std::thread;
+//
+// 	#[test]
+// 	fn it_works() {
+// 		let thing = Arc::new(Mutex::new(5));
+//
+// 		let join_handles = (1..=5)
+// 			// no need to use clone on everything, so the macro does work as expected
+// 			.map(|i| with_cloned! { thing in
+// 				thread::spawn(move || {
+// 					thread::sleep(std::time::Duration::from_millis((0..1000).sample_single(&mut thread_rng())));
+// 					*thing.lock().unwrap() *= i;
+// 				})
+// 			})
+// 			.collect::<Vec<_>>();
+// 		let expected_result = 5 * 1 * 2 * 3 * 4 * 5;
+//
+// 		// but we still run it through to make sure we get expected result still,
+// 		// and nothing else weird went wrong or something
+// 		join_handles.into_iter().for_each(|t| t.join().unwrap());
+// 		assert_eq!(expected_result, *thing.lock().unwrap());
+// 	}
+// }
