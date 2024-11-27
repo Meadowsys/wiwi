@@ -1,0 +1,1 @@
+window.SIDEBAR_ITEMS = {"attr":["builder"],"struct":["Init","Uninit"],"trait":["AcceptDefault"]};

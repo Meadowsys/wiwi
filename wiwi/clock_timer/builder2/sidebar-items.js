@@ -1,1 +1,1 @@
-window.SIDEBAR_ITEMS = {"struct":["Builder","MarkerInit","MarkerUninit"]};
+window.SIDEBAR_ITEMS = {"struct":["Builder"]};

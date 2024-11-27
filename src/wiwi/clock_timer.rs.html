@@ -395,15 +395,7 @@
 <a href="#394" id="394">394</a>
 <a href="#395" id="395">395</a>
 <a href="#396" id="396">396</a>
-<a href="#397" id="397">397</a>
-<a href="#398" id="398">398</a>
-<a href="#399" id="399">399</a>
-<a href="#400" id="400">400</a>
-<a href="#401" id="401">401</a>
-<a href="#402" id="402">402</a>
-<a href="#403" id="403">403</a>
-<a href="#404" id="404">404</a>
-<a href="#405" id="405">405</a></pre></div><pre class="rust"><code><span class="kw">pub extern crate </span>chrono;
+<a href="#397" id="397">397</a></pre></div><pre class="rust"><code><span class="kw">pub extern crate </span>chrono;
 <span class="kw">extern crate </span>tokio;
 
 <span class="kw">use </span><span class="kw">crate</span>::prelude_std::<span class="kw-2">*</span>;
@@ -714,20 +706,12 @@
 
 <span class="kw">pub mod </span>builder2 {
 	<span class="kw">use super</span>::<span class="kw-2">*</span>;
-
-	<span class="kw">pub struct </span>MarkerUninit {
-		__private: ()
-	}
-
-	<span class="kw">pub struct </span>MarkerInit {
-		__private: ()
-	}
-
+	<span class="kw">use </span><span class="kw">crate</span>::builder::{ Init, Uninit };
 	<span class="attr">#[repr(transparent)]
 	</span><span class="kw">pub struct </span>Builder&lt;
-		Start = MarkerUninit,
-		End = MarkerUninit,
-		Interval = MarkerUninit
+		Start = Uninit,
+		End = Uninit,
+		Interval = Uninit
 	&gt; {
 		inner: BuilderInner,
 		__marker: PhantomData&lt;(Start, End, Interval)&gt;
@@ -754,25 +738,25 @@
 		}
 	}
 
-	<span class="kw">impl</span>&lt;End, Interval&gt; Builder&lt;MarkerUninit, End, Interval&gt; {
+	<span class="kw">impl</span>&lt;End, Interval&gt; Builder&lt;Uninit, End, Interval&gt; {
 		<span class="attr">#[inline]
-		</span><span class="kw">pub fn </span>with_start_datetime&lt;TZ: TimeZone&gt;(<span class="kw-2">mut </span><span class="self">self</span>, datetime: DateTime&lt;TZ&gt;) -&gt; Builder&lt;MarkerInit, End, Interval&gt; {
+		</span><span class="kw">pub fn </span>with_start_datetime&lt;TZ: TimeZone&gt;(<span class="kw-2">mut </span><span class="self">self</span>, datetime: DateTime&lt;TZ&gt;) -&gt; Builder&lt;Init, End, Interval&gt; {
 			<span class="self">self</span>.inner.start.write(datetime.with_timezone(<span class="kw-2">&amp;</span>Local));
 			Builder { inner: <span class="self">self</span>.inner, __marker: PhantomData }
 		}
 	}
 
-	<span class="kw">impl</span>&lt;Start, Interval&gt; Builder&lt;Start, MarkerUninit, Interval&gt; {
+	<span class="kw">impl</span>&lt;Start, Interval&gt; Builder&lt;Start, Uninit, Interval&gt; {
 		<span class="attr">#[inline]
-		</span><span class="kw">pub fn </span>with_end_datetime&lt;TZ: TimeZone&gt;(<span class="kw-2">mut </span><span class="self">self</span>, datetime: DateTime&lt;TZ&gt;) -&gt; Builder&lt;Start, MarkerInit, Interval&gt; {
+		</span><span class="kw">pub fn </span>with_end_datetime&lt;TZ: TimeZone&gt;(<span class="kw-2">mut </span><span class="self">self</span>, datetime: DateTime&lt;TZ&gt;) -&gt; Builder&lt;Start, Init, Interval&gt; {
 			<span class="self">self</span>.inner.end.write(datetime.with_timezone(<span class="kw-2">&amp;</span>Local));
 			Builder { inner: <span class="self">self</span>.inner, __marker: PhantomData }
 		}
 	}
 
-	<span class="kw">impl</span>&lt;Interval&gt; Builder&lt;MarkerInit, MarkerUninit, Interval&gt; {
+	<span class="kw">impl</span>&lt;Interval&gt; Builder&lt;Init, Uninit, Interval&gt; {
 		<span class="attr">#[inline]
-		</span><span class="kw">pub fn </span>with_duration(<span class="kw-2">mut </span><span class="self">self</span>, duration: TimeDelta) -&gt; Builder&lt;MarkerInit, MarkerInit, Interval&gt; {
+		</span><span class="kw">pub fn </span>with_duration(<span class="kw-2">mut </span><span class="self">self</span>, duration: TimeDelta) -&gt; Builder&lt;Init, Init, Interval&gt; {
 			<span class="comment">// SAFETY: enforced by type system (typestate pattern)
 			</span><span class="kw">let </span>start = <span class="kw">unsafe </span>{ <span class="self">self</span>.inner.start.assume_init() };
 
@@ -781,15 +765,15 @@
 		}
 	}
 
-	<span class="kw">impl</span>&lt;Start, End&gt; Builder&lt;Start, End, MarkerUninit&gt; {
+	<span class="kw">impl</span>&lt;Start, End&gt; Builder&lt;Start, End, Uninit&gt; {
 		<span class="attr">#[inline]
-		</span><span class="kw">pub fn </span>with_interval(<span class="kw-2">mut </span><span class="self">self</span>, interval: TimeDelta) -&gt; Builder&lt;Start, End, MarkerInit&gt; {
+		</span><span class="kw">pub fn </span>with_interval(<span class="kw-2">mut </span><span class="self">self</span>, interval: TimeDelta) -&gt; Builder&lt;Start, End, Init&gt; {
 			<span class="self">self</span>.inner.interval.write(interval);
 			Builder { inner: <span class="self">self</span>.inner, __marker: PhantomData }
 		}
 	}
 
-	<span class="kw">impl </span>Builder&lt;MarkerInit, MarkerInit, MarkerInit&gt; {
+	<span class="kw">impl </span>Builder&lt;Init, Init, Init&gt; {
 		<span class="attr">#[inline]
 		</span><span class="kw">pub fn </span>build(<span class="self">self</span>) -&gt; ClockTimer {
 			<span class="comment">// SAFETY: enforced by type system (typestate pattern)
