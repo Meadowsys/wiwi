@@ -1,10 +1,12 @@
 use crate::prelude_std::*;
 
-pub use array::ArrayChain;
-pub use hashbrown_hashmap::HashMapChain;
-pub use vec::{ vec_chain, VecChain };
+pub use self::array::ArrayChain;
+pub use self::generic::GenericChain;
+pub use self::hashbrown_hashmap::HashMapChain;
+pub use self::vec::{ vec_chain, VecChain };
 
 mod array;
+mod generic;
 mod hashbrown_hashmap;
 mod vec;
 
