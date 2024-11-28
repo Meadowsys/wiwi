@@ -35,6 +35,7 @@ impl<K, V, S> HashMapChain<K, V, S> {
 		HashMap::with_capacity_and_hasher(capacity, hash_builder).into_chain()
 	}
 }
+
 /*
 Methods
 allocation_size
