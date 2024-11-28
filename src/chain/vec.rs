@@ -82,7 +82,7 @@ impl<T> VecChain<T> {
 	/// # let mut len = 0;
 	/// # let mut initial_capacity = 0;
 	/// # let mut capacity = 0;
-	/// let chain = VecChain::with_capacity(10)
+	/// let chain = VecChain::new_with_capacity(10)
 	///    // chaining methods to get the len and capacity of the vec chain
 	///    .len(&mut len)
 	///    .capacity(&mut initial_capacity);
@@ -114,7 +114,7 @@ impl<T> VecChain<T> {
 	/// // ZSTs never allocate and always have a capacity of `usize::MAX`
 	/// let chain1 = VecChain::<()>::new()
 	///    .capacity(&mut capacity1);
-	/// let chain2 = VecChain::<()>::with_capacity(10)
+	/// let chain2 = VecChain::<()>::new_with_capacity(10)
 	///    .capacity(&mut capacity2);
 	///
 	/// assert_eq!(capacity1, usize::MAX);
