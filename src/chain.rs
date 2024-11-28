@@ -1,9 +1,11 @@
 use crate::prelude_std::*;
 
 pub use array::ArrayChain;
+pub use hashbrown_hashmap::HashMapChain;
 pub use vec::{ vec_chain, VecChain };
 
 mod array;
+mod hashbrown_hashmap;
 mod vec;
 
 pub trait Chain

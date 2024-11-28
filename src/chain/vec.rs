@@ -121,7 +121,7 @@ impl<T> VecChain<T> {
 	/// assert_eq!(capacity2, usize::MAX);
 	/// ```
 	#[inline]
-	pub fn with_capacity(capacity: usize) -> Self {
+	pub fn new_with_capacity(capacity: usize) -> Self {
 		Vec::with_capacity(capacity).into_chain()
 	}
 }
