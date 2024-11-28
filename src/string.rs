@@ -3,7 +3,20 @@ use crate::prelude_std::*;
 use crate::num::*;
 
 const STRING_SIZE_BYTES: usize = size_of::<usize>() * 3;
-const MAX_INLINE_LEN: usize = STRING_SIZE_BYTES - 1;
+const MAX_INLINE_LEN: usize = {
+	// we'll be fine even on (hypothetical, at time of writing)
+	// 128bit and 256bit computers, 512bit will cause issues, so this is
+	// (quite extreme, probably unnecessary) future proofing
+	let container_size = STRING_SIZE_BYTES - 1;
+	#[expect(clippy::as_conversions, reason = "u8 to usize is fine (also we are in const context)")]
+	let len_size = (u8::MAX >> 1) as usize;
+
+	if len_size < container_size {
+		len_size
+	} else {
+		container_size
+	}
+};
 const CAP_MARKER_BE: usize = (!(usize::MAX >> 1)).to_be();
 const CAP_MARKER_U8: u8 = !(u8::MAX >> 1);
 
