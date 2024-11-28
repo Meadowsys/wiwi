@@ -3,6 +3,7 @@ use super::{ chain_fn, AsChainInner, ChainInner as _, OutputStorage };
 
 super::decl_chain! {
 	generics_decl: [T]
+	generics_decl_struct_def: [T]
 	generics: [T]
 	chain: VecChain
 	inner: Vec<T>

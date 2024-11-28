@@ -157,6 +157,7 @@ macro_rules! decl_chain {
 		$(#[$meta:meta])*
 		$(
 			generics_decl: [$($generics_decl:tt)*]
+			generics_decl_struct_def: [$($generics_decl_struct_def:tt)*]
 			generics: [$($generics:tt)*]
 		)?
 		chain: $chain:ident
@@ -166,7 +167,7 @@ macro_rules! decl_chain {
 		$(#[$meta])*
 		#[must_use = "a chain always takes ownership of itself, performs the operation, then returns itself again"]
 		#[repr(transparent)]
-		pub struct $chain$(<$($generics_decl)*>)? {
+		pub struct $chain$(<$($generics_decl_struct_def)*>)? {
 			_inner: $($inner)+
 		}
 

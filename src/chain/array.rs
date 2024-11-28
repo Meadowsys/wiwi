@@ -3,6 +3,7 @@ use super::{ Chain as _, ChainInner as _ };
 
 super::decl_chain! {
 	generics_decl: [T, const N: usize]
+	generics_decl_struct_def: [T, const N: usize]
 	generics: [T, N]
 	chain: ArrayChain
 	inner: [T; N]
