@@ -306,12 +306,38 @@
 <a href="#305" id="305">305</a>
 <a href="#306" id="306">306</a>
 <a href="#307" id="307">307</a>
-<a href="#308" id="308">308</a></pre></div><pre class="rust"><code><span class="kw">use </span><span class="kw">crate</span>::prelude_std::<span class="kw-2">*</span>;
+<a href="#308" id="308">308</a>
+<a href="#309" id="309">309</a>
+<a href="#310" id="310">310</a>
+<a href="#311" id="311">311</a>
+<a href="#312" id="312">312</a>
+<a href="#313" id="313">313</a>
+<a href="#314" id="314">314</a>
+<a href="#315" id="315">315</a>
+<a href="#316" id="316">316</a>
+<a href="#317" id="317">317</a>
+<a href="#318" id="318">318</a>
+<a href="#319" id="319">319</a>
+<a href="#320" id="320">320</a>
+<a href="#321" id="321">321</a></pre></div><pre class="rust"><code><span class="kw">use </span><span class="kw">crate</span>::prelude_std::<span class="kw-2">*</span>;
 
 <span class="kw">use </span><span class="kw">crate</span>::num::<span class="kw-2">*</span>;
 
 <span class="kw">const </span>STRING_SIZE_BYTES: usize = size_of::&lt;usize&gt;() * <span class="number">3</span>;
-<span class="kw">const </span>MAX_INLINE_LEN: usize = STRING_SIZE_BYTES - <span class="number">1</span>;
+<span class="kw">const </span>MAX_INLINE_LEN: usize = {
+	<span class="comment">// we'll be fine even on (hypothetical, at time of writing)
+	// 128bit and 256bit computers, 512bit will cause issues, so this is
+	// (quite extreme, probably unnecessary) future proofing
+	</span><span class="kw">let </span>container_size = STRING_SIZE_BYTES - <span class="number">1</span>;
+	<span class="attr">#[expect(clippy::as_conversions, reason = <span class="string">"u8 to usize is fine (also we are in const context)"</span>)]
+	</span><span class="kw">let </span>len_size = (u8::MAX &gt;&gt; <span class="number">1</span>) <span class="kw">as </span>usize;
+
+	<span class="kw">if </span>len_size &lt; container_size {
+		len_size
+	} <span class="kw">else </span>{
+		container_size
+	}
+};
 <span class="kw">const </span>CAP_MARKER_BE: usize = (!(usize::MAX &gt;&gt; <span class="number">1</span>)).to_be();
 <span class="kw">const </span>CAP_MARKER_U8: u8 = !(u8::MAX &gt;&gt; <span class="number">1</span>);
 

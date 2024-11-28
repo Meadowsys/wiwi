@@ -732,12 +732,21 @@
 <a href="#731" id="731">731</a>
 <a href="#732" id="732">732</a>
 <a href="#733" id="733">733</a>
-<a href="#734" id="734">734</a></pre></div><pre class="rust"><code><span class="kw">use </span><span class="kw">crate</span>::prelude_std::<span class="kw-2">*</span>;
+<a href="#734" id="734">734</a>
+<a href="#735" id="735">735</a>
+<a href="#736" id="736">736</a>
+<a href="#737" id="737">737</a>
+<a href="#738" id="738">738</a>
+<a href="#739" id="739">739</a></pre></div><pre class="rust"><code><span class="kw">use </span><span class="kw">crate</span>::prelude_std::<span class="kw-2">*</span>;
 
-<span class="kw">pub use </span>array::ArrayChain;
-<span class="kw">pub use </span>vec::{ vec_chain, VecChain };
+<span class="kw">pub use </span><span class="self">self</span>::array::ArrayChain;
+<span class="kw">pub use </span><span class="self">self</span>::generic::GenericChain;
+<span class="kw">pub use </span><span class="self">self</span>::hashbrown_hashmap::HashMapChain;
+<span class="kw">pub use </span><span class="self">self</span>::vec::{ vec_chain, VecChain };
 
 <span class="kw">mod </span>array;
+<span class="kw">mod </span>generic;
+<span class="kw">mod </span>hashbrown_hashmap;
 <span class="kw">mod </span>vec;
 
 <span class="kw">pub trait </span>Chain
@@ -891,6 +900,7 @@
 		$(<span class="attr">#[<span class="macro-nonterminal">$meta</span>:meta]</span>)*
 		$(
 			generics_decl: [$(<span class="macro-nonterminal">$generics_decl</span>:tt)<span class="kw-2">*</span>]
+			generics_decl_struct_def: [$(<span class="macro-nonterminal">$generics_decl_struct_def</span>:tt)<span class="kw-2">*</span>]
 			generics: [$(<span class="macro-nonterminal">$generics</span>:tt)<span class="kw-2">*</span>]
 		)<span class="question-mark">?
 		</span>chain: <span class="macro-nonterminal">$chain</span>:ident
@@ -900,7 +910,7 @@
 		</span>$(<span class="attr">#[<span class="macro-nonterminal">$meta</span>]</span>)*
 		<span class="attr">#[must_use = <span class="string">"a chain always takes ownership of itself, performs the operation, then returns itself again"</span>]
 		#[repr(transparent)]
-		</span><span class="kw">pub struct </span><span class="macro-nonterminal">$chain</span>$(&lt;$(<span class="macro-nonterminal">$generics_decl</span>)<span class="kw-2">*</span>&gt;)<span class="question-mark">? </span>{
+		</span><span class="kw">pub struct </span><span class="macro-nonterminal">$chain</span>$(&lt;$(<span class="macro-nonterminal">$generics_decl_struct_def</span>)<span class="kw-2">*</span>&gt;)<span class="question-mark">? </span>{
 			_inner: $(<span class="macro-nonterminal">$inner</span>)+
 		}
 

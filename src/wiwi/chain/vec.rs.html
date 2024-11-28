@@ -578,11 +578,13 @@
 <a href="#577" id="577">577</a>
 <a href="#578" id="578">578</a>
 <a href="#579" id="579">579</a>
-<a href="#580" id="580">580</a></pre></div><pre class="rust"><code><span class="kw">use </span><span class="kw">crate</span>::prelude_std::<span class="kw-2">*</span>;
+<a href="#580" id="580">580</a>
+<a href="#581" id="581">581</a></pre></div><pre class="rust"><code><span class="kw">use </span><span class="kw">crate</span>::prelude_std::<span class="kw-2">*</span>;
 <span class="kw">use super</span>::{ chain_fn, AsChainInner, ChainInner <span class="kw">as _</span>, OutputStorage };
 
 <span class="macro">super::decl_chain!</span> {
 	generics_decl: [T]
+	generics_decl_struct_def: [T]
 	generics: [T]
 	chain: VecChain
 	inner: Vec&lt;T&gt;
@@ -661,7 +663,7 @@
 	/// # let mut len = 0;
 	/// # let mut initial_capacity = 0;
 	/// # let mut capacity = 0;
-	/// let chain = VecChain::with_capacity(10)
+	/// let chain = VecChain::new_with_capacity(10)
 	///    // chaining methods to get the len and capacity of the vec chain
 	///    .len(&amp;mut len)
 	///    .capacity(&amp;mut initial_capacity);
@@ -693,14 +695,14 @@
 	/// // ZSTs never allocate and always have a capacity of `usize::MAX`
 	/// let chain1 = VecChain::&lt;()&gt;::new()
 	///    .capacity(&amp;mut capacity1);
-	/// let chain2 = VecChain::&lt;()&gt;::with_capacity(10)
+	/// let chain2 = VecChain::&lt;()&gt;::new_with_capacity(10)
 	///    .capacity(&amp;mut capacity2);
 	///
 	/// assert_eq!(capacity1, usize::MAX);
 	/// assert_eq!(capacity2, usize::MAX);
 	/// ```
 	</span><span class="attr">#[inline]
-	</span><span class="kw">pub fn </span>with_capacity(capacity: usize) -&gt; <span class="self">Self </span>{
+	</span><span class="kw">pub fn </span>new_with_capacity(capacity: usize) -&gt; <span class="self">Self </span>{
 		Vec::with_capacity(capacity).into_chain()
 	}
 }
