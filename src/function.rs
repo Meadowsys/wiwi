@@ -5,7 +5,7 @@
 //! in trait bounds, and they will accept items implementing rust's core function
 //! traits (eg. functions and closures), and my own custom, nameable types.
 
-use crate::prelude_std::*;
+use crate::prelude::*;
 use crate::macro_util::macro_recurse;
 
 /// Function trait akin to rust's [`Fn`]

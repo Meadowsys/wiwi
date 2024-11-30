@@ -1,6 +1,6 @@
 extern crate thiserror;
 
-use crate::prelude_std::*;
+use crate::prelude::*;
 use super::UnsafeBufWriteGuard;
 
 mod encode;
@@ -90,7 +90,7 @@ mod tests {
 	extern crate hex;
 	extern crate rand;
 
-	use crate::prelude_std::*;
+	use crate::prelude::*;
 	use super::*;
 	use rand::{ Rng, thread_rng };
 

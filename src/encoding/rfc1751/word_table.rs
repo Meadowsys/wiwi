@@ -1,4 +1,4 @@
-use crate::prelude_std::*;
+use crate::prelude::*;
 
 /// A word in the word table (dereferences to `&str`)
 ///

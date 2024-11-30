@@ -1,6 +1,6 @@
 //! Utilities for nominal typing
 
-use crate::prelude_std::*;
+use crate::prelude::*;
 
 /// Declare a new nominal type (alias), with the provided name, a name for the
 /// marker type struct, and the wrapped type

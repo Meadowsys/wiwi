@@ -1,6 +1,6 @@
 extern crate parking_lot;
 
-use crate::prelude_std::*;
+use crate::prelude::*;
 use parking_lot::{ Once, OnceState };
 
 /// Inner data union

@@ -1,4 +1,4 @@
-use crate::prelude_std::*;
+use crate::prelude::*;
 use super::{ Rc, RcWeak, Counter, ThreadCounter, AtomicCounter };
 
 #[repr(transparent)]

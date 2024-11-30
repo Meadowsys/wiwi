@@ -1,4 +1,4 @@
-use crate::prelude_std::*;
+use crate::prelude::*;
 use super::{ Chain as _, ChainInner as _ };
 
 super::decl_chain! {

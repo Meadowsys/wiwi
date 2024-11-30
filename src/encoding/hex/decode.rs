@@ -1,6 +1,6 @@
 //! Internal decoding implementations
 use crate::num::*;
-use crate::prelude_std::*;
+use crate::prelude::*;
 use super::{ DecodeError, UnsafeBufWriteGuard };
 
 /// Length of the table decoder (256)

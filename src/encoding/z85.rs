@@ -1,6 +1,6 @@
 extern crate thiserror;
 
-use crate::prelude_std::*;
+use crate::prelude::*;
 use crate::num::*;
 use super::{ ChunkedSlice, UnsafeBufWriteGuard };
 
@@ -527,7 +527,7 @@ mod tests {
 	extern crate rand;
 	extern crate z85;
 
-	use crate::prelude_std::*;
+	use crate::prelude::*;
 	use super::*;
 	use rand::{ Rng, thread_rng };
 

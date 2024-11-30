@@ -1,4 +1,4 @@
-use crate::prelude_std::*;
+use crate::prelude::*;
 use crate::num::*;
 use super::{ stateless, util, Error, Input, Needle, Parser as _, ParserPhantom, Result, Success };
 

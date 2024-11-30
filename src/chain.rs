@@ -1,4 +1,4 @@
-use crate::prelude_std::*;
+use crate::prelude::*;
 
 pub use self::array::ArrayChain;
 pub use self::generic::{ GenericChain, GenericChainConversion };
@@ -214,7 +214,7 @@ macro_rules! decl_chain {
 		}
 
 		// impl From<Inner> for Chain
-		impl$(<$($generics_decl)*>)? $crate::prelude_std::From<$($inner)+> for $chain$(<$($generics)*>)? {
+		impl$(<$($generics_decl)*>)? $crate::prelude::From<$($inner)+> for $chain$(<$($generics)*>)? {
 			#[inline]
 			fn from(inner: $($inner)+) -> Self {
 				Self { _inner: inner }
@@ -222,9 +222,9 @@ macro_rules! decl_chain {
 		}
 
 		// impl From<&Inner> for Chain where Inner: Clone
-		impl$(<$($generics_decl)*>)? $crate::prelude_std::From<&$($inner)+> for $chain$(<$($generics)*>)?
+		impl$(<$($generics_decl)*>)? $crate::prelude::From<&$($inner)+> for $chain$(<$($generics)*>)?
 		where
-			$($inner)+: $crate::prelude_std::Clone
+			$($inner)+: $crate::prelude::Clone
 		{
 			#[inline]
 			fn from(inner: &$($inner)+) -> Self {
@@ -233,9 +233,9 @@ macro_rules! decl_chain {
 		}
 
 		// impl From<&mut Inner> for Chain where Inner: Clone
-		impl$(<$($generics_decl)*>)? $crate::prelude_std::From<&mut $($inner)+> for $chain$(<$($generics)*>)?
+		impl$(<$($generics_decl)*>)? $crate::prelude::From<&mut $($inner)+> for $chain$(<$($generics)*>)?
 		where
-			$($inner)+: $crate::prelude_std::Clone
+			$($inner)+: $crate::prelude::Clone
 		{
 			#[inline]
 			fn from(inner: &mut $($inner)+) -> Self {
@@ -244,7 +244,7 @@ macro_rules! decl_chain {
 		}
 
 		// impl From<Chain> for Inner
-		impl$(<$($generics_decl)*>)? $crate::prelude_std::From<$chain$(<$($generics)*>)?> for $($inner)+ {
+		impl$(<$($generics_decl)*>)? $crate::prelude::From<$chain$(<$($generics)*>)?> for $($inner)+ {
 			#[inline]
 			fn from(chain: $chain$(<$($generics)*>)?) -> Self {
 				chain._inner
@@ -252,9 +252,9 @@ macro_rules! decl_chain {
 		}
 
 		// impl From<&Chain> for Inner where Inner: Clone
-		impl$(<$($generics_decl)*>)? $crate::prelude_std::From<&$chain$(<$($generics)*>)?> for $($inner)+
+		impl$(<$($generics_decl)*>)? $crate::prelude::From<&$chain$(<$($generics)*>)?> for $($inner)+
 		where
-			$($inner)+: $crate::prelude_std::Clone
+			$($inner)+: $crate::prelude::Clone
 		{
 			#[inline]
 			fn from(chain: &$chain$(<$($generics)*>)?) -> Self {
@@ -263,9 +263,9 @@ macro_rules! decl_chain {
 		}
 
 		// impl From<&mut Chain> for Inner where Inner: Clone
-		impl$(<$($generics_decl)*>)? $crate::prelude_std::From<&mut $chain$(<$($generics)*>)?> for $($inner)+
+		impl$(<$($generics_decl)*>)? $crate::prelude::From<&mut $chain$(<$($generics)*>)?> for $($inner)+
 		where
-			$($inner)+: $crate::prelude_std::Clone
+			$($inner)+: $crate::prelude::Clone
 		{
 			#[inline]
 			fn from(chain: &mut $chain$(<$($generics)*>)?) -> Self {
@@ -274,7 +274,7 @@ macro_rules! decl_chain {
 		}
 
 		// impl AsRef<Inner>
-		impl$(<$($generics_decl)*>)? $crate::prelude_std::AsRef<$($inner)+> for $chain$(<$($generics)*>)? {
+		impl$(<$($generics_decl)*>)? $crate::prelude::AsRef<$($inner)+> for $chain$(<$($generics)*>)? {
 			#[inline]
 			fn as_ref(&self) -> &$($inner)+ {
 				&self._inner
@@ -282,7 +282,7 @@ macro_rules! decl_chain {
 		}
 
 		// impl AsMut<Inner>
-		impl$(<$($generics_decl)*>)? $crate::prelude_std::AsMut<$($inner)+> for $chain$(<$($generics)*>)? {
+		impl$(<$($generics_decl)*>)? $crate::prelude::AsMut<$($inner)+> for $chain$(<$($generics)*>)? {
 			#[inline]
 			fn as_mut(&mut self) -> &mut $($inner)+ {
 				&mut self._inner
@@ -290,14 +290,14 @@ macro_rules! decl_chain {
 		}
 
 		// impl Clone
-		impl$(<$($generics_decl)*>)? $crate::prelude_std::Clone for $chain$(<$($generics)*>)?
+		impl$(<$($generics_decl)*>)? $crate::prelude::Clone for $chain$(<$($generics)*>)?
 		where
-			$($inner)+: $crate::prelude_std::Clone
+			$($inner)+: $crate::prelude::Clone
 		{
 			#[inline]
 			fn clone(&self) -> Self {
 				let inner = <Self as $crate::chain::Chain>::as_inner(self);
-				let inner = <<Self as $crate::chain::Chain>::Inner as $crate::prelude_std::Clone>::clone(inner);
+				let inner = <<Self as $crate::chain::Chain>::Inner as $crate::prelude::Clone>::clone(inner);
 				<Self as $crate::chain::Chain>::from_inner(inner)
 			}
 
@@ -305,37 +305,37 @@ macro_rules! decl_chain {
 			fn clone_from(&mut self, source: &Self) {
 				let inner_self = <Self as $crate::chain::Chain>::as_inner_mut(self);
 				let inner_source = <Self as $crate::chain::Chain>::as_inner(source);
-				<<Self as $crate::chain::Chain>::Inner as $crate::prelude_std::Clone>::clone_from(inner_self, inner_source)
+				<<Self as $crate::chain::Chain>::Inner as $crate::prelude::Clone>::clone_from(inner_self, inner_source)
 			}
 		}
 
 		// impl Copy
-		impl$(<$($generics_decl)*>)? $crate::prelude_std::Copy for $chain$(<$($generics)*>)?
+		impl$(<$($generics_decl)*>)? $crate::prelude::Copy for $chain$(<$($generics)*>)?
 		where
-			$($inner)+: $crate::prelude_std::Copy
+			$($inner)+: $crate::prelude::Copy
 		{}
 
 		// impl Debug
-		impl$(<$($generics_decl)*>)? $crate::prelude_std::Debug for $chain$(<$($generics)*>)?
+		impl$(<$($generics_decl)*>)? $crate::prelude::Debug for $chain$(<$($generics)*>)?
 		where
-			$($inner)+: $crate::prelude_std::Debug
+			$($inner)+: $crate::prelude::Debug
 		{
 			#[inline]
-			fn fmt(&self, f: &mut $crate::prelude_std::fmt::Formatter<'_>) -> $crate::prelude_std::fmt::Result {
-				let mut dbg_struct = $crate::prelude_std::fmt::Formatter::debug_struct(f, stringify!($chain));
-				$crate::prelude_std::fmt::DebugStruct::field(
+			fn fmt(&self, f: &mut $crate::prelude::fmt::Formatter<'_>) -> $crate::prelude::fmt::Result {
+				let mut dbg_struct = $crate::prelude::fmt::Formatter::debug_struct(f, stringify!($chain));
+				$crate::prelude::fmt::DebugStruct::field(
 					&mut dbg_struct,
 					"_",
 					<Self as $crate::chain::Chain>::as_inner(self)
 				);
-				$crate::prelude_std::fmt::DebugStruct::finish(&mut dbg_struct)
+				$crate::prelude::fmt::DebugStruct::finish(&mut dbg_struct)
 			}
 		}
 
 		// impl Default
-		impl$(<$($generics_decl)*>)? $crate::prelude_std::Default for $chain$(<$($generics)*>)?
+		impl$(<$($generics_decl)*>)? $crate::prelude::Default for $chain$(<$($generics)*>)?
 		where
-			$($inner)+: $crate::prelude_std::Default
+			$($inner)+: $crate::prelude::Default
 		{
 			#[inline]
 			fn default() -> Self {
@@ -345,12 +345,12 @@ macro_rules! decl_chain {
 		}
 
 		// impl Display
-		impl$(<$($generics_decl)*>)? $crate::prelude_std::Display for $chain$(<$($generics)*>)?
+		impl$(<$($generics_decl)*>)? $crate::prelude::Display for $chain$(<$($generics)*>)?
 		where
-			$($inner)+: $crate::prelude_std::Display
+			$($inner)+: $crate::prelude::Display
 		{
 			#[inline]
-			fn fmt(&self, f: &mut $crate::prelude_std::fmt::Formatter<'_>) -> $crate::prelude_std::fmt::Result {
+			fn fmt(&self, f: &mut $crate::prelude::fmt::Formatter<'_>) -> $crate::prelude::fmt::Result {
 				let inner = <Self as $crate::chain::Chain>::as_inner(self);
 				<<Self as $crate::chain::Chain>::Inner as Display>::fmt(inner, f)
 			}
@@ -369,7 +369,7 @@ macro_rules! decl_chain {
 			[<$chain$(<$($generics)*>)? as $crate::chain::Chain>::as_inner]
 
 			[$($inner)+]
-			[$crate::prelude_std::identity]
+			[$crate::prelude::identity]
 		}
 
 		// impl PartialEq/PartialOrd inner <-> chain
@@ -379,7 +379,7 @@ macro_rules! decl_chain {
 			[$($inner)+]
 
 			[$($inner)+]
-			[$crate::prelude_std::identity]
+			[$crate::prelude::identity]
 
 			[$chain$(<$($generics)*>)?]
 			[<$chain$(<$($generics)*>)? as $crate::chain::Chain>::as_inner]
@@ -410,12 +410,12 @@ macro_rules! decl_chain {
 		[$($right_ty:tt)+]
 		[$right_expr:expr]
 	} => {
-		impl$(<$($generics_decl)*>)? $crate::prelude_std::PartialEq<$($right_ty)+> for $($left_ty)+
+		impl$(<$($generics_decl)*>)? $crate::prelude::PartialEq<$($right_ty)+> for $($left_ty)+
 		where
-			$($inner)+: $crate::prelude_std::PartialEq<$($inner)+>
+			$($inner)+: $crate::prelude::PartialEq<$($inner)+>
 		{
 			#[inline]
-			fn eq(&self, other: &$($right_ty)+) -> $crate::prelude_std::std::primitive::bool {
+			fn eq(&self, other: &$($right_ty)+) -> $crate::prelude::std::primitive::bool {
 				$crate::chain::decl_chain! {
 					@impl_partial_cmp_helper
 					[$($inner)+]
@@ -428,7 +428,7 @@ macro_rules! decl_chain {
 				reason = "inner might have overridden ne for whatever reason, and we should use it if so"
 			)]
 			#[inline]
-			fn ne(&self, other: &$($right_ty)+) -> $crate::prelude_std::std::primitive::bool {
+			fn ne(&self, other: &$($right_ty)+) -> $crate::prelude::std::primitive::bool {
 				$crate::chain::decl_chain! {
 					@impl_partial_cmp_helper
 					[$($inner)+]
@@ -437,12 +437,12 @@ macro_rules! decl_chain {
 			}
 		}
 
-		impl$(<$($generics_decl)*>)? $crate::prelude_std::PartialOrd<$($right_ty)+> for $($left_ty)+
+		impl$(<$($generics_decl)*>)? $crate::prelude::PartialOrd<$($right_ty)+> for $($left_ty)+
 		where
-			$($inner)+: $crate::prelude_std::PartialOrd<$($inner)+>
+			$($inner)+: $crate::prelude::PartialOrd<$($inner)+>
 		{
 			#[inline]
-			fn partial_cmp(&self, other: &$($right_ty)+) -> $crate::prelude_std::Option<$crate::prelude_std::cmp::Ordering> {
+			fn partial_cmp(&self, other: &$($right_ty)+) -> $crate::prelude::Option<$crate::prelude::cmp::Ordering> {
 				$crate::chain::decl_chain! {
 					@impl_partial_cmp_helper
 					[$($inner)+]
@@ -451,7 +451,7 @@ macro_rules! decl_chain {
 			}
 
 			#[inline]
-			fn lt(&self, other: &$($right_ty)+) -> $crate::prelude_std::std::primitive::bool {
+			fn lt(&self, other: &$($right_ty)+) -> $crate::prelude::std::primitive::bool {
 				$crate::chain::decl_chain! {
 					@impl_partial_cmp_helper
 					[$($inner)+]
@@ -460,7 +460,7 @@ macro_rules! decl_chain {
 			}
 
 			#[inline]
-			fn le(&self, other: &$($right_ty)+) -> $crate::prelude_std::std::primitive::bool {
+			fn le(&self, other: &$($right_ty)+) -> $crate::prelude::std::primitive::bool {
 				$crate::chain::decl_chain! {
 					@impl_partial_cmp_helper
 					[$($inner)+]
@@ -469,7 +469,7 @@ macro_rules! decl_chain {
 			}
 
 			#[inline]
-			fn gt(&self, other: &$($right_ty)+) -> $crate::prelude_std::std::primitive::bool {
+			fn gt(&self, other: &$($right_ty)+) -> $crate::prelude::std::primitive::bool {
 				$crate::chain::decl_chain! {
 					@impl_partial_cmp_helper
 					[$($inner)+]
@@ -478,7 +478,7 @@ macro_rules! decl_chain {
 			}
 
 			#[inline]
-			fn ge(&self, other: &$($right_ty)+) -> $crate::prelude_std::std::primitive::bool {
+			fn ge(&self, other: &$($right_ty)+) -> $crate::prelude::std::primitive::bool {
 				$crate::chain::decl_chain! {
 					@impl_partial_cmp_helper
 					[$($inner)+]
@@ -493,7 +493,7 @@ macro_rules! decl_chain {
 		[$($inner:tt)+]
 		$trait:ident::$trait_fn:ident($($stuff:tt)*)
 	} => {
-		<$($inner)+ as $crate::prelude_std::$trait<$($inner)+>>::$trait_fn($($stuff)*)
+		<$($inner)+ as $crate::prelude::$trait<$($inner)+>>::$trait_fn($($stuff)*)
 	};
 }
 use decl_chain;
@@ -513,7 +513,7 @@ macro_rules! chain_fn {
 		$(where $($where_clause)*)?
 		{
 			let $inner = <Self as $crate::chain::Chain>::as_inner_mut(&mut self);
-			$crate::prelude_std::identity::<()>($body);
+			$crate::prelude::identity::<()>($body);
 			self
 		}
 	};
@@ -532,7 +532,7 @@ macro_rules! chain_fn {
 		pub fn $fn_name$(<$($generics)*>)?(mut $self $($args)*) -> Self
 		$(where $($where_clause)*)?
 		{
-			$crate::prelude_std::identity::<()>($body);
+			$crate::prelude::identity::<()>($body);
 			$self
 		}
 	};
@@ -552,7 +552,7 @@ macro_rules! chain_fn {
 		$(where $($where_clause)*)?
 		{
 			let $inner = <Self as $crate::chain::Chain>::as_inner_mut(&mut self);
-			$crate::prelude_std::identity::<()>($body);
+			$crate::prelude::identity::<()>($body);
 			self
 		}
 	};
@@ -571,7 +571,7 @@ macro_rules! chain_fn {
 		pub unsafe fn $fn_name$(<$($generics)*>)?(mut $self $($args)*) -> Self
 		$(where $($where_clause)*)?
 		{
-			$crate::prelude_std::identity::<()>($body);
+			$crate::prelude::identity::<()>($body);
 			$self
 		}
 	};

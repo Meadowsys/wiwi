@@ -1,6 +1,6 @@
 extern crate wiwiwiwiwi;
 
-use crate::prelude_std::*;
+use crate::prelude::*;
 use self::private::AcceptDefaultSealed;
 
 pub use wiwiwiwiwi::builder;

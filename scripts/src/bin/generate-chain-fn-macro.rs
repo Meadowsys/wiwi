@@ -15,11 +15,11 @@ fn main() {
 
 	let impl_body_inner = &[
 		"let $inner = <Self as $crate::chain::Chain>::as_inner_mut(&mut self);",
-		"$crate::prelude_std::identity::<()>($body);",
+		"$crate::prelude::identity::<()>($body);",
 		"self"
 	];
 	let impl_body_self = &[
-		"$crate::prelude_std::identity::<()>($body);",
+		"$crate::prelude::identity::<()>($body);",
 		"$self"
 	];
 	let impl_body_move = &[

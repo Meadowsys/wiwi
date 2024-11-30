@@ -1,4 +1,4 @@
-use crate::prelude_std::*;
+use crate::prelude::*;
 use self::private::Sealed;
 
 macro_rules! from {

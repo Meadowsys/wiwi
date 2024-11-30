@@ -1,4 +1,4 @@
-use crate::prelude_std::*;
+use crate::prelude::*;
 use super::{ ChunkedSlice, UnsafeBufWriteGuard };
 
 // // table unused, for ref only, cause it can be calculated

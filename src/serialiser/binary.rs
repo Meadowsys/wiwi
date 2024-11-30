@@ -4,7 +4,7 @@
 	reason = "wip (TODO: remove me)"
 )]
 
-use crate::prelude_std::*;
+use crate::prelude::*;
 
 mod int;
 

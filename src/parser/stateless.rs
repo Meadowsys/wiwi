@@ -1,4 +1,4 @@
-use crate::prelude_std::*;
+use crate::prelude::*;
 use crate::num::*;
 use super::{ max_init_cap, util, Error, Input, Needle, ParserPhantom, Result, Success };
 use std::num::NonZero;

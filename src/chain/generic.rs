@@ -1,4 +1,4 @@
-use crate::prelude_std::*;
+use crate::prelude::*;
 
 /// Generic (works with all types) chaining wrapper
 ///

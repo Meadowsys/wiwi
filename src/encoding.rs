@@ -1,4 +1,4 @@
-use crate::prelude_std::*;
+use crate::prelude::*;
 
 pub use self::generic_fn::{
 	encode,

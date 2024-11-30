@@ -1,6 +1,6 @@
 extern crate hashbrown;
 
-use crate::prelude_std::*;
+use crate::prelude::*;
 use crate::num::*;
 use crate::rc::{ RcStr, Counter, AtomicCounter };
 use hashbrown::HashSet;

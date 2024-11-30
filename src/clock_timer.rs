@@ -1,7 +1,7 @@
 pub extern crate chrono;
 extern crate tokio;
 
-use crate::prelude_std::*;
+use crate::prelude::*;
 use chrono::{ DateTime, Local, TimeDelta, TimeZone };
 use std::future::Future;
 use tokio::time::sleep;

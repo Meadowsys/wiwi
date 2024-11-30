@@ -1,4 +1,4 @@
-use crate::prelude_std::*;
+use crate::prelude::*;
 use super::{ stateful, stateless, Input, ParserPhantom, Result, Success };
 
 /// Wraps an implementor of [`Parser`](stateless::Parser) and provides an implementation

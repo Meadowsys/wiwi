@@ -1,4 +1,4 @@
-use crate::prelude_std::*;
+use crate::prelude::*;
 
 pub trait Input: Sized {
 	type ConstSize<const N: usize>: Sized;

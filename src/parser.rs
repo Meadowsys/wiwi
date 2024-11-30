@@ -1,4 +1,4 @@
-use crate::prelude_std::*;
+use crate::prelude::*;
 use std::num::NonZero;
 
 pub use input::{ Input, Needle };

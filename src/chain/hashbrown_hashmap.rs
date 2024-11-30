@@ -1,6 +1,6 @@
 extern crate hashbrown;
 
-use crate::prelude_std::*;
+use crate::prelude::*;
 use super::{ chain_fn, ChainInner as _ };
 use hashbrown::{ DefaultHashBuilder, HashMap };
 
