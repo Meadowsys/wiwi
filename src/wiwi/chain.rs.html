@@ -737,7 +737,7 @@
 <a href="#736" id="736">736</a>
 <a href="#737" id="737">737</a>
 <a href="#738" id="738">738</a>
-<a href="#739" id="739">739</a></pre></div><pre class="rust"><code><span class="kw">use </span><span class="kw">crate</span>::prelude_std::<span class="kw-2">*</span>;
+<a href="#739" id="739">739</a></pre></div><pre class="rust"><code><span class="kw">use </span><span class="kw">crate</span>::prelude::<span class="kw-2">*</span>;
 
 <span class="kw">pub use </span><span class="self">self</span>::array::ArrayChain;
 <span class="kw">pub use </span><span class="self">self</span>::generic::{ GenericChain, GenericChainConversion };
@@ -953,7 +953,7 @@
 		}
 
 		<span class="comment">// impl From&lt;Inner&gt; for Chain
-		</span><span class="kw">impl</span>$(&lt;$(<span class="macro-nonterminal">$generics_decl</span>)<span class="kw-2">*</span>&gt;)<span class="question-mark">? </span><span class="macro-nonterminal">$crate::prelude_std::From</span>&lt;$(<span class="macro-nonterminal">$inner</span>)+&gt; <span class="kw">for </span><span class="macro-nonterminal">$chain</span>$(&lt;$(<span class="macro-nonterminal">$generics</span>)<span class="kw-2">*</span>&gt;)<span class="question-mark">? </span>{
+		</span><span class="kw">impl</span>$(&lt;$(<span class="macro-nonterminal">$generics_decl</span>)<span class="kw-2">*</span>&gt;)<span class="question-mark">? </span><span class="macro-nonterminal">$crate::prelude::From</span>&lt;$(<span class="macro-nonterminal">$inner</span>)+&gt; <span class="kw">for </span><span class="macro-nonterminal">$chain</span>$(&lt;$(<span class="macro-nonterminal">$generics</span>)<span class="kw-2">*</span>&gt;)<span class="question-mark">? </span>{
 			<span class="attr">#[inline]
 			</span><span class="kw">fn </span>from(inner: $(<span class="macro-nonterminal">$inner</span>)+) -&gt; <span class="self">Self </span>{
 				<span class="self">Self </span>{ _inner: inner }
@@ -961,9 +961,9 @@
 		}
 
 		<span class="comment">// impl From&lt;&amp;Inner&gt; for Chain where Inner: Clone
-		</span><span class="kw">impl</span>$(&lt;$(<span class="macro-nonterminal">$generics_decl</span>)<span class="kw-2">*</span>&gt;)<span class="question-mark">? </span><span class="macro-nonterminal">$crate::prelude_std::From</span>&lt;<span class="kw-2">&amp;</span>$(<span class="macro-nonterminal">$inner</span>)+&gt; <span class="kw">for </span><span class="macro-nonterminal">$chain</span>$(&lt;$(<span class="macro-nonterminal">$generics</span>)<span class="kw-2">*</span>&gt;)<span class="question-mark">?
+		</span><span class="kw">impl</span>$(&lt;$(<span class="macro-nonterminal">$generics_decl</span>)<span class="kw-2">*</span>&gt;)<span class="question-mark">? </span><span class="macro-nonterminal">$crate::prelude::From</span>&lt;<span class="kw-2">&amp;</span>$(<span class="macro-nonterminal">$inner</span>)+&gt; <span class="kw">for </span><span class="macro-nonterminal">$chain</span>$(&lt;$(<span class="macro-nonterminal">$generics</span>)<span class="kw-2">*</span>&gt;)<span class="question-mark">?
 		</span><span class="kw">where
-			</span>$(<span class="macro-nonterminal">$inner</span>)+: <span class="macro-nonterminal">$crate::prelude_std::Clone
+			</span>$(<span class="macro-nonterminal">$inner</span>)+: <span class="macro-nonterminal">$crate::prelude::Clone
 		</span>{
 			<span class="attr">#[inline]
 			</span><span class="kw">fn </span>from(inner: <span class="kw-2">&amp;</span>$(<span class="macro-nonterminal">$inner</span>)+) -&gt; <span class="self">Self </span>{
@@ -972,9 +972,9 @@
 		}
 
 		<span class="comment">// impl From&lt;&amp;mut Inner&gt; for Chain where Inner: Clone
-		</span><span class="kw">impl</span>$(&lt;$(<span class="macro-nonterminal">$generics_decl</span>)<span class="kw-2">*</span>&gt;)<span class="question-mark">? </span><span class="macro-nonterminal">$crate::prelude_std::From</span>&lt;<span class="kw-2">&amp;mut </span>$(<span class="macro-nonterminal">$inner</span>)+&gt; <span class="kw">for </span><span class="macro-nonterminal">$chain</span>$(&lt;$(<span class="macro-nonterminal">$generics</span>)<span class="kw-2">*</span>&gt;)<span class="question-mark">?
+		</span><span class="kw">impl</span>$(&lt;$(<span class="macro-nonterminal">$generics_decl</span>)<span class="kw-2">*</span>&gt;)<span class="question-mark">? </span><span class="macro-nonterminal">$crate::prelude::From</span>&lt;<span class="kw-2">&amp;mut </span>$(<span class="macro-nonterminal">$inner</span>)+&gt; <span class="kw">for </span><span class="macro-nonterminal">$chain</span>$(&lt;$(<span class="macro-nonterminal">$generics</span>)<span class="kw-2">*</span>&gt;)<span class="question-mark">?
 		</span><span class="kw">where
-			</span>$(<span class="macro-nonterminal">$inner</span>)+: <span class="macro-nonterminal">$crate::prelude_std::Clone
+			</span>$(<span class="macro-nonterminal">$inner</span>)+: <span class="macro-nonterminal">$crate::prelude::Clone
 		</span>{
 			<span class="attr">#[inline]
 			</span><span class="kw">fn </span>from(inner: <span class="kw-2">&amp;mut </span>$(<span class="macro-nonterminal">$inner</span>)+) -&gt; <span class="self">Self </span>{
@@ -983,7 +983,7 @@
 		}
 
 		<span class="comment">// impl From&lt;Chain&gt; for Inner
-		</span><span class="kw">impl</span>$(&lt;$(<span class="macro-nonterminal">$generics_decl</span>)<span class="kw-2">*</span>&gt;)<span class="question-mark">? </span><span class="macro-nonterminal">$crate::prelude_std::From</span>&lt;<span class="macro-nonterminal">$chain</span>$(&lt;$(<span class="macro-nonterminal">$generics</span>)<span class="kw-2">*</span>&gt;)<span class="question-mark">?</span>&gt; <span class="kw">for </span>$(<span class="macro-nonterminal">$inner</span>)+ {
+		</span><span class="kw">impl</span>$(&lt;$(<span class="macro-nonterminal">$generics_decl</span>)<span class="kw-2">*</span>&gt;)<span class="question-mark">? </span><span class="macro-nonterminal">$crate::prelude::From</span>&lt;<span class="macro-nonterminal">$chain</span>$(&lt;$(<span class="macro-nonterminal">$generics</span>)<span class="kw-2">*</span>&gt;)<span class="question-mark">?</span>&gt; <span class="kw">for </span>$(<span class="macro-nonterminal">$inner</span>)+ {
 			<span class="attr">#[inline]
 			</span><span class="kw">fn </span>from(chain: <span class="macro-nonterminal">$chain</span>$(&lt;$(<span class="macro-nonterminal">$generics</span>)<span class="kw-2">*</span>&gt;)<span class="question-mark">?</span>) -&gt; <span class="self">Self </span>{
 				chain._inner
@@ -991,9 +991,9 @@
 		}
 
 		<span class="comment">// impl From&lt;&amp;Chain&gt; for Inner where Inner: Clone
-		</span><span class="kw">impl</span>$(&lt;$(<span class="macro-nonterminal">$generics_decl</span>)<span class="kw-2">*</span>&gt;)<span class="question-mark">? </span><span class="macro-nonterminal">$crate::prelude_std::From</span>&lt;<span class="kw-2">&amp;</span><span class="macro-nonterminal">$chain</span>$(&lt;$(<span class="macro-nonterminal">$generics</span>)<span class="kw-2">*</span>&gt;)<span class="question-mark">?</span>&gt; <span class="kw">for </span>$(<span class="macro-nonterminal">$inner</span>)+
+		</span><span class="kw">impl</span>$(&lt;$(<span class="macro-nonterminal">$generics_decl</span>)<span class="kw-2">*</span>&gt;)<span class="question-mark">? </span><span class="macro-nonterminal">$crate::prelude::From</span>&lt;<span class="kw-2">&amp;</span><span class="macro-nonterminal">$chain</span>$(&lt;$(<span class="macro-nonterminal">$generics</span>)<span class="kw-2">*</span>&gt;)<span class="question-mark">?</span>&gt; <span class="kw">for </span>$(<span class="macro-nonterminal">$inner</span>)+
 		<span class="kw">where
-			</span>$(<span class="macro-nonterminal">$inner</span>)+: <span class="macro-nonterminal">$crate::prelude_std::Clone
+			</span>$(<span class="macro-nonterminal">$inner</span>)+: <span class="macro-nonterminal">$crate::prelude::Clone
 		</span>{
 			<span class="attr">#[inline]
 			</span><span class="kw">fn </span>from(chain: <span class="kw-2">&amp;</span><span class="macro-nonterminal">$chain</span>$(&lt;$(<span class="macro-nonterminal">$generics</span>)<span class="kw-2">*</span>&gt;)<span class="question-mark">?</span>) -&gt; <span class="self">Self </span>{
@@ -1002,9 +1002,9 @@
 		}
 
 		<span class="comment">// impl From&lt;&amp;mut Chain&gt; for Inner where Inner: Clone
-		</span><span class="kw">impl</span>$(&lt;$(<span class="macro-nonterminal">$generics_decl</span>)<span class="kw-2">*</span>&gt;)<span class="question-mark">? </span><span class="macro-nonterminal">$crate::prelude_std::From</span>&lt;<span class="kw-2">&amp;mut </span><span class="macro-nonterminal">$chain</span>$(&lt;$(<span class="macro-nonterminal">$generics</span>)<span class="kw-2">*</span>&gt;)<span class="question-mark">?</span>&gt; <span class="kw">for </span>$(<span class="macro-nonterminal">$inner</span>)+
+		</span><span class="kw">impl</span>$(&lt;$(<span class="macro-nonterminal">$generics_decl</span>)<span class="kw-2">*</span>&gt;)<span class="question-mark">? </span><span class="macro-nonterminal">$crate::prelude::From</span>&lt;<span class="kw-2">&amp;mut </span><span class="macro-nonterminal">$chain</span>$(&lt;$(<span class="macro-nonterminal">$generics</span>)<span class="kw-2">*</span>&gt;)<span class="question-mark">?</span>&gt; <span class="kw">for </span>$(<span class="macro-nonterminal">$inner</span>)+
 		<span class="kw">where
-			</span>$(<span class="macro-nonterminal">$inner</span>)+: <span class="macro-nonterminal">$crate::prelude_std::Clone
+			</span>$(<span class="macro-nonterminal">$inner</span>)+: <span class="macro-nonterminal">$crate::prelude::Clone
 		</span>{
 			<span class="attr">#[inline]
 			</span><span class="kw">fn </span>from(chain: <span class="kw-2">&amp;mut </span><span class="macro-nonterminal">$chain</span>$(&lt;$(<span class="macro-nonterminal">$generics</span>)<span class="kw-2">*</span>&gt;)<span class="question-mark">?</span>) -&gt; <span class="self">Self </span>{
@@ -1013,7 +1013,7 @@
 		}
 
 		<span class="comment">// impl AsRef&lt;Inner&gt;
-		</span><span class="kw">impl</span>$(&lt;$(<span class="macro-nonterminal">$generics_decl</span>)<span class="kw-2">*</span>&gt;)<span class="question-mark">? </span><span class="macro-nonterminal">$crate::prelude_std::AsRef</span>&lt;$(<span class="macro-nonterminal">$inner</span>)+&gt; <span class="kw">for </span><span class="macro-nonterminal">$chain</span>$(&lt;$(<span class="macro-nonterminal">$generics</span>)<span class="kw-2">*</span>&gt;)<span class="question-mark">? </span>{
+		</span><span class="kw">impl</span>$(&lt;$(<span class="macro-nonterminal">$generics_decl</span>)<span class="kw-2">*</span>&gt;)<span class="question-mark">? </span><span class="macro-nonterminal">$crate::prelude::AsRef</span>&lt;$(<span class="macro-nonterminal">$inner</span>)+&gt; <span class="kw">for </span><span class="macro-nonterminal">$chain</span>$(&lt;$(<span class="macro-nonterminal">$generics</span>)<span class="kw-2">*</span>&gt;)<span class="question-mark">? </span>{
 			<span class="attr">#[inline]
 			</span><span class="kw">fn </span>as_ref(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; <span class="kw-2">&amp;</span>$(<span class="macro-nonterminal">$inner</span>)+ {
 				<span class="kw-2">&amp;</span><span class="self">self</span>._inner
@@ -1021,7 +1021,7 @@
 		}
 
 		<span class="comment">// impl AsMut&lt;Inner&gt;
-		</span><span class="kw">impl</span>$(&lt;$(<span class="macro-nonterminal">$generics_decl</span>)<span class="kw-2">*</span>&gt;)<span class="question-mark">? </span><span class="macro-nonterminal">$crate::prelude_std::AsMut</span>&lt;$(<span class="macro-nonterminal">$inner</span>)+&gt; <span class="kw">for </span><span class="macro-nonterminal">$chain</span>$(&lt;$(<span class="macro-nonterminal">$generics</span>)<span class="kw-2">*</span>&gt;)<span class="question-mark">? </span>{
+		</span><span class="kw">impl</span>$(&lt;$(<span class="macro-nonterminal">$generics_decl</span>)<span class="kw-2">*</span>&gt;)<span class="question-mark">? </span><span class="macro-nonterminal">$crate::prelude::AsMut</span>&lt;$(<span class="macro-nonterminal">$inner</span>)+&gt; <span class="kw">for </span><span class="macro-nonterminal">$chain</span>$(&lt;$(<span class="macro-nonterminal">$generics</span>)<span class="kw-2">*</span>&gt;)<span class="question-mark">? </span>{
 			<span class="attr">#[inline]
 			</span><span class="kw">fn </span>as_mut(<span class="kw-2">&amp;mut </span><span class="self">self</span>) -&gt; <span class="kw-2">&amp;mut </span>$(<span class="macro-nonterminal">$inner</span>)+ {
 				<span class="kw-2">&amp;mut </span><span class="self">self</span>._inner
@@ -1029,14 +1029,14 @@
 		}
 
 		<span class="comment">// impl Clone
-		</span><span class="kw">impl</span>$(&lt;$(<span class="macro-nonterminal">$generics_decl</span>)<span class="kw-2">*</span>&gt;)<span class="question-mark">? </span><span class="macro-nonterminal">$crate::prelude_std::Clone </span><span class="kw">for </span><span class="macro-nonterminal">$chain</span>$(&lt;$(<span class="macro-nonterminal">$generics</span>)<span class="kw-2">*</span>&gt;)<span class="question-mark">?
+		</span><span class="kw">impl</span>$(&lt;$(<span class="macro-nonterminal">$generics_decl</span>)<span class="kw-2">*</span>&gt;)<span class="question-mark">? </span><span class="macro-nonterminal">$crate::prelude::Clone </span><span class="kw">for </span><span class="macro-nonterminal">$chain</span>$(&lt;$(<span class="macro-nonterminal">$generics</span>)<span class="kw-2">*</span>&gt;)<span class="question-mark">?
 		</span><span class="kw">where
-			</span>$(<span class="macro-nonterminal">$inner</span>)+: <span class="macro-nonterminal">$crate::prelude_std::Clone
+			</span>$(<span class="macro-nonterminal">$inner</span>)+: <span class="macro-nonterminal">$crate::prelude::Clone
 		</span>{
 			<span class="attr">#[inline]
 			</span><span class="kw">fn </span>clone(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; <span class="self">Self </span>{
 				<span class="kw">let </span>inner = &lt;<span class="self">Self </span><span class="kw">as </span><span class="macro-nonterminal">$crate::chain::Chain</span>&gt;::as_inner(<span class="self">self</span>);
-				<span class="kw">let </span>inner = &lt;&lt;<span class="self">Self </span><span class="kw">as </span><span class="macro-nonterminal">$crate::chain::Chain</span>&gt;::Inner <span class="kw">as </span><span class="macro-nonterminal">$crate::prelude_std::Clone</span>&gt;::clone(inner);
+				<span class="kw">let </span>inner = &lt;&lt;<span class="self">Self </span><span class="kw">as </span><span class="macro-nonterminal">$crate::chain::Chain</span>&gt;::Inner <span class="kw">as </span><span class="macro-nonterminal">$crate::prelude::Clone</span>&gt;::clone(inner);
 				&lt;<span class="self">Self </span><span class="kw">as </span><span class="macro-nonterminal">$crate::chain::Chain</span>&gt;::from_inner(inner)
 			}
 
@@ -1044,37 +1044,37 @@
 			</span><span class="kw">fn </span>clone_from(<span class="kw-2">&amp;mut </span><span class="self">self</span>, source: <span class="kw-2">&amp;</span><span class="self">Self</span>) {
 				<span class="kw">let </span>inner_self = &lt;<span class="self">Self </span><span class="kw">as </span><span class="macro-nonterminal">$crate::chain::Chain</span>&gt;::as_inner_mut(<span class="self">self</span>);
 				<span class="kw">let </span>inner_source = &lt;<span class="self">Self </span><span class="kw">as </span><span class="macro-nonterminal">$crate::chain::Chain</span>&gt;::as_inner(source);
-				&lt;&lt;<span class="self">Self </span><span class="kw">as </span><span class="macro-nonterminal">$crate::chain::Chain</span>&gt;::Inner <span class="kw">as </span><span class="macro-nonterminal">$crate::prelude_std::Clone</span>&gt;::clone_from(inner_self, inner_source)
+				&lt;&lt;<span class="self">Self </span><span class="kw">as </span><span class="macro-nonterminal">$crate::chain::Chain</span>&gt;::Inner <span class="kw">as </span><span class="macro-nonterminal">$crate::prelude::Clone</span>&gt;::clone_from(inner_self, inner_source)
 			}
 		}
 
 		<span class="comment">// impl Copy
-		</span><span class="kw">impl</span>$(&lt;$(<span class="macro-nonterminal">$generics_decl</span>)<span class="kw-2">*</span>&gt;)<span class="question-mark">? </span><span class="macro-nonterminal">$crate::prelude_std::Copy </span><span class="kw">for </span><span class="macro-nonterminal">$chain</span>$(&lt;$(<span class="macro-nonterminal">$generics</span>)<span class="kw-2">*</span>&gt;)<span class="question-mark">?
+		</span><span class="kw">impl</span>$(&lt;$(<span class="macro-nonterminal">$generics_decl</span>)<span class="kw-2">*</span>&gt;)<span class="question-mark">? </span><span class="macro-nonterminal">$crate::prelude::Copy </span><span class="kw">for </span><span class="macro-nonterminal">$chain</span>$(&lt;$(<span class="macro-nonterminal">$generics</span>)<span class="kw-2">*</span>&gt;)<span class="question-mark">?
 		</span><span class="kw">where
-			</span>$(<span class="macro-nonterminal">$inner</span>)+: <span class="macro-nonterminal">$crate::prelude_std::Copy
+			</span>$(<span class="macro-nonterminal">$inner</span>)+: <span class="macro-nonterminal">$crate::prelude::Copy
 		</span>{}
 
 		<span class="comment">// impl Debug
-		</span><span class="kw">impl</span>$(&lt;$(<span class="macro-nonterminal">$generics_decl</span>)<span class="kw-2">*</span>&gt;)<span class="question-mark">? </span><span class="macro-nonterminal">$crate::prelude_std::Debug </span><span class="kw">for </span><span class="macro-nonterminal">$chain</span>$(&lt;$(<span class="macro-nonterminal">$generics</span>)<span class="kw-2">*</span>&gt;)<span class="question-mark">?
+		</span><span class="kw">impl</span>$(&lt;$(<span class="macro-nonterminal">$generics_decl</span>)<span class="kw-2">*</span>&gt;)<span class="question-mark">? </span><span class="macro-nonterminal">$crate::prelude::Debug </span><span class="kw">for </span><span class="macro-nonterminal">$chain</span>$(&lt;$(<span class="macro-nonterminal">$generics</span>)<span class="kw-2">*</span>&gt;)<span class="question-mark">?
 		</span><span class="kw">where
-			</span>$(<span class="macro-nonterminal">$inner</span>)+: <span class="macro-nonterminal">$crate::prelude_std::Debug
+			</span>$(<span class="macro-nonterminal">$inner</span>)+: <span class="macro-nonterminal">$crate::prelude::Debug
 		</span>{
 			<span class="attr">#[inline]
-			</span><span class="kw">fn </span>fmt(<span class="kw-2">&amp;</span><span class="self">self</span>, f: <span class="kw-2">&amp;mut </span><span class="macro-nonterminal">$crate::prelude_std::fmt::Formatter</span>&lt;<span class="lifetime">'_</span>&gt;) -&gt; <span class="macro-nonterminal">$crate::prelude_std::fmt::Result </span>{
-				<span class="kw">let </span><span class="kw-2">mut </span>dbg_struct = <span class="macro-nonterminal">$crate::prelude_std::fmt::Formatter::debug_struct</span>(f, <span class="macro">stringify!</span>(<span class="macro-nonterminal">$chain</span>));
-				<span class="macro-nonterminal">$crate::prelude_std::fmt::DebugStruct::field</span>(
+			</span><span class="kw">fn </span>fmt(<span class="kw-2">&amp;</span><span class="self">self</span>, f: <span class="kw-2">&amp;mut </span><span class="macro-nonterminal">$crate::prelude::fmt::Formatter</span>&lt;<span class="lifetime">'_</span>&gt;) -&gt; <span class="macro-nonterminal">$crate::prelude::fmt::Result </span>{
+				<span class="kw">let </span><span class="kw-2">mut </span>dbg_struct = <span class="macro-nonterminal">$crate::prelude::fmt::Formatter::debug_struct</span>(f, <span class="macro">stringify!</span>(<span class="macro-nonterminal">$chain</span>));
+				<span class="macro-nonterminal">$crate::prelude::fmt::DebugStruct::field</span>(
 					<span class="kw-2">&amp;mut </span>dbg_struct,
 					<span class="string">"_"</span>,
 					&lt;<span class="self">Self </span><span class="kw">as </span><span class="macro-nonterminal">$crate::chain::Chain</span>&gt;::as_inner(<span class="self">self</span>)
 				);
-				<span class="macro-nonterminal">$crate::prelude_std::fmt::DebugStruct::finish</span>(<span class="kw-2">&amp;mut </span>dbg_struct)
+				<span class="macro-nonterminal">$crate::prelude::fmt::DebugStruct::finish</span>(<span class="kw-2">&amp;mut </span>dbg_struct)
 			}
 		}
 
 		<span class="comment">// impl Default
-		</span><span class="kw">impl</span>$(&lt;$(<span class="macro-nonterminal">$generics_decl</span>)<span class="kw-2">*</span>&gt;)<span class="question-mark">? </span><span class="macro-nonterminal">$crate::prelude_std::Default </span><span class="kw">for </span><span class="macro-nonterminal">$chain</span>$(&lt;$(<span class="macro-nonterminal">$generics</span>)<span class="kw-2">*</span>&gt;)<span class="question-mark">?
+		</span><span class="kw">impl</span>$(&lt;$(<span class="macro-nonterminal">$generics_decl</span>)<span class="kw-2">*</span>&gt;)<span class="question-mark">? </span><span class="macro-nonterminal">$crate::prelude::Default </span><span class="kw">for </span><span class="macro-nonterminal">$chain</span>$(&lt;$(<span class="macro-nonterminal">$generics</span>)<span class="kw-2">*</span>&gt;)<span class="question-mark">?
 		</span><span class="kw">where
-			</span>$(<span class="macro-nonterminal">$inner</span>)+: <span class="macro-nonterminal">$crate::prelude_std::Default
+			</span>$(<span class="macro-nonterminal">$inner</span>)+: <span class="macro-nonterminal">$crate::prelude::Default
 		</span>{
 			<span class="attr">#[inline]
 			</span><span class="kw">fn </span>default() -&gt; <span class="self">Self </span>{
@@ -1084,12 +1084,12 @@
 		}
 
 		<span class="comment">// impl Display
-		</span><span class="kw">impl</span>$(&lt;$(<span class="macro-nonterminal">$generics_decl</span>)<span class="kw-2">*</span>&gt;)<span class="question-mark">? </span><span class="macro-nonterminal">$crate::prelude_std::Display </span><span class="kw">for </span><span class="macro-nonterminal">$chain</span>$(&lt;$(<span class="macro-nonterminal">$generics</span>)<span class="kw-2">*</span>&gt;)<span class="question-mark">?
+		</span><span class="kw">impl</span>$(&lt;$(<span class="macro-nonterminal">$generics_decl</span>)<span class="kw-2">*</span>&gt;)<span class="question-mark">? </span><span class="macro-nonterminal">$crate::prelude::Display </span><span class="kw">for </span><span class="macro-nonterminal">$chain</span>$(&lt;$(<span class="macro-nonterminal">$generics</span>)<span class="kw-2">*</span>&gt;)<span class="question-mark">?
 		</span><span class="kw">where
-			</span>$(<span class="macro-nonterminal">$inner</span>)+: <span class="macro-nonterminal">$crate::prelude_std::Display
+			</span>$(<span class="macro-nonterminal">$inner</span>)+: <span class="macro-nonterminal">$crate::prelude::Display
 		</span>{
 			<span class="attr">#[inline]
-			</span><span class="kw">fn </span>fmt(<span class="kw-2">&amp;</span><span class="self">self</span>, f: <span class="kw-2">&amp;mut </span><span class="macro-nonterminal">$crate::prelude_std::fmt::Formatter</span>&lt;<span class="lifetime">'_</span>&gt;) -&gt; <span class="macro-nonterminal">$crate::prelude_std::fmt::Result </span>{
+			</span><span class="kw">fn </span>fmt(<span class="kw-2">&amp;</span><span class="self">self</span>, f: <span class="kw-2">&amp;mut </span><span class="macro-nonterminal">$crate::prelude::fmt::Formatter</span>&lt;<span class="lifetime">'_</span>&gt;) -&gt; <span class="macro-nonterminal">$crate::prelude::fmt::Result </span>{
 				<span class="kw">let </span>inner = &lt;<span class="self">Self </span><span class="kw">as </span><span class="macro-nonterminal">$crate::chain::Chain</span>&gt;::as_inner(<span class="self">self</span>);
 				&lt;&lt;<span class="self">Self </span><span class="kw">as </span><span class="macro-nonterminal">$crate::chain::Chain</span>&gt;::Inner <span class="kw">as </span>Display&gt;::fmt(inner, f)
 			}
@@ -1108,7 +1108,7 @@
 			[&lt;<span class="macro-nonterminal">$chain</span>$(&lt;$(<span class="macro-nonterminal">$generics</span>)<span class="kw-2">*</span>&gt;)<span class="question-mark">? </span><span class="kw">as </span><span class="macro-nonterminal">$crate::chain::Chain</span>&gt;::as_inner]
 
 			[$(<span class="macro-nonterminal">$inner</span>)+]
-			[<span class="macro-nonterminal">$crate::prelude_std::identity</span>]
+			[<span class="macro-nonterminal">$crate::prelude::identity</span>]
 		}
 
 		<span class="comment">// impl PartialEq/PartialOrd inner &lt;-&gt; chain
@@ -1118,7 +1118,7 @@
 			[$(<span class="macro-nonterminal">$inner</span>)+]
 
 			[$(<span class="macro-nonterminal">$inner</span>)+]
-			[<span class="macro-nonterminal">$crate::prelude_std::identity</span>]
+			[<span class="macro-nonterminal">$crate::prelude::identity</span>]
 
 			[<span class="macro-nonterminal">$chain</span>$(&lt;$(<span class="macro-nonterminal">$generics</span>)<span class="kw-2">*</span>&gt;)<span class="question-mark">?</span>]
 			[&lt;<span class="macro-nonterminal">$chain</span>$(&lt;$(<span class="macro-nonterminal">$generics</span>)<span class="kw-2">*</span>&gt;)<span class="question-mark">? </span><span class="kw">as </span><span class="macro-nonterminal">$crate::chain::Chain</span>&gt;::as_inner]
@@ -1149,12 +1149,12 @@
 		[$(<span class="macro-nonterminal">$right_ty</span>:tt)+]
 		[<span class="macro-nonterminal">$right_expr</span>:expr]
 	} =&gt; {
-		<span class="kw">impl</span>$(&lt;$(<span class="macro-nonterminal">$generics_decl</span>)<span class="kw-2">*</span>&gt;)<span class="question-mark">? </span><span class="macro-nonterminal">$crate::prelude_std::PartialEq</span>&lt;$(<span class="macro-nonterminal">$right_ty</span>)+&gt; <span class="kw">for </span>$(<span class="macro-nonterminal">$left_ty</span>)+
+		<span class="kw">impl</span>$(&lt;$(<span class="macro-nonterminal">$generics_decl</span>)<span class="kw-2">*</span>&gt;)<span class="question-mark">? </span><span class="macro-nonterminal">$crate::prelude::PartialEq</span>&lt;$(<span class="macro-nonterminal">$right_ty</span>)+&gt; <span class="kw">for </span>$(<span class="macro-nonterminal">$left_ty</span>)+
 		<span class="kw">where
-			</span>$(<span class="macro-nonterminal">$inner</span>)+: <span class="macro-nonterminal">$crate::prelude_std::PartialEq</span>&lt;$(<span class="macro-nonterminal">$inner</span>)+&gt;
+			</span>$(<span class="macro-nonterminal">$inner</span>)+: <span class="macro-nonterminal">$crate::prelude::PartialEq</span>&lt;$(<span class="macro-nonterminal">$inner</span>)+&gt;
 		{
 			<span class="attr">#[inline]
-			</span><span class="kw">fn </span>eq(<span class="kw-2">&amp;</span><span class="self">self</span>, other: <span class="kw-2">&amp;</span>$(<span class="macro-nonterminal">$right_ty</span>)+) -&gt; <span class="macro-nonterminal">$crate::prelude_std::std::primitive::bool </span>{
+			</span><span class="kw">fn </span>eq(<span class="kw-2">&amp;</span><span class="self">self</span>, other: <span class="kw-2">&amp;</span>$(<span class="macro-nonterminal">$right_ty</span>)+) -&gt; <span class="macro-nonterminal">$crate::prelude::std::primitive::bool </span>{
 				<span class="macro-nonterminal">$</span><span class="macro">crate::chain::decl_chain!</span> {
 					@<span class="macro-nonterminal">impl_partial_cmp_helper
 					</span>[$(<span class="macro-nonterminal">$inner</span>)+]
@@ -1167,7 +1167,7 @@
 				reason = <span class="string">"inner might have overridden ne for whatever reason, and we should use it if so"
 			</span>)]
 			#[inline]
-			</span><span class="kw">fn </span>ne(<span class="kw-2">&amp;</span><span class="self">self</span>, other: <span class="kw-2">&amp;</span>$(<span class="macro-nonterminal">$right_ty</span>)+) -&gt; <span class="macro-nonterminal">$crate::prelude_std::std::primitive::bool </span>{
+			</span><span class="kw">fn </span>ne(<span class="kw-2">&amp;</span><span class="self">self</span>, other: <span class="kw-2">&amp;</span>$(<span class="macro-nonterminal">$right_ty</span>)+) -&gt; <span class="macro-nonterminal">$crate::prelude::std::primitive::bool </span>{
 				<span class="macro-nonterminal">$</span><span class="macro">crate::chain::decl_chain!</span> {
 					@<span class="macro-nonterminal">impl_partial_cmp_helper
 					</span>[$(<span class="macro-nonterminal">$inner</span>)+]
@@ -1176,12 +1176,12 @@
 			}
 		}
 
-		<span class="kw">impl</span>$(&lt;$(<span class="macro-nonterminal">$generics_decl</span>)<span class="kw-2">*</span>&gt;)<span class="question-mark">? </span><span class="macro-nonterminal">$crate::prelude_std::PartialOrd</span>&lt;$(<span class="macro-nonterminal">$right_ty</span>)+&gt; <span class="kw">for </span>$(<span class="macro-nonterminal">$left_ty</span>)+
+		<span class="kw">impl</span>$(&lt;$(<span class="macro-nonterminal">$generics_decl</span>)<span class="kw-2">*</span>&gt;)<span class="question-mark">? </span><span class="macro-nonterminal">$crate::prelude::PartialOrd</span>&lt;$(<span class="macro-nonterminal">$right_ty</span>)+&gt; <span class="kw">for </span>$(<span class="macro-nonterminal">$left_ty</span>)+
 		<span class="kw">where
-			</span>$(<span class="macro-nonterminal">$inner</span>)+: <span class="macro-nonterminal">$crate::prelude_std::PartialOrd</span>&lt;$(<span class="macro-nonterminal">$inner</span>)+&gt;
+			</span>$(<span class="macro-nonterminal">$inner</span>)+: <span class="macro-nonterminal">$crate::prelude::PartialOrd</span>&lt;$(<span class="macro-nonterminal">$inner</span>)+&gt;
 		{
 			<span class="attr">#[inline]
-			</span><span class="kw">fn </span>partial_cmp(<span class="kw-2">&amp;</span><span class="self">self</span>, other: <span class="kw-2">&amp;</span>$(<span class="macro-nonterminal">$right_ty</span>)+) -&gt; <span class="macro-nonterminal">$crate::prelude_std::Option</span>&lt;<span class="macro-nonterminal">$crate::prelude_std::cmp::Ordering</span>&gt; {
+			</span><span class="kw">fn </span>partial_cmp(<span class="kw-2">&amp;</span><span class="self">self</span>, other: <span class="kw-2">&amp;</span>$(<span class="macro-nonterminal">$right_ty</span>)+) -&gt; <span class="macro-nonterminal">$crate::prelude::Option</span>&lt;<span class="macro-nonterminal">$crate::prelude::cmp::Ordering</span>&gt; {
 				<span class="macro-nonterminal">$</span><span class="macro">crate::chain::decl_chain!</span> {
 					@<span class="macro-nonterminal">impl_partial_cmp_helper
 					</span>[$(<span class="macro-nonterminal">$inner</span>)+]
@@ -1190,7 +1190,7 @@
 			}
 
 			<span class="attr">#[inline]
-			</span><span class="kw">fn </span>lt(<span class="kw-2">&amp;</span><span class="self">self</span>, other: <span class="kw-2">&amp;</span>$(<span class="macro-nonterminal">$right_ty</span>)+) -&gt; <span class="macro-nonterminal">$crate::prelude_std::std::primitive::bool </span>{
+			</span><span class="kw">fn </span>lt(<span class="kw-2">&amp;</span><span class="self">self</span>, other: <span class="kw-2">&amp;</span>$(<span class="macro-nonterminal">$right_ty</span>)+) -&gt; <span class="macro-nonterminal">$crate::prelude::std::primitive::bool </span>{
 				<span class="macro-nonterminal">$</span><span class="macro">crate::chain::decl_chain!</span> {
 					@<span class="macro-nonterminal">impl_partial_cmp_helper
 					</span>[$(<span class="macro-nonterminal">$inner</span>)+]
@@ -1199,7 +1199,7 @@
 			}
 
 			<span class="attr">#[inline]
-			</span><span class="kw">fn </span>le(<span class="kw-2">&amp;</span><span class="self">self</span>, other: <span class="kw-2">&amp;</span>$(<span class="macro-nonterminal">$right_ty</span>)+) -&gt; <span class="macro-nonterminal">$crate::prelude_std::std::primitive::bool </span>{
+			</span><span class="kw">fn </span>le(<span class="kw-2">&amp;</span><span class="self">self</span>, other: <span class="kw-2">&amp;</span>$(<span class="macro-nonterminal">$right_ty</span>)+) -&gt; <span class="macro-nonterminal">$crate::prelude::std::primitive::bool </span>{
 				<span class="macro-nonterminal">$</span><span class="macro">crate::chain::decl_chain!</span> {
 					@<span class="macro-nonterminal">impl_partial_cmp_helper
 					</span>[$(<span class="macro-nonterminal">$inner</span>)+]
@@ -1208,7 +1208,7 @@
 			}
 
 			<span class="attr">#[inline]
-			</span><span class="kw">fn </span>gt(<span class="kw-2">&amp;</span><span class="self">self</span>, other: <span class="kw-2">&amp;</span>$(<span class="macro-nonterminal">$right_ty</span>)+) -&gt; <span class="macro-nonterminal">$crate::prelude_std::std::primitive::bool </span>{
+			</span><span class="kw">fn </span>gt(<span class="kw-2">&amp;</span><span class="self">self</span>, other: <span class="kw-2">&amp;</span>$(<span class="macro-nonterminal">$right_ty</span>)+) -&gt; <span class="macro-nonterminal">$crate::prelude::std::primitive::bool </span>{
 				<span class="macro-nonterminal">$</span><span class="macro">crate::chain::decl_chain!</span> {
 					@<span class="macro-nonterminal">impl_partial_cmp_helper
 					</span>[$(<span class="macro-nonterminal">$inner</span>)+]
@@ -1217,7 +1217,7 @@
 			}
 
 			<span class="attr">#[inline]
-			</span><span class="kw">fn </span>ge(<span class="kw-2">&amp;</span><span class="self">self</span>, other: <span class="kw-2">&amp;</span>$(<span class="macro-nonterminal">$right_ty</span>)+) -&gt; <span class="macro-nonterminal">$crate::prelude_std::std::primitive::bool </span>{
+			</span><span class="kw">fn </span>ge(<span class="kw-2">&amp;</span><span class="self">self</span>, other: <span class="kw-2">&amp;</span>$(<span class="macro-nonterminal">$right_ty</span>)+) -&gt; <span class="macro-nonterminal">$crate::prelude::std::primitive::bool </span>{
 				<span class="macro-nonterminal">$</span><span class="macro">crate::chain::decl_chain!</span> {
 					@<span class="macro-nonterminal">impl_partial_cmp_helper
 					</span>[$(<span class="macro-nonterminal">$inner</span>)+]
@@ -1232,7 +1232,7 @@
 		[$(<span class="macro-nonterminal">$inner</span>:tt)+]
 		<span class="macro-nonterminal">$</span><span class="kw">trait</span>:<span class="macro-nonterminal">ident</span>::<span class="macro-nonterminal">$trait_fn</span>:ident($(<span class="macro-nonterminal">$stuff</span>:tt)<span class="kw-2">*</span>)
 	} =&gt; {
-		&lt;$(<span class="macro-nonterminal">$inner</span>)+ <span class="kw">as </span><span class="macro-nonterminal">$crate::prelude_std</span>::<span class="macro-nonterminal">$</span><span class="kw">trait</span>&lt;$(<span class="macro-nonterminal">$inner</span>)+&gt;&gt;::<span class="macro-nonterminal">$trait_fn</span>($(<span class="macro-nonterminal">$stuff</span>)<span class="kw-2">*</span>)
+		&lt;$(<span class="macro-nonterminal">$inner</span>)+ <span class="kw">as </span><span class="macro-nonterminal">$crate::prelude</span>::<span class="macro-nonterminal">$</span><span class="kw">trait</span>&lt;$(<span class="macro-nonterminal">$inner</span>)+&gt;&gt;::<span class="macro-nonterminal">$trait_fn</span>($(<span class="macro-nonterminal">$stuff</span>)<span class="kw-2">*</span>)
 	};
 }
 <span class="kw">use </span>decl_chain;
@@ -1252,7 +1252,7 @@
 		</span>$(<span class="kw">where </span>$(<span class="macro-nonterminal">$where_clause</span>)<span class="kw-2">*</span>)<span class="question-mark">?
 		</span>{
 			<span class="kw">let </span><span class="macro-nonterminal">$inner </span>= &lt;<span class="self">Self </span><span class="kw">as </span><span class="macro-nonterminal">$crate::chain::Chain</span>&gt;::as_inner_mut(<span class="kw-2">&amp;mut </span><span class="self">self</span>);
-			<span class="macro-nonterminal">$crate::prelude_std::identity</span>::&lt;()&gt;(<span class="macro-nonterminal">$body</span>);
+			<span class="macro-nonterminal">$crate::prelude::identity</span>::&lt;()&gt;(<span class="macro-nonterminal">$body</span>);
 			<span class="self">self
 		</span>}
 	};
@@ -1271,7 +1271,7 @@
 		</span><span class="kw">pub fn </span><span class="macro-nonterminal">$fn_name</span>$(&lt;$(<span class="macro-nonterminal">$generics</span>)<span class="kw-2">*</span>&gt;)<span class="question-mark">?</span>(<span class="kw-2">mut </span><span class="macro-nonterminal">$self </span>$(<span class="macro-nonterminal">$args</span>)<span class="kw-2">*</span>) -&gt; <span class="self">Self
 		</span>$(<span class="kw">where </span>$(<span class="macro-nonterminal">$where_clause</span>)<span class="kw-2">*</span>)<span class="question-mark">?
 		</span>{
-			<span class="macro-nonterminal">$crate::prelude_std::identity</span>::&lt;()&gt;(<span class="macro-nonterminal">$body</span>);
+			<span class="macro-nonterminal">$crate::prelude::identity</span>::&lt;()&gt;(<span class="macro-nonterminal">$body</span>);
 			<span class="macro-nonterminal">$self
 		</span>}
 	};
@@ -1291,7 +1291,7 @@
 		</span>$(<span class="kw">where </span>$(<span class="macro-nonterminal">$where_clause</span>)<span class="kw-2">*</span>)<span class="question-mark">?
 		</span>{
 			<span class="kw">let </span><span class="macro-nonterminal">$inner </span>= &lt;<span class="self">Self </span><span class="kw">as </span><span class="macro-nonterminal">$crate::chain::Chain</span>&gt;::as_inner_mut(<span class="kw-2">&amp;mut </span><span class="self">self</span>);
-			<span class="macro-nonterminal">$crate::prelude_std::identity</span>::&lt;()&gt;(<span class="macro-nonterminal">$body</span>);
+			<span class="macro-nonterminal">$crate::prelude::identity</span>::&lt;()&gt;(<span class="macro-nonterminal">$body</span>);
 			<span class="self">self
 		</span>}
 	};
@@ -1310,7 +1310,7 @@
 		</span><span class="kw">pub unsafe fn </span><span class="macro-nonterminal">$fn_name</span>$(&lt;$(<span class="macro-nonterminal">$generics</span>)<span class="kw-2">*</span>&gt;)<span class="question-mark">?</span>(<span class="kw-2">mut </span><span class="macro-nonterminal">$self </span>$(<span class="macro-nonterminal">$args</span>)<span class="kw-2">*</span>) -&gt; <span class="self">Self
 		</span>$(<span class="kw">where </span>$(<span class="macro-nonterminal">$where_clause</span>)<span class="kw-2">*</span>)<span class="question-mark">?
 		</span>{
-			<span class="macro-nonterminal">$crate::prelude_std::identity</span>::&lt;()&gt;(<span class="macro-nonterminal">$body</span>);
+			<span class="macro-nonterminal">$crate::prelude::identity</span>::&lt;()&gt;(<span class="macro-nonterminal">$body</span>);
 			<span class="macro-nonterminal">$self
 		</span>}
 	};
