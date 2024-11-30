@@ -24,6 +24,7 @@ pub mod _changelog {}
 pub mod prelude;
 pub mod prelude_std;
 
+pub mod aoc;
 pub mod builder;
 pub mod chain;
 pub mod clock_timer;

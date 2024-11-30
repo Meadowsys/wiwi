@@ -38,6 +38,7 @@ use crate::prelude_std::*;
 ///
 /// assert_eq!(&*numbers, &[1, 2, 3, 4, 5]);
 /// ```
+#[must_use = "a chain always takes ownership of itself, performs the operation, then returns itself again"]
 #[repr(transparent)]
 pub struct GenericChain<T> {
 	inner: T
