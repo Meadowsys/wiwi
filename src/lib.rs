@@ -22,6 +22,7 @@ compile_error!("16-bit platforms are not supported yet (but please do file an is
 pub mod _changelog {}
 
 pub mod prelude;
+pub mod prelude_std;
 
 pub mod builder;
 pub mod chain;
