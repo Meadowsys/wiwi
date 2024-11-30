@@ -36,6 +36,7 @@ pub mod num;
 pub mod parser;
 pub mod rc;
 pub mod serialiser;
+pub mod slice;
 pub mod string;
 pub mod tuple;
 pub mod vh;

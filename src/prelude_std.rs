@@ -38,7 +38,6 @@ pub use std::{
 	env,
 	hint,
 	ptr,
-	slice,
 	str
 };
 
@@ -157,3 +156,6 @@ pub use std::sync::atomic::{
 	fence
 };
 pub use std::vec::Vec;
+
+// "augmented" modules by wiwi
+pub use crate::slice;
