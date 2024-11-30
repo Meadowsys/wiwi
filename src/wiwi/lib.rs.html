@@ -263,7 +263,9 @@
 <a href="#262" id="262">262</a>
 <a href="#263" id="263">263</a>
 <a href="#264" id="264">264</a>
-<a href="#265" id="265">265</a></pre></div><pre class="rust"><code><span class="attr">#![no_implicit_prelude]
+<a href="#265" id="265">265</a>
+<a href="#266" id="266">266</a>
+<a href="#267" id="267">267</a></pre></div><pre class="rust"><code><span class="attr">#![no_implicit_prelude]
 
 #![cfg_attr(docsrs, feature(doc_cfg))]
 
@@ -286,6 +288,7 @@
 #[doc = <span class="macro">include_str!</span>(<span class="string">"../CHANGELOG.md"</span>)]
 </span><span class="kw">pub mod </span>_changelog {}
 
+<span class="kw">pub mod </span>prelude;
 <span class="kw">pub mod </span>prelude_std;
 
 <span class="kw">pub mod </span>builder;
@@ -301,6 +304,7 @@
 <span class="kw">pub mod </span>parser;
 <span class="kw">pub mod </span>rc;
 <span class="kw">pub mod </span>serialiser;
+<span class="kw">pub mod </span>slice;
 <span class="kw">pub mod </span>string;
 <span class="kw">pub mod </span>tuple;
 <span class="kw">pub mod </span>vh;
