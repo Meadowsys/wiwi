@@ -1,7 +1,7 @@
 use crate::prelude_std::*;
 
 pub use self::array::ArrayChain;
-pub use self::generic::GenericChain;
+pub use self::generic::{ GenericChain, GenericChainConversion };
 pub use self::hashbrown_hashmap::HashMapChain;
 pub use self::vec::{ vec_chain, VecChain };
 

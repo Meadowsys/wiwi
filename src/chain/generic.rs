@@ -2,9 +2,11 @@ use crate::prelude_std::*;
 
 /// Generic (works with all types) chaining wrapper
 ///
-/// This wrapper's API is very very simple, consisting of just 3 functions:
+/// This wrapper's API is very very simple, consisting of just 4 functions:
 ///
 /// - [`new`](GenericChain::new) creates a new generic chainer (obviously :p)
+/// - [`map`](GenericChain::map) takes a closure that gets ownership of the inner
+///   value, and returns a new value, possibly of a different type
 /// - [`with_inner`](GenericChain::with_inner) takes a closure that can operate
 ///   on a passed-in mutable reference to the inner value
 /// - [`into_inner`](GenericChain::into_inner) will unwrap the struct and return
@@ -15,7 +17,7 @@ use crate::prelude_std::*;
 /// chainer.
 ///
 /// This type also does not implement any traits, not even the chain ones
-/// provided by this module. The API really is just those 3 functions.
+/// provided by this module. The API really is just those 4 functions.
 ///
 /// # Examples
 ///
@@ -48,6 +50,14 @@ impl<T> GenericChain<T> {
 	}
 
 	#[inline]
+	pub fn map<T2, F>(self, f: F) -> GenericChain<T2>
+	where
+		F: FnOnce(T) -> T2
+	{
+		GenericChain::new(f(self.into_inner()))
+	}
+
+	#[inline]
 	pub fn with_inner<F, Void>(mut self, f: F) -> Self
 	where
 		F: FnOnce(&mut T) -> Void
@@ -61,3 +71,13 @@ impl<T> GenericChain<T> {
 		self.inner
 	}
 }
+
+/// Chaining API to convert any ([`Sized`]) type to [`GenericChain<T>`] (`value.into_generic_chain()`)
+pub trait GenericChainConversion: Sized {
+	#[inline]
+	fn into_generic_chain(self) -> GenericChain<Self> {
+		GenericChain::new(self)
+	}
+}
+
+impl<T> GenericChainConversion for T {}
