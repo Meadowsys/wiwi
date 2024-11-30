@@ -21,7 +21,7 @@ compile_error!("16-bit platforms are not supported yet (but please do file an is
 #[doc = include_str!("../CHANGELOG.md")]
 pub mod _changelog {}
 
-pub mod prelude_std;
+pub mod prelude;
 
 pub mod builder;
 pub mod chain;
