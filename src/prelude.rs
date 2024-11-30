@@ -82,6 +82,7 @@ pub use std::convert::{
 };
 pub use std::default::Default;
 pub use std::fmt::{ self, Debug, Display };
+pub use std::fs::{ self, File };
 pub use std::future::{ self, Future, IntoFuture };
 pub use std::hash::{ self, Hash, Hasher };
 pub use std::iter::{
@@ -132,6 +133,7 @@ pub use std::ops::{
 };
 pub use std::option::{ self, Option, Option::Some, Option::None };
 pub use std::panic::{ UnwindSafe, RefUnwindSafe };
+pub use std::path::{ self, Path, PathBuf };
 pub use std::result::{ self, Result, Result::Ok, Result::Err };
 pub use std::rc::{ Rc, Weak as RcWeak };
 pub use std::string::{ self, String, ToString };
