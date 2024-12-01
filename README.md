@@ -1,9 +1,10 @@
 # wiwi
 
-A (not so) lil lib containing many things and Stuff&trade; (some useful, some silly), intending to serve as an "extended standard library" of sorts. Maybe even can serve as a replacement for `std` eventually, for some applications (we'll see!).
+A (not so) lil lib containing many things and Stuff&trade; (some useful, some silly), intending to serve as an "extended standard library" of sorts.
 
-<!-- ### Stable vs unstable features -->
-<!-- TODO: figure out unstable features and stuffs -->
+## Features
+
+`wiwi` can do many things, and it is probably best to check out the documentation for this crate, for the latest published version [on docs.rs](https://docs.rs/wiwi/latest/wiwi), or for the latest commit in the repo [on wiwi.kiwin.gay](https://wiwi.kiwin.gay/wiwi).
 
 ## Platform support
 
