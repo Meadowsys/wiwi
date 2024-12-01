@@ -3645,7 +3645,7 @@
 {
 	<span class="kw">type </span>Signed;
 
-	<span class="kw">fn </span>cast_signed(<span class="self">self</span>) -&gt; <span class="self">Self</span>::Signed;
+	<span class="kw">fn </span>into_signed(<span class="self">self</span>) -&gt; <span class="self">Self</span>::Signed;
 }
 
 <span class="kw">pub trait </span>IntSigned
@@ -3655,7 +3655,7 @@
 {
 	<span class="kw">type </span>Unsigned;
 
-	<span class="kw">fn </span>cast_unsigned(<span class="self">self</span>) -&gt; <span class="self">Self</span>::Unsigned;
+	<span class="kw">fn </span>into_unsigned(<span class="self">self</span>) -&gt; <span class="self">Self</span>::Unsigned;
 }
 
 <span class="macro">macro_rules!</span> impl_int_signed_and_unsigned {
@@ -3669,7 +3669,7 @@
 					reason = <span class="string">"implementation detail of a more restrictive API"
 				</span>)]
 				#[inline(always)]
-				</span><span class="kw">fn </span>cast_signed(<span class="self">self</span>) -&gt; <span class="macro-nonterminal">$signed </span>{ <span class="self">self </span><span class="kw">as _ </span>}
+				</span><span class="kw">fn </span>into_signed(<span class="self">self</span>) -&gt; <span class="macro-nonterminal">$signed </span>{ <span class="self">self </span><span class="kw">as _ </span>}
 			}
 
 			<span class="kw">impl </span>IntSigned <span class="kw">for </span><span class="macro-nonterminal">$signed </span>{
@@ -3680,7 +3680,7 @@
 					reason = <span class="string">"implementation detail of a more restrictive API"
 				</span>)]
 				#[inline(always)]
-				</span><span class="kw">fn </span>cast_unsigned(<span class="self">self</span>) -&gt; <span class="macro-nonterminal">$unsigned </span>{ <span class="self">self </span><span class="kw">as _ </span>}
+				</span><span class="kw">fn </span>into_unsigned(<span class="self">self</span>) -&gt; <span class="macro-nonterminal">$unsigned </span>{ <span class="self">self </span><span class="kw">as _ </span>}
 			}
 		)*
 	}

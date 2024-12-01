@@ -579,7 +579,19 @@
 <a href="#578" id="578">578</a>
 <a href="#579" id="579">579</a>
 <a href="#580" id="580">580</a>
-<a href="#581" id="581">581</a></pre></div><pre class="rust"><code><span class="kw">use </span><span class="kw">crate</span>::prelude::<span class="kw-2">*</span>;
+<a href="#581" id="581">581</a>
+<a href="#582" id="582">582</a>
+<a href="#583" id="583">583</a>
+<a href="#584" id="584">584</a>
+<a href="#585" id="585">585</a>
+<a href="#586" id="586">586</a>
+<a href="#587" id="587">587</a>
+<a href="#588" id="588">588</a>
+<a href="#589" id="589">589</a>
+<a href="#590" id="590">590</a>
+<a href="#591" id="591">591</a>
+<a href="#592" id="592">592</a>
+<a href="#593" id="593">593</a></pre></div><pre class="rust"><code><span class="kw">use </span><span class="kw">crate</span>::prelude::<span class="kw-2">*</span>;
 <span class="kw">use super</span>::{ chain_fn, AsChainInner, ChainInner <span class="kw">as _</span>, OutputStorage };
 
 <span class="macro">super::decl_chain!</span> {
@@ -875,6 +887,18 @@
 			<span class="comment">// SAFETY: caller promises that `new_len &lt;= capacity` and
 			// `..new_len` elements are initialised
 			</span>=&gt; <span class="kw">unsafe </span>{ inner.set_len(new_len) }
+	}
+
+	<span class="macro">chain_fn!</span> {
+		sort(inner) <span class="kw">where </span>{
+			T: Ord
+		} =&gt; inner.sort()
+	}
+
+	<span class="macro">chain_fn!</span> {
+		sort_by[F](inner, compare: F) <span class="kw">where </span>{
+			F: FnMut(<span class="kw-2">&amp;</span>T, <span class="kw-2">&amp;</span>T) -&gt; cmp::Ordering
+		} =&gt; inner.sort_by(compare)
 	}
 }
 
