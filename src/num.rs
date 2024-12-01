@@ -1450,7 +1450,7 @@ where
 {
 	type Signed;
 
-	fn cast_signed(self) -> Self::Signed;
+	fn into_signed(self) -> Self::Signed;
 }
 
 pub trait IntSigned
@@ -1460,7 +1460,7 @@ where
 {
 	type Unsigned;
 
-	fn cast_unsigned(self) -> Self::Unsigned;
+	fn into_unsigned(self) -> Self::Unsigned;
 }
 
 macro_rules! impl_int_signed_and_unsigned {
@@ -1474,7 +1474,7 @@ macro_rules! impl_int_signed_and_unsigned {
 					reason = "implementation detail of a more restrictive API"
 				)]
 				#[inline(always)]
-				fn cast_signed(self) -> $signed { self as _ }
+				fn into_signed(self) -> $signed { self as _ }
 			}
 
 			impl IntSigned for $signed {
@@ -1485,7 +1485,7 @@ macro_rules! impl_int_signed_and_unsigned {
 					reason = "implementation detail of a more restrictive API"
 				)]
 				#[inline(always)]
-				fn cast_unsigned(self) -> $unsigned { self as _ }
+				fn into_unsigned(self) -> $unsigned { self as _ }
 			}
 		)*
 	}
