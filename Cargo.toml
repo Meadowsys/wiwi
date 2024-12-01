@@ -69,15 +69,15 @@ members = [
 ]
 
 [workspace.package]
-version = "0.10.0"
+version = "0.11.0-pre.1"
 edition = "2021"
 authors = ["Meadowsys <meadowsys@kiwin.gay>"]
 repository = "https://github.com/meadowsys/wiwi"
 license = "MIT"
 
 [workspace.dependencies]
-wiwiwiwiwi = { path = "proc-macro", version = "=0.10.0" }
-wiwiwiwiwiwiwiwiwiwi = { path = "decl-macro", version = "=0.10.0" }
+wiwiwiwiwi = { path = "proc-macro", version = "=0.11.0-pre.1" }
+wiwiwiwiwiwiwiwiwiwi = { path = "decl-macro", version = "=0.11.0-pre.1" }
 
 chrono = { version = "0.4.38", features = ["clock"] }
 criterion = { version = "0.5.1", features = ["html_reports"] }
