@@ -295,6 +295,18 @@ impl<T> VecChain<T> {
 			// `..new_len` elements are initialised
 			=> unsafe { inner.set_len(new_len) }
 	}
+
+	chain_fn! {
+		sort(inner) where {
+			T: Ord
+		} => inner.sort()
+	}
+
+	chain_fn! {
+		sort_by[F](inner, compare: F) where {
+			F: FnMut(&T, &T) -> cmp::Ordering
+		} => inner.sort_by(compare)
+	}
 }
 
 /*
