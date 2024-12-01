@@ -1058,7 +1058,7 @@ checksum = "589f6da84c646204747d1270a2a5661ea66ed1cced2631d546fdfb155959f9ec"
 
 [[package]]
 name = "wiwi"
-version = "0.11.0-pre.1"
+version = "0.11.0-pre.2"
 dependencies = [
  "chrono",
  "criterion",
@@ -1076,14 +1076,14 @@ dependencies = [
 
 [[package]]
 name = "wiwi-scripts"
-version = "0.11.0-pre.1"
+version = "0.11.0-pre.2"
 dependencies = [
  "wiwi",
 ]
 
 [[package]]
 name = "wiwiwiwiwi"
-version = "0.11.0-pre.1"
+version = "0.11.0-pre.2"
 dependencies = [
  "darling",
  "proc-macro2",
@@ -1093,7 +1093,7 @@ dependencies = [
 
 [[package]]
 name = "wiwiwiwiwiwiwiwiwiwi"
-version = "0.11.0-pre.1"
+version = "0.11.0-pre.2"
 
 [[package]]
 name = "z85"
