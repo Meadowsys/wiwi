@@ -36,12 +36,18 @@ impl<K, V, S> HashMapChain<K, V, S> {
 	}
 }
 
+impl<K, V, S> HashMapChain<K, V, S> {
+	chain_fn! {
+		clear(inner)
+			=> inner.clear()
+	}
+}
+
 /*
 Methods
 allocation_size
 allocator
 capacity
-clear
 contains_key
 drain
 entry
