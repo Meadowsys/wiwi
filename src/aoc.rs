@@ -50,5 +50,6 @@ where
 pub mod prelude {
 	pub use crate::prelude::*;
 	pub use crate::aoc::{ self, * };
-	pub use crate::chain::{ GenericChain, GenericChainConversion };
+	pub use crate::chain::{ self, * };
+	pub use crate::num::*;
 }
