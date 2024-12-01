@@ -13,14 +13,7 @@ exclude = [
 	"rust-toolchain.toml"
 ]
 categories = [
-	# "data-structures" # ?
-	# "internationalization" # ?
-	# "localization" # ?
-	# "mathematics" # ?
-	# "encoding" # ?
 	"rust-patterns"
-	# "wasm" # ?
-	# "web-programming" # ?
 ]
 keywords = [
 	"fundamental",
@@ -44,30 +37,11 @@ tokio = { workspace = true }
 nightly = []
 # unstable = []
 
-[build-dependencies]
-# cc = "1.1.6"
-# dotenvy = "0.15.7"
-
 [dev-dependencies]
 criterion = { workspace = true }
 hex = { workspace = true }
 rand = { workspace = true }
 z85 = { workspace = true }
-
-# [[bench]]
-# name = "hex-and-z85"
-# required-features = [
-# 	# "base32",
-# 	# "base64",
-# 	"hex",
-# 	"z85",
-# ]
-# harness = false
-
-[profile.bench]
-lto = true
-codegen-units = 1
-opt-level = 3
 
 [lints]
 workspace = true
@@ -105,33 +79,20 @@ license = "MIT"
 wiwiwiwiwi = { path = "proc-macro", version = "=0.10.0" }
 wiwiwiwiwiwiwiwiwiwi = { path = "decl-macro", version = "=0.10.0" }
 
-# argon2 = "0.5.3"
-# chacha20poly1305 = "0.10.1"
 chrono = { version = "0.4.38", features = ["clock"] }
 criterion = { version = "0.5.1", features = ["html_reports"] }
 darling = "0.20.10"
 hashbrown = { version = "0.15.0", features = ["default-hasher"] }
 hex = "0.4.3"
 home = "0.5.9"
-# httparse = "1.8.0"
-# image = "0.25.1"
-# ordered version = "4.2.0"
-# p384 = "0.13.0"
 parking_lot = "0.12.3"
 proc-macro2 = "1.0.83"
 quote = "1.0.36"
 rand = "0.8.5"
-# rand_chacha = "0.3.1"
-# serde = "1.0.204"
-# serde_json = "1.0.116"
-# spin_sleep = "1.2.0"
 syn = "2.0.66"
 thiserror = { version = "1.0.69" }
 tokio = { version = "1.41.1", features = ["full"] }
-# url = "2.5.0"
-# uuid = "1.8.0"
 z85 = "3.0.5"
-# zeroize = "1.7.0"
 
 [workspace.lints.rust]
 # missing_docs = "warn"
