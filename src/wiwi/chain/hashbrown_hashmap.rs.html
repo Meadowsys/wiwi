@@ -131,7 +131,13 @@
 <a href="#130" id="130">130</a>
 <a href="#131" id="131">131</a>
 <a href="#132" id="132">132</a>
-<a href="#133" id="133">133</a></pre></div><pre class="rust"><code><span class="kw">extern crate </span>hashbrown;
+<a href="#133" id="133">133</a>
+<a href="#134" id="134">134</a>
+<a href="#135" id="135">135</a>
+<a href="#136" id="136">136</a>
+<a href="#137" id="137">137</a>
+<a href="#138" id="138">138</a>
+<a href="#139" id="139">139</a></pre></div><pre class="rust"><code><span class="kw">extern crate </span>hashbrown;
 
 <span class="kw">use </span><span class="kw">crate</span>::prelude::<span class="kw-2">*</span>;
 <span class="kw">use super</span>::{ chain_fn, ChainInner <span class="kw">as _ </span>};
@@ -169,12 +175,18 @@
 	}
 }
 
+<span class="kw">impl</span>&lt;K, V, S&gt; HashMapChain&lt;K, V, S&gt; {
+	<span class="macro">chain_fn!</span> {
+		clear(inner)
+			=&gt; inner.clear()
+	}
+}
+
 <span class="comment">/*
 Methods
 allocation_size
 allocator
 capacity
-clear
 contains_key
 drain
 entry
