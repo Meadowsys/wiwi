@@ -41,6 +41,58 @@ macro_rules! __with_cloned_impl {
 	};
 }
 
+#[macro_export]
+macro_rules! with_cloned_2 {
+	($($stuff:tt)*) => {
+		// hide potential distracting implementation details in docs
+		$crate::__with_cloned_impl_2! { $($stuff)* }
+	}
+}
+
+#[doc(hidden)]
+#[macro_export]
+macro_rules! __with_cloned_impl_2 {
+	{ $(,)? in $($stuff:tt)* } => {
+		{
+			$($stuff)*
+		}
+	};
+
+	{ $(,)? _ $($rest:tt)* } => {
+		{
+			$crate::__with_cloned_impl_2! { $($rest)* }
+		}
+	};
+
+	{ $(,)? mut &$thing:ident $($rest:tt)* } => {
+		{
+			let mut $thing = ::core::clone::Clone::clone($thing);
+			$crate::__with_cloned_impl_2! { $($rest)* }
+		}
+	};
+
+	{ $(,)? mut $thing:ident $($rest:tt)* } => {
+		{
+			let mut $thing = ::core::clone::Clone::clone(&$thing);
+			$crate::__with_cloned_impl_2! { $($rest)* }
+		}
+	};
+
+	{ $(,)? &$thing:ident $($rest:tt)* } => {
+		{
+			let $thing = ::core::clone::Clone::clone($thing);
+			$crate::__with_cloned_impl_2! { $($rest)* }
+		}
+	};
+
+	{ $(,)? $thing:ident $($rest:tt)* } => {
+		{
+			let $thing = ::core::clone::Clone::clone(&$thing);
+			$crate::__with_cloned_impl_2! { $($rest)* }
+		}
+	};
+}
+
 // #[cfg(test)]
 // mod tests {
 // 	extern crate rand;
