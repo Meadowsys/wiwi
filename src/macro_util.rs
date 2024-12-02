@@ -169,3 +169,5 @@ pub use wiwiwiwiwiwiwiwiwiwi::void;
 /// ```
 #[doc(inline)]
 pub use wiwiwiwiwiwiwiwiwiwi::with_cloned;
+
+pub use wiwiwiwiwiwiwiwiwiwi::with_cloned_2;
