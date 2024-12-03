@@ -171,3 +171,4 @@ pub use wiwiwiwiwiwiwiwiwiwi::void;
 pub use wiwiwiwiwiwiwiwiwiwi::with_cloned;
 
 pub use wiwiwiwiwiwiwiwiwiwi::with_cloned_2;
+pub use wiwiwiwiwiwiwiwiwiwi::with_cloned_3;

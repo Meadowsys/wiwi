@@ -93,6 +93,142 @@ macro_rules! __with_cloned_impl_2 {
 	};
 }
 
+#[macro_export]
+macro_rules! with_cloned_3 {
+	($($stuff:tt)*) => {
+		// hide potential distracting implementation details in docs
+		$crate::__with_cloned_impl_3! { $($stuff)* }
+	}
+}
+
+#[doc(hidden)]
+#[macro_export]
+macro_rules! __with_cloned_impl_3 {
+	{ _ => $rest:expr } => {
+		$rest
+	};
+
+	// arbitrary complex expr, with seperate ident
+
+	{ mut $name:ident = $thing:expr => $rest:expr } => {
+		{
+			let mut $name = ::core::clone::Clone::clone(&$thing);
+			$rest
+		}
+	};
+
+	{ $name:ident = $thing:expr => $rest:expr } => {
+		{
+			let $name = ::core::clone::Clone::clone(&$thing);
+			$rest
+		}
+	};
+
+	{ mut $name:ident = $thing:expr, $($rest:tt)* } => {
+		{
+			let mut $name = ::core::clone::Clone::clone(&$thing);
+			$crate::__with_cloned_impl_3! { $($rest)* }
+		}
+	};
+
+	{ $name:ident = $thing:expr, $($rest:tt)* } => {
+		{
+			let $name = ::core::clone::Clone::clone(&$thing);
+			$crate::__with_cloned_impl_3! { $($rest)* }
+		}
+	};
+
+	// deref once
+
+	{ mut *$thing:ident => $rest:expr } => {
+		{
+			let mut $thing = ::core::clone::Clone::clone($thing);
+			$rest
+		}
+	};
+
+	{ *$thing:ident => $rest:expr } => {
+		{
+			let $thing = ::core::clone::Clone::clone($thing);
+			$rest
+		}
+	};
+
+	{ mut *$thing:ident, $($rest:tt)* } => {
+		{
+			let mut $thing = ::core::clone::Clone::clone($thing);
+			$crate::__with_cloned_impl_3! { $($rest)* }
+		}
+	};
+
+	{ *$thing:ident, $($rest:tt)* } => {
+		{
+			let $thing = ::core::clone::Clone::clone($thing);
+			$crate::__with_cloned_impl_3! { $($rest)* }
+		}
+	};
+
+	// deref twice
+
+	{ mut **$thing:ident => $rest:expr } => {
+		{
+			let mut $thing = ::core::clone::Clone::clone(*$thing);
+			$rest
+		}
+	};
+
+	{ **$thing:ident => $rest:expr } => {
+		{
+			let $thing = ::core::clone::Clone::clone(*$thing);
+			$rest
+		}
+	};
+
+	{ mut **$thing:ident, $($rest:tt)* } => {
+		{
+			let mut $thing = ::core::clone::Clone::clone(*$thing);
+			$crate::__with_cloned_impl_3! { $($rest)* }
+		}
+	};
+
+	{ **$thing:ident, $($rest:tt)* } => {
+		{
+			let $thing = ::core::clone::Clone::clone(*$thing);
+			$crate::__with_cloned_impl_3! { $($rest)* }
+		}
+	};
+
+	// simple ident (a la original `with_cloned!`)
+
+	{ mut $thing:ident => $rest:expr } => {
+		{
+			let mut $thing = ::core::clone::Clone::clone(&$thing);
+			$rest
+		}
+	};
+
+	{ $thing:ident => $rest:expr } => {
+		{
+			let $thing = ::core::clone::Clone::clone(&$thing);
+			$rest
+		}
+	};
+
+	{ mut $thing:ident, $($rest:tt)* } => {
+		{
+			let mut $thing = ::core::clone::Clone::clone(&$thing);
+			$crate::__with_cloned_impl_3! { $($rest)* }
+		}
+	};
+
+	{ $thing:ident, $($rest:tt)* } => {
+		{
+			let $thing = ::core::clone::Clone::clone(&$thing);
+			$crate::__with_cloned_impl_3! { $($rest)* }
+		}
+	};
+}
+
 // #[cfg(test)]
 // mod tests {
 // 	extern crate rand;
