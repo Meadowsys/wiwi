@@ -1,7 +1,9 @@
 extern crate hashbrown;
 
 use crate::prelude::*;
-use super::{ chain_fn, ChainInner as _ };
+use crate::macro_util::void;
+use super::{ chain_fn, ChainInner as _, OutputStorage };
+use hash::BuildHasher;
 use hashbrown::{ DefaultHashBuilder, HashMap };
 
 super::decl_chain! {
@@ -40,6 +42,24 @@ impl<K, V, S> HashMapChain<K, V, S> {
 	chain_fn! {
 		clear(inner)
 			=> inner.clear()
+	}
+
+	chain_fn! {
+		insert(inner, k: K, v: V) where {
+			K: Eq + Hash,
+			S: BuildHasher
+		} => void!(inner.insert(k, v))
+	}
+
+	chain_fn! {
+		insert_and_take_old[O](inner, k: K, v: V, out: O) where {
+			K: Eq + Hash,
+			S: BuildHasher,
+			O: OutputStorage<Option<V>>
+		} => {
+			// SAFETY: we always write once to `out`
+			unsafe { out.store(inner.insert(k, v)) }
+		}
 	}
 }
 
