@@ -2,10 +2,18 @@ use proc_macro::TokenStream;
 use syn::parse_macro_input;
 
 mod builder;
+mod with_cloned;
 
 #[proc_macro_attribute]
 pub fn builder(attr: TokenStream, item: TokenStream) -> TokenStream {
 	builder::builder(attr, parse_macro_input!(item)).into()
+}
+
+#[proc_macro]
+pub fn with_cloned(input: TokenStream) -> TokenStream {
+	match with_cloned::with_cloned(input.into()) {
+		Ok(ts) | Err(ts) => { ts.into() }
+	}
 }
 
 // #[cfg(feature = "memory-usage")]
