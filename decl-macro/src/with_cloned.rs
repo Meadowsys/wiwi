@@ -267,6 +267,30 @@ macro_rules! __with_cloned_impl_4 {
 		$crate::__with_cloned_impl_4! { @impl {} { $($expr)* } { $($expr)* } $($rest)* }
 	};
 
+	// api, one deref
+	{ mut *$item:ident $($rest:tt)* } => {
+		$crate::__with_cloned_impl_4! { @impl mut { $item } { *$item } $($rest)* }
+	};
+	{ *$item:ident $($rest:tt)* } => {
+		$crate::__with_cloned_impl_4! { @impl { $item } { *$item } $($rest)* }
+	};
+
+	// api, two derefs
+	{ mut **$item:ident $($rest:tt)* } => {
+		$crate::__with_cloned_impl_4! { @impl mut { $item } { **$item } $($rest)* }
+	};
+	{ **$item:ident $($rest:tt)* } => {
+		$crate::__with_cloned_impl_4! { @impl { $item } { **$item } $($rest)* }
+	};
+
+	// api, field access
+	{ mut $parent:ident.$item:ident $($rest:tt)* } => {
+		$crate::__with_cloned_impl_4! { @impl mut { $item } { $parent.$item } $($rest)* }
+	};
+	{ $parent:ident.$item:ident $($rest:tt)* } => {
+		$crate::__with_cloned_impl_4! { @impl { $item } { $parent.$item } $($rest)* }
+	};
+
 	// api, ident
 	{ mut $item:ident $($rest:tt)* } => {
 		$crate::__with_cloned_impl_4! { @impl mut { $item } { $item } $($rest)* }
