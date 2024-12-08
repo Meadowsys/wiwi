@@ -229,6 +229,147 @@ macro_rules! __with_cloned_impl_3 {
 	};
 }
 
+#[macro_export]
+macro_rules! with_cloned_4 {
+	($($stuff:tt)*) => {
+		// hide potential distracting implementation details in docs
+		$crate::__with_cloned_impl_4! { $($stuff)* }
+	}
+}
+
+#[doc(hidden)]
+#[macro_export]
+macro_rules! __with_cloned_impl_4 {
+	// dud case
+	{ _ => $expr:expr } => { $expr };
+
+	// api, arbitrary expr with provided ident, more args
+	{ mut $item:ident = $expr:expr, $($rest:tt)* } => {
+		$crate::__with_cloned_impl_4! { @impl mut { $item } { $($expr)* }, $($rest)* }
+	};
+	{ $item:ident = $expr:expr, $($rest:tt)* } => {
+		$crate::__with_cloned_impl_4! { @impl { $item } { $($expr)* }, $($rest)* }
+	};
+
+	// api, arbitrary expr with provided ident, final arg
+	{ mut $item:ident = $expr:expr => $body:expr } => {
+		$crate::__with_cloned_impl_4! { @impl mut { $item } { $expr } => $body }
+	};
+	{ $item:ident = $expr:expr => $body:expr } => {
+		$crate::__with_cloned_impl_4! { @impl { $item } { $expr } => $body }
+	};
+
+	// api, parens wrapped arbitrary expr
+	{ mut ($($expr:tt)*) $($rest:tt)* } => {
+		$crate::__with_cloned_impl_4! { @impl mut {} { $($expr)* } { $($expr)* } $($rest)* }
+	};
+	{ ($($expr:tt)*) $($rest:tt)* } => {
+		$crate::__with_cloned_impl_4! { @impl {} { $($expr)* } { $($expr)* } $($rest)* }
+	};
+
+	// api, ident
+	{ mut $item:ident $($rest:tt)* } => {
+		$crate::__with_cloned_impl_4! { @impl mut { $item } { $item } $($rest)* }
+	};
+	{ $item:ident $($rest:tt)* } => {
+		$crate::__with_cloned_impl_4! { @impl { $item } { $item } $($rest)* }
+	};
+
+	// impl, base case, more args
+	{ @impl mut { $item:ident } { $expr:expr }, $($rest:tt)* } => {
+		{
+			let mut $item = ::core::clone::Clone::clone(&$expr);
+			$crate::__with_cloned_impl_4! { $($rest)* }
+		}
+	};
+	{ @impl { $item:ident } { $expr:expr }, $($rest:tt)* } => {
+		{
+			let $item = ::core::clone::Clone::clone(&$expr);
+			$crate::__with_cloned_impl_4! { $($rest)* }
+		}
+	};
+
+	// impl, base case, final arg
+	{ @impl mut { $item:ident } { $expr:expr } => $body:expr } => {
+		{
+			let mut $item = ::core::clone::Clone::clone(&$expr);
+			$body
+		}
+	};
+	{ @impl { $item:ident } { $expr:expr } => $body:expr } => {
+		{
+			let $item = ::core::clone::Clone::clone(&$expr);
+			$body
+		}
+	};
+
+	// impl, ident
+	{ @impl mut {} { $item:ident } { $expr:expr } $($rest:tt)* } => {
+		$crate::__with_cloned_impl_4! { @impl mut { $item } { $expr } $($rest)* }
+	};
+	{ @impl {} { $item:ident } { $expr:expr } $($rest:tt)* } => {
+		$crate::__with_cloned_impl_4! { @impl { $item } { $expr } $($rest)* }
+	};
+
+	// impl, deref
+	{ @impl mut {} { *$($item_rest:tt)* } { $expr:expr } $($rest:tt)* } => {
+		$crate::__with_cloned_impl_4! { @impl mut {} { $($item_rest)* } { $expr } $($rest)* }
+	};
+	{ @impl {} { *$($item_rest:tt)* } { $expr:expr } $($rest:tt)* } => {
+		$crate::__with_cloned_impl_4! { @impl {} { $($item_rest)* } { $expr } $($rest)* }
+	};
+
+	// impl, `as_ref` case
+	{ @impl mut {} { $item:ident.as_ref() $($item_rest:tt)* } { $expr:expr } $($rest:tt)* } => {
+		$crate::__with_cloned_impl_4! { @impl mut {} { $item $($item_rest)* } { $expr } $($rest)* }
+	};
+	{ @impl {} { $item:ident.as_ref() $($item_rest:tt)* } { $expr:expr } $($rest:tt)* } => {
+		$crate::__with_cloned_impl_4! { @impl {} { $item $($item_rest)* } { $expr } $($rest)* }
+	};
+
+	// impl, `as_mut` case
+	{ @impl mut {} { $item:ident.as_mut() $($item_rest:tt)* } { $expr:expr } $($rest:tt)* } => {
+		$crate::__with_cloned_impl_4! { @impl mut {} { $item $($item_rest)* } { $expr } $($rest)* }
+	};
+	{ @impl {} { $item:ident.as_mut() $($item_rest:tt)* } { $expr:expr } $($rest:tt)* } => {
+		$crate::__with_cloned_impl_4! { @impl {} { $item $($item_rest)* } { $expr } $($rest)* }
+	};
+
+	// impl, fn call
+	{ @impl mut {} { $item:ident($($args:tt)*) $($item_rest:tt)* } { $expr:expr } $($rest:tt)* } => {
+		$crate::__with_cloned_impl_4! { @impl mut {} { $item $($item_rest)* } { $expr } $($rest)* }
+	};
+	{ @impl {} { $item:ident($($args:tt)*) $($item_rest:tt)* } { $expr:expr } $($rest:tt)* } => {
+		$crate::__with_cloned_impl_4! { @impl {} { $item $($item_rest)* } { $expr } $($rest)* }
+	};
+
+	// impl, field access
+	{ @impl mut {} { $parent:ident.$($item_rest:tt)* } { $expr:expr } $($rest:tt)* } => {
+		$crate::__with_cloned_impl_4! { @impl mut {} { $($item_rest)* } { $expr } $($rest)* }
+	};
+	{ @impl {} { $parent:ident.$($item_rest:tt)* } { $expr:expr } $($rest:tt)* } => {
+		$crate::__with_cloned_impl_4! { @impl {} { $($item_rest)* } { $expr } $($rest)* }
+	};
+
+	// impl, short circuit op
+	{ @impl mut {} { $item:ident? $($item_rest:tt)* } { $expr:expr } $($rest:tt)* } => {
+		$crate::__with_cloned_impl_4! { @impl mut {} { $item $($item_rest)* } { $expr } $($rest)* }
+	};
+	{ @impl {} { $item:ident? $($item_rest:tt)* } { $expr:expr } $($rest:tt)* } => {
+		$crate::__with_cloned_impl_4! { @impl {} { $item $($item_rest)* } { $expr } $($rest)* }
+	};
+
+	// impl, parens wrapped expr
+	{ @impl mut {} { ($($item:tt)*) $($item_rest:tt)* } { $expr:expr } $($rest:tt)* } => {
+		$crate::__with_cloned_impl_4! { @impl mut {} { $($item)* $($item_rest)* } { $expr } $($rest)* }
+	};
+	{ @impl {} { ($($item:tt)*) $($item_rest:tt)* } { $expr:expr } $($rest:tt)* } => {
+		$crate::__with_cloned_impl_4! { @impl {} { $($item)* $($item_rest)* } { $expr } $($rest)* }
+	};
+
+	{} => { compile_error! { "uwu" } };
+}
+
 // #[cfg(test)]
 // mod tests {
 // 	extern crate rand;

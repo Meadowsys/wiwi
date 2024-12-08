@@ -173,4 +173,5 @@ pub use wiwiwiwiwiwiwiwiwiwi::with_cloned;
 
 pub use wiwiwiwiwiwiwiwiwiwi::with_cloned_2;
 pub use wiwiwiwiwiwiwiwiwiwi::with_cloned_3;
-pub use wiwiwiwiwi::with_cloned as with_cloned_4;
+pub use wiwiwiwiwiwiwiwiwiwi::with_cloned_4;
+pub use wiwiwiwiwi::with_cloned as with_cloned_proc;
