@@ -137,10 +137,32 @@
 <a href="#136" id="136">136</a>
 <a href="#137" id="137">137</a>
 <a href="#138" id="138">138</a>
-<a href="#139" id="139">139</a></pre></div><pre class="rust"><code><span class="kw">extern crate </span>hashbrown;
+<a href="#139" id="139">139</a>
+<a href="#140" id="140">140</a>
+<a href="#141" id="141">141</a>
+<a href="#142" id="142">142</a>
+<a href="#143" id="143">143</a>
+<a href="#144" id="144">144</a>
+<a href="#145" id="145">145</a>
+<a href="#146" id="146">146</a>
+<a href="#147" id="147">147</a>
+<a href="#148" id="148">148</a>
+<a href="#149" id="149">149</a>
+<a href="#150" id="150">150</a>
+<a href="#151" id="151">151</a>
+<a href="#152" id="152">152</a>
+<a href="#153" id="153">153</a>
+<a href="#154" id="154">154</a>
+<a href="#155" id="155">155</a>
+<a href="#156" id="156">156</a>
+<a href="#157" id="157">157</a>
+<a href="#158" id="158">158</a>
+<a href="#159" id="159">159</a></pre></div><pre class="rust"><code><span class="kw">extern crate </span>hashbrown;
 
 <span class="kw">use </span><span class="kw">crate</span>::prelude::<span class="kw-2">*</span>;
-<span class="kw">use super</span>::{ chain_fn, ChainInner <span class="kw">as _ </span>};
+<span class="kw">use </span><span class="kw">crate</span>::macro_util::void;
+<span class="kw">use super</span>::{ chain_fn, ChainInner <span class="kw">as _</span>, OutputStorage };
+<span class="kw">use </span>hash::BuildHasher;
 <span class="kw">use </span>hashbrown::{ DefaultHashBuilder, HashMap };
 
 <span class="macro">super::decl_chain!</span> {
@@ -179,6 +201,24 @@
 	<span class="macro">chain_fn!</span> {
 		clear(inner)
 			=&gt; inner.clear()
+	}
+
+	<span class="macro">chain_fn!</span> {
+		insert(inner, k: K, v: V) <span class="kw">where </span>{
+			K: Eq + Hash,
+			S: BuildHasher
+		} =&gt; <span class="macro">void!</span>(inner.insert(k, v))
+	}
+
+	<span class="macro">chain_fn!</span> {
+		insert_and_take_old[O](inner, k: K, v: V, out: O) <span class="kw">where </span>{
+			K: Eq + Hash,
+			S: BuildHasher,
+			O: OutputStorage&lt;<span class="prelude-ty">Option</span>&lt;V&gt;&gt;
+		} =&gt; {
+			<span class="comment">// SAFETY: we always write once to `out`
+			</span><span class="kw">unsafe </span>{ out.store(inner.insert(k, v)) }
+		}
 	}
 }
 

@@ -39,14 +39,30 @@
 <a href="#38" id="38">38</a>
 <a href="#39" id="39">39</a>
 <a href="#40" id="40">40</a>
-<a href="#41" id="41">41</a></pre></div><pre class="rust"><code><span class="kw">use </span>proc_macro::TokenStream;
+<a href="#41" id="41">41</a>
+<a href="#42" id="42">42</a>
+<a href="#43" id="43">43</a>
+<a href="#44" id="44">44</a>
+<a href="#45" id="45">45</a>
+<a href="#46" id="46">46</a>
+<a href="#47" id="47">47</a>
+<a href="#48" id="48">48</a>
+<a href="#49" id="49">49</a></pre></div><pre class="rust"><code><span class="kw">use </span>proc_macro::TokenStream;
 <span class="kw">use </span>syn::parse_macro_input;
 
 <span class="kw">mod </span>builder;
+<span class="kw">mod </span>with_cloned;
 
 <span class="attr">#[proc_macro_attribute]
 </span><span class="kw">pub fn </span>builder(attr: TokenStream, item: TokenStream) -&gt; TokenStream {
 	builder::builder(attr, <span class="macro">parse_macro_input!</span>(item)).into()
+}
+
+<span class="attr">#[proc_macro]
+</span><span class="kw">pub fn </span>with_cloned(input: TokenStream) -&gt; TokenStream {
+	<span class="kw">match </span>with_cloned::with_cloned(input.into()) {
+		<span class="prelude-val">Ok</span>(ts) | <span class="prelude-val">Err</span>(ts) =&gt; { ts.into() }
+	}
 }
 
 <span class="comment">// #[cfg(feature = "memory-usage")]

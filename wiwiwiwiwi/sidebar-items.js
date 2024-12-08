@@ -1,1 +1,1 @@
-window.SIDEBAR_ITEMS = {"attr":["builder"]};
+window.SIDEBAR_ITEMS = {"attr":["builder"],"macro":["with_cloned"]};
