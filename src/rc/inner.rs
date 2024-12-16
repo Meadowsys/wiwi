@@ -1,4 +1,5 @@
 use crate::prelude::*;
+use crate::macro_util::void;
 use self::alloc_mod::Layout;
 use self::atomic::Ordering::*;
 
@@ -86,7 +87,7 @@ where
 	// - because just allocated, we must have exclusive reference to `instance`
 	// - reference is used just for this single `write` statement and
 	//   dropped immediately after
-	unsafe { value_uninit(instance).write(value); }
+	unsafe { void!(value_uninit(instance).write(value)) }
 
 	// SAFETY: instance just allocated in statement above
 	let ptr = unsafe { slice_thin_ptr(instance).as_ptr() };
@@ -129,7 +130,7 @@ where
 	// - because just allocated, we must have exclusive reference to `instance`
 	// - reference is used just for this single `write` statement and
 	//   dropped immediately after
-	unsafe { value_uninit(instance).write(value); }
+	unsafe { void!(value_uninit(instance).write(value)) }
 
 	// SAFETY: instance just allocated in statement above
 	let ptr = unsafe { slice_thin_ptr(instance).as_ptr() };
@@ -174,11 +175,11 @@ where
 	// - because just allocated, we must have exclusive reference to `instance`
 	// - reference is used just for this single `write` statement and
 	//   dropped immediately after
-	unsafe { counter_uninit(instance).write(C::new()); }
+	unsafe { void!(counter_uninit(instance).write(C::new())) }
 
 	// we can fill in length since that will never change
 	// SAFETY: same as above
-	unsafe { slice_len_uninit(instance).write(slice_len); }
+	unsafe { void!(slice_len_uninit(instance).write(slice_len)) }
 
 	instance
 }
