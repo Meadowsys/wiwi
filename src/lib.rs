@@ -31,6 +31,7 @@ pub mod clock_timer;
 pub mod encoding;
 pub mod filetypes;
 pub mod lazy_wrap;
+pub mod lsl;
 pub mod macro_util;
 pub mod nominal;
 pub mod num;
