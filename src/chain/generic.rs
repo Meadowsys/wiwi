@@ -1,4 +1,5 @@
 use crate::prelude::*;
+use crate::macro_util::void;
 
 /// Generic (works with all types) chaining wrapper
 ///
@@ -51,10 +52,7 @@ impl<T> GenericChain<T> {
 	}
 
 	#[inline]
-	pub fn map<T2, F>(self, f: F) -> GenericChain<T2>
-	where
-		F: FnOnce(T) -> T2
-	{
+	pub fn map<T2>(self, f: impl FnOnce(T) -> T2) -> GenericChain<T2> {
 		GenericChain::new(f(self.into_inner()))
 	}
 
@@ -63,7 +61,7 @@ impl<T> GenericChain<T> {
 	where
 		F: FnOnce(&mut T) -> Void
 	{
-		let _void = f(&mut self.inner);
+		void!(f(&mut self.inner));
 		self
 	}
 

@@ -34,6 +34,8 @@ pub use std::{
 	stringify,
 	vec,
 
+	thread_local,
+
 	array,
 	env,
 	hint,
