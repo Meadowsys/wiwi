@@ -561,7 +561,7 @@ pub unsafe trait Counter: Sized {
 pub struct ThreadCounter {
 	strong: cell::Cell<usize>,
 	weak: cell::Cell<usize>,
-	_not_thread_safe: PhantomData<*const ()>
+	__not_thread_safe: PhantomData<*const ()>
 }
 
 // SAFETY: we implement everything correctly
@@ -571,7 +571,7 @@ unsafe impl Counter for ThreadCounter {
 		Self {
 			strong: cell::Cell::new(1),
 			weak: cell::Cell::new(1),
-			_not_thread_safe: PhantomData
+			__not_thread_safe: PhantomData
 		}
 	}
 
