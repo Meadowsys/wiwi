@@ -190,28 +190,31 @@ where
 ///
 /// This instance must be fully initialised, and this must be the first time
 /// this function is called on this particular `instance`.
+///
+/// There also must not be any existing references to `slice`
+/// so we can safely create an exclusive reference to the slice to drop it.
+/// Ideally we can do this through a fat pointer directly without needing to
+/// create an intermediate wide reference, but, those APIs are unstable right
+/// now smh
 #[inline]
 pub unsafe fn drop_instance<C, V, S>(instance: RcInner<C, V, S>)
 where
 	C: Counter
 {
 	// SAFETY: caller promises `instance` is fully initialised
-	let slice_ref = unsafe { slice_ref(instance) };
-
-	#[expect(
-		clippy::as_conversions,
-		reason = "slice ptr cast without casting methods available (yet?)"
-	)]
-	let slice_ptr = slice_ref as *const [S] as *mut [S];
-
-	// SAFETY: see above
-	unsafe { ptr::drop_in_place(slice_ptr) }
-
-	// SAFETY: caller promises `instance` is fully initialised
 	let value_ptr = unsafe { value_ptr(instance).as_ptr() };
 
 	// SAFETY: see above
 	unsafe { ptr::drop_in_place(value_ptr) }
+
+	// SAFETY: caller promises `instance` is fully initialised, and that we can
+	// safely create an exclusive reference. If this is only called in `drop`
+	// handler of the last strong pointer, this should be safe. We drop here using this temporary exclusive reference which is dropped before this
+	// function returns, so dealloc can run without triggering UB
+	let slice_ref = unsafe { slice_mut(instance) };
+
+	// SAFETY: see above
+	unsafe { ptr::drop_in_place(slice_ref) }
 }
 
 /// Drop the counter and deallocate the backing allocation of the provided instance
@@ -469,6 +472,29 @@ where
 
 	// SAFETY: caller promises ptr is valid for at least `len` elements
 	unsafe { slice::from_raw_parts(ptr, slice_len) }
+}
+
+/// # Safety
+///
+/// - The provided `instance` must not have been dropped or deallocated
+/// - The provided `instance` must have field `slice_len` already initialised
+/// - The provided `instance` must have `slice_len` elements in `slice` already initialised
+/// - `instance` must outlive `'h` (the lifetime of the returned reference)
+/// - there must not be any other references, shared or exclusive, to `instance`,
+///   so the returned exclusive reference can be valid
+#[inline]
+pub unsafe fn slice_mut<'h, C, V, S>(instance: RcInner<C, V, S>) -> &'h mut [S]
+where
+	C: Counter
+{
+	// SAFETY: caller promises to uphold the requirements
+	let ptr = unsafe { slice_thin_ptr(instance).as_ptr() };
+
+	// SAFETY: caller promises to uphold the requirements
+	let slice_len = unsafe { slice_len(instance) };
+
+	// SAFETY: caller promises ptr is valid for at least `len` elements
+	unsafe { slice::from_raw_parts_mut(ptr, slice_len) }
 }
 
 impl<C, V, S> Clone for RcInner<C, V, S>
