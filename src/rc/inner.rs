@@ -209,7 +209,8 @@ where
 
 	// SAFETY: caller promises `instance` is fully initialised, and that we can
 	// safely create an exclusive reference. If this is only called in `drop`
-	// handler of the last strong pointer, this should be safe. We drop here using this temporary exclusive reference which is dropped before this
+	// handler of the last strong pointer, this should be safe. We drop here
+	// using this temporary exclusive reference which is dropped before this
 	// function returns, so dealloc can run without triggering UB
 	let slice_ref = unsafe { slice_mut(instance) };
 
