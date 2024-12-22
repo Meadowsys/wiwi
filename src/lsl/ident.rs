@@ -7,24 +7,20 @@ pub struct IdentIncrementer {
 }
 
 impl IdentIncrementer {
-	fn new() -> Self {
+	pub fn new() -> Self {
 		Self { next: RcThread::from_value(cell::Cell::new(0)) }
 	}
 
-	fn next(&self) -> u64 {
+	pub fn next(&self) -> u64 {
 		let next = self.next.as_value_ref().get();
 		self.next.as_value_ref().set(next.checked_add(1).unwrap());
 		next
-	}
-
-	fn mk_owned_ref(&self) -> Self {
-		Self { next: RcThread::clone(&self.next) }
 	}
 }
 
 impl Clone for IdentIncrementer {
 	fn clone(&self) -> Self {
-		self.mk_owned_ref()
+		Self { next: RcThread::clone(&self.next) }
 	}
 }
 

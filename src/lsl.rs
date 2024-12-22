@@ -8,9 +8,20 @@ extern crate hashbrown;
 extern crate wiwiwiwiwiwiwiwiwiwi;
 use crate::prelude::*;
 
+use crate::chain::GenericChainConversion as _;
+use self::ident::{ Ident, IdentIncrementer };
 use self::private::{ SealedStruct, SealedTrait };
 
 pub use wiwiwiwiwiwiwiwiwiwi::state;
+
+mod ident;
+
+fn script(f: impl FnOnce(ScriptCx)) -> Script {
+	Script::new()
+		.into_generic_chain()
+		.with_inner(|s| f(s.cx()))
+		.into_inner()
+}
 
 /// LSL primitive `integer` type
 #[expect(non_camel_case_types, reason = "lsl primitive")]
@@ -84,9 +95,40 @@ impl SealedTrait for prim_boolean {}
 // #[expect(non_camel_case_types, reason = "lsl primitive")]
 // struct prim_unit { __private: () }
 
+struct Script {
+	ident_incrementer: IdentIncrementer
+}
+
+impl Script {
+	fn new() -> Self {
+		Self {
+			ident_incrementer: IdentIncrementer::new()
+		}
+	}
+
+	fn cx(&self) -> ScriptCx {
+		ScriptCx { script: self }
+	}
+}
+
+struct ScriptCx<'h> {
+	script: &'h Script
+}
+
 pub trait Type {
 	#[doc(hidden)]
 	fn __assert_obj_safe(_: &dyn Type, _: SealedStruct)
+	where
+		Self: Sized
+	{}
+}
+
+pub trait Value<T>
+where
+	T: Type
+{
+	#[doc(hidden)]
+	fn __assert_obj_safe(_: &dyn Value<T>, _: SealedStruct)
 	where
 		Self: Sized
 	{}
