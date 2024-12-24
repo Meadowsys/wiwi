@@ -33,6 +33,7 @@ pub mod filetypes;
 pub mod lazy_wrap;
 pub mod lsl;
 pub mod macro_util;
+pub mod mem_use;
 pub mod nominal;
 pub mod num;
 pub mod parser;

@@ -124,6 +124,7 @@ pub use std::mem::{
 	take,
 	zeroed
 };
+pub use std::num::{ self, NonZero, Saturating, Wrapping };
 pub use std::ops::{
 	self,
 	Deref,
