@@ -30,5 +30,7 @@ pub struct Ident {
 }
 
 impl Ident {
-	fn to_u64(&self) -> u64 { self.ident }
+	fn to_u64(&self) -> u64 {
+		self.ident
+	}
 }
