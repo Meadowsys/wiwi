@@ -25,59 +25,59 @@ fn script(f: impl FnOnce(ScriptCx)) -> Script {
 
 /// LSL primitive `integer` type
 #[expect(non_camel_case_types, reason = "lsl primitive")]
-struct prim_integer { __private: () }
+struct primitive_integer { __private: () }
 
-impl Type for prim_integer {}
+impl Type for primitive_integer {}
 
-impl SealedTrait for prim_integer {}
+impl SealedTrait for primitive_integer {}
 
 /// LSL primitive `float` type
 #[expect(non_camel_case_types, reason = "lsl primitive")]
-struct prim_float { __private: () }
+struct primitive_float { __private: () }
 
-impl Type for prim_float {}
+impl Type for primitive_float {}
 
-impl SealedTrait for prim_float {}
+impl SealedTrait for primitive_float {}
 
 /// LSL primitive `string` type
 #[expect(non_camel_case_types, reason = "lsl primitive")]
-struct prim_string { __private: () }
+struct primitive_string { __private: () }
 
-impl Type for prim_string {}
+impl Type for primitive_string {}
 
-impl SealedTrait for prim_string {}
+impl SealedTrait for primitive_string {}
 
 /// LSL primitive `key` type
 #[expect(non_camel_case_types, reason = "lsl primitive")]
-struct prim_key { __private: () }
+struct primitive_key { __private: () }
 
-impl Type for prim_key {}
+impl Type for primitive_key {}
 
-impl SealedTrait for prim_key {}
+impl SealedTrait for primitive_key {}
 
 /// LSL primitive `vector` type
 #[expect(non_camel_case_types, reason = "lsl primitive")]
-struct prim_vector { __private: () }
+struct primitive_vector { __private: () }
 
-impl Type for prim_vector {}
+impl Type for primitive_vector {}
 
-impl SealedTrait for prim_vector {}
+impl SealedTrait for primitive_vector {}
 
 /// LSL primitive `rotation` type
 #[expect(non_camel_case_types, reason = "lsl primitive")]
-struct prim_rotation { __private: () }
+struct primitive_rotation { __private: () }
 
-impl Type for prim_rotation {}
+impl Type for primitive_rotation {}
 
-impl SealedTrait for prim_rotation {}
+impl SealedTrait for primitive_rotation {}
 
 /// LSL primitive `list` type
 #[expect(non_camel_case_types, reason = "lsl primitive")]
-struct prim_list { __private: () }
+struct primitive_list { __private: () }
 
-impl Type for prim_list {}
+impl Type for primitive_list {}
 
-impl SealedTrait for prim_list {}
+impl SealedTrait for primitive_list {}
 
 /// LSL primitive `boolean` type
 ///
@@ -86,14 +86,51 @@ impl SealedTrait for prim_list {}
 /// underneath by an integer, so should work just as if LSL always had
 /// booleans to begin with.
 #[expect(non_camel_case_types, reason = "lsl primitive")]
-struct prim_boolean { __private: () }
+struct primitive_boolean { __private: () }
 
-impl Type for prim_boolean {}
+impl Type for primitive_boolean {}
 
-impl SealedTrait for prim_boolean {}
+impl SealedTrait for primitive_boolean {}
 
 // #[expect(non_camel_case_types, reason = "lsl primitive")]
 // struct prim_unit { __private: () }
+
+struct VarContainer<T>
+where
+	T: Type
+{
+	__something: PhantomData<T>
+}
+
+impl<T> VarContainer<T>
+where
+	T: Type
+{}
+
+#[expect(non_camel_case_types, reason = "lsl primitive")]
+type integer = VarContainer<primitive_integer>;
+
+#[expect(non_camel_case_types, reason = "lsl primitive")]
+type float = VarContainer<primitive_float>;
+
+#[expect(non_camel_case_types, reason = "lsl primitive")]
+type string = VarContainer<primitive_string>;
+
+#[expect(non_camel_case_types, reason = "lsl primitive")]
+type key = VarContainer<primitive_key>;
+
+#[expect(non_camel_case_types, reason = "lsl primitive")]
+type vector = VarContainer<primitive_vector>;
+
+#[expect(non_camel_case_types, reason = "lsl primitive")]
+type rotation = VarContainer<primitive_rotation>;
+
+#[expect(non_camel_case_types, reason = "lsl primitive")]
+type list = VarContainer<primitive_list>;
+
+#[expect(non_camel_case_types, reason = "lsl primitive")]
+type boolean = VarContainer<primitive_boolean>;
+
 
 struct Script {
 	ident_incrementer: IdentIncrementer
@@ -117,22 +154,34 @@ struct ScriptCx<'h> {
 
 pub trait Type {
 	#[doc(hidden)]
-	fn __assert_obj_safe(_: &dyn Type, _: SealedStruct)
-	where
-		Self: Sized
-	{}
+	fn __assert_dyn_compat(&self, _: &dyn Type, _: SealedStruct) {}
 }
 
-pub trait Value<T>
+pub trait Var<T>
 where
 	T: Type
 {
 	#[doc(hidden)]
-	fn __assert_obj_safe(_: &dyn Value<T>, _: SealedStruct)
-	where
-		Self: Sized
-	{}
+	fn __assert_dyn_compat(&self, _: &dyn Var<T>, _: SealedStruct) {}
 }
+
+pub trait Expr<T>
+where
+	Self: ExprDyn,
+	T: Type
+{
+	#[doc(hidden)]
+	fn __assert_dyn_compat(&self, _: &dyn Expr<T>, _: SealedStruct) {}
+
+	fn into_dyn(self) -> Box<dyn ExprDyn>
+	where
+		Self: Sized + 'static
+	{
+		Box::new(self)
+	}
+}
+
+pub trait ExprDyn {}
 
 mod private {
 	pub struct SealedStruct {
