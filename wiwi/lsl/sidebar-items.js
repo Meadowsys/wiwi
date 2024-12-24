@@ -1,1 +1,1 @@
-window.SIDEBAR_ITEMS = {"macro":["state"],"trait":["Type","Value"]};
+window.SIDEBAR_ITEMS = {"macro":["state"]};

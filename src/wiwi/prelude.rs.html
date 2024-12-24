@@ -163,7 +163,8 @@
 <a href="#162" id="162">162</a>
 <a href="#163" id="163">163</a>
 <a href="#164" id="164">164</a>
-<a href="#165" id="165">165</a></pre></div><pre class="rust"><code><span class="doccomment">//! Prelude exporting types from the Rust standard library (`std`)
+<a href="#165" id="165">165</a>
+<a href="#166" id="166">166</a></pre></div><pre class="rust"><code><span class="doccomment">//! Prelude exporting types from the Rust standard library (`std`)
 
 </span><span class="kw">pub extern crate </span>alloc <span class="kw">as </span>alloc_crate;
 <span class="kw">pub extern crate </span>core;
@@ -289,6 +290,7 @@
 	take,
 	zeroed
 };
+<span class="kw">pub use </span>std::num::{ <span class="self">self</span>, NonZero, Saturating, Wrapping };
 <span class="kw">pub use </span>std::ops::{
 	<span class="self">self</span>,
 	Deref,

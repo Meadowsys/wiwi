@@ -990,10 +990,10 @@
 	</span>C: Counter
 {
 	<span class="comment">// SAFETY: caller promises to uphold the requirements
-	</span><span class="kw">let </span>ptr = <span class="kw">unsafe </span>{ <span class="kw-2">&amp;</span>raw <span class="kw">const </span>(<span class="kw-2">*</span>instance.ptr.as_ptr()).counter };
+	</span><span class="kw">let </span>ptr = <span class="kw">unsafe </span>{ <span class="kw-2">&amp;</span>raw <span class="kw-2">mut </span>(<span class="kw-2">*</span>instance.ptr.as_ptr()).counter };
 
 	<span class="comment">// SAFETY: ptr is guaranteed to be nonnull
-	</span><span class="kw">unsafe </span>{ ptr::NonNull::new_unchecked(ptr.cast_mut()) }
+	</span><span class="kw">unsafe </span>{ ptr::NonNull::new_unchecked(ptr) }
 }
 
 <span class="doccomment">/// # Safety
@@ -1039,10 +1039,10 @@
 	</span>C: Counter
 {
 	<span class="comment">// SAFETY: caller promises to uphold the requirements
-	</span><span class="kw">let </span>ptr = <span class="kw">unsafe </span>{ <span class="kw-2">&amp;</span>raw <span class="kw">const </span>(<span class="kw-2">*</span>instance.ptr.as_ptr()).slice_len };
+	</span><span class="kw">let </span>ptr = <span class="kw">unsafe </span>{ <span class="kw-2">&amp;</span>raw <span class="kw-2">mut </span>(<span class="kw-2">*</span>instance.ptr.as_ptr()).slice_len };
 
 	<span class="comment">// SAFETY: ptr is guaranteed to be nonnull
-	</span><span class="kw">unsafe </span>{ ptr::NonNull::new_unchecked(ptr.cast_mut()) }
+	</span><span class="kw">unsafe </span>{ ptr::NonNull::new_unchecked(ptr) }
 }
 
 <span class="doccomment">/// # Safety
@@ -1088,10 +1088,10 @@
 	</span>C: Counter
 {
 	<span class="comment">// SAFETY: caller promises to uphold the requirements
-	</span><span class="kw">let </span>ptr = <span class="kw">unsafe </span>{ <span class="kw-2">&amp;</span>raw <span class="kw">const </span>(<span class="kw-2">*</span>instance.ptr.as_ptr()).value };
+	</span><span class="kw">let </span>ptr = <span class="kw">unsafe </span>{ <span class="kw-2">&amp;</span>raw <span class="kw-2">mut </span>(<span class="kw-2">*</span>instance.ptr.as_ptr()).value };
 
 	<span class="comment">// SAFETY: ptr is guaranteed to be nonnull
-	</span><span class="kw">unsafe </span>{ ptr::NonNull::new_unchecked(ptr.cast_mut()) }
+	</span><span class="kw">unsafe </span>{ ptr::NonNull::new_unchecked(ptr) }
 }
 
 <span class="doccomment">/// # Safety
@@ -1137,11 +1137,11 @@
 	</span>C: Counter
 {
 	<span class="comment">// SAFETY: caller promises to uphold the requirements
-	</span><span class="kw">let </span>ptr = <span class="kw">unsafe </span>{ <span class="kw-2">&amp;</span>raw <span class="kw">const </span>(<span class="kw-2">*</span>instance.ptr.as_ptr()).slice };
+	</span><span class="kw">let </span>ptr = <span class="kw">unsafe </span>{ <span class="kw-2">&amp;</span>raw <span class="kw-2">mut </span>(<span class="kw-2">*</span>instance.ptr.as_ptr()).slice };
 	<span class="kw">let </span>ptr = ptr.cast::&lt;S&gt;();
 
 	<span class="comment">// SAFETY: ptr is guaranteed to be nonnull
-	</span><span class="kw">unsafe </span>{ ptr::NonNull::new_unchecked(ptr.cast_mut()) }
+	</span><span class="kw">unsafe </span>{ ptr::NonNull::new_unchecked(ptr) }
 }
 
 <span class="doccomment">/// # Safety
