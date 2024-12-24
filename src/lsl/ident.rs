@@ -11,10 +11,10 @@ impl IdentIncrementer {
 		Self { next: RcThread::from_value(cell::Cell::new(0)) }
 	}
 
-	pub fn next(&self) -> u64 {
-		let next = self.next.as_value_ref().get();
-		self.next.as_value_ref().set(next.checked_add(1).unwrap());
-		next
+	pub fn next(&self) -> Ident {
+		let ident = self.next.as_value_ref().get();
+		self.next.as_value_ref().set(ident.checked_add(1).unwrap());
+		Ident { ident }
 	}
 }
 
