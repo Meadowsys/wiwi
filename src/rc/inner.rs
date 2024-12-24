@@ -300,10 +300,10 @@ where
 	C: Counter
 {
 	// SAFETY: caller promises to uphold the requirements
-	let ptr = unsafe { &raw const (*instance.ptr.as_ptr()).counter };
+	let ptr = unsafe { &raw mut (*instance.ptr.as_ptr()).counter };
 
 	// SAFETY: ptr is guaranteed to be nonnull
-	unsafe { ptr::NonNull::new_unchecked(ptr.cast_mut()) }
+	unsafe { ptr::NonNull::new_unchecked(ptr) }
 }
 
 /// # Safety
@@ -349,10 +349,10 @@ where
 	C: Counter
 {
 	// SAFETY: caller promises to uphold the requirements
-	let ptr = unsafe { &raw const (*instance.ptr.as_ptr()).slice_len };
+	let ptr = unsafe { &raw mut (*instance.ptr.as_ptr()).slice_len };
 
 	// SAFETY: ptr is guaranteed to be nonnull
-	unsafe { ptr::NonNull::new_unchecked(ptr.cast_mut()) }
+	unsafe { ptr::NonNull::new_unchecked(ptr) }
 }
 
 /// # Safety
@@ -398,10 +398,10 @@ where
 	C: Counter
 {
 	// SAFETY: caller promises to uphold the requirements
-	let ptr = unsafe { &raw const (*instance.ptr.as_ptr()).value };
+	let ptr = unsafe { &raw mut (*instance.ptr.as_ptr()).value };
 
 	// SAFETY: ptr is guaranteed to be nonnull
-	unsafe { ptr::NonNull::new_unchecked(ptr.cast_mut()) }
+	unsafe { ptr::NonNull::new_unchecked(ptr) }
 }
 
 /// # Safety
@@ -447,11 +447,11 @@ where
 	C: Counter
 {
 	// SAFETY: caller promises to uphold the requirements
-	let ptr = unsafe { &raw const (*instance.ptr.as_ptr()).slice };
+	let ptr = unsafe { &raw mut (*instance.ptr.as_ptr()).slice };
 	let ptr = ptr.cast::<S>();
 
 	// SAFETY: ptr is guaranteed to be nonnull
-	unsafe { ptr::NonNull::new_unchecked(ptr.cast_mut()) }
+	unsafe { ptr::NonNull::new_unchecked(ptr) }
 }
 
 /// # Safety
