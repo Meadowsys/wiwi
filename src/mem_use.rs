@@ -183,7 +183,102 @@ where
 	const MEM_USE: usize = size_of::<Self>() + T::MEM_USE;
 }
 
-// TODO: &mut T, Option, tuples, Result, Vec, String, [T], str, [T; N], the ranges, cells, path, osstr, cstr
+impl<T> MemUse for &mut T
+where
+	T: ?Sized + MemUse
+{
+	#[inline]
+	fn mem_use_inline(&self) -> usize {
+		size_of::<Self>()
+	}
+
+	#[inline]
+	fn mem_use_indirect(&self) -> usize {
+		T::mem_use(self)
+	}
+}
+
+impl<T> MemUseStatic for &mut T
+where
+	T: ?Sized + MemUseStatic
+{
+	#[inline]
+	fn mem_use_static(&self) -> usize {
+		size_of::<Self>() + T::mem_use_static(self)
+	}
+}
+
+impl<T> MemUseConst for &mut T
+where
+	T: MemUseConst
+{
+	const MEM_USE: usize = size_of::<Self>() + T::MEM_USE;
+}
+
+impl<T> MemUse for [T]
+where
+	T: MemUse
+{
+	#[inline]
+	fn mem_use(&self) -> usize {
+		self.iter().map(T::mem_use).sum()
+	}
+
+	#[inline]
+	fn mem_use_inline(&self) -> usize {
+		size_of::<T>() + self.len()
+	}
+
+	#[inline]
+	fn mem_use_indirect(&self) -> usize {
+		self.iter().map(T::mem_use_indirect).sum()
+	}
+}
+
+impl<T> MemUseStatic for [T]
+where
+	T: MemUseStatic
+{
+	#[inline]
+	fn mem_use_static(&self) -> usize {
+		let mut i = 0;
+		let mut mem_use = 0;
+
+		while i < self.len() {
+			mem_use += self[i].mem_use_static();
+			i += 1;
+		}
+
+		mem_use
+	}
+}
+
+impl MemUse for str {
+	#[inline]
+	fn mem_use(&self) -> usize {
+		self.len()
+	}
+
+	#[inline]
+	fn mem_use_inline(&self) -> usize {
+		self.len()
+	}
+
+	#[inline]
+	fn mem_use_indirect(&self) -> usize {
+		0
+	}
+}
+
+impl MemUseStatic for str {
+	#[inline]
+	fn mem_use_static(&self) -> usize {
+		self.len()
+	}
+}
+
+// TODO: Option, tuples, Result, Vec, String, [T; N], the ranges, cells, path, osstr, cstr, rc, arc, types in this crate
+// TODO: go through std's list of types lol
 
 mod private {
 	pub struct SealedStruct {
