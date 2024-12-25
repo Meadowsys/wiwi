@@ -226,7 +226,7 @@ where
 
 	#[inline]
 	fn mem_use_inline(&self) -> usize {
-		size_of::<T>() + self.len()
+		size_of_val(self)
 	}
 
 	#[inline]
