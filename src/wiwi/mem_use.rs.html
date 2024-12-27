@@ -513,7 +513,7 @@
 
 	<span class="attr">#[inline]
 	</span><span class="kw">fn </span>mem_use_inline(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; usize {
-		size_of::&lt;T&gt;() + <span class="self">self</span>.len()
+		size_of_val(<span class="self">self</span>)
 	}
 
 	<span class="attr">#[inline]
