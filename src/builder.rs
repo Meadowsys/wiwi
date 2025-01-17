@@ -1,7 +1,7 @@
 extern crate wiwiwiwiwi;
 
 use crate::prelude::*;
-use self::private::{ AcceptDefaultSealed, InitialisationStatusSealed };
+use self::private::*;
 
 pub use wiwiwiwiwi::builder;
 
@@ -9,9 +9,20 @@ pub struct Uninit {
 	__private: ()
 }
 
+pub trait IsUninit: IsUninitSealed {}
+
+impl IsUninit for Uninit {}
+impl IsUninitSealed for Uninit {}
+
 pub struct Init {
 	__private: ()
 }
+
+pub trait IsInit: IsInitSealed {}
+
+impl IsInit for Init {}
+impl IsInitSealed for Init {}
+
 /// Compile-time known value for if the current type encodes initialised or not
 ///
 /// This can be used for example for a state that has a default variant, where
@@ -25,16 +36,21 @@ pub struct Init {
 ///
 /// # Safety
 ///
-/// Implementing this trait is a promise that your [`IS_INIT`](InitialisationStatus::IS_INIT)
-/// value is actually reflective of initialisation state, assuming the types
-/// have been used correctly.
+/// Implementing this trait is a promise that your
+/// [`IS_INIT`](InitialisationStatus::IS_INIT)
+/// value is actually reflective of initialisation state, and
+/// [`InvertInitialisationStatus`](InitialisationStatus::InvertInitialisationStatus)
+/// is too, assuming the types have been used correctly.
 pub unsafe trait InitialisationStatus: InitialisationStatusSealed {
 	const IS_INIT: bool;
+	const IS_UNINIT: bool = !Self::IS_INIT;
+	type InvertInitialisationStatus: InitialisationStatus;
 }
 
 // SAFETY: `Uninit` represents being uninitialised
 unsafe impl InitialisationStatus for Uninit {
 	const IS_INIT: bool = false;
+	type InvertInitialisationStatus = Init;
 }
 
 impl InitialisationStatusSealed for Uninit {}
@@ -42,6 +58,7 @@ impl InitialisationStatusSealed for Uninit {}
 // SAFETY: `Init` represents being initialised
 unsafe impl InitialisationStatus for Init {
 	const IS_INIT: bool = true;
+	type InvertInitialisationStatus = Uninit;
 }
 
 impl InitialisationStatusSealed for Init {}
@@ -76,10 +93,16 @@ where
 
 impl<T> AcceptDefaultSealed<T> for Option<T> {}
 
+pub type PhantomDataInvariant<T> = PhantomData<fn(T) -> T>;
+
 /// notouchie
 mod private {
 	/// notouchie
-	pub trait AcceptDefaultSealed<T> {}
+	pub trait IsUninitSealed {}
+	/// notouchie
+	pub trait IsInitSealed {}
 	/// notouchie
 	pub trait InitialisationStatusSealed {}
+	/// notouchie
+	pub trait AcceptDefaultSealed<T> {}
 }
