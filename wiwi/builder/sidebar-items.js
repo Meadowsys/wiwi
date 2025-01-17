@@ -1,1 +1,1 @@
-window.SIDEBAR_ITEMS = {"attr":["builder"],"struct":["Init","Uninit"],"trait":["AcceptDefault","InitialisationStatus"]};
+window.SIDEBAR_ITEMS = {"attr":["builder"],"struct":["Init","Uninit"],"trait":["AcceptDefault","InitialisationStatus","IsInit","IsUninit"],"type":["PhantomDataInvariant"]};
