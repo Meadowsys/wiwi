@@ -63,36 +63,6 @@ unsafe impl InitialisationStatus for Init {
 
 impl InitialisationStatusSealed for Init {}
 
-/// Trait for required items that can take [`None`] for convenience, because
-/// they implement [`Default`]
-pub trait AcceptDefault<T>
-where
-	Self: AcceptDefaultSealed<T>
-{
-	fn unwrap_or_default(self) -> T;
-}
-
-impl<T> AcceptDefault<T> for T {
-	#[inline]
-	fn unwrap_or_default(self) -> T {
-		self
-	}
-}
-
-impl<T> AcceptDefaultSealed<T> for T {}
-
-impl<T> AcceptDefault<T> for Option<T>
-where
-	T: Default
-{
-	#[inline]
-	fn unwrap_or_default(self) -> T {
-		self.unwrap_or_default()
-	}
-}
-
-impl<T> AcceptDefaultSealed<T> for Option<T> {}
-
 pub type PhantomDataInvariant<T> = PhantomData<fn(T) -> T>;
 
 /// notouchie
@@ -103,6 +73,4 @@ mod private {
 	pub trait IsInitSealed {}
 	/// notouchie
 	pub trait InitialisationStatusSealed {}
-	/// notouchie
-	pub trait AcceptDefaultSealed<T> {}
 }
