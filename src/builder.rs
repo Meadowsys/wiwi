@@ -1,3 +1,23 @@
+//! Compile time checked builder APIs
+//!
+//! # (temporary) Checklist for manually writing builders
+//!
+//! - struct definition
+//! - impl struct with `builder()` and `finish_init(..)`
+//! - submodule for builder impl details
+//!   - imports
+//!   - pub type for init/uninit
+//!   - builder struct def
+//!   - builder state trait def
+//!   - builder state container struct def
+//!   - private mod for sealed trait
+//!   - impl builder state trait
+//!   - impl sealed
+//!   - impl uninit for `new()` fn
+//!   - impl<S> where S: builder state trait for all the fns including `build()`
+//!     (`build()` calls `finish_init(..)`)
+//!   - impl block, same as previous one in headers and stuffs, for the internal fns
+
 extern crate wiwiwiwiwi;
 
 use crate::prelude::*;
