@@ -94,19 +94,27 @@
 <a href="#93" id="93">93</a>
 <a href="#94" id="94">94</a>
 <a href="#95" id="95">95</a>
-<a href="#96" id="96">96</a>
-<a href="#97" id="97">97</a>
-<a href="#98" id="98">98</a>
-<a href="#99" id="99">99</a>
-<a href="#100" id="100">100</a>
-<a href="#101" id="101">101</a>
-<a href="#102" id="102">102</a>
-<a href="#103" id="103">103</a>
-<a href="#104" id="104">104</a>
-<a href="#105" id="105">105</a>
-<a href="#106" id="106">106</a>
-<a href="#107" id="107">107</a>
-<a href="#108" id="108">108</a></pre></div><pre class="rust"><code><span class="kw">extern crate </span>wiwiwiwiwi;
+<a href="#96" id="96">96</a></pre></div><pre class="rust"><code><span class="doccomment">//! Compile time checked builder APIs
+//!
+//! # (temporary) Checklist for manually writing builders
+//!
+//! - struct definition
+//! - impl struct with `builder()` and `finish_init(..)`
+//! - submodule for builder impl details
+//!   - imports
+//!   - pub type for init/uninit
+//!   - builder struct def
+//!   - builder state trait def
+//!   - builder state container struct def
+//!   - private mod for sealed trait
+//!   - impl builder state trait
+//!   - impl sealed
+//!   - impl uninit for `new()` fn
+//!   - impl&lt;S&gt; where S: builder state trait for all the fns including `build()`
+//!     (`build()` calls `finish_init(..)`)
+//!   - impl block, same as previous one in headers and stuffs, for the internal fns
+
+</span><span class="kw">extern crate </span>wiwiwiwiwi;
 
 <span class="kw">use </span><span class="kw">crate</span>::prelude::<span class="kw-2">*</span>;
 <span class="kw">use </span><span class="self">self</span>::private::<span class="kw-2">*</span>;
@@ -171,36 +179,6 @@
 
 <span class="kw">impl </span>InitialisationStatusSealed <span class="kw">for </span>Init {}
 
-<span class="doccomment">/// Trait for required items that can take [`None`] for convenience, because
-/// they implement [`Default`]
-</span><span class="kw">pub trait </span>AcceptDefault&lt;T&gt;
-<span class="kw">where
-	</span><span class="self">Self</span>: AcceptDefaultSealed&lt;T&gt;
-{
-	<span class="kw">fn </span>unwrap_or_default(<span class="self">self</span>) -&gt; T;
-}
-
-<span class="kw">impl</span>&lt;T&gt; AcceptDefault&lt;T&gt; <span class="kw">for </span>T {
-	<span class="attr">#[inline]
-	</span><span class="kw">fn </span>unwrap_or_default(<span class="self">self</span>) -&gt; T {
-		<span class="self">self
-	</span>}
-}
-
-<span class="kw">impl</span>&lt;T&gt; AcceptDefaultSealed&lt;T&gt; <span class="kw">for </span>T {}
-
-<span class="kw">impl</span>&lt;T&gt; AcceptDefault&lt;T&gt; <span class="kw">for </span><span class="prelude-ty">Option</span>&lt;T&gt;
-<span class="kw">where
-	</span>T: Default
-{
-	<span class="attr">#[inline]
-	</span><span class="kw">fn </span>unwrap_or_default(<span class="self">self</span>) -&gt; T {
-		<span class="self">self</span>.unwrap_or_default()
-	}
-}
-
-<span class="kw">impl</span>&lt;T&gt; AcceptDefaultSealed&lt;T&gt; <span class="kw">for </span><span class="prelude-ty">Option</span>&lt;T&gt; {}
-
 <span class="kw">pub type </span>PhantomDataInvariant&lt;T&gt; = PhantomData&lt;<span class="kw">fn</span>(T) -&gt; T&gt;;
 
 <span class="doccomment">/// notouchie
@@ -211,7 +189,5 @@
 	</span><span class="kw">pub trait </span>IsInitSealed {}
 	<span class="doccomment">/// notouchie
 	</span><span class="kw">pub trait </span>InitialisationStatusSealed {}
-	<span class="doccomment">/// notouchie
-	</span><span class="kw">pub trait </span>AcceptDefaultSealed&lt;T&gt; {}
 }
 </code></pre></div></section></main></body></html>
